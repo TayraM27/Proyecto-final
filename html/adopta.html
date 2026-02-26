@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetFamily</title>
+    <link rel="stylesheet" href="../style/header.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <link rel="stylesheet" href="../style/footer.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="https://kit.fontawesome.com/093cf7cd82.js" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&family=Comfortaa:wght@300..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<header>
+    <!-- Logo (XL) -->
+    <div id="contenedor_logo" class="d-none d-lg-block">
+        <a id="logoXL" href="index.html">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderXL">
+            <h2 id="title-logo">Pet<span style="color: #F8BA56;">Family</span></h2>
+        </a>
+    </div>
+
+    <!-- Header móvil -->
+    <div id="menu_burger" class="container-fluid justify-content-between align-content-center d-lg-none">
+        <i id="btn_burger" class="fa-solid fa-bars text-center col-2 ms-n5"></i>
+        <a id="logoMD" href="index.html" class="mb-2">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderMD">
+            <h2 id="burger_logo">Pet<span style="color: #F8BA56;">Family</span></h2>
+        </a>
+        <div id="user_burger" class="align-content-center d-lg-none">
+            <a href="login.html"><img src="../img/iconosHeader/iconUser.png" width="15px" alt="Usuario"></a>
+            <a href="register.html" class="btn-register">Registrarse</a>
+        </div>
+    </div>
+
+    <!-- Menú escritorio -->
+    <nav id="menu" class="d-none d-lg-block">
+        <ul id="lista_menu">
+            <li><a href="adopta.html">Adopta</a></li>
+            <li><a href="colabora.html" class="colabora">Colabora</a>
+                <ul class="submenuColabora d-none">
+                    <li><a href="">Dona</a></li>
+                    <li><a href="">Apadrina</a></li>
+                </ul>
+            </li>
+            <li><a href="protectoras.html">Protectoras</a></li>
+            <li><a href="foro.html">Foro</a></li>
+            <li><a href="mapa.html">Mapa</a></li>
+            <li><a href="test.html">Tests</a></li>
+        </ul>
+    </nav>
+
+    <!-- Usuario XL -->
+    <div id="user_container" class="d-none d-lg-block">
+        <a href="login.html"><img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px"></a>
+        <a href="register.html" class="btn-register">Registrarse</a>
+    </div>
+</header>
+
+<main>
+    <div class="container mt-5 mb-5">
+
+        <!-- filtros-->
+        <form class="mb-4 p-3 bg-light rounded shadow-sm">
+            <div class="row g-3">
+
+                <div class="col-md-3">
+                    <label class="form-label">Urgencia</label>
+                    <select class="form-select">
+                        <option>Todos</option>
+                        <option>Nuevo</option>
+                        <option>Urgente</option>
+                        <option>Normal</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Especie</label>
+                    <select class="form-select">
+                        <option>Todas</option>
+                        <option>Perro</option>
+                        <option>Gato</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Ubicación</label>
+                    <input type="text" class="form-control" placeholder="Oviedo, Gijón...">
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end">
+                    <button class="btn btn-primary w-100">Filtrar</button>
+                </div>
+
+            </div>
+        </form>
+
+        <div class="row g-4">
+
+            <div class="col-sm-12 col-md-6 col-lg-4 animalCard">
+                <div class="card h-100 mt-4 shadow-sm">
+                    <img src="../img/mascotas/albergue-animales-dog.jpg" class="card-img-top" alt="Nombre del animal">
+                    <div class="card-body">
+                        <h5 class="card-title">Nombre del animal</h5>
+                        <span class="badge bg-warning text-dark">Vacunado</span>
+                        <span class="badge bg-info text-dark">Nuevo</span>
+                        <p class="card-text mt-2">
+                            <strong>📍 Ubicación:</strong> Oviedo<br>
+                            <strong>🎂 Edad:</strong> 2 años<br>
+                            👁️
+                        </p>
+                        <a href="#" class="btn btn-primary w-100">Adoptar</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-md-6 col-lg-4 animalCard">
+                <div class="card h-100 mt-4 shadow-sm">
+                    <img src="../img/mascotas/protectora-de-asturias-dog.jpg" class="card-img-top" alt="Nombre del animal">
+                    <div class="card-body">
+                        <h5 class="card-title">Nombre del animal</h5>
+                        <span class="badge bg-warning text-dark">Vacunado</span>
+                        <span class="badge bg-info text-dark">Nuevo</span>
+                        <p class="card-text mt-2">
+                            <strong>📍 Ubicación:</strong> Oviedo<br>
+                            <strong>🎂 Edad:</strong> 2 años<br>
+                            👁️
+                        </p>
+                        <a href="#" class="btn btn-primary w-100">Adoptar</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-md-6 col-lg-4 animalCard">
+                <div class="card h-100 mt-4 shadow-sm">
+                    <img src="../img/mascotas/asociacion-felina-la-esperanza-cat.jpg" class="card-img-top" alt="Nombre del animal">
+                    <div class="card-body">
+                        <h5 class="card-title">Nombre del animal</h5>
+                        <span class="badge bg-warning text-dark">Vacunado</span>
+                        <span class="badge bg-info text-dark">Nuevo</span>
+                        <p class="card-text mt-2">
+                            <strong>📍 Ubicación:</strong> Oviedo<br>
+                            <strong>🎂 Edad:</strong> 2 años<br>
+                            👁️
+                        </p>
+                        <a href="#" class="btn btn-primary w-100">Adoptar</a>
+                    </div>
+                </div>
+            </div>
+
+           <div class="col-sm-12 col-md-6 col-lg-4 animalCard">
+                <div class="card h-100 mt-4 shadow-sm">
+                    <img src="../img/mascotas/masquechuchos-cat.jpg" class="card-img-top" alt="Nombre del animal">
+                    <div class="card-body">
+                        <h5 class="card-title">Nombre del animal</h5>
+                        <span class="badge bg-warning text-dark">Vacunado</span>
+                        <span class="badge bg-info text-dark">Nuevo</span>
+                        <p class="card-text mt-2">
+                            <strong>📍 Ubicación:</strong> Oviedo<br>
+                            <strong>🎂 Edad:</strong> 2 años<br>
+                            👁️
+                        </p>
+                        <a href="#" class="btn btn-primary w-100">Adoptar</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-md-6 col-lg-4 animalCard">
+                <div class="card h-100 mt-4 shadow-sm">
+                    <img src="../img/mascotas/nortemascotas-dog.jpg" class="card-img-top" alt="Nombre del animal">
+                    <div class="card-body">
+                        <h5 class="card-title">Nombre del animal</h5>
+                        <span class="badge bg-warning text-dark">Vacunado</span>
+                        <span class="badge bg-info text-dark">Nuevo</span>
+                        <p class="card-text mt-2">
+                            <strong>📍 Ubicación:</strong> Oviedo<br>
+                            <strong>🎂 Edad:</strong> 2 años<br>
+                            👁️
+                        </p>
+                        <a href="#" class="btn btn-primary w-100">Adoptar</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-md-6 col-lg-4 animalCard">
+                <div class="card h-100 mt-4 shadow-sm">
+                    <img src="../img/mascotas/protectora-de-asturias-cat.jpg" class="card-img-top" alt="Nombre del animal">
+                    <div class="card-body">
+                        <h5 class="card-title">Nombre del animal</h5>
+                        <span class="badge bg-warning text-dark">Vacunado</span>
+                        <span class="badge bg-info text-dark">Nuevo</span>
+                        <p class="card-text mt-2">
+                            <strong>📍 Ubicación:</strong> Oviedo<br>
+                            <strong>🎂 Edad:</strong> 2 años<br>
+                            👁️
+                        </p>
+                        <a href="#" class="btn btn-primary w-100">Adoptar</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<!-- flecha subir -->
+<div class="text-center mb-4">
+    <a href="#"><img src="../img/sectionIndex/up-arrow.png" alt="Flecha" id="arrow" width="3%"></a>
+</div>
+
+<!-- footer -->
+<footer>
+    <p>© 2024 PetFamily. Todos los derechos reservados.</p>
+    <p><a href="privacidad.html" style="color: white;">Política de Privacidad</a> | <a href="terminos.html" style="color: white;">Términos de Servicio</a></p>
+</footer>
+
+<!-- scripts -->
+<script src="../javascript/script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="//code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
+
+</body>
+</html>
