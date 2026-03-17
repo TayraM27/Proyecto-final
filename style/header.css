@@ -5,22 +5,22 @@ body {
 
 header {
     width: 100%;
-    height: 15vh;
+    height: clamp(60px, 10vh, 90px);
     background-color: #1B358F;
     position: fixed;
     top: 0;
     left: 0;
     display: flex;
-    justify-content: space-between; 
+    justify-content: space-between;
     align-items: center;
     padding: 0 2em;
     box-sizing: border-box;
     z-index: 10;
 }
-#contenedor_logo, #menu, #user_container,#menu_burger {
-    justify-self: center; 
-}
 
+#contenedor_logo, #menu, #user_container, #menu_burger {
+    justify-self: center;
+}
 
 /* Logo */
 #logoXL {
@@ -28,19 +28,18 @@ header {
     align-items: center;
     gap: 0.5em;
     text-decoration: none;
-
 }
 
 #logoXL img {
     width: 4.7em;
-   
 }
 
 #logoXL h2 {
-    color: white;          
-    margin: 0;           
+    color: white;
+    margin: 0;
     font-size: 2.2em;
 }
+
 #logoMD {
     display: flex;
     align-items: center;
@@ -49,8 +48,8 @@ header {
 }
 
 #logoMD h2 {
-    color: white;          
-    margin: 0;           
+    color: white;
+    margin: 0;
     font-size: 2em;
 }
 
@@ -67,8 +66,8 @@ header {
     color: #F8BA56;
     padding: 0.5em;
     text-decoration: none;
-    font-size: 1.15em;
-    font-weight:500;
+    font-size: 1rem;
+    font-weight: 500;
     transition: transform .4s, color .4s;
     transform: scale(1);
 }
@@ -79,24 +78,25 @@ header {
     background-color: rgba(248, 186, 86, 0.1);
     padding: .5em;
     border-radius: 10%;
-    
-    
 }
 
 #lista_menu li:hover {
     transform: scale(1.1);
     color: white;
 }
+
 #adopta img {
     width: 1em;
     opacity: 0;
 }
+
 #adopta:hover img {
-    opacity: 1;  
+    opacity: 1;
 }
+
 /* Submenú Colabora */
-   .colabora {
-    position: relative; 
+.colabora {
+    position: relative;
 }
 
 .submenuColabora {
@@ -104,35 +104,43 @@ header {
     top: 100%;
     left: 0;
     background-color: #1B358F;
-    padding: 1em;
+    padding: 0.5em 0;
     flex-direction: column;
     align-items: flex-start;
-    min-width: 150px;
+    min-width: 130px;
     border-radius: 0 0 10px 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
     z-index: 1000;
 }
 
-@media (max-width: 991px) {
-    .submenuColabora {
-        position: static;
-        box-shadow: none;
-        border-radius: 0;
-        width: 100%;
-        padding: 0.5em 1em;
-        background-color: #1B358F;
-    }
-    .submenuColabora li a {
-        padding-left: 2em;
-        font-size: 1em;
-    }
-    .submenuColabora ul{
-        list-style: none;
-    }
+.submenuColabora ul, .submenuColabora li {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
 }
 
-/* Menú burguer */
-#menu_burger i{
+.submenuColabora li a {
+    color: #F8BA56;
+    padding: 0.4em 1em;
+    text-decoration: none;
+    font-size: 0.85em;
+    font-weight: 500;
+    display: block;
+    transition: background 0.3s, color 0.3s;
+    border-bottom: 1px solid rgba(248, 186, 86, 0.2);
+}
+
+.submenuColabora li:last-child a {
+    border-bottom: none;
+}
+
+.submenuColabora li a:hover {
+    color: white;
+    background-color: rgba(248, 186, 86, 0.18);
+}
+
+/* Menú burger */
+#menu_burger i {
     color: white;
     cursor: pointer;
     font-size: 2em;
@@ -141,15 +149,14 @@ header {
     align-items: center;
 }
 
-/* estilos para cuando el menú burger estédesplegado */
 #menu.d-block {
     position: fixed;
-    top: 15vh;
+    top: clamp(60px, 10vh, 90px);
     left: 0;
     width: 100%;
     background-color: #1B358F;
     padding: 1em 0;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     z-index: 999;
 }
 
@@ -158,16 +165,16 @@ header {
     display: flex;
     align-items: center;
 }
+
 #user_container img {
     width: 3.4em;
     padding: 10px;
     cursor: pointer;
     transition: transform .3s, filter .1s;
     filter: brightness(130%);
-
 }
 
-#user_container img:hover{
+#user_container img:hover {
     transform: scale(1.2);
     filter: brightness(2000%);
 }
@@ -179,29 +186,26 @@ header {
     border-radius: 8px;
     text-decoration: none;
     font-weight: bold;
-    transition: background-color 0.3s,color .3s, font-size .3s;
+    transition: background-color 0.3s, color .3s, font-size .3s;
     margin-right: -2%;
 }
+
 .btn-register:hover {
     background-color: #ffc66a;
     color: #2742a2;
     font-size: 1.05em;
 }
-/* fin header css */
 
-
-
-
-/* (992px–1238px) achicar icono, fuente del menú y padding del botón. */
+/* (992px–1238px) */
 @media (min-width: 992px) and (max-width: 1238px) {
 
     header {
-        padding: 0 1em;        
+        padding: 0 1em;
         gap: 0.5em;
     }
 
     #logoXL img {
-        width: 4.7em;          
+        width: 4.7em;
     }
 
     #logoXL h2 {
@@ -209,15 +213,14 @@ header {
     }
 
     #lista_menu {
-        gap: 0.9em;            
+        gap: 0.9em;
     }
 
     #lista_menu li a {
-        font-size: 1.2em;    
+        font-size: 1.2em;
         padding: 0.4em 0.3em;
     }
 
-   
     #user_container {
         display: flex;
         flex-direction: row;
@@ -228,48 +231,47 @@ header {
     }
 
     #user_container img {
-        width: 2.6em;         
+        width: 2.6em;
         padding: 6px;
     }
 
     .btn-register {
-        font-size: 1em;     
+        font-size: 1em;
         padding: 0.7em 0.7em;
         margin-right: 0;
     }
 }
 
-/*para  que el logo no mueva elementos en tablets */
 @media (min-width: 746px) and (max-width: 1090px) {
+
     #logoMD {
         position: relative;
         z-index: 5;
     }
+
     a.btn-register {
         position: relative;
     }
-    
+
     #menu_burger {
         align-items: center;
     }
-  
 }
 
-/* Tablets*/
 @media (max-width: 1090px) {
-   
+
     #logoMD {
-    display: flex;
-    align-items: center;
-    gap: 0.4em;
-    text-decoration: none; 
-    margin-right: -16%;
-    text-align: center;
+        display: flex;
+        align-items: center;
+        gap: 0.4em;
+        text-decoration: none;
+        margin-right: -16%;
+        text-align: center;
     }
 
     #logoMD img {
         text-align: center;
-        width: 4.2em; 
+        width: 4.2em;
     }
 
     #logoMD h2 {
@@ -277,7 +279,7 @@ header {
     }
 
     #lista_menu {
-        gap: 1em; 
+        gap: 1em;
     }
 
     #lista_menu li a {
@@ -288,17 +290,15 @@ header {
         width: 2.5em;
         transition: transform .3s, filter .1s;
         filter: brightness(130%);
-
-    }
-    #menu_burger{
-        display:  flex;
     }
 
-  
-     #user_burger img:hover {
+    #menu_burger {
+        display: flex;
+    }
+
+    #user_burger img:hover {
         transform: scale(1.1);
         filter: brightness(2000%);
-
     }
 
     .btn-register {
@@ -307,14 +307,13 @@ header {
         margin-left: .2em;
         padding: 0.7em 0.7em;
     }
-    .btn-register:hover {
-    background-color: #ffc66a;
-    transform: scale(1.02);
-    color: #2742a2;
 
+    .btn-register:hover {
+        background-color: #ffc66a;
+        transform: scale(1.02);
+        color: #2742a2;
     }
 }
-
 
 @media (max-width: 991px) {
 
@@ -364,40 +363,65 @@ header {
     #lista_menu li:last-child a {
         border-bottom: none;
     }
-    
-    #user_burger img{
+
+    #user_burger img {
         width: 2.2em;
         text-align: center;
         transition: transform .3s, filter .1s;
         margin-right: .5em;
     }
-     #user_burger img:hover {
+
+    #user_burger img:hover {
         transform: scale(1.1);
         filter: brightness(2000%);
-
     }
 
     .btn-register {
         padding: .7em;
     }
-    .btn-register:hover {
-    background-color: #ffc66a;
-    transform: scale(1.05);
-    color: #2742a2;
 
+    .btn-register:hover {
+        background-color: #ffc66a;
+        transform: scale(1.05);
+        color: #2742a2;
     }
-    i{
+
+    i {
         margin-left: -1%;
     }
-   
+
+    .submenuColabora {
+        position: static;
+        box-shadow: none;
+        border-radius: 0;
+        width: 100%;
+        padding: 0.5em 1em;
+        background-color: #1B358F;
+    }
+
+    .submenuColabora li a {
+        padding-left: 2em;
+        font-size: 1em;
+    }
+
+    .submenuColabora li a:hover {
+        color: white;
+        background-color: rgba(248, 186, 86, 0.18);
+        border-radius: 10%;
+        transform: none;
+    }
+
+    .submenuColabora ul {
+        list-style: none;
+    }
 }
 
-
 @media (max-width: 650px) {
- 
+
     #logoMD img {
         display: none;
     }
+
     #logoMD h2 {
         font-size: 2.2em;
     }
@@ -405,33 +429,37 @@ header {
     #lista_menu li a {
         font-size: 0.85em;
     }
-    #user_burger img{
+
+    #user_burger img {
         margin-top: 2%;
         width: 2.3em;
         transition: transform .3s, filter .1s;
     }
+
     #user_burger img:hover {
         transform: scale(1.1);
         filter: brightness(2000%);
     }
+
     .btn-register {
         padding: .8em;
         font-size: 0.9em;
         width: 10%;
     }
-    .btn-register:hover {
-    background-color: #ffc66a;
-    transform: scale(1.05);
-    color: #2742a2;
 
+    .btn-register:hover {
+        background-color: #ffc66a;
+        transform: scale(1.05);
+        color: #2742a2;
     }
-  
 }
 
-@media (max-width: 520px){
-    header{
+@media (max-width: 520px) {
+
+    header {
         justify-content: center;
     }
+
     #logoMD img {
         display: none;
     }
@@ -445,11 +473,13 @@ header {
         font-size: 0.85em;
         margin-left: -2%;
     }
-    #user_burger{
+
+    #user_burger {
         display: none;
     }
-   #lista_menu {
-        flex-direction: column; 
+
+    #lista_menu {
+        flex-direction: column;
         gap: 0;
         width: 100%;
     }
@@ -459,45 +489,5 @@ header {
         width: 100%;
         padding: 1em;
         text-align: left;
-      }
-   
-
-
- 
-}
-.submenuColabora ul, .submenuColabora li {
-    list-style: none;
-    padding-left: 0;
-    margin-left: 0;
-}
-
-/* Estilo de los enlaces del submenú Colabora */
-.submenuColabora li a {
-    color: #F8BA56;
-    padding: 0.5em 1em;
-    text-decoration: none;
-    font-size: 1.05em;
-    font-weight: 500;
-    display: block;
-    transition: background 0.3s, color 0.3s, transform 0.3s;
-    border-bottom: 1px solid rgba(248, 186, 86, 0.2);
-}
-
-.submenuColabora li:last-child a {
-    border-bottom: none;
-}
-
-.submenuColabora li a:hover {
-        color: white;
-        background-color: rgba(248, 186, 86, 0.18);
-        border-radius: 10%;
-}
-
-@media (max-width: 991px) {
-    .submenuColabora li a:hover {
-        color: white;
-        background-color: rgba(248, 186, 86, 0.18);
-        border-radius: 10%;
-        transform: none;
     }
 }

@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetFamily – Ficha de mascota</title>
+
+    <link rel="stylesheet" href="../style/header.css">
+    <link rel="stylesheet" href="../style/footer.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/093cf7cd82.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+<header>
+
+    <!-- Logo (XL) -->
+    <div id="contenedor_logo" class="d-none d-lg-block">
+        <a id="logoXL" href="index.html">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderXL">
+            <h2 id="title-logo">Pet<span style="color:#F8BA56;">Family</span></h2>
+        </a>
+    </div>
+
+    <!-- Header(xs,sm, md) -->
+    <div id="menu_burger" class="container-fluid justify-content-between align-content-center d-lg-none">
+        <i id="btn_burger" class="fa-solid fa-bars text-center col-2 ms-n5"></i>
+        <a id="logoMD" href="index.html" class="mb-2">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderMD" class="mb-2">
+            <h2 id="burger_logo">Pet<span style="color:#F8BA56;">Family</span></h2>
+        </a>
+        <div id="user_burger" class="align-content-center d-lg-none">
+            <a href="login.html"><img src="../img/iconosHeader/iconUser.png" width="15px" alt="Usuario"></a>
+            <a href="register.html" class="btn-register">Registrarse</a>
+        </div>
+    </div>
+
+    <nav id="menu" class="d-none d-lg-block">
+        <ul id="lista_menu">
+            <li><a href="adopta.html">Adopta</a></li>
+            <li><a href="colabora.html" class="colabora">Colabora</a>
+                <ul class="submenuColabora d-none">
+                    <li><a href="dona.html">Dona</a></li>
+                    <li><a href="apadrina.html">Apadrina</a></li>
+                    <li><a href="acoge.html">Acoge</a></li>
+                </ul>
+            </li>
+            <li><a href="protectoras.html">Protectoras</a></li>
+            <li><a href="foro.html">Foro</a></li>
+            <li><a href="mapa.html">Mapa</a></li>
+            <li><a href="test.html">Tests</a></li>
+        </ul>
+    </nav>
+
+    <!-- Usuario xl -->
+    <div id="user_container" class="d-none d-lg-block">
+        <a href="login.html"><img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px"></a>
+        <a href="register.html" class="btn-register">Registrarse</a>
+    </div>
+
+</header>
+<!-- Fin html del header -->
+
+
+<main>
+    <div class="container">
+
+        <!-- Migas -->
+        <p class="migas">
+            <a href="index.html">Inicio</a>
+            <span>›</span>
+            <a href="adopta.html">Adopta</a>
+            <span>›</span>
+            <span id="miga-nombre">...</span>
+        </p>
+
+        <div class="row g-4">
+
+            <!-- Columna izquierda: galería dinámica -->
+            <div class="col-lg-6">
+                <img id="foto-principal" src="" alt="Foto del animal">
+                <div class="miniaturas" id="contenedor-miniaturas"></div>
+            </div>
+
+            <!-- Columna derecha: datos del animal -->
+            <div class="col-lg-6">
+
+                <div class="d-flex align-items-center gap-3 flex-wrap mb-1">
+                    <h1 class="animal-nombre mb-0" id="animal-nombre">...</h1>
+                    <span id="animal-sexo-icono"></span>
+                </div>
+
+                <p class="animal-subtitulo" id="animal-subtitulo"></p>
+
+                <div class="d-flex gap-2 flex-wrap mb-3" id="animal-badges"></div>
+
+                <!-- Características -->
+                <div class="tarjeta">
+                    <p class="tarjeta-titulo">
+                        <i class="fa-solid fa-list-check"></i> Características
+                    </p>
+                    <ul class="caracteristicas" id="animal-caracteristicas"></ul>
+                </div>
+
+                <!-- Compatible con -->
+                <div class="tarjeta">
+                    <p class="tarjeta-titulo">
+                        <i class="fa-solid fa-circle-check"></i> Compatible con
+                    </p>
+                    <ul class="caracteristicas" id="animal-compatibilidad"></ul>
+                </div>
+
+                <!-- Botones acción -->
+                <div class="d-flex flex-column gap-2">
+                    <button class="btn-adoptar" onclick="mostrarModalAdopcion()">
+                        <i class="fa-solid fa-house-heart me-1"></i> Quiero adoptarlo
+                    </button>
+                    <button class="btn-apadrinar" onclick="window.location.href='apadrina.html'">
+                        <i class="fa-solid fa-star me-1"></i> <span id="btn-apadrinar-texto">Apadrinar</span>
+                    </button>
+                    <button class="btn-favorito-ficha" id="btn-fav-ficha"
+                            onclick="toggleFavoritoFicha()">
+                        <i class="fa-regular fa-heart me-1"></i> Guardar en favoritos
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="row g-4 mt-1">
+
+            <!-- Descripción -->
+            <div class="col-lg-8">
+                <div class="tarjeta">
+                    <p class="tarjeta-titulo" id="descripcion-titulo">
+                        <i class="fa-solid fa-align-left"></i> Sobre ...
+                    </p>
+                    <div id="animal-descripcion"></div>
+                    <div class="aviso-responsable mt-3">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <strong>Adopción responsable:</strong> antes de adoptar, la protectora realizará
+                        una entrevista para asegurarse de que la convivencia será adecuada para el animal
+                        y para ti. Es un proceso pensado para el bienestar de todos.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Protectora -->
+            <div class="col-lg-4">
+                <div class="tarjeta">
+                    <p class="tarjeta-titulo">
+                        <i class="fa-solid fa-building-shield"></i> Protectora responsable
+                    </p>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="protectora-logo" id="protectora-emoji">🏠</div>
+                        <div>
+                            <p class="protectora-nombre mb-0" id="protectora-nombre"></p>
+                            <p class="protectora-info mb-0" id="protectora-ubicacion"></p>
+                        </div>
+                    </div>
+                    <ul class="caracteristicas mb-3" id="protectora-contacto"></ul>
+                    <button class="btn-contactar w-100 mb-2">
+                        <i class="fa-solid fa-paper-plane me-1"></i> Contactar protectora
+                    </button>
+                    <a href="protectoras.html"
+                       style="display:block; text-align:center; font-size:0.83rem; color:#1B358F; font-weight:500;">
+                        Ver ficha de la protectora →
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- Otros animales -->
+        <div class="seccion-mas">
+            <h4><i class="fa-solid fa-paw" style="color:#F8BA56;"></i> Otros animales en adopción</h4>
+            <div class="row g-3" id="otros-animales"></div>
+        </div>
+
+    </div>
+
+    <!-- flecha para subir al inicio tiene los estilos en footer.css -->
+    <div class="text-center">
+        <a href="#"><img src="../img/sectionIndex/up-arrow.png" alt="Volver arriba" id="arrow" width="3%"></a>
+    </div>
+</main>
+
+
+<!-- Modal adopción -->
+<div class="modal fade" id="modalAdopcion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-pf">
+            <div class="modal-header modal-header-pf">
+                <h5 class="modal-title text-white fw-bold">
+                    <i class="fa-solid fa-house-heart me-2" style="color:#F8BA56;"></i>
+                    <span id="modal-titulo">¿Quieres adoptar?</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body modal-body-pf" id="modal-body"></div>
+            <div class="modal-footer" style="border:none; padding-top:0;">
+                <button type="button" class="btn-adoptar"
+                        style="border-radius:8px; padding:0.6em 1.5em; width:auto;"
+                        data-bs-dismiss="modal">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- footer -->
+<footer>
+    <p>© 2025 PetFamily. Todos los derechos reservados.</p>
+    <p>
+        <a href="privacidad.html" style="color:white;">Política de Privacidad</a> |
+        <a href="terminos.html"   style="color:white;">Términos de Servicio</a>
+    </p>
+</footer>
+
+<!-- script js -->
+<script src="../javascript/script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- chat -->
+<script src="//code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
+
+<script>
+// ==================================================================================================
+//  BASE DE DATOS LOCAL DE ANIMALES
+//  En producción esto vendrá de: fetch('backend/mascotas.php?id=aXX')
+
+var animales = {
+
+    // Leia
+    'a01': {
+        nombre: 'Leia',
+        especie: 'Perro',
+        raza: 'Pit bull',
+        sexo: 'hembra',
+        subtitulo: 'Perra · Pit bull · Mediano',
+        ubicacion: 'Gijón, Asturias',
+        edad: '14 años',
+        tamanyo: 'Mediano',
+        color: 'Marrón',
+        enAdopcion: 'Larga espera',
+        salud: 'Bueno',
+        badges: [
+            { texto: 'Vacunado',      clase: 'bg-warning text-dark' },
+            { texto: 'Licencia PPP',  clase: 'bg-secondary' },
+            { texto: 'Esterilizada',  clase: 'bg-success' },
+            { texto: 'Microchip',     clase: 'bg-secondary' }
+        ],
+        compatibilidad: {
+            ninos: true, otrosPerros: null, gatos: null, piso: true
+        },
+        fotos: [
+            '../img/mascotas/leia-centro-proteccion-animales-gijon.jpg',
+            '../img/mascotas/leai2-centro-proteccion-animales-gijon.jpg'
+        ],
+        descripcion: '<p class="descripcion-texto">Leia es una perra de 14 años llena de cariño y nobleza. A pesar de los años que lleva esperando, sigue siendo fiel y agradecida con quienes le muestran afecto.</p><p class="descripcion-texto">Necesita un hogar tranquilo y comprensivo que entienda sus necesidades. Tiene licencia PPP, por lo que su futura familia deberá obtener el permiso correspondiente.</p>',
+        protectora: {
+            emoji: '🐾',
+            nombre: 'Centro de Protección Animal de Gijón',
+            ubicacion: 'Gijón, Asturias',
+            contacto: [
+                { icono: 'fa-phone',   texto: '984 181 507' },
+                { icono: 'fa-envelope', texto: 'albergue@gijon.es' }
+            ]
+        }
+    },
+
+//---------------------------------------------------------------------------------------
+
+    // Haru
+    'a02': {
+        nombre: 'Haru',
+        especie: 'Perro',
+        raza: 'Mestiza',
+        sexo: 'hembra',
+        subtitulo: 'Perra · Mestiza · Grande',
+        ubicacion: 'Oviedo, Asturias',
+        edad: '7 años',
+        tamanyo: 'Grande',
+        color: 'Marrón',
+        enAdopcion: '1 año',
+        salud: 'Bueno',
+        badges: [
+            { texto: 'Urgente',      clase: 'bg-danger' },
+            { texto: 'Vacunado',     clase: 'bg-warning text-dark' },
+            { texto: 'Esterilizada', clase: 'bg-success' },
+            { texto: 'Microchip',    clase: 'bg-secondary' }
+        ],
+        compatibilidad: {
+            ninos: true, otrosPerros: null, gatos: null, piso: false
+        },
+        fotos: [
+            '../img/mascotas/haru-protectora-de-asturias-dog.jpg',
+            '../img/mascotas/haru2-protectora-de-asturias-1621115340-Mthub.jpg',
+            '../img/mascotas/haru3-protectora-de-asturias.jpg'
+        ],
+        descripcion: '<p class="descripcion-texto">Haru es una perra de 7 años con mucha energía y amor para dar. Lleva un año esperando su familia ideal y necesita con urgencia un hogar que le dé la oportunidad que merece.</p><p class="descripcion-texto">Es activa y necesita espacio para moverse, por lo que una casa con jardín o salidas frecuentes sería ideal para ella.</p>',
+        protectora: {
+            emoji: '🏠',
+            nombre: 'Protectora de Asturias',
+            ubicacion: 'Oviedo, Asturias',
+            contacto: [
+                { icono: 'fa-phone',    texto: '985 234 567' },
+                { icono: 'fa-envelope', texto: 'contacto@protectoraasturias.es' }
+            ]
+        }
+    },
+
+//---------------------------------------------------------------------------------------
+
+    // Roy
+    'a03': {
+        nombre: 'Roy',
+        especie: 'Gato',
+        raza: 'Europeo',
+        sexo: 'macho',
+        subtitulo: 'Gato · Europeo · Pequeño',
+        ubicacion: 'Avilés, Asturias',
+        edad: '2 años',
+        tamanyo: 'Pequeño',
+        color: 'Blanco y negro',
+        enAdopcion: 'Recién llegado',
+        salud: 'Bueno',
+        badges: [
+            { texto: 'Nuevo',        clase: 'bg-info text-dark' },
+            { texto: 'Vacunado',     clase: 'bg-warning text-dark' },
+            { texto: 'Esterilizado', clase: 'bg-success' },
+            { texto: 'Microchip',    clase: 'bg-secondary' }
+        ],
+        compatibilidad: {
+            ninos: true, otrosGatos: true, perros: null, piso: true
+        },
+        fotos: [
+            '../img/mascotas/roys-asociacion-felina-la-esperanza-cat.jpg',
+            '../img/mascotas/roy2-asociacion-felina-la-esperanza.jpg',
+            '../img/mascotas/roy3-asociacion-felina-la-esperanza.jpg'
+        ],
+        descripcion: '<p class="descripcion-texto">Roy es un gatito blanco y negro de raza Europeo, de tan solo 2 años. Es <strong>muy cariñoso y mimoso</strong>, le encanta recibir atención y mimos de las personas.</p><p class="descripcion-texto">Se lleva fenomenal con niños y convive con otros gatos estupendamente. Roy busca una familia que le dé el amor que merece.</p>',
+        protectora: {
+            emoji: '🐱',
+            nombre: 'Asociación Felina La Esperanza',
+            ubicacion: 'Asturias',
+            contacto: [
+                { icono: 'fa-envelope', texto: 'asociacionfelinalaesperanza@gmail.com' },
+                { icono: 'fa-brands fa-facebook', texto: 'AsociacionFelinaEsperanza', href: 'https://facebook.com/AsociacionFelinaEsperanza' }
+            ]
+        }
+    },
+
+//---------------------------------------------------------------------------------------
+
+    // Bambi
+    'a04': {
+        nombre: 'Bambi',
+        especie: 'Gato',
+        raza: 'Común europeo',
+        sexo: 'macho',
+        subtitulo: 'Gato · Común europeo · Pequeño',
+        ubicacion: 'Oviedo, Asturias',
+        edad: 'Sin determinar',
+        tamanyo: 'Pequeño',
+        color: 'Sin datos',
+        enAdopcion: 'Sin datos',
+        salud: 'Bueno',
+        badges: [
+            { texto: 'Vacunado',     clase: 'bg-warning text-dark' },
+            { texto: 'Esterilizado', clase: 'bg-success' },
+            { texto: 'Microchip',    clase: 'bg-secondary' }
+        ],
+        compatibilidad: {
+            ninos: null, otrosGatos: null, perros: null, piso: true
+        },
+        fotos: [
+            '../img/mascotas/bambi-masquechuchos-cat.jpg'
+        ],
+        descripcion: '<p class="descripcion-texto">Bambi es un gato tranquilo que busca un hogar donde sentirse seguro y querido. Aunque aún no tenemos muchos datos sobre él, está disponible para adopción y esperando a su familia ideal.</p>',
+        protectora: {
+            emoji: '🐾',
+            nombre: 'MásQueChuchos',
+            ubicacion: 'Oviedo, Asturias',
+            contacto: [
+                { icono: 'fa-envelope', texto: 'info@masquechuchos.es' }
+            ]
+        }
+    },
+
+//---------------------------------------------------------------------------------------
+
+    // Dexter
+    'a05': {
+        nombre: 'Dexter',
+        especie: 'Perro',
+        raza: 'Cruce Pastor Alemán',
+        sexo: 'macho',
+        subtitulo: 'Perro · Cruce Pastor Alemán · Mediano',
+        ubicacion: 'Gijón, Asturias',
+        edad: '10 años',
+        tamanyo: 'Mediano',
+        color: 'Negro y marrón',
+        enAdopcion: '9 años',
+        salud: 'Bueno',
+        badges: [
+            { texto: 'Urgente',      clase: 'bg-danger' },
+            { texto: 'Vacunado',     clase: 'bg-warning text-dark' },
+            { texto: 'Esterilizado', clase: 'bg-success' },
+            { texto: 'Microchip',    clase: 'bg-secondary' }
+        ],
+        compatibilidad: {
+            ninos: true, otrosPerros: false, gatos: true, piso: true
+        },
+        fotos: [
+            '../img/mascotas/dexter-nortemascotas-dog.jpg',
+            '../img/mascotas/dexter2-nortemascotas-1461588001-ouIWI.jpg'
+        ],
+        descripcion: '<p class="descripcion-texto">Dexter lleva <strong>9 años</strong> esperando en la protectora. Es un perro de 10 años con mucho amor que dar, tranquilo y obediente. Ha demostrado una paciencia infinita esperando a alguien que le dé una oportunidad.</p><p class="descripcion-texto">Se lleva bien con niños y gatos, aunque prefiere ser el único perro del hogar. Un hogar tranquilo sería ideal para él.</p>',
+        protectora: {
+            emoji: '🏠',
+            nombre: 'Norte Mascotas',
+            ubicacion: 'Gijón, Asturias',
+            contacto: [
+                { icono: 'fa-phone',    texto: '984 123 456' },
+                { icono: 'fa-envelope', texto: 'info@nortemascotas.com' }
+            ]
+        }
+    },
+
+//---------------------------------------------------------------------------------------
+
+    // Bosque
+    'a06': {
+        nombre: 'Bosque',
+        especie: 'Gato',
+        raza: 'Común europeo',
+        sexo: 'hembra',
+        subtitulo: 'Gata · Común europeo · Pequeño',
+        ubicacion: 'Oviedo, Asturias',
+        edad: '8 meses',
+        tamanyo: 'Pequeño',
+        color: 'Atigrado',
+        enAdopcion: '3 meses',
+        salud: 'Leucemia felina+',
+        badges: [
+            { texto: 'Vacunado',       clase: 'bg-warning text-dark' },
+            { texto: 'Leucemia felina+', clase: 'bg-dark' },
+            { texto: 'Esterilizada',   clase: 'bg-success' },
+            { texto: 'Microchip',      clase: 'bg-secondary' }
+        ],
+        compatibilidad: {
+            ninos: false, otrosGatos: false, perros: false, piso: true
+        },
+        fotos: [
+            '../img/mascotas/bosque-protectora-de-asturias-cat.jpg',
+            '../img/mascotas/bosque2-protectora-de-asturias.jpg',
+            '../img/mascotas/bosque3-protectora-de-asturias.jpg'
+        ],
+        descripcion: '<p class="descripcion-texto">Bosque es una gatita de 8 meses con leucemia felina positivo. Necesita un hogar sin otros animales que comprenda y acepte su condición. Con los cuidados adecuados puede tener una vida feliz y de calidad.</p><p class="descripcion-texto">Es una gata tranquila que necesita una familia comprometida y consciente de sus necesidades especiales.</p>',
+        protectora: {
+            emoji: '🏠',
+            nombre: 'Protectora de Asturias',
+            ubicacion: 'Oviedo, Asturias',
+            contacto: [
+                { icono: 'fa-phone',    texto: '985 234 567' },
+                { icono: 'fa-envelope', texto: 'contacto@protectoraasturias.es' }
+            ]
+        }
+    }
+};
+
+// ==================================================================================================
+//  ICONOS SVG DE SEXO
+
+var svgMacho  = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="28px" fill="#0419CC" title="Macho"><path d="M768-768v216h-72v-93L564-513q17.54 26.15 26.77 55.58Q600-428 600-396.41q0 85.48-59.28 144.95Q481.44-192 396.22-192T251.5-251.28Q192-310.56 192-395.78t59.35-144.72Q310.69-600 396-600q32 0 61.5 8.5T513-564l132-132h-93v-72h216Z"/></svg>';
+var svgHembra = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="28px" fill="#CC0479" title="Hembra"><path d="M440-120v-80h-80v-80h80v-84q-79-14-129.5-75.5T260-582q0-91 64.5-154.5T480-800q91 0 155.5 63.5T700-582q0 81-50.5 142.5T520-364v84h80v80h-80v80h-80Zm139-361q41-41 41-99t-41-99q-41-41-99-41t-99 41q-41 41-41 99t41 99q41 41 99 41t99-41Z"/></svg>';
+
+// ==============================================================================
+//  CARGAR FICHA SEGÚN ?id= DE LA URL
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Leer el parámetro ?id= de la URL
+    var params = new URLSearchParams(window.location.search);
+    var id     = params.get('id') || 'a01';   // por defecto a01 si no hay id
+    var animal = animales[id];
+
+    // Si el id no existe redirigir al catálogo
+    if (!animal) {
+        window.location.href = 'adopta.html';
+        return;
+    }
+
+    document.title = 'PetFamily – ' + animal.nombre;
+
+    document.getElementById('miga-nombre').textContent = animal.nombre;
+
+    var fotoPrincipal = document.getElementById('foto-principal');
+    fotoPrincipal.src = animal.fotos[0];
+    fotoPrincipal.alt = 'Foto de ' + animal.nombre;
+
+    var contenedorMiniaturas = document.getElementById('contenedor-miniaturas');
+    if (animal.fotos.length > 1) {
+        animal.fotos.forEach(function(ruta, i) {
+            var img = document.createElement('img');
+            img.src       = ruta;
+            img.alt       = animal.nombre + ' foto ' + (i + 1);
+            img.className = 'miniatura' + (i === 0 ? ' activa' : '');
+            img.addEventListener('click', function() { cambiarFoto(img, ruta); });
+            contenedorMiniaturas.appendChild(img);
+        });
+    }
+
+    document.getElementById('animal-nombre').textContent    = animal.nombre;
+    document.getElementById('animal-sexo-icono').innerHTML  = animal.sexo === 'macho' ? svgMacho : svgHembra;
+    document.getElementById('animal-subtitulo').textContent = animal.subtitulo;
+
+    document.getElementById('btn-apadrinar-texto').textContent = 'Apadrinar a ' + animal.nombre;
+
+    var badgesEl = document.getElementById('animal-badges');
+    animal.badges.forEach(function(b) {
+        var span = document.createElement('span');
+        span.className   = 'badge badge-estado ' + b.clase;
+        span.textContent = b.texto;
+        badgesEl.appendChild(span);
+    });
+
+    var caract = document.getElementById('animal-caracteristicas');
+    var filas = [
+        { icono: 'fa-location-dot', label: 'Ubicación',       valor: animal.ubicacion  },
+        { icono: 'fa-cake-candles', label: 'Edad',            valor: animal.edad       },
+        { icono: 'fa-weight-scale', label: 'Tamaño',          valor: animal.tamanyo    },
+        { icono: 'fa-palette',      label: 'Color',           valor: animal.color      },
+        { icono: 'fa-clock',        label: 'En adopción',     valor: animal.enAdopcion },
+        { icono: 'fa-heart-pulse',  label: 'Estado de salud', valor: animal.salud      }
+    ];
+    filas.forEach(function(f) {
+        caract.innerHTML += '<li><span class="etiqueta"><i class="fa-solid ' + f.icono + '"></i> ' + f.label + '</span><span class="valor">' + f.valor + '</span></li>';
+    });
+
+    // ------ Compatibilidad ------
+    var compat = document.getElementById('animal-compatibilidad');
+    var filasCompat = [
+        { icono: 'fa-child',  label: 'Niños',        val: animal.compatibilidad.ninos       },
+        { icono: 'fa-dog',    label: 'Perros',        val: animal.compatibilidad.otrosPerros !== undefined ? animal.compatibilidad.otrosPerros : animal.compatibilidad.perros },
+        { icono: 'fa-cat',    label: 'Gatos',         val: animal.compatibilidad.gatos       !== undefined ? animal.compatibilidad.gatos       : animal.compatibilidad.otrosGatos },
+        { icono: 'fa-house',  label: 'Piso',          val: animal.compatibilidad.piso        }
+    ];
+    filasCompat.forEach(function(f) {
+        var valHTML;
+        if (f.val === true)       valHTML = '<span class="valor icono-si"><i class="fa-solid fa-check"></i> Sí</span>';
+        else if (f.val === false) valHTML = '<span class="valor icono-no"><i class="fa-solid fa-xmark"></i> No</span>';
+        else                      valHTML = '<span class="valor" style="color:#aaa;">Sin datos</span>';
+        compat.innerHTML += '<li><span class="etiqueta"><i class="fa-solid ' + f.icono + '"></i> ' + f.label + '</span>' + valHTML + '</li>';
+    });
+
+    document.getElementById('descripcion-titulo').innerHTML = '<i class="fa-solid fa-align-left"></i> Sobre ' + animal.nombre;
+    document.getElementById('animal-descripcion').innerHTML = animal.descripcion;
+
+    //  Protectora 
+    document.getElementById('protectora-emoji').textContent    = animal.protectora.emoji;
+    document.getElementById('protectora-nombre').textContent   = animal.protectora.nombre;
+    document.getElementById('protectora-ubicacion').innerHTML  = '<i class="fa-solid fa-location-dot"></i> ' + animal.protectora.ubicacion;
+
+    var contactoEl = document.getElementById('protectora-contacto');
+    animal.protectora.contacto.forEach(function(c) {
+        var valor = c.href
+            ? '<a href="' + c.href + '" target="_blank" style="color:#1B358F; font-size:0.82rem;">' + c.texto + '</a>'
+            : c.texto;
+        contactoEl.innerHTML += '<li><span class="etiqueta"><i class="fa-solid ' + c.icono + '"></i></span><span class="valor" style="font-size:0.82rem;">' + valor + '</span></li>';
+    });
+
+    // ------------------------------------------------------------------------------
+    //Modal adopción 
+    document.getElementById('modal-titulo').textContent = '¿Quieres adoptar a ' + animal.nombre + '?';
+    var contactoModal = animal.protectora.contacto.map(function(c) {
+        if (c.href) return '<li>📘 <a href="' + c.href + '" target="_blank" style="color:#1B358F;">' + c.texto + '</a></li>';
+        if (c.icono.indexOf('phone') !== -1)    return '<li>📞 <strong>' + c.texto + '</strong></li>';
+        if (c.icono.indexOf('envelope') !== -1) return '<li>📧 <strong>' + c.texto + '</strong></li>';
+        return '<li>' + c.texto + '</li>';
+    }).join('');
+    document.getElementById('modal-body').innerHTML =
+        '<p style="color:#444; font-size:0.95rem;">Para iniciar el proceso de adopción, ponte en contacto con <strong>' + animal.protectora.nombre + '</strong>. Ellos te guiarán en cada paso. 🐾</p><ul style="font-size:0.9rem; color:#555;">' + contactoModal + '</ul>';
+
+    //  Otros animales 
+    var otrosEl = document.getElementById('otros-animales');
+    Object.keys(animales).forEach(function(key) {
+        if (key === id) return;
+        var a = animales[key];
+        otrosEl.innerHTML +=
+            '<div class="col-6 col-md-3">' +
+            '  <div class="card-sugerencia card" onclick="window.location.href=\'fichaAnimal.html?id=' + key + '\'">' +
+            '    <img src="' + a.fotos[0] + '" alt="' + a.nombre + '">' +
+            '    <div class="card-body">' +
+            '      <p class="card-title">' + a.nombre + '</p>' +
+            '      <p class="card-text">' + a.subtitulo + '</p>' +
+            '    </div>' +
+            '  </div>' +
+            '</div>';
+    });
+
+    //  Favorito: comprobar si ya estaba guardado ------
+    var favs = obtenerFavoritos();
+    var btnFav = document.getElementById('btn-fav-ficha');
+    if (favs.indexOf(id) !== -1) {
+        btnFav.classList.add('activo');
+        btnFav.innerHTML = '<i class="fa-solid fa-heart me-1"></i> Guardado en favoritos';
+    }
+});
+
+//  CAMBIAR FOTO PRINCIPAL
+
+function cambiarFoto(miniatura, ruta) {
+    var fotoPrincipal = document.getElementById('foto-principal');
+    fotoPrincipal.style.opacity = '0';
+    setTimeout(function() {
+        fotoPrincipal.src = ruta;
+        fotoPrincipal.style.opacity = '1';
+    }, 200);
+    document.querySelectorAll('.miniatura').forEach(function(m) {
+        m.classList.remove('activa');
+    });
+    miniatura.classList.add('activa');
+}
+
+
+//  FAVORITOS
+
+var CLAVE_FAVORITOS = 'petfamily_favoritos';
+
+function obtenerFavoritos() {
+    var datos = localStorage.getItem(CLAVE_FAVORITOS);
+    return datos ? JSON.parse(datos) : [];
+}
+
+function toggleFavoritoFicha() {
+    var params = new URLSearchParams(window.location.search);
+    var id     = params.get('id') || 'a01';
+    var favs   = obtenerFavoritos();
+    var pos    = favs.indexOf(id);
+    var btn    = document.getElementById('btn-fav-ficha');
+    if (pos !== -1) {
+        favs.splice(pos, 1);
+        btn.classList.remove('activo');
+        btn.innerHTML = '<i class="fa-regular fa-heart me-1"></i> Guardar en favoritos';
+    } else {
+        favs.push(id);
+        btn.classList.add('activo');
+        btn.innerHTML = '<i class="fa-solid fa-heart me-1"></i> Guardado en favoritos';
+    }
+    localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify(favs));
+}
+
+
+//  MODAL ADOPCIÓN
+
+function mostrarModalAdopcion() {
+    var modal = new bootstrap.Modal(document.getElementById('modalAdopcion'));
+    modal.show();
+}
+</script>
+
+</body>
+</html>

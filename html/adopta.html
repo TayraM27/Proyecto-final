@@ -1,25 +1,23 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-   <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetFamily</title>
+    <title>PetFamily – Adopta</title>
     <link rel="stylesheet" href="../style/header.css">
     <link rel="stylesheet" href="../style/style.css">
     <link rel="stylesheet" href="../style/footer.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/093cf7cd82.js" crossorigin="anonymous"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&family=Comfortaa:wght@300..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
 <header>
+
     <!-- Logo (XL) -->
     <div id="contenedor_logo" class="d-none d-lg-block">
         <a id="logoXL" href="index.html">
@@ -28,11 +26,11 @@
         </a>
     </div>
 
-    <!-- Header móvil -->
+    <!-- Header(xs,sm, md) -->
     <div id="menu_burger" class="container-fluid justify-content-between align-content-center d-lg-none">
         <i id="btn_burger" class="fa-solid fa-bars text-center col-2 ms-n5"></i>
         <a id="logoMD" href="index.html" class="mb-2">
-            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderMD">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderMD" class="mb-2">
             <h2 id="burger_logo">Pet<span style="color: #F8BA56;">Family</span></h2>
         </a>
         <div id="user_burger" class="align-content-center d-lg-none">
@@ -41,14 +39,14 @@
         </div>
     </div>
 
-    <!-- Menú escritorio -->
     <nav id="menu" class="d-none d-lg-block">
         <ul id="lista_menu">
             <li><a href="adopta.html">Adopta</a></li>
             <li><a href="colabora.html" class="colabora">Colabora</a>
                 <ul class="submenuColabora d-none">
-                    <li><a href="">Dona</a></li>
-                    <li><a href="">Apadrina</a></li>
+                    <li><a href="dona.html">Dona</a></li>
+                    <li><a href="apadrina.html">Apadrina</a></li>
+                    <li><a href="acoge.html">Acoge</a></li>
                 </ul>
             </li>
             <li><a href="protectoras.html">Protectoras</a></li>
@@ -58,20 +56,22 @@
         </ul>
     </nav>
 
-    <!-- Usuario XL -->
+    <!-- Usuario xl -->
     <div id="user_container" class="d-none d-lg-block">
         <a href="login.html"><img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px"></a>
         <a href="register.html" class="btn-register">Registrarse</a>
     </div>
 </header>
+<!-- Fin html del header -->
+
 
 <main>
     <div class="container mt-5 mb-5">
-
-        <!-- filtros-->
+        <p class="migas">
+            <a href="index.html">Inicio</a><span>›</span>Adopta
+        </p>
         <form class="mb-4 p-3 bg-light rounded shadow-sm">
             <div class="row g-3">
-
                 <div class="col-md-3">
                     <label class="form-label">Urgencia</label>
                     <select class="form-select">
@@ -81,7 +81,6 @@
                         <option>Normal</option>
                     </select>
                 </div>
-
                 <div class="col-md-3">
                     <label class="form-label">Especie</label>
                     <select class="form-select">
@@ -90,142 +89,362 @@
                         <option>Gato</option>
                     </select>
                 </div>
-
                 <div class="col-md-3">
                     <label class="form-label">Ubicación</label>
                     <input type="text" class="form-control" placeholder="Oviedo, Gijón...">
                 </div>
-
                 <div class="col-md-3 d-flex align-items-end">
-                    <button class="btn btn-primary w-100">Filtrar</button>
+                    <button type="button" class="btn btn-primary w-100">Filtrar</button>
                 </div>
-
             </div>
         </form>
 
         <div class="row g-4">
 
+            <!-- Leia -->
             <div class="col-sm-12 col-md-6 col-lg-4 animalCard">
-                <div class="card h-100 mt-4 shadow-sm">
-                    <img src="../img/mascotas/albergue-animales-dog.jpg" class="card-img-top" alt="Nombre del animal">
+                <div class="card h-100 shadow-sm">
+                    <div class="contenedor-imagen">
+                        <img src="../img/mascotas/leia-centro-proteccion-animales-gijon.jpg"
+                             class="card-img-top" alt="Leia">
+                        <button class="btn-fav" data-id="a01" onclick="toggleFavorito(event, 'a01')" title="Agregar a favoritos">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                        <div class="image-badges">
+                            <span class="badge bg-warning text-dark">Vacunado</span>
+                            <span class="badge bg-secondary">Licencia PPP</span>
+                        </div>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">Nombre del animal</h5>
-                        <span class="badge bg-warning text-dark">Vacunado</span>
-                        <span class="badge bg-info text-dark">Nuevo</span>
-                        <p class="card-text mt-2">
-                            <strong>📍 Ubicación:</strong> Oviedo<br>
-                            <strong>🎂 Edad:</strong> 2 años<br>
-                            👁️
-                        </p>
-                        <a href="#" class="btn btn-primary w-100">Adoptar</a>
+                        <h5 class="card-title">
+                            Leia
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#CC0479" title="Hembra">
+                                <path d="M440-120v-80h-80v-80h80v-84q-79-14-129.5-75.5T260-582q0-91 64.5-154.5T480-800q91 0 155.5 63.5T700-582q0 81-50.5 142.5T520-364v84h80v80h-80v80h-80Zm139-361q41-41 41-99t-41-99q-41-41-99-41t-99 41q-41 41-41 99t41 99q41 41 99 41t99-41Z"/>
+                            </svg>
+                        </h5>
+                        <ul class="card-meta">
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M536.5-503.5Q560-527 560-560t-23.5-56.5Q513-640 480-640t-56.5 23.5Q400-593 400-560t23.5 56.5Q447-480 480-480t56.5-23.5ZM480-186q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
+                                Gijón
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg>
+                                14 años
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M120-120v-200l160-160-160-160v-200h200l160 160 160-160h200v200L680-480l160 160v200H640L480-280 320-120H120Zm80-80h114l166-166 166 166h114v-114L590-480l170-170v-114H646L480-598 314-764H200v114l170 170-170 170v114Z"/></svg>
+                                Mediano · Pit bull
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M360-840v-80h240v80H360Zm80 440h80v-240h-80v240Zm40 320q-74 0-139.5-28.5T226-186q-49-49-77.5-114.5T120-440q0-74 28.5-139.5T226-694q49-49 114.5-77.5T480-800q62 0 119 20t107 58l56-56 56 56-56 56q38 50 58 107t20 119q0 74-28.5 139.5T734-186q-49 49-114.5 77.5T480-80Z"/></svg>
+                                <strong>En adopción:</strong>&nbsp;Larga espera
+                            </li>
+                        </ul>
+                        <div class="fila-badges mt-2">
+                            <span class="badge bg-success">Esterilizada</span>
+                            <span class="badge bg-secondary">Microchip</span>
+                        </div>
+                        <div class="contador-vistas mt-2">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>Vista <strong id="vistas-a01">0</strong> veces</span>
+                        </div>
+                        <a href="fichaAnimal.html?id=a01" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('a01')">Ver ficha</a>
                     </div>
                 </div>
             </div>
 
+            <!-- Haru -->
             <div class="col-sm-12 col-md-6 col-lg-4 animalCard">
-                <div class="card h-100 mt-4 shadow-sm">
-                    <img src="../img/mascotas/protectora-de-asturias-dog.jpg" class="card-img-top" alt="Nombre del animal">
+                <div class="card h-100 shadow-sm">
+                    <div class="contenedor-imagen">
+                        <img src="../img/mascotas/haru-protectora-de-asturias-dog.jpg"
+                             class="card-img-top" alt="Haru">
+                        <button class="btn-fav" data-id="a02" onclick="toggleFavorito(event, 'a02')" title="Agregar a favoritos">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                        <div class="image-badges">
+                            <span class="badge bg-danger">Urgente</span>
+                            <span class="badge bg-warning text-dark">Vacunado</span>
+                        </div>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">Nombre del animal</h5>
-                        <span class="badge bg-warning text-dark">Vacunado</span>
-                        <span class="badge bg-info text-dark">Nuevo</span>
-                        <p class="card-text mt-2">
-                            <strong>📍 Ubicación:</strong> Oviedo<br>
-                            <strong>🎂 Edad:</strong> 2 años<br>
-                            👁️
-                        </p>
-                        <a href="#" class="btn btn-primary w-100">Adoptar</a>
+                        <h5 class="card-title">
+                            Haru
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#CC0479" title="Hembra">
+                                <path d="M440-120v-80h-80v-80h80v-84q-79-14-129.5-75.5T260-582q0-91 64.5-154.5T480-800q91 0 155.5 63.5T700-582q0 81-50.5 142.5T520-364v84h80v80h-80v80h-80Zm139-361q41-41 41-99t-41-99q-41-41-99-41t-99 41q-41 41-41 99t41 99q41 41 99 41t99-41Z"/>
+                            </svg>
+                        </h5>
+                        <ul class="card-meta">
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M536.5-503.5Q560-527 560-560t-23.5-56.5Q513-640 480-640t-56.5 23.5Q400-593 400-560t23.5 56.5Q447-480 480-480t56.5-23.5ZM480-186q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
+                                Oviedo
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg>
+                                7 años
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M120-120v-200l160-160-160-160v-200h200l160 160 160-160h200v200L680-480l160 160v200H640L480-280 320-120H120Zm80-80h114l166-166 166 166h114v-114L590-480l170-170v-114H646L480-598 314-764H200v114l170 170-170 170v114Z"/></svg>
+                                Grande
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M360-840v-80h240v80H360Zm80 440h80v-240h-80v240Zm40 320q-74 0-139.5-28.5T226-186q-49-49-77.5-114.5T120-440q0-74 28.5-139.5T226-694q49-49 114.5-77.5T480-800q62 0 119 20t107 58l56-56 56 56-56 56q38 50 58 107t20 119q0 74-28.5 139.5T734-186q-49 49-114.5 77.5T480-80Z"/></svg>
+                                <strong>En adopción:</strong>&nbsp;1 año
+                            </li>
+                        </ul>
+                        <div class="fila-badges mt-2">
+                            <span class="badge bg-success">Esterilizada</span>
+                            <span class="badge bg-secondary">Microchip</span>
+                        </div>
+                        <div class="contador-vistas mt-2">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>Vista <strong id="vistas-a02">0</strong> veces</span>
+                        </div>
+                        <a href="fichaAnimal.html?id=a02" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('a02')">Ver ficha</a>
                     </div>
                 </div>
             </div>
 
+            <!-- Roy -->
             <div class="col-sm-12 col-md-6 col-lg-4 animalCard">
-                <div class="card h-100 mt-4 shadow-sm">
-                    <img src="../img/mascotas/asociacion-felina-la-esperanza-cat.jpg" class="card-img-top" alt="Nombre del animal">
+                <div class="card h-100 shadow-sm">
+                    <div class="contenedor-imagen">
+                        <img src="../img/mascotas/roys-asociacion-felina-la-esperanza-cat.jpg"
+                             class="card-img-top" alt="Roy">
+                        <button class="btn-fav" data-id="a03" onclick="toggleFavorito(event, 'a03')" title="Agregar a favoritos">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                        <div class="image-badges">
+                            <span class="badge bg-info text-dark">Nuevo</span>
+                            <span class="badge bg-warning text-dark">Vacunado</span>
+                        </div>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">Nombre del animal</h5>
-                        <span class="badge bg-warning text-dark">Vacunado</span>
-                        <span class="badge bg-info text-dark">Nuevo</span>
-                        <p class="card-text mt-2">
-                            <strong>📍 Ubicación:</strong> Oviedo<br>
-                            <strong>🎂 Edad:</strong> 2 años<br>
-                            👁️
-                        </p>
-                        <a href="#" class="btn btn-primary w-100">Adoptar</a>
+                        <h5 class="card-title">
+                            Roy
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#0419CC" title="Macho">
+                                <path d="M768-768v216h-72v-93L564-513q17.54 26.15 26.77 55.58Q600-428 600-396.41q0 85.48-59.28 144.95Q481.44-192 396.22-192T251.5-251.28Q192-310.56 192-395.78t59.35-144.72Q310.69-600 396-600q32 0 61.5 8.5T513-564l132-132h-93v-72h216Z"/>
+                            </svg>
+                        </h5>
+                        <ul class="card-meta">
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M536.5-503.5Q560-527 560-560t-23.5-56.5Q513-640 480-640t-56.5 23.5Q400-593 400-560t23.5 56.5Q447-480 480-480t56.5-23.5ZM480-186q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
+                                Avilés
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg>
+                                2 años
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M120-120v-200l160-160-160-160v-200h200l160 160 160-160h200v200L680-480l160 160v200H640L480-280 320-120H120Zm80-80h114l166-166 166 166h114v-114L590-480l170-170v-114H646L480-598 314-764H200v114l170 170-170 170v114Z"/></svg>
+                                Pequeño · Europeo
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M360-840v-80h240v80H360Zm80 440h80v-240h-80v240Zm40 320q-74 0-139.5-28.5T226-186q-49-49-77.5-114.5T120-440q0-74 28.5-139.5T226-694q49-49 114.5-77.5T480-800q62 0 119 20t107 58l56-56 56 56-56 56q38 50 58 107t20 119q0 74-28.5 139.5T734-186q-49 49-114.5 77.5T480-80Z"/></svg>
+                                <strong>En adopción:</strong>&nbsp;Recién llegado
+                            </li>
+                        </ul>
+                        <div class="fila-badges mt-2">
+                            <span class="badge bg-success">Esterilizado</span>
+                            <span class="badge bg-secondary">Microchip</span>
+                        </div>
+                        <div class="contador-vistas mt-2">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>Vista <strong id="vistas-a03">0</strong> veces</span>
+                        </div>
+                        <a href="fichaAnimal.html?id=a03" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('a03')">Ver ficha</a>
                     </div>
                 </div>
             </div>
 
-           <div class="col-sm-12 col-md-6 col-lg-4 animalCard">
-                <div class="card h-100 mt-4 shadow-sm">
-                    <img src="../img/mascotas/masquechuchos-cat.jpg" class="card-img-top" alt="Nombre del animal">
+            <!-- Bambi -->
+            <div class="col-sm-12 col-md-6 col-lg-4 animalCard">
+                <div class="card h-100 shadow-sm">
+                    <div class="contenedor-imagen">
+                        <img src="../img/mascotas/bambi-masquechuchos-cat.jpg"
+                             class="card-img-top" alt="Bambi">
+                        <button class="btn-fav" data-id="a04" onclick="toggleFavorito(event, 'a04')" title="Agregar a favoritos">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                        <div class="image-badges">
+                            <span class="badge bg-warning text-dark">Vacunado</span>
+                        </div>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">Nombre del animal</h5>
-                        <span class="badge bg-warning text-dark">Vacunado</span>
-                        <span class="badge bg-info text-dark">Nuevo</span>
-                        <p class="card-text mt-2">
-                            <strong>📍 Ubicación:</strong> Oviedo<br>
-                            <strong>🎂 Edad:</strong> 2 años<br>
-                            👁️
-                        </p>
-                        <a href="#" class="btn btn-primary w-100">Adoptar</a>
+                        <h5 class="card-title">
+                            Bambi
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#0419CC" title="Macho">
+                                <path d="M768-768v216h-72v-93L564-513q17.54 26.15 26.77 55.58Q600-428 600-396.41q0 85.48-59.28 144.95Q481.44-192 396.22-192T251.5-251.28Q192-310.56 192-395.78t59.35-144.72Q310.69-600 396-600q32 0 61.5 8.5T513-564l132-132h-93v-72h216Z"/>
+                            </svg>
+                        </h5>
+                        <ul class="card-meta">
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M536.5-503.5Q560-527 560-560t-23.5-56.5Q513-640 480-640t-56.5 23.5Q400-593 400-560t23.5 56.5Q447-480 480-480t56.5-23.5ZM480-186q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
+                                Oviedo
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg>
+                                Sin determinar
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M120-120v-200l160-160-160-160v-200h200l160 160 160-160h200v200L680-480l160 160v200H640L480-280 320-120H120Zm80-80h114l166-166 166 166h114v-114L590-480l170-170v-114H646L480-598 314-764H200v114l170 170-170 170v114Z"/></svg>
+                                Pequeño
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M360-840v-80h240v80H360Zm80 440h80v-240h-80v240Zm40 320q-74 0-139.5-28.5T226-186q-49-49-77.5-114.5T120-440q0-74 28.5-139.5T226-694q49-49 114.5-77.5T480-800q62 0 119 20t107 58l56-56 56 56-56 56q38 50 58 107t20 119q0 74-28.5 139.5T734-186q-49 49-114.5 77.5T480-80Z"/></svg>
+                                <strong>En adopción:</strong>&nbsp;Sin datos
+                            </li>
+                        </ul>
+                        <div class="fila-badges mt-2">
+                            <span class="badge bg-success">Esterilizado</span>
+                            <span class="badge bg-secondary">Microchip</span>
+                        </div>
+                        <div class="contador-vistas mt-2">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>Vista <strong id="vistas-a04">0</strong> veces</span>
+                        </div>
+                        <a href="fichaAnimal.html?id=a04" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('a04')">Ver ficha</a>
                     </div>
                 </div>
             </div>
 
+            <!-- Dexter -->
             <div class="col-sm-12 col-md-6 col-lg-4 animalCard">
-                <div class="card h-100 mt-4 shadow-sm">
-                    <img src="../img/mascotas/nortemascotas-dog.jpg" class="card-img-top" alt="Nombre del animal">
+                <div class="card h-100 shadow-sm">
+                    <div class="contenedor-imagen">
+                        <img src="../img/mascotas/dexter-nortemascotas-dog.jpg"
+                             class="card-img-top" alt="Dexter">
+                        <button class="btn-fav" data-id="a05" onclick="toggleFavorito(event, 'a05')" title="Agregar a favoritos">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                        <div class="image-badges">
+                            <span class="badge bg-danger">Urgente</span>
+                            <span class="badge bg-warning text-dark">Vacunado</span>
+                        </div>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">Nombre del animal</h5>
-                        <span class="badge bg-warning text-dark">Vacunado</span>
-                        <span class="badge bg-info text-dark">Nuevo</span>
-                        <p class="card-text mt-2">
-                            <strong>📍 Ubicación:</strong> Oviedo<br>
-                            <strong>🎂 Edad:</strong> 2 años<br>
-                            👁️
-                        </p>
-                        <a href="#" class="btn btn-primary w-100">Adoptar</a>
+                        <h5 class="card-title">
+                            Dexter
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#0419CC" title="Macho">
+                                <path d="M768-768v216h-72v-93L564-513q17.54 26.15 26.77 55.58Q600-428 600-396.41q0 85.48-59.28 144.95Q481.44-192 396.22-192T251.5-251.28Q192-310.56 192-395.78t59.35-144.72Q310.69-600 396-600q32 0 61.5 8.5T513-564l132-132h-93v-72h216Z"/>
+                            </svg>
+                        </h5>
+                        <ul class="card-meta">
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M536.5-503.5Q560-527 560-560t-23.5-56.5Q513-640 480-640t-56.5 23.5Q400-593 400-560t23.5 56.5Q447-480 480-480t56.5-23.5ZM480-186q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
+                                Gijón
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg>
+                                10 años
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M120-120v-200l160-160-160-160v-200h200l160 160 160-160h200v200L680-480l160 160v200H640L480-280 320-120H120Zm80-80h114l166-166 166 166h114v-114L590-480l170-170v-114H646L480-598 314-764H200v114l170 170-170 170v114Z"/></svg>
+                                Mediano · Cruce Pastor Alemán
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#e53935"><path d="M360-840v-80h240v80H360Zm80 440h80v-240h-80v240Zm40 320q-74 0-139.5-28.5T226-186q-49-49-77.5-114.5T120-440q0-74 28.5-139.5T226-694q49-49 114.5-77.5T480-800q62 0 119 20t107 58l56-56 56 56-56 56q38 50 58 107t20 119q0 74-28.5 139.5T734-186q-49 49-114.5 77.5T480-80Z"/></svg>
+                                <strong style="color:#e53935">En adopción: 9 años</strong>
+                            </li>
+                        </ul>
+                        <div class="fila-badges mt-2">
+                            <span class="badge bg-success">Esterilizado</span>
+                            <span class="badge bg-secondary">Microchip</span>
+                        </div>
+                        <div class="contador-vistas mt-2">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>Vista <strong id="vistas-a05">0</strong> veces</span>
+                        </div>
+                        <a href="fichaAnimal.html?id=a05" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('a05')">Ver ficha</a>
                     </div>
                 </div>
             </div>
 
+            <!-- Bosque -->
             <div class="col-sm-12 col-md-6 col-lg-4 animalCard">
-                <div class="card h-100 mt-4 shadow-sm">
-                    <img src="../img/mascotas/protectora-de-asturias-cat.jpg" class="card-img-top" alt="Nombre del animal">
+                <div class="card h-100 shadow-sm">
+                    <div class="contenedor-imagen">
+                        <img src="../img/mascotas/bosque-protectora-de-asturias-cat.jpg"
+                             class="card-img-top" alt="Bosque">
+                        <button class="btn-fav" data-id="a06" onclick="toggleFavorito(event, 'a06')" title="Agregar a favoritos">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                        <div class="image-badges">
+                            <span class="badge bg-warning text-dark">Vacunado</span>
+                            <span class="badge bg-dark">Leucemia felina+</span>
+                        </div>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">Nombre del animal</h5>
-                        <span class="badge bg-warning text-dark">Vacunado</span>
-                        <span class="badge bg-info text-dark">Nuevo</span>
-                        <p class="card-text mt-2">
-                            <strong>📍 Ubicación:</strong> Oviedo<br>
-                            <strong>🎂 Edad:</strong> 2 años<br>
-                            👁️
-                        </p>
-                        <a href="#" class="btn btn-primary w-100">Adoptar</a>
+                        <h5 class="card-title">
+                            Bosque
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#CC0479" title="Hembra">
+                                <path d="M440-120v-80h-80v-80h80v-84q-79-14-129.5-75.5T260-582q0-91 64.5-154.5T480-800q91 0 155.5 63.5T700-582q0 81-50.5 142.5T520-364v84h80v80h-80v80h-80Zm139-361q41-41 41-99t-41-99q-41-41-99-41t-99 41q-41 41-41 99t41 99q41 41 99 41t99-41Z"/>
+                            </svg>
+                        </h5>
+                        <ul class="card-meta">
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M536.5-503.5Q560-527 560-560t-23.5-56.5Q513-640 480-640t-56.5 23.5Q400-593 400-560t23.5 56.5Q447-480 480-480t56.5-23.5ZM480-186q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
+                                Oviedo
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg>
+                                8 meses
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M120-120v-200l160-160-160-160v-200h200l160 160 160-160h200v200L680-480l160 160v200H640L480-280 320-120H120Zm80-80h114l166-166 166 166h114v-114L590-480l170-170v-114H646L480-598 314-764H200v114l170 170-170 170v114Z"/></svg>
+                                Pequeño
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M360-840v-80h240v80H360Zm80 440h80v-240h-80v240Zm40 320q-74 0-139.5-28.5T226-186q-49-49-77.5-114.5T120-440q0-74 28.5-139.5T226-694q49-49 114.5-77.5T480-800q62 0 119 20t107 58l56-56 56 56-56 56q38 50 58 107t20 119q0 74-28.5 139.5T734-186q-49 49-114.5 77.5T480-80Z"/></svg>
+                                <strong>En adopción:</strong>&nbsp;3 meses
+                            </li>
+                        </ul>
+                        <div class="fila-badges mt-2">
+                            <span class="badge bg-success">Esterilizada</span>
+                            <span class="badge bg-secondary">Microchip</span>
+                        </div>
+                        <div class="contador-vistas mt-2">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>Vista <strong id="vistas-a06">0</strong> veces</span>
+                        </div>
+                        <a href="fichaAnimal.html?id=a06" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('a06')">Ver ficha</a>
                     </div>
                 </div>
             </div>
 
         </div>
     </div>
-</main>
 
-<!-- flecha subir -->
-<div class="text-center mb-4">
-    <a href="#"><img src="../img/sectionIndex/up-arrow.png" alt="Flecha" id="arrow" width="3%"></a>
-</div>
+    <!-- flecha para subir al inicio tiene los estilos en footer.css -->
+    <div class="text-center">
+        <a href="#"><img src="../img/sectionIndex/up-arrow.png" alt="Flecha que te devuelve a la parte superior" id="arrow" width="3%"></a>
+    </div>
+</main>
 
 <!-- footer -->
 <footer>
-    <p>© 2024 PetFamily. Todos los derechos reservados.</p>
+    <p>© 2025 PetFamily. Todos los derechos reservados.</p>
     <p><a href="privacidad.html" style="color: white;">Política de Privacidad</a> | <a href="terminos.html" style="color: white;">Términos de Servicio</a></p>
 </footer>
 
-<!-- scripts -->
+<!-- script js -->
 <script src="../javascript/script.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- chat -->
 <script src="//code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var ids = ['a01', 'a02', 'a03', 'a04', 'a05', 'a06'];
+        for (var i = 0; i < ids.length; i++) {
+            var cantidad = obtenerNumeroVistas(ids[i]);
+            var elemento = document.getElementById('vistas-' + ids[i]);
+            if (elemento) {
+                elemento.textContent = cantidad;
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

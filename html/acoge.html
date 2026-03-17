@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetFamily – Acoge</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../style/header.css">
+    <link rel="stylesheet" href="../style/footer.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+<header>
+
+    <!-- Logo (XL) -->
+    <div id="contenedor_logo" class="d-none d-lg-block">
+        <a id="logoXL" href="index.html">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderXL">
+            <h2 id="title-logo">Pet<span style="color:#F8BA56;">Family</span></h2>
+        </a>
+    </div>
+
+    <!-- Header(xs,sm, md) -->
+    <div id="menu_burger" class="container-fluid justify-content-between align-content-center d-lg-none">
+        <i id="btn_burger" class="fa-solid fa-bars text-center col-2 ms-n5"></i>
+        <a id="logoMD" href="index.html" class="mb-2">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderMD" class="mb-2">
+            <h2 id="burger_logo">Pet<span style="color:#F8BA56;">Family</span></h2>
+        </a>
+        <div id="user_burger" class="align-content-center d-lg-none">
+            <a href="login.html"><img src="../img/iconosHeader/iconUser.png" width="15px" alt="Usuario"></a>
+            <a href="register.html" class="btn-register">Registrarse</a>
+        </div>
+    </div>
+
+    <nav id="menu" class="d-none d-lg-block">
+        <ul id="lista_menu">
+            <li><a href="adopta.html">Adopta</a></li>
+            <li><a href="colabora.html" class="colabora">Colabora</a>
+                <ul class="submenuColabora d-none">
+                    <li><a href="dona.html">Dona</a></li>
+                    <li><a href="apadrina.html">Apadrina</a></li>
+                    <li><a href="acoge.html">Acoge</a></li>
+                </ul>
+            </li>
+            <li><a href="protectoras.html">Protectoras</a></li>
+            <li><a href="foro.html">Foro</a></li>
+            <li><a href="mapa.html">Mapa</a></li>
+            <li><a href="test.html">Tests</a></li>
+        </ul>
+    </nav>
+
+    <!-- Usuario xl -->
+    <div id="user_container" class="d-none d-lg-block">
+        <a href="login.html"><img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px"></a>
+        <a href="register.html" class="btn-register">Registrarse</a>
+    </div>
+
+</header>
+<!-- Fin html del header -->
+
+
+<main>
+    <div class="container">
+
+        <p class="migas">
+            <a href="index.html">Inicio</a>
+            <span>›</span>
+            <a href="colabora.html">Colabora</a>
+            <span>›</span>
+            Acoge
+        </p>
+
+        <h1 class="pagina-titulo">
+             Acoge a un animal
+        </h1>
+        <p class="pagina-subtitulo">
+            Acoger es abrir tu casa temporalmente a un animal que lo necesita. Sin adoptar, sin compromisos permanentes. Solo con ganas de ayudar.
+        </p>
+        <div class="linea-amarilla"></div>
+
+        <!-- ¿Qué es acoger? + Requisitos -->
+        <div class="row g-4 mb-5">
+
+            <div class="col-lg-7">
+                <div class="acoge-bloque">
+                    <h2 class="acoge-titulo-seccion">¿En qué consiste acoger?</h2>
+                    <p class="acoge-texto">
+                        Una acogida temporal es un acuerdo entre tú y la protectora: el animal vive en tu casa durante un tiempo determinado, mientras la protectora sigue haciéndose cargo de los gastos veterinarios y busca un hogar definitivo.
+                    </p>
+                    <p class="acoge-texto">
+                        Es una de las formas de ayuda más valiosas que existen. Sin casas de acogida, muchos animales no tendrían otro sitio que el albergue. Tu casa puede ser el puente entre su pasado y su futuro.
+                    </p>
+                    <div class="acoge-aviso">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>La protectora cubre los gastos veterinarios. Tú pones el espacio, el tiempo y el cariño.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="acoge-bloque acoge-bloque-amarillo">
+                    <h3 class="acoge-titulo-card">
+                        <i class="fa-solid fa-list-check me-2"></i>¿Qué necesitas para acoger?
+                    </h3>
+                    <ul class="acoge-lista-check">
+                        <li><i class="fa-solid fa-check"></i> Tener un espacio en casa, aunque sea pequeño</li>
+                        <li><i class="fa-solid fa-check"></i> Tiempo para dedicarle atención y paseos básicos</li>
+                        <li><i class="fa-solid fa-check"></i> Ganas de ayudar, sin importar la experiencia previa</li>
+                        <li><i class="fa-solid fa-check"></i> Compromiso con el bienestar del animal durante la acogida</li>
+                        <li><i class="fa-solid fa-check"></i> Comunicación fluida con la protectora</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 4 tipos de acogida -->
+        <h2 class="acoge-titulo-seccion mb-4">Tipos de acogida</h2>
+        <div class="row g-3 mb-5">
+
+            <div class="col-md-6 col-lg-3">
+                <div class="acoge-tipo-card">
+                    <div class="acoge-tipo-icono acoge-icono-urgencia">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <h4 class="acoge-tipo-titulo">Urgencia</h4>
+                    <p class="acoge-tipo-desc">Cuando un animal entra en la protectora y necesita salir del albergue de forma inmediata. Puede ser horas o días.</p>
+                    <span class="acoge-tipo-duracion"><i class="fa-regular fa-clock me-1"></i>Horas – días</span>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="acoge-tipo-card">
+                    <div class="acoge-tipo-icono acoge-icono-temporal">
+                        <i class="fa-solid fa-house-chimney"></i>
+                    </div>
+                    <h4 class="acoge-tipo-titulo">Temporal</h4>
+                    <p class="acoge-tipo-desc">La más común. El animal vive contigo mientras la protectora busca adoptante definitivo. Sin fecha fija de fin.</p>
+                    <span class="acoge-tipo-duracion"><i class="fa-regular fa-clock me-1"></i>Semanas – meses</span>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="acoge-tipo-card">
+                    <div class="acoge-tipo-icono acoge-icono-recuperacion">
+                        <i class="fa-solid fa-kit-medical"></i>
+                    </div>
+                    <h4 class="acoge-tipo-titulo">Recuperación</h4>
+                    <p class="acoge-tipo-desc">Para animales que han pasado por cirugía o enfermedad y necesitan descanso en un entorno tranquilo y familiar.</p>
+                    <span class="acoge-tipo-duracion"><i class="fa-regular fa-clock me-1"></i>2 – 8 semanas</span>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="acoge-tipo-card">
+                    <div class="acoge-tipo-icono acoge-icono-socializacion">
+                        <i class="fa-solid fa-people-arrows"></i>
+                    </div>
+                    <h4 class="acoge-tipo-titulo">Socialización</h4>
+                    <p class="acoge-tipo-desc">Para animales miedosos o con poca interacción humana. El objetivo es que ganen confianza en un hogar real.</p>
+                    <span class="acoge-tipo-duracion"><i class="fa-regular fa-clock me-1"></i>1 – 3 meses</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Responsabilidades protectora / acogedor -->
+        <div class="row g-4 mb-5">
+
+            <div class="col-lg-6">
+                <div class="acoge-bloque">
+                    <h2 class="acoge-titulo-seccion">
+                        <i class="fa-solid fa-building-shield me-2"></i>La protectora se encarga de…
+                    </h2>
+                    <ul class="acoge-lista-prot">
+                        <li>
+                            <i class="fa-solid fa-syringe acoge-icono-azul"></i>
+                            <div>
+                                <strong>Gastos veterinarios</strong>
+                                <span>Vacunas, esterilización, medicación y revisiones corren a cargo de la protectora.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-bowl-food acoge-icono-azul"></i>
+                            <div>
+                                <strong>Pienso y material básico</strong>
+                                <span>Muchas protectoras proporcionan pienso, cama o transportín según disponibilidad.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-magnifying-glass acoge-icono-azul"></i>
+                            <div>
+                                <strong>Búsqueda del adoptante</strong>
+                                <span>Ellos gestionan las solicitudes, entrevistas y el proceso de adopción definitiva.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-headset acoge-icono-azul"></i>
+                            <div>
+                                <strong>Apoyo y seguimiento</strong>
+                                <span>Estarán disponibles para cualquier duda o incidencia durante la acogida.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="acoge-bloque">
+                    <h2 class="acoge-titulo-seccion">
+                        <i class="fa-solid fa-person me-2"></i>Tú te encargas de…
+                    </h2>
+                    <ul class="acoge-lista-prot">
+                        <li>
+                            <i class="fa-solid fa-house acoge-icono-gold"></i>
+                            <div>
+                                <strong>El espacio y la convivencia</strong>
+                                <span>Integrar al animal en tu rutina diaria y darle un sitio donde sentirse seguro.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-utensils acoge-icono-gold"></i>
+                            <div>
+                                <strong>Alimentación y cuidado diario</strong>
+                                <span>Darle de comer, limpiarle, pasearle si es perro y prestarle la atención que necesita.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-comment-dots acoge-icono-gold"></i>
+                            <div>
+                                <strong>Comunicación con la protectora</strong>
+                                <span>Reportar cómo evoluciona el animal y avisar ante cualquier cambio de comportamiento.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-heart acoge-icono-gold"></i>
+                            <div>
+                                <strong>Cariño y paciencia</strong>
+                                <span>Algunos animales llegan asustados o con traumas. Tu calma es su mejor medicina.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Protectoras con acogida -->
+        <h2 class="acoge-titulo-seccion mb-1">¿Con qué protectora quieres colaborar?</h2>
+        <p class="acoge-texto mb-4">Contacta directamente con la protectora que más te encaje y cuéntales que quieres ser familia de acogida.</p>
+
+        <div class="row g-3 mb-5">
+
+            <div class="col-md-6 col-lg-4">
+                <div class="acoge-prot-card">
+                    <div class="acoge-prot-header">
+                        <div class="acoge-prot-emoji">🐕</div>
+                        <div>
+                            <p class="acoge-prot-nombre">Centro de Protección Animal de Gijón</p>
+                            <p class="acoge-prot-lugar"><i class="fa-solid fa-location-dot"></i> Gijón</p>
+                        </div>
+                    </div>
+                    <p class="acoge-prot-foco">Especialidad en acogidas de urgencia y animales con necesidades especiales o razas PPP.</p>
+                    <div class="acoge-prot-contacto">
+                        <a href="tel:615411417"><i class="fa-solid fa-phone"></i> 615 411 417</a>
+                        <a href="mailto:cproteccionanimalgijon@gmail.com"><i class="fa-solid fa-envelope"></i> Email</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="acoge-prot-card">
+                    <div class="acoge-prot-header">
+                        <div class="acoge-prot-emoji">💙</div>
+                        <div>
+                            <p class="acoge-prot-nombre">Fundación Protectora de Asturias</p>
+                            <p class="acoge-prot-lugar"><i class="fa-solid fa-location-dot"></i> Siero</p>
+                        </div>
+                    </div>
+                    <p class="acoge-prot-foco">Su modelo se basa principalmente en casas de acogida. Tienen mucha experiencia en acompañar a nuevos acogedores.</p>
+                    <div class="acoge-prot-contacto">
+                        <a href="mailto:info@protectoradeasturias.org"><i class="fa-solid fa-envelope"></i> Email</a>
+                        <a href="http://www.protectoradeasturias.org" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> Web</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="acoge-prot-card">
+                    <div class="acoge-prot-header">
+                        <div class="acoge-prot-emoji">🐾</div>
+                        <div>
+                            <p class="acoge-prot-nombre">Nortemascotas</p>
+                            <p class="acoge-prot-lugar"><i class="fa-solid fa-location-dot"></i> Gijón</p>
+                        </div>
+                    </div>
+                    <p class="acoge-prot-foco">Trabajan exclusivamente con familias de acogida. Cada animal tiene un seguimiento muy cercano y personal.</p>
+                    <div class="acoge-prot-contacto">
+                        <a href="tel:665971933"><i class="fa-solid fa-phone"></i> 665 971 933</a>
+                        <a href="mailto:Mariasol.ferreyra2014@gmail.com"><i class="fa-solid fa-envelope"></i> Email</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="acoge-prot-card">
+                    <div class="acoge-prot-header">
+                        <div class="acoge-prot-emoji">🏠</div>
+                        <div>
+                            <p class="acoge-prot-nombre">MÁS QUE CHUCHOS</p>
+                            <p class="acoge-prot-lugar"><i class="fa-solid fa-location-dot"></i> Oviedo – Llanera</p>
+                        </div>
+                    </div>
+                    <p class="acoge-prot-foco">Con más de 30 años de experiencia, tienen un programa de acogida consolidado y forman a sus voluntarios.</p>
+                    <div class="acoge-prot-contacto">
+                        <a href="mailto:info@masquechuchos.org"><i class="fa-solid fa-envelope"></i> Email</a>
+                        <a href="http://masquechuchos.org" target="_blank" rel="noopener"><i class="fa-solid fa-globe"></i> Web</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="acoge-prot-card">
+                    <div class="acoge-prot-header">
+                        <div class="acoge-prot-emoji">🐱</div>
+                        <div>
+                            <p class="acoge-prot-nombre">Asociación Felina La Esperanza</p>
+                            <p class="acoge-prot-lugar"><i class="fa-solid fa-location-dot"></i> Asturias</p>
+                        </div>
+                    </div>
+                    <p class="acoge-prot-foco">Buscan acogedores para gatos con leucemia felina u otras enfermedades crónicas. Una acogida especializada con mucho impacto.</p>
+                    <div class="acoge-prot-contacto">
+                        <a href="mailto:asociacionfelinalaesperanza@gmail.com"><i class="fa-solid fa-envelope"></i> Email</a>
+                        <a href="https://www.teaming.net/asociacionfelinalaesperanza" target="_blank" rel="noopener"><i class="fa-solid fa-mug-hot"></i> Teaming</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="text-center">
+        <a href="#" class="text-align-center">
+            <img src="../img/sectionIndex/up-arrow.png" alt="Volver arriba" id="arrow" width="3%">
+        </a>
+    </div>
+</main>
+
+
+<!-- footer -->
+<footer>
+    <p>© 2026 PetFamily. Todos los derechos reservados.</p>
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetFamily – Mapa</title>
+
+    <link rel="stylesheet" href="../style/header.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <link rel="stylesheet" href="../style/footer.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/093cf7cd82.js" crossorigin="anonymous"></script>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+    <style>
+        * { font-family: 'Poppins', sans-serif; }
+
+        body { overflow-x: hidden; background-color: #f8f9fa; }
+
+        main { margin-top: clamp(60px, 10vh, 90px); padding: 2em 0 3em; }
+
+        /* ── Hero ── */
+        .mapa-hero {
+            background: linear-gradient(135deg, #1B358F 0%, #2a4db5 60%, #F8BA56 100%);
+            color: white;
+            padding: 3rem 1.5rem 2.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .mapa-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+        .mapa-hero h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.4rem;
+        }
+        .mapa-hero p {
+            font-size: 1rem;
+            opacity: 0.9;
+            max-width: 540px;
+            margin: 0 auto;
+        }
+
+        /* ── Filtros ── */
+        .filtros-mapa {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            justify-content: center;
+            padding: 1.4rem 1rem;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            position: sticky;
+            top: clamp(60px, 10vh, 90px);
+            z-index: 900;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .btn-filtro {
+            border: 2px solid transparent;
+            border-radius: 50px;
+            padding: 0.42rem 1.1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: #f1f3f5;
+            color: #495057;
+        }
+        .btn-filtro:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,0.12); }
+        .btn-filtro.activo { color: white; border-color: transparent; }
+        .btn-filtro[data-cat="todos"].activo       { background: #1B358F; }
+        .btn-filtro[data-cat="protectora"].activo  { background: #e53935; }
+        .btn-filtro[data-cat="veterinaria"].activo { background: #2e7d32; }
+        .btn-filtro[data-cat="tienda"].activo      { background: #F8BA56; color: #333; }
+        .btn-filtro[data-cat="donacion"].activo    { background: #8e24aa; }
+        .btn-filtro[data-cat="refugio"].activo     { background: #0277bd; }
+
+        /* ── Layout principal ── */
+        .mapa-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 0;
+            height: calc(100vh - clamp(60px, 10vh, 90px) - 58px - 64px);
+            min-height: 500px;
+            position: relative;
+        }
+
+        /* ── Panel lateral ── */
+        .panel-lateral {
+            background: white;
+            border-right: 1px solid #e9ecef;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        .panel-lateral h6 {
+            font-weight: 700;
+            color: #1B358F;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.8rem;
+        }
+        .punto-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.7rem;
+            padding: 0.7rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.15s;
+            border: 1px solid transparent;
+            margin-bottom: 0.4rem;
+        }
+        .punto-item:hover  { background: #f8f9fa; border-color: #dee2e6; }
+        .punto-item.activo { background: #EEF2FF; border-color: #1B358F; }
+        .punto-icono {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+        .punto-info .nombre {
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: #212529;
+            line-height: 1.3;
+        }
+        .punto-info .meta {
+            font-size: 0.78rem;
+            color: #6c757d;
+            margin-top: 0.1rem;
+        }
+        .badge-cat {
+            font-size: 0.68rem;
+            padding: 2px 7px;
+            border-radius: 50px;
+            font-weight: 600;
+            color: white;
+        }
+        .distancia-chip {
+            font-size: 0.72rem;
+            color: #1B358F;
+            font-weight: 700;
+        }
+
+        /* ── Mapa ── */
+        #map {
+            height: 100%;
+            width: 100%;
+            z-index: 1;
+            position: relative;
+        }
+
+        /* ── Botones flotantes sobre el mapa ── */
+        .map-controls {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 800;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .btn-map-ctrl {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            border: none;
+            background: white;
+            color: #1B358F;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .btn-map-ctrl:hover  { background: #1B358F; color: white; transform: scale(1.08); }
+        .btn-map-ctrl.activo { background: #1B358F; color: white; }
+        .btn-map-ctrl.spin i { animation: girar 1s linear infinite; }
+        @keyframes girar { to { transform: rotate(360deg); } }
+
+        /* ── Marcador pulsante del usuario ── */
+        .marcador-yo {
+            width: 18px;
+            height: 18px;
+            background: #1B358F;
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px rgba(27,53,143,0.25);
+            animation: pulso 2s ease-in-out infinite;
+        }
+        @keyframes pulso {
+            0%,100% { box-shadow: 0 0 0 4px rgba(27,53,143,0.25); }
+            50%      { box-shadow: 0 0 0 10px rgba(27,53,143,0.07); }
+        }
+
+        /* ── Popup Leaflet personalizado ── */
+        .leaflet-popup-content-wrapper {
+            border-radius: 12px !important;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+            padding: 0 !important;
+            overflow: hidden;
+        }
+        .leaflet-popup-content {
+            margin: 0 !important;
+            width: 240px !important;
+        }
+        .popup-header {
+            padding: 0.8rem 1rem 0.6rem;
+            color: white;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+        .popup-body {
+            padding: 0.6rem 1rem 0.9rem;
+        }
+        .popup-body p {
+            font-size: 0.8rem;
+            color: #555;
+            margin: 0 0 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .popup-body a {
+            display: inline-block;
+            margin-top: 0.5rem;
+            font-size: 0.78rem;
+            color: #1B358F;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .popup-body a:hover { text-decoration: underline; }
+
+        /* ── Toast de notificación ── */
+        .mapa-toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(16px);
+            background: #212529;
+            color: white;
+            padding: 0.55rem 1.4rem;
+            border-radius: 50px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .mapa-toast.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ── Modo pantalla completa ── */
+        body.mapa-fullscreen header,
+        body.mapa-fullscreen footer,
+        body.mapa-fullscreen .mapa-hero,
+        body.mapa-fullscreen .filtros-mapa,
+        body.mapa-fullscreen .leyenda-mapa,
+        body.mapa-fullscreen .panel-lateral { display: none !important; }
+        body.mapa-fullscreen main           { margin-top: 0; padding: 0; }
+        body.mapa-fullscreen .mapa-layout   { height: 100vh; grid-template-columns: 1fr; }
+
+        /* ── Leyenda ── */
+        .leyenda-mapa {
+            background: white;
+            border-top: 1px solid #e9ecef;
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem 2rem;
+            justify-content: center;
+        }
+        .leyenda-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.78rem;
+            color: #495057;
+            font-weight: 500;
+        }
+        .leyenda-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .mapa-layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: 55vh 1fr;
+                height: auto;
+            }
+            .panel-lateral { order: 2; max-height: 320px; }
+            #map { order: 1; }
+            .mapa-hero h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+    <div id="contenedor_logo" class="d-none d-lg-block">
+        <a id="logoXL" href="index.html">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderXL">
+            <h2 id="title-logo">Pet<span style="color:#F8BA56;">Family</span></h2>
+        </a>
+    </div>
+
+    <div id="menu_burger" class="container-fluid justify-content-between align-content-center d-lg-none">
+        <i id="btn_burger" class="fa-solid fa-bars text-center col-2 ms-n5"></i>
+        <a id="logoMD" href="index.html" class="mb-2">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderMD" class="mb-2">
+            <h2 id="burger_logo">Pet<span style="color:#F8BA56;">Family</span></h2>
+        </a>
+        <div id="user_burger" class="align-content-center d-lg-none">
+            <a href="login.html"><img src="../img/iconosHeader/iconUser.png" width="15px" alt="Usuario"></a>
+            <a href="register.html" class="btn-register">Registrarse</a>
+        </div>
+    </div>
+
+    <nav id="menu" class="d-none d-lg-block">
+        <ul id="lista_menu">
+            <li><a href="adopta.html">Adopta</a></li>
+            <li><a href="colabora.html" class="colabora">Colabora</a>
+                <ul class="submenuColabora d-none">
+                    <li><a href="dona.html">Dona</a></li>
+                    <li><a href="apadrina.html">Apadrina</a></li>
+                </ul>
+            </li>
+            <li><a href="protectoras.html">Protectoras</a></li>
+            <li><a href="foro.html">Foro</a></li>
+            <li><a href="mapa.html" class="active">Mapa</a></li>
+            <li><a href="test.html">Tests</a></li>
+        </ul>
+    </nav>
+
+    <div id="user_container" class="d-none d-lg-block">
+        <a href="login.html"><img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px"></a>
+        <a href="register.html" class="btn-register">Registrarse</a>
+    </div>
+</header>
+
+<main>
+
+    <!-- ── Hero ── -->
+    <div class="mapa-hero">
+        <h1><i class="fa-solid fa-map-location-dot me-2"></i>Mapa de recursos</h1>
+        <p>Encuentra protectoras, veterinarias, tiendas de animales y puntos de donación cerca de ti en Asturias.</p>
+    </div>
+
+    <!-- ── Filtros ── -->
+    <div class="filtros-mapa">
+        <button class="btn-filtro activo" data-cat="todos">
+            <i class="fa-solid fa-layer-group"></i> Todos
+        </button>
+        <button class="btn-filtro" data-cat="protectora">
+            <i class="fa-solid fa-house-heart"></i> Protectoras
+        </button>
+        <button class="btn-filtro" data-cat="veterinaria">
+            <i class="fa-solid fa-stethoscope"></i> Veterinarias
+        </button>
+        <button class="btn-filtro" data-cat="tienda">
+            <i class="fa-solid fa-store"></i> Tiendas
+        </button>
+        <button class="btn-filtro" data-cat="donacion">
+            <i class="fa-solid fa-hand-holding-heart"></i> Donación
+        </button>
+        <button class="btn-filtro" data-cat="refugio">
+            <i class="fa-solid fa-paw"></i> Refugios
+        </button>
+    </div>
+
+    <!-- ── Layout mapa + panel ── -->
+    <div class="mapa-layout">
+
+        <!-- Panel lateral -->
+        <div class="panel-lateral" id="panel-lateral">
+            <h6><i class="fa-solid fa-list me-1"></i> Puntos encontrados (<span id="contador-puntos">12</span>)</h6>
+            <div id="lista-puntos"></div>
+        </div>
+
+        <!-- Mapa Leaflet -->
+        <div id="map">
+            <div class="map-controls">
+                <button class="btn-map-ctrl" id="btn-ubicacion" title="Mi ubicación">
+                    <i class="fa-solid fa-location-crosshairs"></i>
+                </button>
+                <button class="btn-map-ctrl" id="btn-fullscreen" title="Pantalla completa">
+                    <i class="fa-solid fa-expand"></i>
+                </button>
+                <button class="btn-map-ctrl" id="btn-centro" title="Volver a Asturias">
+                    <i class="fa-solid fa-house"></i>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ── Leyenda ── -->
+    <div class="leyenda-mapa">
+        <div class="leyenda-item">
+            <div class="leyenda-dot" style="background:#e53935"></div> Protectora
+        </div>
+        <div class="leyenda-item">
+            <div class="leyenda-dot" style="background:#2e7d32"></div> Veterinaria
+        </div>
+        <div class="leyenda-item">
+            <div class="leyenda-dot" style="background:#F8BA56"></div> Tienda
+        </div>
+        <div class="leyenda-item">
+            <div class="leyenda-dot" style="background:#8e24aa"></div> Punto de donación
+        </div>
+        <div class="leyenda-item">
+            <div class="leyenda-dot" style="background:#0277bd"></div> Refugio
+        </div>
+    </div>
+
+</main>
+
+<!-- Toast de notificación -->
+<div class="mapa-toast" id="mapa-toast"></div>
+
+<!-- footer -->
+<footer>
+    <p>© 2025 PetFamily. Todos los derechos reservados.</p>
+    <p>
+        <a href="privacidad.html" style="color:white;">Política de Privacidad</a> |
+        <a href="terminos.html" style="color:white;">Términos de Servicio</a>
+    </p>
+</footer>
+
+<!-- Scripts -->
+<script src="../javascript/script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="//code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
+
+<script>
+// --------------------------------------------------------------------------------------------------
+//  DATOS DE PUNTOS
+//  En producción se sustituye por: fetch('backend/mapa.php')
+
+const puntos = [
+    // PROTECTORAS
+    {
+        id: 1, categoria: 'protectora',
+        nombre: 'Protectora Norte Mascotas',
+        direccion: 'C/ Corrida, 48, Gijón',
+        telefono: '984 123 456',
+        email: 'info@nortemascotas.com',
+        web: 'https://nortemascotas.com',
+        lat: 43.5322, lng: -5.6611
+    },
+    {
+        id: 2, categoria: 'protectora',
+        nombre: 'Protectora de Asturias',
+        direccion: 'C/ Fuertes Acevedo, 12, Oviedo',
+        telefono: '985 234 567',
+        email: 'contacto@protectoraasturias.es',
+        web: '',
+        lat: 43.3614, lng: -5.8496
+    },
+    {
+        id: 3, categoria: 'protectora',
+        nombre: 'APAS – Asociación Protectora',
+        direccion: 'Av. de los Telares, Avilés',
+        telefono: '985 567 890',
+        email: 'apas@apas.es',
+        web: '',
+        lat: 43.5547, lng: -5.9249
+    },
+//---------------------------------------------------------------------------------------
+    // VETERINARIAS
+    {
+        id: 4, categoria: 'veterinaria',
+        nombre: 'Clínica Veterinaria Asturvets',
+        direccion: 'C/ Uría, 32, Oviedo',
+        telefono: '985 111 222',
+        email: 'asturvets@vet.es',
+        web: '',
+        lat: 43.3636, lng: -5.8480
+    },
+    {
+        id: 5, categoria: 'veterinaria',
+        nombre: 'Vetgijón Centro',
+        direccion: 'C/ Magnus Blikstad, 5, Gijón',
+        telefono: '984 333 444',
+        email: 'info@vetgijon.es',
+        web: '',
+        lat: 43.5368, lng: -5.6631
+    },
+    {
+        id: 6, categoria: 'veterinaria',
+        nombre: 'Clínica Animal Langreo',
+        direccion: 'C/ Sama, 18, Langreo',
+        telefono: '985 666 777',
+        email: '',
+        web: '',
+        lat: 43.2987, lng: -5.6830
+    },
+//---------------------------------------------------------------------------------------
+    // TIENDAS
+    {
+        id: 7, categoria: 'tienda',
+        nombre: 'Kiwoko Oviedo',
+        direccion: 'C. C. Salesas, Oviedo',
+        telefono: '900 800 700',
+        email: '',
+        web: 'https://kiwoko.com',
+        lat: 43.3572, lng: -5.8602
+    },
+    {
+        id: 8, categoria: 'tienda',
+        nombre: 'Tienda Animal Gijón',
+        direccion: 'Av. de la Costa, 21, Gijón',
+        telefono: '984 222 333',
+        email: '',
+        web: '',
+        lat: 43.5394, lng: -5.6722
+    },
+//---------------------------------------------------------------------------------------
+    // PUNTOS DE DONACIÓN
+    {
+        id: 9, categoria: 'donacion',
+        nombre: 'Punto donación pienso – Carrefour Oviedo',
+        direccion: 'C. C. Los Fresnos, Oviedo',
+        telefono: '',
+        email: '',
+        web: '',
+        lat: 43.3490, lng: -5.8710
+    },
+    {
+        id: 10, categoria: 'donacion',
+        nombre: 'Punto donación – Farmacia Central Gijón',
+        direccion: 'C/ Corrida, 12, Gijón',
+        telefono: '',
+        email: '',
+        web: '',
+        lat: 43.5349, lng: -5.6636
+    },
+//---------------------------------------------------------------------------------------
+    // REFUGIOS
+    {
+        id: 11, categoria: 'refugio',
+        nombre: 'Albergue Municipal de Animales Gijón',
+        direccion: 'Camino de la Manzaneda, Gijón',
+        telefono: '984 181 507',
+        email: 'albergue@gijon.es',
+        web: '',
+        lat: 43.5155, lng: -5.6940
+    },
+    {
+        id: 12, categoria: 'refugio',
+        nombre: 'Centro de Acogida Animal Oviedo',
+        direccion: 'Polígono de Silvota, Oviedo',
+        telefono: '985 961 400',
+        email: '',
+        web: '',
+        lat: 43.3269, lng: -5.8840
+    }
+];
+
+// --------------------------------------------------------------------------------------------------
+//  CONFIGURACIÓN DE CATEGORÍAS
+
+const config = {
+    protectora: { color: '#e53935', icono: '🏠', label: 'Protectora' },
+    veterinaria: { color: '#2e7d32', icono: '🩺', label: 'Veterinaria' },
+    tienda:      { color: '#F8BA56', icono: '🛒', label: 'Tienda' },
+    donacion:    { color: '#8e24aa', icono: '💜', label: 'Donación' },
+    refugio:     { color: '#0277bd', icono: '🐾', label: 'Refugio' }
+};
+
+// --------------------------------------------------------------------------------------------------
+//  INICIALIZAR MAPA
+
+const CENTRO_ASTURIAS = [43.3614, -5.8496];
+const ZOOM_INICIAL    = 10;
+
+const map = L.map('map', {
+    center: CENTRO_ASTURIAS,
+    zoom: ZOOM_INICIAL,
+    zoomControl: true
+});
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19
+}).addTo(map);
+
+// --------------------------------------------------------------------------------------------------
+//  MARCADOR PERSONALIZADO (pin de color por categoría)
+
+function crearIcono(categoria) {
+    const cfg = config[categoria];
+    return L.divIcon({
+        className: '',
+        html: `<div style="
+            background:${cfg.color};
+            width:36px; height:36px;
+            border-radius:50% 50% 50% 0;
+            transform:rotate(-45deg);
+            border:3px solid white;
+            box-shadow:0 3px 10px rgba(0,0,0,0.25);
+            display:flex; align-items:center; justify-content:center;
+        "><span style="transform:rotate(45deg); font-size:14px;">${cfg.icono}</span></div>`,
+        iconSize: [36, 36],
+        iconAnchor: [18, 36],
+        popupAnchor: [0, -38]
+    });
+}
+
+// --------------------------------------------------------------------------------------------------
+//  VARIABLES DE ESTADO
+
+let marcadores      = {};
+let categoriaActiva = 'todos';
+let miPosicion      = null;    // { lat, lng } cuando el usuario activa geolocalización
+let markerYo        = null;    // marcador del usuario en el mapa
+let circuloYo       = null;    // radio de proximidad (5 km)
+let modoFullscreen  = false;
+
+// --------------------------------------------------------------------------------------------------
+//  FUNCIÓN AUXILIAR: DISTANCIA entre dos coordenadas (Haversine, resultado en km)
+
+function distanciaKm(lat1, lng1, lat2, lng2) {
+    const R  = 6371;
+    const dL = (lat2 - lat1) * Math.PI / 180;
+    const dN = (lng2 - lng1) * Math.PI / 180;
+    const a  = Math.sin(dL/2) * Math.sin(dL/2)
+             + Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180)
+             * Math.sin(dN/2) * Math.sin(dN/2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function formatearDistancia(km) {
+    return km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km';
+}
+
+// --------------------------------------------------------------------------------------------------
+//  TOAST DE NOTIFICACIÓN
+
+function mostrarToast(texto, duracion = 3000) {
+    const toast = document.getElementById('mapa-toast');
+    toast.textContent = texto;
+    toast.classList.add('visible');
+    setTimeout(() => toast.classList.remove('visible'), duracion);
+}
+
+// --------------------------------------------------------------------------------------------------
+//  RENDERIZAR PUNTOS
+//  Si hay posición activa calcula distancias y ordena de menor a mayor
+
+function renderPuntos(filtro) {
+    // Limpiar marcadores anteriores del mapa
+    Object.values(marcadores).forEach(m => map.removeLayer(m));
+    marcadores = {};
+
+    const lista = document.getElementById('lista-puntos');
+    lista.innerHTML = '';
+
+    let filtrados = filtro === 'todos' ? [...puntos] : puntos.filter(p => p.categoria === filtro);
+
+    // Con ubicación activa: calcular distancia y ordenar
+    if (miPosicion) {
+        filtrados = filtrados
+            .map(p => ({ ...p, distancia: distanciaKm(miPosicion.lat, miPosicion.lng, p.lat, p.lng) }))
+            .sort((a, b) => a.distancia - b.distancia);
+    }
+
+    document.getElementById('contador-puntos').textContent = filtrados.length;
+
+    filtrados.forEach(p => {
+        const cfg = config[p.categoria];
+
+        // Marcador en el mapa
+        const marker = L.marker([p.lat, p.lng], { icon: crearIcono(p.categoria) })
+            .addTo(map)
+            .bindPopup(`
+                <div class="popup-header" style="background:${cfg.color}">
+                    ${cfg.icono} ${p.nombre}
+                </div>
+                <div class="popup-body">
+                    ${p.direccion  ? `<p><i class="fa-solid fa-location-dot" style="color:${cfg.color}"></i> ${p.direccion}</p>`  : ''}
+                    ${p.telefono   ? `<p><i class="fa-solid fa-phone"        style="color:${cfg.color}"></i> ${p.telefono}</p>`   : ''}
+                    ${p.email      ? `<p><i class="fa-solid fa-envelope"     style="color:${cfg.color}"></i> ${p.email}</p>`      : ''}
+                    ${p.distancia  ? `<p><i class="fa-solid fa-route"        style="color:${cfg.color}"></i> <strong>${formatearDistancia(p.distancia)}</strong> de ti</p>` : ''}
+                    ${p.web        ? `<a href="${p.web}" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>` : ''}
+                </div>
+            `, { maxWidth: 260 });
+
+        marcadores[p.id] = marker;
+
+        // Item en panel lateral
+        const item = document.createElement('div');
+        item.className = 'punto-item';
+        item.dataset.id = p.id;
+        item.innerHTML = `
+            <div class="punto-icono" style="background:${cfg.color}">${cfg.icono}</div>
+            <div class="punto-info">
+                <div class="nombre">${p.nombre}</div>
+                <div class="meta">
+                    <span class="badge-cat" style="background:${cfg.color}">${cfg.label}</span>
+                    ${p.distancia ? `<span class="distancia-chip"> · 📍 ${formatearDistancia(p.distancia)}</span>` : ''}
+                </div>
+            </div>
+        `;
+        item.addEventListener('click', () => {
+            document.querySelectorAll('.punto-item').forEach(i => i.classList.remove('activo'));
+            item.classList.add('activo');
+            map.flyTo([p.lat, p.lng], 15, { duration: 1 });
+            marcadores[p.id].openPopup();
+        });
+
+        lista.appendChild(item);
+    });
+}
+
+// --------------------------------------------------------------------------------------------------
+//  FILTROS DE CATEGORÍA
+
+document.querySelectorAll('.btn-filtro').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.btn-filtro').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+        categoriaActiva = btn.dataset.cat;
+        renderPuntos(categoriaActiva);
+    });
+});
+
+// --------------------------------------------------------------------------------------------------
+//  MI UBICACIÓN
+
+document.getElementById('btn-ubicacion').addEventListener('click', () => {
+    const btn = document.getElementById('btn-ubicacion');
+
+    // Si ya está activo → desactivar y limpiar
+    if (btn.classList.contains('activo')) {
+        btn.classList.remove('activo');
+        miPosicion = null;
+        if (markerYo)  { map.removeLayer(markerYo);  markerYo  = null; }
+        if (circuloYo) { map.removeLayer(circuloYo); circuloYo = null; }
+        renderPuntos(categoriaActiva);
+        mostrarToast('Ubicación desactivada');
+        return;
+    }
+
+    if (!navigator.geolocation) {
+        mostrarToast('Tu navegador no soporta geolocalización');
+        return;
+    }
+
+    btn.classList.add('spin');
+    mostrarToast('Obteniendo tu ubicación…');
+
+    navigator.geolocation.getCurrentPosition(
+        // Éxito
+        (pos) => {
+            btn.classList.remove('spin');
+            btn.classList.add('activo');
+
+            miPosicion = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+
+            // Eliminar marcador anterior si existía
+            if (markerYo)  map.removeLayer(markerYo);
+            if (circuloYo) map.removeLayer(circuloYo);
+
+            // Marcador pulsante "Tú estás aquí"
+            const iconoYo = L.divIcon({
+                className: '',
+                html: '<div class="marcador-yo"></div>',
+                iconSize: [18, 18],
+                iconAnchor: [9, 9]
+            });
+            markerYo = L.marker([miPosicion.lat, miPosicion.lng], { icon: iconoYo })
+                .addTo(map)
+                .bindPopup('<strong>📍 Tú estás aquí</strong>');
+
+            // Círculo de radio 5 km
+            circuloYo = L.circle([miPosicion.lat, miPosicion.lng], {
+                radius: 5000,
+                color: '#1B358F',
+                fillColor: '#1B358F',
+                fillOpacity: 0.05,
+                weight: 1.5,
+                dashArray: '6 4'
+            }).addTo(map);
+
+            map.flyTo([miPosicion.lat, miPosicion.lng], 13, { duration: 1.2 });
+            renderPuntos(categoriaActiva);
+            mostrarToast('¡Ubicación encontrada! Lista ordenada por distancia 📍');
+        },
+        // Error
+        (err) => {
+            btn.classList.remove('spin');
+            const msgs = { 1: 'Permiso de ubicación denegado', 2: 'No se pudo obtener tu posición', 3: 'Tiempo de espera agotado' };
+            mostrarToast(msgs[err.code] || 'Error de geolocalización');
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+    );
+});
+
+// --------------------------------------------------------------------------------------------------
+//  BOTÓN: PANTALLA COMPLETA
+
+document.getElementById('btn-fullscreen').addEventListener('click', () => {
+    const btn  = document.getElementById('btn-fullscreen');
+    const icon = btn.querySelector('i');
+
+    modoFullscreen = !modoFullscreen;
+
+    if (modoFullscreen) {
+        document.body.classList.add('mapa-fullscreen');
+        icon.className = 'fa-solid fa-compress';
+        btn.title = 'Salir de pantalla completa';
+        mostrarToast('Pantalla completa — pulsa ESC o el botón para salir');
+    } else {
+        document.body.classList.remove('mapa-fullscreen');
+        icon.className = 'fa-solid fa-expand';
+        btn.title = 'Pantalla completa';
+    }
+
+    // Redibujar el mapa tras el cambio de tamaño del contenedor
+    setTimeout(() => map.invalidateSize(), 300);
+});
+
+// Salir también con tecla ESC
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modoFullscreen) {
+        document.getElementById('btn-fullscreen').click();
+    }
+});
+
+// --------------------------------------------------------------------------------------------------
+//  BOTÓN: VOLVER AL CENTRO DE ASTURIAS
+
+document.getElementById('btn-centro').addEventListener('click', () => {
+    map.flyTo(CENTRO_ASTURIAS, ZOOM_INICIAL, { duration: 1 });
+    mostrarToast('Volviendo a Asturias 🏠');
+});
+
+// --------------------------------------------------------------------------------------------------
+//  RENDER INICIAL
+
+renderPuntos('todos');
+</script>
+
+</body>
+</html>

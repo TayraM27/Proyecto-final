@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetFamily – Dona</title>
+
+    <link rel="stylesheet" href="../style/header.css">
+    <link rel="stylesheet" href="../style/footer.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/093cf7cd82.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+<header>
+
+    <!-- Logo (XL) -->
+    <div id="contenedor_logo" class="d-none d-lg-block">
+        <a id="logoXL" href="index.html">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderXL">
+            <h2 id="title-logo">Pet<span style="color: #F8BA56;">Family</span></h2>
+        </a>
+    </div>
+
+    <!-- Header(xs,sm, md) -->
+    <div id="menu_burger" class="container-fluid justify-content-between align-content-center d-lg-none">
+        <i id="btn_burger" class="fa-solid fa-bars text-center col-2 ms-n5"></i>
+        <a id="logoMD" href="index.html" class="mb-2">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderMD" class="mb-2">
+            <h2 id="burger_logo">Pet<span style="color: #F8BA56;">Family</span></h2>
+        </a>
+        <div id="user_burger" class="align-content-center d-lg-none">
+            <a href="login.html"><img src="../img/iconosHeader/iconUser.png" width="15px" alt="Usuario"></a>
+            <a href="register.html" class="btn-register">Registrarse</a>
+        </div>
+    </div>
+
+    <nav id="menu" class="d-none d-lg-block">
+        <ul id="lista_menu">
+            <li><a href="adopta.html">Adopta</a></li>
+            <li><a href="colabora.html" class="colabora">Colabora</a>
+                <ul class="submenuColabora d-none">
+                <li><a href="dona.html">Dona</a></li>
+                <li><a href="apadrina.html">Apadrina</a></li>
+                <li><a href="acoge.html">Acoge</a></li>
+              </ul>
+            </li>
+            <li><a href="protectoras.html">Protectoras</a></li>
+            <li><a href="foro.html">Foro</a></li>
+            <li><a href="mapa.html">Mapa</a></li>
+            <li><a href="test.html">Tests</a></li>
+        </ul>
+    </nav>
+
+    <!-- Usuario xl -->
+    <div id="user_container" class="d-none d-lg-block">
+        <a href="login.html"><img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px"></a>
+        <a href="register.html" class="btn-register">Registrarse</a>
+    </div>
+
+</header>
+<!-- Fin html del header -->
+
+
+<main>
+    <div class="container">
+
+        <p class="migas">
+            <a href="index.html">Inicio</a>
+            <span>›</span>
+            <a href="colabora.html">Colabora</a>
+            <span>›</span>
+            Dona
+        </p>
+
+        <h1 class="pagina-titulo">
+            <i class="fa-solid fa-hand-holding-heart" style="color:#F8BA56;"></i> Haz una donación
+        </h1>
+        <p class="pagina-subtitulo">
+            Tu aportación llega directamente a la protectora que elijas. Sin intermediarios, sin comisiones.
+        </p>
+        <div class="linea-amarilla"></div>
+
+        <div class="row g-4">
+
+            <!-- Columna izquierda -->
+            <div class="col-lg-7">
+
+                <div class="tarjeta">
+                    <p class="tarjeta-titulo">
+                        <i class="fa-solid fa-circle-question"></i> ¿Para qué sirve tu donación?
+                    </p>
+
+                    <div class="beneficio-item">
+                        <div class="beneficio-icono">💊</div>
+                        <div class="beneficio-texto">
+                            <strong>Atención veterinaria</strong>
+                            <span>Cubre consultas, vacunas, medicamentos y operaciones de urgencia.</span>
+                        </div>
+                    </div>
+
+                    <div class="beneficio-item">
+                        <div class="beneficio-icono">🍖</div>
+                        <div class="beneficio-texto">
+                            <strong>Alimentación diaria</strong>
+                            <span>Garantiza comida de calidad para todos los animales del refugio.</span>
+                        </div>
+                    </div>
+
+                    <div class="beneficio-item">
+                        <div class="beneficio-icono">🏠</div>
+                        <div class="beneficio-texto">
+                            <strong>Mantenimiento del refugio</strong>
+                            <span>Ayuda a mantener las instalaciones limpias y seguras.</span>
+                        </div>
+                    </div>
+
+                    <div class="beneficio-item">
+                        <div class="beneficio-icono">📣</div>
+                        <div class="beneficio-texto">
+                            <strong>Visibilidad y adopciones</strong>
+                            <span>Financia campañas para dar más visibilidad a los animales.</span>
+                        </div>
+                    </div>
+
+                    <div class="beneficio-item">
+                        <div class="beneficio-icono">🧴</div>
+                        <div class="beneficio-texto">
+                            <strong>Higiene y cuidados</strong>
+                            <span>Productos de limpieza, baño y cuidado básico de los animales.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tarjeta">
+                    <p class="tarjeta-titulo">
+                        <i class="fa-solid fa-building-shield"></i> Elige una protectora
+                    </p>
+
+                    <div class="aviso-teaming">
+                        <i class="fa-solid fa-mug-hot"></i>
+                        <strong>¿Qué es Teaming?</strong> Es una plataforma de microdonaciones donde
+                        colaboras con solo <strong>1 €/mes</strong>. Individualmente parece poco, pero
+                        sumado al de muchas personas permite a las protectoras cubrir gastos fijos mes a mes.
+                    </div>
+
+                    <div class="d-flex flex-column gap-3">
+
+                        <label class="card-protectora seleccionada" id="prot-1"
+                               onclick="toggleProtectora('prot-1')">
+                            <input type="checkbox" name="protectora" value="prot-1" checked>
+                            <img class="logo-protectora"
+                                 src="../img/mascotas/centro-proteccion-animales-gijon-logo.jpg"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                 alt="Logo Centro de Protección Animal de Gijón">
+                            <div class="icono-prot-fb">🐕</div>
+                            <div style="flex:1;">
+                                <p class="protectora-nombre">Centro de Protección Animal de Gijón</p>
+                                <p class="protectora-lugar">
+                                    <i class="fa-solid fa-location-dot"></i> Gijón
+                                </p>
+                                <p class="descripcion-protectora">
+                                    Instalación municipal gestionada por la Fundación Protectora de Asturias. Recogen animales perdidos o abandonados y los preparan para la adopción.
+                                </p>
+                            </div>
+                        </label>
+
+                        <label class="card-protectora" id="prot-2"
+                               onclick="toggleProtectora('prot-2')">
+                            <input type="checkbox" name="protectora" value="prot-2">
+                            <img class="logo-protectora"
+                                 src="../img/mascotas/nortemascotas-logo.jpg"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                 alt="Logo Nortemascotas">
+                            <div class="icono-prot-fb">🐾</div>
+                            <div style="flex:1;">
+                                <p class="protectora-nombre">Nortemascotas</p>
+                                <p class="protectora-lugar">
+                                    <i class="fa-solid fa-location-dot"></i> Asturias
+                                </p>
+                                <p class="descripcion-protectora">
+                                    Rescatan animales en condiciones extremas o peligro de muerte, los rehabilitan y buscan familias que les den la oportunidad que merecen.
+                                </p>
+                            </div>
+                        </label>
+
+                        <label class="card-protectora" id="prot-3"
+                               onclick="toggleProtectora('prot-3')">
+                            <input type="checkbox" name="protectora" value="prot-3">
+                            <img class="logo-protectora"
+                                 src="../img/mascotas/masquechuchos-logo.jpg"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                 alt="Logo MÁS QUE CHUCHOS">
+                            <div class="icono-prot-fb">🏠</div>
+                            <div style="flex:1;">
+                                <p class="protectora-nombre">MÁS QUE CHUCHOS</p>
+                                <p class="protectora-lugar">
+                                    <i class="fa-solid fa-location-dot"></i> Oviedo
+                                </p>
+                                <p class="descripcion-protectora">
+                                    Cuidan a más de 250 perros y gatos en Oviedo. Aceptan donaciones de pienso, mantas y medicinas, además de apadrinamientos desde 5 €/mes.
+                                </p>
+                            </div>
+                        </label>
+
+                        <label class="card-protectora" id="prot-4"
+                               onclick="toggleProtectora('prot-4')">
+                            <input type="checkbox" name="protectora" value="prot-4">
+                            <img class="logo-protectora"
+                                 src="../img/mascotas/protectora-de-asturias-logo.jpg"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                 alt="Logo Fundación Protectora de Asturias">
+                            <div class="icono-prot-fb">💙</div>
+                            <div style="flex:1;">
+                                <p class="protectora-nombre">Fundación Protectora de Asturias</p>
+                                <p class="protectora-lugar">
+                                    <i class="fa-solid fa-location-dot"></i> Asturias
+                                </p>
+                                <p class="descripcion-protectora">
+                                    Responden al abandono y maltrato animal en Asturias. Trabajan con métodos en positivo y ofrecen seguimiento tras cada adopción.
+                                </p>
+                            </div>
+                        </label>
+
+                        <label class="card-protectora" id="prot-5"
+                               onclick="toggleProtectora('prot-5')">
+                            <input type="checkbox" name="protectora" value="prot-5">
+                            <img class="logo-protectora"
+                                 src="../img/mascotas/asociacion-felina-la-esperanza-logo.jpg"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                 alt="Logo Asociación Felina La Esperanza">
+                            <div class="icono-prot-fb">🐱</div>
+                            <div style="flex:1;">
+                                <p class="protectora-nombre">Asociación Felina La Esperanza</p>
+                                <p class="protectora-lugar">
+                                    <i class="fa-solid fa-location-dot"></i> Asturias
+                                </p>
+                                <p class="descripcion-protectora">
+                                    Especializados en gatos. Rescatan, atienden veterinariamente y buscan hogar para felinos sin familia en Asturias.
+                                </p>
+                            </div>
+                        </label>
+
+                    </div>
+
+                    <p class="aviso-seleccion-multiple">
+                        <i class="fa-solid fa-circle-info" style="color:#1B358F;"></i>
+                        Puedes seleccionar una o varias protectoras. Se abrirá la información de cada una.
+                    </p>
+
+                    <div class="aviso mt-2">
+                        <i class="fa-solid fa-circle-info"></i>
+                        El pago se realiza directamente en la web de la protectora.
+                        PetFamily no gestiona ni almacena ningún dato bancario.
+                    </div>
+
+                    <button class="btn-donar mt-3" onclick="mostrarModalDona()">
+                        <i class="fa-solid fa-arrow-right me-2"></i>
+                        Ver información para donar
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Columna derecha -->
+            <div class="col-lg-5">
+                <div class="tarjeta tarjeta-sticky">
+                    <p class="tarjeta-titulo">
+                        <i class="fa-solid fa-chart-simple"></i> El abandono en cifras
+                    </p>
+
+                    <div class="beneficio-item">
+                        <div class="beneficio-icono" style="background-color:#FFE8E8;">🐾</div>
+                        <div class="beneficio-texto">
+                            <strong>+292.000 abandonos en 2024</strong>
+                            <span>Solo en España. Un incremento del 2% respecto al año anterior.</span>
+                        </div>
+                    </div>
+
+                    <div class="beneficio-item">
+                        <div class="beneficio-icono" style="background-color:#FFE8E8;">⏱️</div>
+                        <div class="beneficio-texto">
+                            <strong>33 abandonos por hora</strong>
+                            <span>Aproximadamente 800 perros y gatos abandonados cada día.</span>
+                        </div>
+                    </div>
+
+                    <div class="beneficio-item">
+                        <div class="beneficio-icono" style="background-color:#E8F8EE;">🏆</div>
+                        <div class="beneficio-texto">
+                            <strong>España lidera el abandono en Europa</strong>
+                            <span>El país europeo con mayor tasa de abandono animal.</span>
+                        </div>
+                    </div>
+
+                    <div class="beneficio-item">
+                        <div class="beneficio-icono" style="background-color:#E8F0FF;">💙</div>
+                        <div class="beneficio-texto">
+                            <strong>Los refugios no dan abasto</strong>
+                            <span>Recursos insuficientes para atender la demanda creciente de acogida.</span>
+                        </div>
+                    </div>
+
+                    <div class="aviso mt-2">
+                        <i class="fa-solid fa-heart"></i>
+                        Cualquier aportación, por pequeña que sea, marca la diferencia para estos animales.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    <!-- flecha para subir al inicio tiene los estilos en footer.css -->
+    <div class="text-center">
+        <a href="#" class="text-align-center">
+            <img src="../img/sectionIndex/up-arrow.png" alt="Flecha que te devuelve a la parte superior" id="arrow" width="3%">
+        </a>
+    </div>
+    </main>
+
+<!-- footer -->
+    <footer>
+        <p>© 2026 PetFamily. Todos los derechos reservados.</p>
+        <p><a href="privacidad.html" style="color: white;">Política de Privacidad</a> | <a href="terminos.html" style="color: white;">Términos de Servicio</a></p>
+    </footer>
+
+<!-- modal donación -->
+<div class="modal fade" id="modalDonacion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-pf">
+            <div class="modal-header modal-header-pf">
+                <h5 class="modal-title text-white fw-bold">
+                    <i class="fa-solid fa-building-shield me-2" style="color:#F8BA56;"></i>
+                    Información para donar
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body modal-body-pf">
+                <p class="modal-intro">
+                    El proceso de donación se realiza directamente en la página de cada protectora.
+                </p>
+                <div id="modal-datos-protectora"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- script js -->
+    <script src="../javascript/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
+<!-- chat -->
+    <script src="//code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
+
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetFamily - Tests</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../style/header.css">
+    <link rel="stylesheet" href="../style/footer.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+<header>
+    <!-- Logo (XL) -->
+    <div id="contenedor_logo" class="d-none d-lg-block">
+        <a id="logoXL" href="index.html">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderXL">
+            <h2 id="title-logo">Pet<span style="color:#F8BA56;">Family</span></h2>
+        </a>
+    </div>
+    <!-- Header(xs,sm, md) -->
+    <div id="menu_burger" class="container-fluid justify-content-between align-content-center d-lg-none">
+        <i id="btn_burger" class="fa-solid fa-bars text-center col-2 ms-n5"></i>
+        <a id="logoMD" href="index.html" class="mb-2">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderMD" class="mb-2">
+            <h2 id="burger_logo">Pet<span style="color:#F8BA56;">Family</span></h2>
+        </a>
+        <div id="user_burger" class="align-content-center d-lg-none">
+            <a href="login.html"><img src="../img/iconosHeader/iconUser.png" width="15px" alt="Usuario"></a>
+            <a href="register.html" class="btn-register">Registrarse</a>
+        </div>
+    </div>
+    <nav id="menu" class="d-none d-lg-block">
+        <ul id="lista_menu">
+            <li><a href="adopta.html">Adopta</a></li>
+            <li><a href="colabora.html" class="colabora">Colabora</a>
+                <ul class="submenuColabora d-none">
+                    <li><a href="dona.html">Dona</a></li>
+                    <li><a href="apadrina.html">Apadrina</a></li>
+                    <li><a href="acoge.html">Acoge</a></li>
+                </ul>
+            </li>
+            <li><a href="protectoras.html">Protectoras</a></li>
+            <li><a href="foro.html">Foro</a></li>
+            <li><a href="mapa.html">Mapa</a></li>
+            <li><a href="test.html">Tests</a></li>
+        </ul>
+    </nav>
+    <!-- Usuario xl -->
+    <div id="user_container" class="d-none d-lg-block">
+        <a href="login.html"><img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px"></a>
+        <a href="register.html" class="btn-register">Registrarse</a>
+    </div>
+</header>
+<!-- Fin html del header -->
+
+
+<main>
+    <div class="container">
+
+        <p class="migas">
+            <a href="index.html">Inicio</a>
+            <span>&rsaquo;</span>
+            Tests
+        </p>
+
+        <h1 class="pagina-titulo">
+            <i class="fa-solid fa-lightbulb"></i> Tests
+        </h1>
+        <p class="pagina-subtitulo">
+            Pon a prueba tus conocimientos sobre el cuidado animal o descubre qué mascota encaja mejor con tu estilo de vida.
+        </p>
+        <div class="linea-amarilla"></div>
+
+        <!-- SELECTOR DE TESTS -->
+        <div id="test-selector" class="test-selector">
+            <div class="row g-4 justify-content-center">
+
+                <div class="col-md-5">
+                    <div class="test-card" id="card-conocimiento">
+                        <div class="test-card-franja"></div>
+                        <div class="test-card-body">
+                        <div class="test-card-icono test-icono-conocimiento">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+                        <h2 class="test-card-titulo">Test de conocimientos</h2>
+                        <p class="test-card-desc">
+                            Evalúa cuánto sabes sobre el cuidado y bienestar de perros y gatos. Obtendrás tu puntuación al terminar. Disponible para todos.
+                        </p>
+                        <ul class="test-card-info">
+                            <li><i class="fa-solid fa-circle-check me-2"></i>100 preguntas, 15 aleatorias por ronda</li>
+                            <li><i class="fa-solid fa-circle-check me-2"></i>Resultado y revisión inmediata</li>
+                            <li><i class="fa-solid fa-circle-check me-2"></i>Sin necesidad de cuenta</li>
+                        </ul>
+                        <button class="btn-azul test-card-btn" onclick="iniciarTest('conocimiento')">
+                            Empezar <i class="fa-solid fa-arrow-right ms-2"></i>
+                        </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-5">
+                    <div class="test-card test-card-compatibilidad" id="card-compatibilidad">
+                        <div class="test-card-franja"></div>
+                        <div class="test-card-body">
+                        <div class="test-card-icono test-icono-compatibilidad">
+                            <i class="fa-solid fa-heart"></i>
+                        </div>
+                        <h2 class="test-card-titulo">Test de compatibilidad</h2>
+                        <p class="test-card-desc">
+                            Descubre qué mascota se adapta mejor a tu estilo de vida, espacio y personalidad. Necesitas una cuenta para ver tu resultado.
+                        </p>
+                        <ul class="test-card-info">
+                            <li><i class="fa-solid fa-circle-check me-2"></i>12 preguntas sobre tu estilo de vida</li>
+                            <li><i class="fa-solid fa-circle-check me-2"></i>Ranking de mascotas por % de compatibilidad</li>
+                            <li><i class="fa-solid fa-lock me-2"></i>Requiere cuenta para ver resultado</li>
+                        </ul>
+                        <button class="btn-amarillo test-card-btn" onclick="iniciarTest('compatibilidad')">
+                            Empezar <i class="fa-solid fa-arrow-right ms-2"></i>
+                        </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- ============================================= -->
+        <!-- TEST DE CONOCIMIENTOS                         -->
+        <!-- ============================================= -->
+        <div id="test-conocimiento" class="test-contenedor d-none">
+
+            <div class="test-header">
+                <button class="test-volver-btn" onclick="volverSelector()">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Volver
+                </button>
+                <h2 class="test-titulo-activo">
+                    <i class="fa-solid fa-book-open me-2"></i>Test de conocimientos
+                </h2>
+            </div>
+
+            <div class="test-progreso-wrap">
+                <div class="test-progreso-barra">
+                    <div class="test-progreso-fill" id="prog-conocimiento"></div>
+                </div>
+                <span class="test-progreso-label" id="prog-label-conocimiento">Pregunta 1 de 10</span>
+            </div>
+
+            <div id="preguntas-conocimiento"></div>
+
+            <div class="test-navegacion">
+                <button class="btn-azul" id="btn-siguiente-conocimiento" onclick="siguientePregunta('conocimiento')" disabled>
+                    Siguiente <i class="fa-solid fa-arrow-right ms-2"></i>
+                </button>
+            </div>
+
+            <!-- Resultado conocimiento -->
+            <div id="resultado-conocimiento" class="test-resultado d-none">
+                <div class="test-resultado-icono" id="res-icon-conocimiento"></div>
+                <h3 class="test-resultado-titulo" id="res-titulo-conocimiento"></h3>
+                <p class="test-resultado-puntuacion" id="res-puntuacion-conocimiento"></p>
+                <p class="test-resultado-mensaje" id="res-mensaje-conocimiento"></p>
+                <div class="test-resultado-detalle" id="res-detalle-conocimiento"></div>
+                <button class="btn-azul mt-3" onclick="reiniciarTest('conocimiento')">
+                    <i class="fa-solid fa-rotate-left me-2"></i>Repetir test
+                </button>
+                <button class="btn-amarillo mt-3 ms-2" onclick="volverSelector()">
+                    <i class="fa-solid fa-house me-2"></i>Volver a Tests
+                </button>
+            </div>
+
+        </div>
+
+
+        <!-- ============================================= -->
+        <!-- TEST DE COMPATIBILIDAD                        -->
+        <!-- ============================================= -->
+        <div id="test-compatibilidad" class="test-contenedor d-none">
+
+            <div class="test-header">
+                <button class="test-volver-btn" onclick="volverSelector()">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Volver
+                </button>
+                <h2 class="test-titulo-activo">
+                    <i class="fa-solid fa-heart me-2"></i>Test de compatibilidad
+                </h2>
+            </div>
+
+            <!-- PASO 0: Selección de especie -->
+            <div id="compat-seleccion-especie" class="compat-especie-wrap">
+                <p class="compat-especie-intro">
+                    Antes de empezar, dinos qué tipo de animal te interesa. Esto nos permite mostrarte solo las mascotas relevantes para ti.
+                </p>
+                <div class="compat-especie-opciones">
+                    <button class="compat-especie-btn" onclick="elegirEspecie('perro')">
+                        <i class="fa-solid fa-dog"></i>
+                        <span>Perro</span>
+                        <small>Quiero adoptar un perro</small>
+                    </button>
+                    <button class="compat-especie-btn" onclick="elegirEspecie('gato')">
+                        <i class="fa-solid fa-cat"></i>
+                        <span>Gato</span>
+                        <small>Quiero adoptar un gato</small>
+                    </button>
+                    <button class="compat-especie-btn compat-especie-indefinido" onclick="elegirEspecie('indiferente')">
+                        <i class="fa-solid fa-shuffle"></i>
+                        <span>Por definir</span>
+                        <small>Que el test decida por mí</small>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Barra de progreso (oculta hasta elegir especie) -->
+            <div id="prog-wrap-compatibilidad" class="test-progreso-wrap d-none">
+                <div class="test-progreso-barra">
+                    <div class="test-progreso-fill" id="prog-compatibilidad"></div>
+                </div>
+                <span class="test-progreso-label" id="prog-label-compatibilidad">Pregunta 1 de 12</span>
+            </div>
+
+            <div id="preguntas-compatibilidad" class="d-none"></div>
+
+            <div class="test-navegacion">
+                <button class="btn-amarillo d-none" id="btn-siguiente-compatibilidad" onclick="siguientePregunta('compatibilidad')" disabled>
+                    Siguiente <i class="fa-solid fa-arrow-right ms-2"></i>
+                </button>
+            </div>
+
+            <!-- Aviso login -->
+            <div id="aviso-login-compatibilidad" class="test-aviso-login d-none">
+                <div class="test-aviso-icono"><i class="fa-solid fa-lock"></i></div>
+                <h4>Inicia sesión para ver tu resultado</h4>
+                <p>Has completado el test. Para ver el ranking de mascotas compatibles contigo necesitas una cuenta.</p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap mt-3">
+                    <a href="login.html" class="btn-azul">
+                        <i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar sesión
+                    </a>
+                    <a href="register.html" class="btn-amarillo">
+                        <i class="fa-solid fa-user-plus me-2"></i>Crear cuenta gratis
+                    </a>
+                </div>
+            </div>
+
+            <!-- Resultado con ranking -->
+            <div id="resultado-compatibilidad" class="test-resultado d-none">
+                <h3 class="test-resultado-titulo">
+                    <i class="fa-solid fa-ranking-star me-2"></i>Tu ranking de compatibilidad
+                </h3>
+                <p class="test-resultado-mensaje" id="res-mensaje-compatibilidad"></p>
+                <div id="res-mascotas-compatibilidad"></div>
+                <div class="mt-4 d-flex gap-3 justify-content-center flex-wrap">
+                    <button class="btn-azul" onclick="reiniciarTest('compatibilidad')">
+                        <i class="fa-solid fa-rotate-left me-2"></i>Repetir test
+                    </button>
+                    <a href="adopta.html" class="btn-amarillo">
+                        <i class="fa-solid fa-paw me-2"></i>Ver todas las mascotas
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="#"><img src="../img/sectionIndex/up-arrow.png" alt="Volver arriba" id="arrow" width="3%"></a>
+    </div>
+</main>
+
+
+<footer>
+    <p>© 2026 PetFamily. Todos los derechos reservados.</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../javascript/script.js"></script>
+<script src="../javascript/test.js"></script>
+
+</body>
+</html>

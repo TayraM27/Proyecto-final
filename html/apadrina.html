@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetFamily – Apadrina</title>
+
+    <link rel="stylesheet" href="../style/header.css">
+    <link rel="stylesheet" href="../style/footer.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/093cf7cd82.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+<header>
+
+    <!-- Logo (XL) -->
+    <div id="contenedor_logo" class="d-none d-lg-block">
+        <a id="logoXL" href="index.html" >
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderXL">
+            <h2 id="title-logo">Pet<span style="color: #F8BA56;">Family</span></h2>
+        </a>   
+    </div>
+
+    <!-- Header(xs,sm, md) -->
+    <div id="menu_burger" class="container-fluid justify-content-between align-content-center d-lg-none " >
+        <i id="btn_burger" class="fa-solid fa-bars text-center col-2 ms-n5"></i>
+        <a id="logoMD" href="index.html" class="mb-2">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderMD" class="mb-2">
+            <h2 id="burger_logo" >Pet<span style="color: #F8BA56;">Family</span></h2>
+        </a>
+        <div id="user_burger" class="align-content-center d-lg-none">
+            <a href="login.html"><img src="../img/iconosHeader/iconUser.png" width="15px" alt="Usuario" ></a>
+            <a href="register.html" class="btn-register">Registrarse</a>
+        </div>
+    </div>
+
+    <nav id="menu" class="d-none d-lg-block">  
+        <ul id="lista_menu">
+            <li><a href="adopta.html">Adopta</a></li>
+            <li><a href="colabora.html" class="colabora">Colabora</a>
+              <ul class="submenuColabora d-none">
+                <li><a href="dona.html">Dona</a></li>
+                <li><a href="apadrina.html">Apadrina</a></li>
+                <li><a href="acoge.html">Acoge</a></li>
+              </ul>
+            </li>
+            <li><a href="protectoras.html">Protectoras</a></li>
+            <li><a href="foro.html">Foro</a></li>
+            <li><a href="mapa.html">Mapa</a></li>
+            <li><a href="test.html">Tests</a></li>
+        </ul>
+    </nav>
+
+    <!-- Usuario xl -->   
+    <div id="user_container" class="d-none d-lg-block">
+        <a href="login.html"><img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px"></a>
+        <a href="register.html" class="btn-register">Registrarse</a>
+    </div>
+</header>
+<!-- Fin html del header -->
+
+
+<main>
+    <div class="container">
+
+        <p class="migas">
+            <a href="index.html">Inicio</a>
+            <span>›</span>
+            <a href="colabora.html">Colabora</a>
+            <span>›</span>
+            Apadrina
+        </p>
+
+        <h1 class="pagina-titulo">
+            <i class="fa-solid fa-heart" style="color:#F8BA56;"></i> Apadrina a un animal
+        </h1>
+        <p class="pagina-subtitulo">
+            Estos animales no pueden ser adoptados en este momento, pero necesitan apoyo. Tu aportación mensual cubre sus cuidados y les da una vida digna.
+        </p>
+        <div class="linea-amarilla"></div>
+
+        <div class="aviso-cuenta mb-4" style="margin-top:0;">
+            <i class="fa-solid fa-circle-info"></i>
+            Para apadrinar necesitas una cuenta en PetFamily.
+            <a href="login.html">Inicia sesión</a> o <a href="register.html">regístrate gratis</a> para continuar.
+        </div>
+
+        <div class="tarjeta mb-4">
+            <p class="tarjeta-titulo">
+                <i class="fa-solid fa-circle-question"></i> ¿Qué significa apadrinar?
+            </p>
+            <div class="row g-3">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="apadrina-que-item">
+                        <div class="beneficio-icono">💊</div>
+                        <div class="beneficio-texto">
+                            <strong>Cubre sus cuidados</strong>
+                            <span>Tu aportación mensual ayuda a pagar veterinario, medicación y alimentación.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="apadrina-que-item">
+                        <div class="beneficio-icono">📸</div>
+                        <div class="beneficio-texto">
+                            <strong>Seguimiento real</strong>
+                            <span>Recibirás fotos y actualizaciones periódicas del estado de tu apadrinado.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="apadrina-que-item">
+                        <div class="beneficio-icono">🏠</div>
+                        <div class="beneficio-texto">
+                            <strong>Sin adoptar</strong>
+                            <span>Puedes ayudar aunque no puedas tener un animal en casa.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="apadrina-que-item">
+                        <div class="beneficio-icono">❌</div>
+                        <div class="beneficio-texto">
+                            <strong>Sin compromiso eterno</strong>
+                            <span>Puedes cancelar tu apadrinamiento cuando quieras contactando a la protectora.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Animales disponibles -->
+        <p class="tarjeta-titulo" style="margin-bottom:1.2em;">
+            <i class="fa-solid fa-paw"></i> Animales disponibles para apadrinar
+        </p>
+
+        <div class="row g-4 mb-5">
+
+            <!-- Leia -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card-animal-apadrina">
+                    <div class="animal-img-wrap">
+                        <img src="../img/mascotas/leia-centro-proteccion-animales-gijon.jpg"
+                             onerror="this.src='../img/mascotas/placeholder.jpg'"
+                             alt="Leia" class="animal-img">
+                        <span class="animal-badge-especie">🐕 Perro</span>
+                    </div>
+                    <div class="animal-info">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <h3 class="animal-nombre">Leia</h3>
+                            <span class="animal-badge-razon">Mayor</span>
+                        </div>
+                        <p class="animal-protectora">
+                            <i class="fa-solid fa-building-shield"></i> Centro de Protección Animal de Gijón
+                        </p>
+                        <p class="animal-desc">
+                            Pit bull, 14 años. Una abuela con artrosis pero con mucho amor que dar. Muy sociable con personas y perros. Necesita licencia PPP.
+                        </p>
+                        <div class="animal-tags">
+                            <span class="animal-tag">👵 14 años</span>
+                            <span class="animal-tag">🐕 Sociable</span>
+                            <span class="animal-tag">📋 Licencia PPP</span>
+                        </div>
+                        <button class="btn-apadrinar" onclick="abrirModalApadrina('leia')">
+                            <i class="fa-solid fa-heart me-2"></i> Apadrinar a Leia
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dexter -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card-animal-apadrina">
+                    <div class="animal-img-wrap">
+                        <img src="../img/mascotas/dexter-nortemascotas-dog.jpg"
+                             onerror="this.src='../img/mascotas/placeholder.jpg'"
+                             alt="Dexter" class="animal-img">
+                        <span class="animal-badge-especie">🐕 Perro</span>
+                    </div>
+                    <div class="animal-info">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <h3 class="animal-nombre">Dexter</h3>
+                            <span class="animal-badge-razon">Mayor</span>
+                        </div>
+                        <p class="animal-protectora">
+                            <i class="fa-solid fa-building-shield"></i> Nortemascotas · Asturias
+                        </p>
+                        <p class="animal-desc">
+                            10 años, cruce de Pastor Alemán. Lleva 9 años en adopción. Fue maltratado y abandonado. Es un amor de perro que busca quien le dé el cariño que merece.
+                        </p>
+                        <div class="animal-tags">
+                            <span class="animal-tag">⏳ 9 años esperando</span>
+                            <span class="animal-tag">💙 Necesita amor</span>
+                        </div>
+                        <button class="btn-apadrinar" onclick="abrirModalApadrina('dexter')">
+                            <i class="fa-solid fa-heart me-2"></i> Apadrinar a Dexter
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bosque -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card-animal-apadrina">
+                    <div class="animal-img-wrap">
+                        <img src="../img/mascotas/bosque-protectora-de-asturias-cat.jpg"
+                             onerror="this.src='../img/mascotas/placeholder.jpg'"
+                             alt="Bosque" class="animal-img">
+                        <span class="animal-badge-especie">🐱 Gato</span>
+                    </div>
+                    <div class="animal-info">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <h3 class="animal-nombre">Bosque</h3>
+                            <span class="animal-badge-razon animal-badge-salud">Enfermedad</span>
+                        </div>
+                        <p class="animal-protectora">
+                            <i class="fa-solid fa-building-shield"></i> Fundación Protectora de Asturias
+                        </p>
+                        <p class="animal-desc">
+                            Gatita de 8 meses positiva a leucemia felina. Necesita cuidados especiales y medicación continua. Alegre y cariñosa a pesar de todo.
+                        </p>
+                        <div class="animal-tags">
+                            <span class="animal-tag">💊 Cuidados especiales</span>
+                            <span class="animal-tag">🌿 8 meses</span>
+                        </div>
+                        <button class="btn-apadrinar" onclick="abrirModalApadrina('bosque')">
+                            <i class="fa-solid fa-heart me-2"></i> Apadrinar a Bosque
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+  <!-- flecha para subir al inicio tiene los estilos en footer.css -->
+  <div class="text-center">
+  <a href="#" class="text-align-center"><img src="../img/sectionIndex/up-arrow.png" alt="Flecha que te devuelve a la parte superior" id="arrow" width="3%"></a>
+    </div>
+    </main>
+
+<!-- footer -->
+    <footer>
+        <p>© 2026 PetFamily. Todos los derechos reservados.</p>
+        <p><a href="privacidad.html" style="color: white;">Política de Privacidad</a> | <a href="terminos.html" style="color: white;">Términos de Servicio</a></p>
+    </footer>
+
+<!-- modal apadrinamiento -->
+<div class="modal fade" id="modalApadrina" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-pf">
+            <div class="modal-header modal-header-pf">
+                <h5 class="modal-title text-white fw-bold">
+                    <i class="fa-solid fa-heart me-2" style="color:#F8BA56;"></i>
+                    Apadrinar a <span id="modal-animal-nombre">–</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body modal-body-pf">
+                <p class="modal-intro">
+                    El apadrinamiento se gestiona directamente con la protectora. Contacta con ellos para acordar tu aportación mensual.
+                </p>
+                <div id="modal-datos-apadrina"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- script js -->
+    <script src="../javascript/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
+<!-- chat -->
+    <script src="//code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" defer></script>
+
+</body>
+</html>
