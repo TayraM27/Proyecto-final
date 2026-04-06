@@ -1,4 +1,60 @@
+/* ------------------------------------------------------------------ */
+/* Contador de vistas — global (llamado desde onclick en adopta.html) */
+/* ------------------------------------------------------------------ */
+var CLAVE_VISTAS = 'petfamily_vistas';
+
+function obtenerVistas() {
+    var datos = localStorage.getItem(CLAVE_VISTAS);
+    return datos ? JSON.parse(datos) : {};
+}
+
+function contarVista(id) {
+    var vistas = obtenerVistas();
+    vistas[id] = (vistas[id] || 0) + 1;
+    localStorage.setItem(CLAVE_VISTAS, JSON.stringify(vistas));
+    return vistas[id];
+}
+
+function obtenerNumeroVistas(id) {
+    var vistas = obtenerVistas();
+    return vistas[id] || 0;
+}
+
+function registrarVistaFicha(id) {
+    var total    = contarVista(id);
+    var elemento = document.getElementById('vistas-' + id);
+    if (elemento) {
+        elemento.textContent = total;
+    }
+    return total;
+}
+
+
 document.addEventListener('DOMContentLoaded', function() {
+
+    // ----------------------------------------------------------------
+    // Header hide on scroll
+    // ----------------------------------------------------------------
+    var header         = document.querySelector('header');
+    var scrollAnterior = 0;
+    var UMBRAL_SCROLL  = 80;
+
+    window.addEventListener('scroll', function() {
+        var scrollActual = window.scrollY;
+
+        if (scrollActual < UMBRAL_SCROLL) {
+            header.classList.remove('header-oculto');
+            return;
+        }
+
+        if (scrollActual > scrollAnterior) {
+            header.classList.add('header-oculto');
+        } else {
+            header.classList.remove('header-oculto');
+        }
+
+        scrollAnterior = scrollActual;
+    }, { passive: true });
 
     // ----------------------------------------------------------------
     // Hover del logo
@@ -22,22 +78,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     var logoImagenXL = document.getElementById('logoHeaderXL');
-    var logoXL = document.getElementById('logoXL');
+    var logoXL       = document.getElementById('logoXL');
     if (logoXL && logoImagenXL) {
         configurarHoverLogo(logoXL, logoImagenXL);
     }
 
     var logoImagenMD = document.getElementById('logoHeaderMD');
-    var logoMD = document.getElementById('logoMD');
+    var logoMD       = document.getElementById('logoMD');
     if (logoMD && logoImagenMD) {
         configurarHoverLogo(logoMD, logoImagenMD);
     }
 
     // ----------------------------------------------------------------
-    // Menú burger
+    // Menu burger
     // ----------------------------------------------------------------
-    var botonBurger = document.getElementById('btn_burger');
-    var menu = document.getElementById('menu');
+    var botonBurger  = document.getElementById('btn_burger');
+    var menu         = document.getElementById('menu');
     var menuColabora = document.querySelector('.submenuColabora');
 
     if (botonBurger && menu) {
@@ -58,10 +114,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ----------------------------------------------------------------
-    // Submenú Colabora
+    // Submenu Colabora
     // ----------------------------------------------------------------
     var enlaceColabora = document.querySelector('a.colabora');
-    var itemColabora = enlaceColabora ? enlaceColabora.closest('li') : null;
+    var itemColabora   = enlaceColabora ? enlaceColabora.closest('li') : null;
 
     function esMobil() {
         return window.innerWidth <= 991;
@@ -119,10 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function obtenerFavoritos() {
         var datos = localStorage.getItem(CLAVE_FAVORITOS);
-        if (datos) {
-            return JSON.parse(datos);
-        }
-        return [];
+        return datos ? JSON.parse(datos) : [];
     }
 
     function guardarFavoritos(lista) {
@@ -130,8 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function esFavorito(id) {
-        var favoritos = obtenerFavoritos();
-        return favoritos.indexOf(id) !== -1;
+        return obtenerFavoritos().indexOf(id) !== -1;
     }
 
     function actualizarBotonFavorito(id) {
@@ -149,51 +201,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Inicializar botones de favoritos al cargar la página
+    // Inicializar botones de favoritos al cargar
     var botonesFav = document.querySelectorAll('.btn-fav[data-id]');
     for (var i = 0; i < botonesFav.length; i++) {
         actualizarBotonFavorito(botonesFav[i].dataset.id);
     }
 
-    // ----------------------------------------------------------------
-    // Contador de vistas
-    // ----------------------------------------------------------------
-    var CLAVE_VISTAS = 'petfamily_vistas';
-
-    function obtenerVistas() {
-        var datos = localStorage.getItem(CLAVE_VISTAS);
-        if (datos) {
-            return JSON.parse(datos);
+    // Inicializar contadores de vistas en adopta.html
+    var ids = ['a01', 'a02', 'a03', 'a04', 'a05', 'a06'];
+    for (var j = 0; j < ids.length; j++) {
+        var elVistas = document.getElementById('vistas-' + ids[j]);
+        if (elVistas) {
+            elVistas.textContent = obtenerNumeroVistas(ids[j]);
         }
-        return {};
-    }
-
-    function contarVista(id) {
-        var vistas = obtenerVistas();
-        if (vistas[id]) {
-            vistas[id] = vistas[id] + 1;
-        } else {
-            vistas[id] = 1;
-        }
-        localStorage.setItem(CLAVE_VISTAS, JSON.stringify(vistas));
-        return vistas[id];
-    }
-
-    function obtenerNumeroVistas(id) {
-        var vistas = obtenerVistas();
-        if (vistas[id]) {
-            return vistas[id];
-        }
-        return 0;
-    }
-
-    function registrarVistaFicha(id) {
-        var total = contarVista(id);
-        var elemento = document.getElementById('vistas-' + id);
-        if (elemento) {
-            elemento.textContent = total;
-        }
-        return total;
     }
 
     // ----------------------------------------------------------------
@@ -203,9 +223,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         var estaLogueado = false;
 
-        // Filtros de categorías
+        // Filtros de categorias
         var btnsFiltro = document.querySelectorAll('.foro-filtro-btn');
-        var posts = document.querySelectorAll('.foro-post');
+        var posts      = document.querySelectorAll('.foro-post');
 
         btnsFiltro.forEach(function(btn) {
             btn.addEventListener('click', function() {
@@ -214,12 +234,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 var cat = btn.getAttribute('data-cat');
                 posts.forEach(function(post) {
                     post.style.display = (cat === 'todas' || post.getAttribute('data-cat') === cat)
-                        ? 'block' : 'none';
+                        ? '' : 'none';
                 });
             });
         });
 
-        // Ver más comentarios
+        // Ver mas comentarios
         document.querySelectorAll('.foro-ver-mas-com').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 var seccion = btn.closest('.foro-comentarios-seccion');
@@ -237,25 +257,16 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Publicar
+        // Boton publicar
         var btnPublicar = document.getElementById('btnPublicar');
-        var textarea = document.getElementById('textareaPublicar');
-        var avisoLogin = document.getElementById('avisoLogin');
-        var btnCerrar = document.getElementById('btnCerrarAviso');
-
-        // Recuperar texto guardado
-        var textoPendiente = sessionStorage.getItem('foroTextoPendiente');
-        if (textoPendiente) {
-            textarea.value = textoPendiente;
-            textarea.classList.add('textarea-pendiente');
-        }
+        var textarea    = document.getElementById('textareaPublicar');
+        var avisoLogin  = document.getElementById('avisoLogin');
+        var btnCerrar   = document.getElementById('btnCerrarAviso');
 
         btnPublicar.addEventListener('click', function() {
             var texto = textarea.value.trim();
             if (!texto) {
                 textarea.focus();
-                textarea.classList.add('textarea-error');
-                setTimeout(function() { textarea.classList.remove('textarea-error'); }, 2000);
                 return;
             }
             if (!estaLogueado) {
@@ -273,21 +284,9 @@ document.addEventListener('DOMContentLoaded', function() {
         textarea.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = this.scrollHeight + 'px';
-            this.classList.toggle('textarea-activo', this.value.trim().length > 0);
-            this.classList.remove('textarea-pendiente', 'textarea-error');
         });
 
-        // Adjuntos: aviso si no logueado
-        document.querySelectorAll('.foro-adj-btn').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                if (!estaLogueado) {
-                    avisoLogin.classList.remove('d-none');
-                    avisoLogin.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            });
-        });
-
-        // Input comentario: aviso si no logueado
+        // Inputs de comentario — aviso login
         document.querySelectorAll('.foro-input-com').forEach(function(inp) {
             inp.addEventListener('focus', function() {
                 if (!estaLogueado) {
@@ -298,7 +297,17 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Reacciones y likes: aviso si no logueado
+        // Adjuntos — aviso login
+        document.querySelectorAll('.foro-adj-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                if (!estaLogueado) {
+                    avisoLogin.classList.remove('d-none');
+                    avisoLogin.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        });
+
+        // Reacciones y likes — aviso login
         document.querySelectorAll('.foro-reaccion-btn, .foro-com-like').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 if (!estaLogueado) {
@@ -308,29 +317,326 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-}); // DOMContentLoaded
+    // ----------------------------------------------------------------
+    // Login
+    // ----------------------------------------------------------------
+    if (document.getElementById('formLogin')) {
+
+        var formLogin     = document.getElementById('formLogin');
+        var inputEmail    = document.getElementById('loginEmail');
+        var inputPassword = document.getElementById('loginPassword');
+        var errorEmailL   = document.getElementById('errorEmail');
+        var errorPasswordL= document.getElementById('errorPassword');
+        var alertaLogin   = document.getElementById('alertaLogin');
+        var btnLogin      = document.getElementById('btnLogin');
+        var togglePwd     = document.getElementById('togglePwd');
+        var iconoPwd      = document.getElementById('iconoPwd');
+        var inputRol      = document.getElementById('inputRol');
+        var panelUsuario  = document.getElementById('panelUsuario');
+        var panelAdmin    = document.getElementById('panelAdmin');
+
+        // Selector de rol
+        document.querySelectorAll('.login-rol-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.login-rol-btn').forEach(function(b) { b.classList.remove('activo'); });
+                btn.classList.add('activo');
+                var rol = btn.getAttribute('data-rol');
+                inputRol.value = rol;
+                if (rol === 'admin') {
+                    panelUsuario.classList.add('d-none');
+                    panelAdmin.classList.remove('d-none');
+                } else {
+                    panelAdmin.classList.add('d-none');
+                    panelUsuario.classList.remove('d-none');
+                }
+                alertaLogin.classList.add('d-none');
+            });
+        });
+
+        // Mostrar/ocultar contrasena
+        togglePwd.addEventListener('click', function() {
+            var tipo = inputPassword.type === 'password' ? 'text' : 'password';
+            inputPassword.type = tipo;
+            iconoPwd.className = tipo === 'password' ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash';
+        });
+
+        function mostrarErrorL(input, span, msg) {
+            input.classList.remove('input-ok');
+            input.classList.add('input-error');
+            span.textContent = msg;
+        }
+
+        function limpiarErrorL(input, span) {
+            input.classList.remove('input-error');
+            input.classList.add('input-ok');
+            span.textContent = '';
+        }
+
+        function validarEmailL() {
+            var valor = inputEmail.value.trim();
+            var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!valor)           return mostrarErrorL(inputEmail, errorEmailL, 'El email es obligatorio.'), false;
+            if (!regex.test(valor)) return mostrarErrorL(inputEmail, errorEmailL, 'Introduce un email valido.'), false;
+            limpiarErrorL(inputEmail, errorEmailL);
+            return true;
+        }
+
+        function validarPasswordL() {
+            var valor = inputPassword.value;
+            if (!valor)          return mostrarErrorL(inputPassword, errorPasswordL, 'La contrasena es obligatoria.'), false;
+            if (valor.length < 6) return mostrarErrorL(inputPassword, errorPasswordL, 'Minimo 6 caracteres.'), false;
+            limpiarErrorL(inputPassword, errorPasswordL);
+            return true;
+        }
+
+        inputEmail.addEventListener('blur', validarEmailL);
+        inputEmail.addEventListener('input', function() { if (this.classList.contains('input-error')) validarEmailL(); });
+        inputPassword.addEventListener('blur', validarPasswordL);
+        inputPassword.addEventListener('input', function() { if (this.classList.contains('input-error')) validarPasswordL(); });
+
+        formLogin.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var ok = validarEmailL() & validarPasswordL();
+            if (!ok) return;
+
+            btnLogin.disabled = true;
+            btnLogin.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Iniciando sesion...';
+            alertaLogin.classList.add('d-none');
+
+            setTimeout(function() {
+                btnLogin.disabled = false;
+                btnLogin.innerHTML = '<i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar sesion';
+                alertaLogin.classList.remove('d-none');
+            }, 1200);
+        });
+    }
+
+    // ----------------------------------------------------------------
+    // Registro
+    // ----------------------------------------------------------------
+    if (document.getElementById('formRegistro')) {
+
+        var formRegistro         = document.getElementById('formRegistro');
+        var inputNombre          = document.getElementById('regNombre');
+        var inputUsername        = document.getElementById('regUsername');
+        var inputEmailR          = document.getElementById('regEmail');
+        var inputLocalidad       = document.getElementById('regLocalidad');
+        var inputTelefono        = document.getElementById('regTelefono');
+        var inputPasswordR       = document.getElementById('regPassword');
+        var inputPasswordConfirm = document.getElementById('regPasswordConfirm');
+        var inputTerminos        = document.getElementById('regTerminos');
+        var inputFoto            = document.getElementById('fotoPerfil');
+        var fotoIcono            = document.getElementById('fotoIcono');
+        var fotoImg              = document.getElementById('fotoImg');
+        var btnRegistro          = document.getElementById('btnRegistro');
+        var alertaRegistro       = document.getElementById('alertaRegistro');
+
+        // Preview foto de perfil
+        document.querySelector('.reg-foto-label').addEventListener('click', function() {
+            inputFoto.click();
+        });
+
+        inputFoto.addEventListener('change', function() {
+            var archivo = this.files[0];
+            if (!archivo) return;
+            if (archivo.size > 2 * 1024 * 1024) {
+                alert('La foto no puede superar 2 MB.');
+                this.value = '';
+                return;
+            }
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                fotoIcono.classList.add('d-none');
+                fotoImg.src = e.target.result;
+                fotoImg.classList.remove('d-none');
+            };
+            reader.readAsDataURL(archivo);
+        });
+
+        // Mostrar/ocultar contrasenas
+        document.getElementById('togglePwdReg').addEventListener('click', function() {
+            var tipo = inputPasswordR.type === 'password' ? 'text' : 'password';
+            inputPasswordR.type = tipo;
+            document.getElementById('iconoPwdReg').className = tipo === 'password' ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash';
+        });
+
+        document.getElementById('togglePwdConfirm').addEventListener('click', function() {
+            var tipo = inputPasswordConfirm.type === 'password' ? 'text' : 'password';
+            inputPasswordConfirm.type = tipo;
+            document.getElementById('iconoPwdConfirm').className = tipo === 'password' ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash';
+        });
+
+        // Indicador fuerza contrasena
+        inputPasswordR.addEventListener('input', function() {
+            var val    = this.value;
+            var fill   = document.getElementById('pwdFill');
+            var label  = document.getElementById('pwdLabel');
+            if (!val) { fill.style.width = '0%'; label.textContent = ''; return; }
+            var puntos = 0;
+            if (val.length >= 8)           puntos++;
+            if (/[A-Z]/.test(val))         puntos++;
+            if (/[0-9]/.test(val))         puntos++;
+            if (/[^A-Za-z0-9]/.test(val))  puntos++;
+            if (puntos <= 1) {
+                fill.style.width = '33%'; fill.style.backgroundColor = '#e74c3c';
+                label.style.color = '#e74c3c'; label.textContent = 'Debil';
+            } else if (puntos <= 2) {
+                fill.style.width = '66%'; fill.style.backgroundColor = '#F8BA56';
+                label.style.color = '#c87a00'; label.textContent = 'Media';
+            } else {
+                fill.style.width = '100%'; fill.style.backgroundColor = '#2e7d32';
+                label.style.color = '#2e7d32'; label.textContent = 'Fuerte';
+            }
+            validarPasswordR();
+            if (inputPasswordConfirm.value) validarPasswordConfirm();
+        });
+
+        function mostrarErrorR(input, span, msg) {
+            if (input) { input.classList.remove('input-ok'); input.classList.add('input-error'); }
+            span.textContent = msg;
+        }
+
+        function limpiarErrorR(input, span) {
+            if (input) { input.classList.remove('input-error'); input.classList.add('input-ok'); }
+            span.textContent = '';
+        }
+
+        function validarNombre() {
+            var val = inputNombre.value.trim();
+            if (!val)         return mostrarErrorR(inputNombre, document.getElementById('errorNombre'), 'El nombre es obligatorio.'), false;
+            if (val.length < 2) return mostrarErrorR(inputNombre, document.getElementById('errorNombre'), 'Al menos 2 caracteres.'), false;
+            limpiarErrorR(inputNombre, document.getElementById('errorNombre'));
+            return true;
+        }
+
+        function validarUsername() {
+            var val = inputUsername.value.trim();
+            if (!val)           return mostrarErrorR(inputUsername, document.getElementById('errorUsername'), 'El nombre de usuario es obligatorio.'), false;
+            if (val.length < 3) return mostrarErrorR(inputUsername, document.getElementById('errorUsername'), 'Minimo 3 caracteres.'), false;
+            if (/\s/.test(val)) return mostrarErrorR(inputUsername, document.getElementById('errorUsername'), 'Sin espacios.'), false;
+            limpiarErrorR(inputUsername, document.getElementById('errorUsername'));
+            return true;
+        }
+
+        function validarEmailR() {
+            var val   = inputEmailR.value.trim();
+            var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!val)              return mostrarErrorR(inputEmailR, document.getElementById('errorEmail'), 'El email es obligatorio.'), false;
+            if (!regex.test(val))  return mostrarErrorR(inputEmailR, document.getElementById('errorEmail'), 'Introduce un email valido.'), false;
+            limpiarErrorR(inputEmailR, document.getElementById('errorEmail'));
+            return true;
+        }
+
+        function validarLocalidad() {
+            var val = inputLocalidad.value.trim();
+            if (!val) return mostrarErrorR(inputLocalidad, document.getElementById('errorLocalidad'), 'La localidad es obligatoria.'), false;
+            limpiarErrorR(inputLocalidad, document.getElementById('errorLocalidad'));
+            return true;
+        }
+
+        function validarTelefono() {
+            var val   = inputTelefono.value.trim();
+            if (!val) return true;
+            var regex = /^[6-9]\d{8}$/;
+            if (!regex.test(val.replace(/\s/g, ''))) return mostrarErrorR(inputTelefono, document.getElementById('errorTelefono'), 'Telefono no valido. Ej: 612 345 678'), false;
+            limpiarErrorR(inputTelefono, document.getElementById('errorTelefono'));
+            return true;
+        }
+
+        function validarPasswordR() {
+            var val = inputPasswordR.value;
+            if (!val)           return mostrarErrorR(inputPasswordR, document.getElementById('errorPassword'), 'La contrasena es obligatoria.'), false;
+            if (val.length < 8) return mostrarErrorR(inputPasswordR, document.getElementById('errorPassword'), 'Minimo 8 caracteres.'), false;
+            limpiarErrorR(inputPasswordR, document.getElementById('errorPassword'));
+            return true;
+        }
+
+        function validarPasswordConfirm() {
+            var val = inputPasswordConfirm.value;
+            if (!val)                        return mostrarErrorR(inputPasswordConfirm, document.getElementById('errorPasswordConfirm'), 'Repite la contrasena.'), false;
+            if (val !== inputPasswordR.value) return mostrarErrorR(inputPasswordConfirm, document.getElementById('errorPasswordConfirm'), 'Las contrasenas no coinciden.'), false;
+            limpiarErrorR(inputPasswordConfirm, document.getElementById('errorPasswordConfirm'));
+            return true;
+        }
+
+        function validarTerminos() {
+            if (!inputTerminos.checked) {
+                document.getElementById('errorTerminos').textContent = 'Debes aceptar los terminos para continuar.';
+                return false;
+            }
+            document.getElementById('errorTerminos').textContent = '';
+            return true;
+        }
+
+        // Listeners blur/input
+        inputNombre.addEventListener('blur', validarNombre);
+        inputNombre.addEventListener('input', function() { if (this.classList.contains('input-error')) validarNombre(); });
+        inputUsername.addEventListener('blur', validarUsername);
+        inputUsername.addEventListener('input', function() { if (this.classList.contains('input-error')) validarUsername(); });
+        inputEmailR.addEventListener('blur', validarEmailR);
+        inputEmailR.addEventListener('input', function() { if (this.classList.contains('input-error')) validarEmailR(); });
+        inputLocalidad.addEventListener('blur', validarLocalidad);
+        inputLocalidad.addEventListener('input', function() { if (this.classList.contains('input-error')) validarLocalidad(); });
+        inputTelefono.addEventListener('blur', validarTelefono);
+        inputTelefono.addEventListener('input', function() { if (this.classList.contains('input-error')) validarTelefono(); });
+        inputPasswordConfirm.addEventListener('blur', validarPasswordConfirm);
+        inputPasswordConfirm.addEventListener('input', function() { if (this.classList.contains('input-error')) validarPasswordConfirm(); });
+
+        // Submit
+        formRegistro.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var ok = validarNombre()
+                & validarUsername()
+                & validarEmailR()
+                & validarLocalidad()
+                & validarTelefono()
+                & validarPasswordR()
+                & validarPasswordConfirm()
+                & validarTerminos();
+
+            if (!ok) {
+                var primerError = formRegistro.querySelector('.input-error');
+                if (primerError) primerError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            btnRegistro.disabled = true;
+            btnRegistro.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Creando cuenta...';
+            alertaRegistro.classList.add('d-none');
+
+            setTimeout(function() {
+                btnRegistro.disabled = false;
+                btnRegistro.innerHTML = '<i class="fa-solid fa-user-plus me-2"></i>Crear cuenta gratis';
+                alertaRegistro.classList.remove('d-none');
+            }, 1200);
+        });
+    }
+
+}); // fin DOMContentLoaded
 
 
 /* ------------------------------------------------------------------ */
-
-
-// toggleFavorito se llama desde onclick en fichas de animales
+/* toggleFavorito — llamado desde onclick en adopta.html y fichaAnimal */
+/* ------------------------------------------------------------------ */
 function toggleFavorito(evento, id) {
     evento.stopPropagation();
     var CLAVE_FAVORITOS = 'petfamily_favoritos';
-    var datos = localStorage.getItem(CLAVE_FAVORITOS);
-    var favoritos = datos ? JSON.parse(datos) : [];
-    var posicion = favoritos.indexOf(id);
+    var favoritos = JSON.parse(localStorage.getItem(CLAVE_FAVORITOS) || '[]');
+    var posicion  = favoritos.indexOf(id);
+
     if (posicion !== -1) {
         favoritos.splice(posicion, 1);
     } else {
         favoritos.push(id);
     }
+
     localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify(favoritos));
+
     var boton = document.querySelector('.btn-fav[data-id="' + id + '"]');
     if (!boton) return;
     var icono = boton.querySelector('i');
     var esFav = favoritos.indexOf(id) !== -1;
+
     if (esFav) {
         boton.classList.add('activo');
         icono.className = 'fa-solid fa-heart';
@@ -342,17 +648,18 @@ function toggleFavorito(evento, id) {
     }
 }
 
-/* ------------------------------------------------------------------ */
-/* Dona                                                                */
 
+/* ------------------------------------------------------------------ */
+/* dona */
+/* ------------------------------------------------------------------ */
 var protectoras = {
     'prot-1': {
-        nombre:   'Centro de Protección Animal de Gijón',
+        nombre:   'Centro de Proteccion Animal de Gijon',
         telefono: '615 411 417',
         email:    'cproteccionanimalgijon@gmail.com',
         web:      'https://www.albergaria.es/protectoras/centro-proteccion-animales-gijon/',
-        teaming:  'https://www.teaming.net/fundacionprotectoradeanimalesasturias',
-        iban:     'ES15 0081 5665 2400 0109 0516 (Sabadell)'
+        teaming:  null,
+        iban:     null
     },
     'prot-2': {
         nombre:   'Nortemascotas',
@@ -363,14 +670,14 @@ var protectoras = {
         iban:     'ES39 0182 2800 1902 0163 9405 (BBVA)'
     },
     'prot-3': {
-        nombre:   'MÁS QUE CHUCHOS',
+        nombre:   'MAS QUE CHUCHOS',
         telefono: null,
         email:    'info@masquechuchos.org',
         web:      'http://masquechuchos.org',
         teaming:  'https://www.teaming.net/masquechuchos/'
     },
     'prot-4': {
-        nombre:   'Fundación Protectora de Asturias',
+        nombre:   'Fundacion Protectora de Asturias',
         telefono: null,
         email:    'info@protectoradeasturias.org',
         web:      'http://www.protectoradeasturias.org/index.php/colabora/donaciones',
@@ -378,7 +685,7 @@ var protectoras = {
         iban:     'ES15 0081 5665 2400 0109 0516 (Sabadell)'
     },
     'prot-5': {
-        nombre:   'Asociación Felina La Esperanza',
+        nombre:   'Asociacion Felina La Esperanza',
         telefono: null,
         email:    'asociacionfelinalaesperanza@gmail.com',
         web:      null,
@@ -387,7 +694,7 @@ var protectoras = {
 };
 
 function toggleProtectora(id) {
-    var card = document.getElementById(id);
+    var card     = document.getElementById(id);
     var checkbox = card.querySelector('input[type="checkbox"]');
     card.classList.toggle('seleccionada', checkbox.checked);
 }
@@ -395,51 +702,35 @@ function toggleProtectora(id) {
 function buildDatosProt(p) {
     var html = '<div class="modal-prot-bloque">';
     html += '<p class="modal-prot-nombre">' + p.nombre + '</p>';
-    if (p.telefono) {
-        html += '<div class="modal-dato"><i class="fa-solid fa-phone"></i><span>' + p.telefono + '</span></div>';
-    }
-    if (p.email) {
-        html += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i><span>' + p.email + '</span></div>';
-    }
-    if (p.iban) {
-        html += '<div class="modal-dato"><i class="fa-solid fa-building-columns"></i><span>' + p.iban + '</span></div>';
-    }
-    if (p.web) {
-        html += '<a href="' + p.web + '" target="_blank" class="btn-ir-web">' +
-            '<i class="fa-solid fa-arrow-up-right-from-square me-2"></i>Ir a la página de donaciones</a>';
-    }
-    if (p.teaming) {
-        html += '<a href="' + p.teaming + '" target="_blank" class="btn-ir-web btn-ir-web-teaming">' +
-            '<i class="fa-solid fa-mug-hot me-2"></i>Colaborar con 1 €/mes en Teaming</a>';
-    }
+    if (p.telefono) html += '<div class="modal-dato"><i class="fa-solid fa-phone"></i><span>' + p.telefono + '</span></div>';
+    if (p.email)    html += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i><span>' + p.email + '</span></div>';
+    if (p.iban)     html += '<div class="modal-dato"><i class="fa-solid fa-building-columns"></i><span>' + p.iban + '</span></div>';
+    if (p.web)      html += '<a href="' + p.web + '" target="_blank" class="btn-ir-web"><i class="fa-solid fa-arrow-up-right-from-square me-2"></i>Ir a la pagina de donaciones</a>';
+    if (p.teaming)  html += '<a href="' + p.teaming + '" target="_blank" class="btn-ir-web btn-ir-web-teaming"><i class="fa-solid fa-mug-hot me-2"></i>Colaborar con 1 mes en Teaming</a>';
     html += '</div>';
     return html;
 }
 
 function mostrarModalDona() {
     var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-    if (checkboxes.length === 0) {
-        alert('Por favor, selecciona al menos una protectora.');
-        return;
-    }
+    if (checkboxes.length === 0) { alert('Por favor, selecciona al menos una protectora.'); return; }
     var contenido = '';
     for (var i = 0; i < checkboxes.length; i++) {
         var id = checkboxes[i].closest('label').id;
         contenido += buildDatosProt(protectoras[id]);
     }
     document.getElementById('modal-datos-protectora').innerHTML = contenido;
-    var modal = new bootstrap.Modal(document.getElementById('modalDonacion'));
-    modal.show();
+    new bootstrap.Modal(document.getElementById('modalDonacion')).show();
 }
 
-/* ------------------------------------------------------------------ */
-/* Apadrina                                                            */
-/* ------------------------------------------------------------------ */
 
+/* ------------------------------------------------------------------ */
+/* apadrina */
+/* ------------------------------------------------------------------ */
 var animalesApadrina = {
     leia: {
         nombre:     'Leia',
-        protectora: 'Centro de Protección Animal de Gijón',
+        protectora: 'Centro de Proteccion Animal de Gijon',
         telefono:   '615 411 417',
         email:      'cproteccionanimalgijon@gmail.com',
         web:        'https://www.albergaria.es/protectoras/centro-proteccion-animales-gijon/leia_4431.html',
@@ -457,7 +748,7 @@ var animalesApadrina = {
     },
     bosque: {
         nombre:     'Bosque',
-        protectora: 'Fundación Protectora de Asturias',
+        protectora: 'Fundacion Protectora de Asturias',
         telefono:   null,
         email:      null,
         web:        'https://www.albergaria.es/animales-en-adopcion/bosque/',
@@ -469,381 +760,98 @@ var animalesApadrina = {
 function abrirModalApadrina(idAnimal) {
     var animal = animalesApadrina[idAnimal];
     document.getElementById('modal-animal-nombre').textContent = animal.nombre;
+
     var html = '<p class="protectora-nombre mb-2">' + animal.protectora + '</p>';
-    if (animal.telefono) {
-        html += '<div class="modal-dato"><i class="fa-solid fa-phone"></i>' +
-            '<a href="tel:' + animal.telefono.replace(/\s/g, '') + '">' + animal.telefono + '</a></div>';
-    }
-    if (animal.email) {
-        html += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i>' +
-            '<a href="mailto:' + animal.email + '">' + animal.email + '</a></div>';
-    }
-    if (animal.iban) {
-        html += '<div class="modal-dato"><i class="fa-solid fa-building-columns"></i>' +
-            '<span>' + animal.iban + '</span></div>';
-    }
-    if (animal.web) {
-        html += '<a href="' + animal.web + '" target="_blank" rel="noopener" class="btn-ir-web mt-2">' +
-            '<i class="fa-solid fa-arrow-up-right-from-square me-1"></i>Ver ficha en la protectora</a>';
-    }
-    if (animal.teaming) {
-        html += '<a href="' + animal.teaming + '" target="_blank" rel="noopener" class="btn-ir-web btn-ir-web-teaming mt-2">' +
-            '<i class="fa-solid fa-mug-hot me-1"></i>Colaborar por Teaming (1 €/mes)</a>';
-    }
+    if (animal.telefono) html += '<div class="modal-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + animal.telefono.replace(/\s/g, '') + '">' + animal.telefono + '</a></div>';
+    if (animal.email)    html += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + animal.email + '">' + animal.email + '</a></div>';
+    if (animal.iban)     html += '<div class="modal-dato"><i class="fa-solid fa-building-columns"></i><span>' + animal.iban + '</span></div>';
+    if (animal.web)      html += '<a href="' + animal.web + '" target="_blank" rel="noopener" class="btn-ir-web mt-2"><i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Ver ficha en la protectora</a>';
+    if (animal.teaming)  html += '<a href="' + animal.teaming + '" target="_blank" rel="noopener" class="btn-ir-web btn-ir-web-teaming mt-2"><i class="fa-solid fa-mug-hot me-1"></i> Colaborar por Teaming</a>';
+
     document.getElementById('modal-datos-apadrina').innerHTML = html;
-    var modal = new bootstrap.Modal(document.getElementById('modalApadrina'));
-    modal.show();
+    new bootstrap.Modal(document.getElementById('modalApadrina')).show();
 }
-/* ------------------------------------------------------------------ */
-/* Login                                                               */
-/* ------------------------------------------------------------------ */
 
-document.addEventListener('DOMContentLoaded', function() {
+// ===============================
+// CARGA DINÁMICA DE MASCOTAS
+// ===============================
 
-    if (!document.getElementById('formLogin')) return;
-
-    var formLogin    = document.getElementById('formLogin');
-    var inputEmail   = document.getElementById('loginEmail');
-    var inputPassword= document.getElementById('loginPassword');
-    var errorEmail   = document.getElementById('errorEmail');
-    var errorPassword= document.getElementById('errorPassword');
-    var alertaLogin  = document.getElementById('alertaLogin');
-    var btnLogin     = document.getElementById('btnLogin');
-    var togglePwd    = document.getElementById('togglePwd');
-    var iconoPwd     = document.getElementById('iconoPwd');
-    var inputRol     = document.getElementById('inputRol');
-    var panelUsuario = document.getElementById('panelUsuario');
-    var panelAdmin   = document.getElementById('panelAdmin');
-
-    // Selector de rol
-    var botonesRol = document.querySelectorAll('.login-rol-btn');
-
-    botonesRol.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            botonesRol.forEach(function(b) { b.classList.remove('activo'); });
-            btn.classList.add('activo');
-
-            var rol = btn.getAttribute('data-rol');
-            inputRol.value = rol;
-
-            if (rol === 'admin') {
-                panelUsuario.classList.add('d-none');
-                panelAdmin.classList.remove('d-none');
-            } else {
-                panelAdmin.classList.add('d-none');
-                panelUsuario.classList.remove('d-none');
-            }
-
-            alertaLogin.classList.add('d-none');
-        });
-    });
-
-    // Mostrar/ocultar contraseña
-    togglePwd.addEventListener('click', function() {
-        var tipo = inputPassword.type === 'password' ? 'text' : 'password';
-        inputPassword.type = tipo;
-        iconoPwd.className = tipo === 'password' ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash';
-    });
-
-    // Validación
-    inputEmail.addEventListener('input', validarEmail);
-    inputEmail.addEventListener('blur', validarEmail);
-    inputPassword.addEventListener('input', validarPassword);
-    inputPassword.addEventListener('blur', validarPassword);
-
-    function validarEmail() {
-        var valor = inputEmail.value.trim();
-        var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!valor) return mostrarError(inputEmail, errorEmail, 'El email es obligatorio.'), false;
-        if (!regex.test(valor)) return mostrarError(inputEmail, errorEmail, 'Introduce un email válido.'), false;
-        limpiarError(inputEmail, errorEmail);
-        return true;
-    }
-
-    function validarPassword() {
-        var valor = inputPassword.value;
-        if (!valor) return mostrarError(inputPassword, errorPassword, 'La contraseña es obligatoria.'), false;
-        if (valor.length < 6) return mostrarError(inputPassword, errorPassword, 'Mínimo 6 caracteres.'), false;
-        limpiarError(inputPassword, errorPassword);
-        return true;
-    }
-
-    function mostrarError(input, span, msg) {
-        input.classList.remove('input-ok');
-        input.classList.add('input-error');
-        span.textContent = msg;
-    }
-
-    function limpiarError(input, span) {
-        input.classList.remove('input-error');
-        input.classList.add('input-ok');
-        span.textContent = '';
-    }
-
-    // Envío
-    formLogin.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        var emailOk    = validarEmail();
-        var passwordOk = validarPassword();
-        if (!emailOk || !passwordOk) return;
-
-        btnLogin.disabled = true;
-        btnLogin.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Iniciando sesión...';
-        alertaLogin.classList.add('d-none');
-
-        setTimeout(function() {
-            btnLogin.disabled = false;
-            btnLogin.innerHTML = '<i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar sesión';
-            alertaLogin.classList.remove('d-none');
-        }, 1200);
-    });
-
-});
-/* ------------------------------------------------------------------ */
-/* Registro                                                            */
-/* ------------------------------------------------------------------ */
-
-document.addEventListener('DOMContentLoaded', function() {
-
-    var formRegistro = document.getElementById('formRegistro');
-    if (!formRegistro) return;
-
-    var inputNombre          = document.getElementById('regNombre');
-    var inputUsername        = document.getElementById('regUsername');
-    var inputEmail           = document.getElementById('regEmail');
-    var inputLocalidad       = document.getElementById('regLocalidad');
-    var inputTelefono        = document.getElementById('regTelefono');
-    var inputPassword        = document.getElementById('regPassword');
-    var inputPasswordConfirm = document.getElementById('regPasswordConfirm');
-    var inputTerminos        = document.getElementById('regTerminos');
-    var inputFoto            = document.getElementById('fotoPerfil');
-    var fotoPreview          = document.getElementById('fotoPreview');
-    var fotoIcono            = document.getElementById('fotoIcono');
-    var fotoImg              = document.getElementById('fotoImg');
-    var btnRegistro          = document.getElementById('btnRegistro');
-    var alertaRegistro       = document.getElementById('alertaRegistro');
-
-    // ----------------------------------------------------------------
-    // Preview de foto de perfil
-    // ----------------------------------------------------------------
-    document.querySelector('.reg-foto-label').addEventListener('click', function() {
-        inputFoto.click();
-    });
-
-    inputFoto.addEventListener('change', function() {
-        var archivo = this.files[0];
-        if (!archivo) return;
-
-        // Validar tamaño (max 2 MB)
-        if (archivo.size > 2 * 1024 * 1024) {
-            mostrarError(null, document.getElementById('errorNombre'), 'La foto no puede superar 2 MB.');
-            this.value = '';
+// Renderiza tarjetas de mascotas en adopta.html
+async function cargarMascotasAdopta() {
+    const contenedor = document.getElementById('contenedor-mascotas');
+    if (!contenedor) return;
+    contenedor.innerHTML = '<div class="text-center w-100 py-5"><div class="spinner-border" role="status"></div></div>';
+    try {
+        const res = await fetch('../php/get_mascotas.php');
+        const json = await res.json();
+        if (!json.success) throw new Error(json.error || 'Error cargando mascotas');
+        const mascotas = json.data;
+        if (!mascotas.length) {
+            contenedor.innerHTML = '<div class="alert alert-info">No hay animales en adopción actualmente.</div>';
             return;
         }
+        contenedor.innerHTML = mascotas.map(mascota => renderTarjetaMascota(mascota)).join('');
+    } catch (e) {
+        contenedor.innerHTML = '<div class="alert alert-danger">Error cargando animales: ' + e.message + '</div>';
+    }
+}
 
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            fotoIcono.classList.add('d-none');
-            fotoImg.src = e.target.result;
-            fotoImg.classList.remove('d-none');
-        };
-        reader.readAsDataURL(archivo);
+// Renderiza una tarjeta de mascota (ajusta según tu HTML)
+function renderTarjetaMascota(m) {
+    return `
+    <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="${m.especie}" data-ubicacion="${m.ubicacion || ''}" data-tamano="${m.tamano || ''}">
+        <div class="card h-100 shadow-sm">
+            <div class="contenedor-imagen">
+                <img src="${m.foto || '../img/mascotas/default.jpg'}" class="card-img-top" alt="${m.nombre}">
+                <button class="btn-fav" data-id="${m.idMascota}" onclick="toggleFavorito(event, '${m.idMascota}')" title="Agregar a favoritos">
+                    <i class="fa-regular fa-heart"></i>
+                </button>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">${m.nombre}</h5>
+                <ul class="card-meta">
+                    <li>${m.raza || ''}</li>
+                    <li>${m.edad || ''} años</li>
+                    <li>${m.sexo || ''}</li>
+                </ul>
+                <div class="contador-vistas mt-2">
+                    <i class="fa-solid fa-eye"></i>
+                    <span>Vista <strong id="vistas-${m.idMascota}">0</strong> veces</span>
+                </div>
+                <a href="fichaAnimal.html?id=${m.idMascota}" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('${m.idMascota}')">Ver ficha</a>
+            </div>
+        </div>
+    </div>
+    `;
+}
+
+// Cargar datos de una mascota en fichaAnimal.html
+async function cargarMascotaFicha() {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    if (!id) return;
+    try {
+        const res = await fetch(`../php/get_mascota.php?id=${id}`);
+        const json = await res.json();
+        if (!json.success) throw new Error(json.error || 'No encontrada');
+        const m = json.data;
+        document.getElementById('animal-nombre').textContent = m.nombre;
+        document.getElementById('animal-subtitulo').textContent = `${m.raza || ''} · ${m.edad || ''} años · ${m.sexo || ''}`;
+        document.getElementById('animal-descripcion').textContent = m.descripcion || '';
+        document.getElementById('foto-principal').src = m.foto || '../img/mascotas/default.jpg';
+        // Puedes completar más campos según tu HTML
+    } catch (e) {
+        document.querySelector('main').innerHTML = `<div class='alert alert-danger'>Error: ${e.message}</div>`;
+    }
+}
+
+// Inicialización automática
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        if (document.getElementById('contenedor-mascotas')) cargarMascotasAdopta();
+        if (document.getElementById('animal-nombre')) cargarMascotaFicha();
     });
-
-    // ----------------------------------------------------------------
-    // Mostrar/ocultar contraseñas
-    
-    document.getElementById('togglePwdReg').addEventListener('click', function() {
-        toggleVisibilidad(inputPassword, document.getElementById('iconoPwdReg'));
-    });
-
-    document.getElementById('togglePwdConfirm').addEventListener('click', function() {
-        toggleVisibilidad(inputPasswordConfirm, document.getElementById('iconoPwdConfirm'));
-    });
-
-    function toggleVisibilidad(input, icono) {
-        var tipo = input.type === 'password' ? 'text' : 'password';
-        input.type = tipo;
-        icono.className = tipo === 'password' ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash';
-    }
-
-    // ----------------------------------------------------------------
-    // Indicador de fuerza de contraseña
-    // ----------------------------------------------------------------
-    inputPassword.addEventListener('input', function() {
-        var val = this.value;
-        var fuerza = calcularFuerza(val);
-        var fill  = document.getElementById('pwdFill');
-        var label = document.getElementById('pwdLabel');
-
-        if (!val) {
-            fill.style.width = '0%';
-            label.textContent = '';
-            return;
-        }
-
-        if (fuerza === 1) {
-            fill.style.width = '33%';
-            fill.style.backgroundColor = '#e74c3c';
-            label.style.color = '#e74c3c';
-            label.textContent = 'Débil';
-        } else if (fuerza === 2) {
-            fill.style.width = '66%';
-            fill.style.backgroundColor = '#F8BA56';
-            label.style.color = '#c87a00';
-            label.textContent = 'Media';
-        } else {
-            fill.style.width = '100%';
-            fill.style.backgroundColor = '#2e7d32';
-            label.style.color = '#2e7d32';
-            label.textContent = 'Fuerte';
-        }
-
-        validarPassword();
-        if (inputPasswordConfirm.value) validarPasswordConfirm();
-    });
-
-    function calcularFuerza(pwd) {
-        var puntos = 0;
-        if (pwd.length >= 8) puntos++;
-        if (/[A-Z]/.test(pwd)) puntos++;
-        if (/[0-9]/.test(pwd)) puntos++;
-        if (/[^A-Za-z0-9]/.test(pwd)) puntos++;
-        if (puntos <= 1) return 1;
-        if (puntos <= 2) return 2;
-        return 3;
-    }
-
-    // ----------------------------------------------------------------
-    // Validaciones individuales
-    inputNombre.addEventListener('blur', validarNombre);
-    inputNombre.addEventListener('input', function() { if (this.classList.contains('input-error')) validarNombre(); });
-
-    inputUsername.addEventListener('blur', validarUsername);
-    inputUsername.addEventListener('input', function() { if (this.classList.contains('input-error')) validarUsername(); });
-
-    inputEmail.addEventListener('blur', validarEmail);
-    inputEmail.addEventListener('input', function() { if (this.classList.contains('input-error')) validarEmail(); });
-
-    inputLocalidad.addEventListener('blur', validarLocalidad);
-    inputLocalidad.addEventListener('input', function() { if (this.classList.contains('input-error')) validarLocalidad(); });
-
-    inputTelefono.addEventListener('blur', validarTelefono);
-    inputTelefono.addEventListener('input', function() { if (this.classList.contains('input-error')) validarTelefono(); });
-
-    inputPasswordConfirm.addEventListener('blur', validarPasswordConfirm);
-    inputPasswordConfirm.addEventListener('input', function() { if (this.classList.contains('input-error')) validarPasswordConfirm(); });
-
-    function validarNombre() {
-        var val = inputNombre.value.trim();
-        if (!val) return mostrarError(inputNombre, document.getElementById('errorNombre'), 'El nombre es obligatorio.'), false;
-        if (val.length < 2) return mostrarError(inputNombre, document.getElementById('errorNombre'), 'El nombre debe tener al menos 2 caracteres.'), false;
-        limpiarError(inputNombre, document.getElementById('errorNombre'));
-        return true;
-    }
-
-    function validarUsername() {
-        var val = inputUsername.value.trim();
-        if (!val) return mostrarError(inputUsername, document.getElementById('errorUsername'), 'El nombre de usuario es obligatorio.'), false;
-        if (val.length < 3) return mostrarError(inputUsername, document.getElementById('errorUsername'), 'Mínimo 3 caracteres.'), false;
-        if (/\s/.test(val)) return mostrarError(inputUsername, document.getElementById('errorUsername'), 'Sin espacios.'), false;
-        limpiarError(inputUsername, document.getElementById('errorUsername'));
-        return true;
-    }
-
-    function validarEmail() {
-        var val = inputEmail.value.trim();
-        var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!val) return mostrarError(inputEmail, document.getElementById('errorEmail'), 'El email es obligatorio.'), false;
-        if (!regex.test(val)) return mostrarError(inputEmail, document.getElementById('errorEmail'), 'Introduce un email válido.'), false;
-        limpiarError(inputEmail, document.getElementById('errorEmail'));
-        return true;
-    }
-
-    function validarLocalidad() {
-        var val = inputLocalidad.value.trim();
-        if (!val) return mostrarError(inputLocalidad, document.getElementById('errorLocalidad'), 'La localidad es obligatoria.'), false;
-        limpiarError(inputLocalidad, document.getElementById('errorLocalidad'));
-        return true;
-    }
-
-    function validarTelefono() {
-        var val = inputTelefono.value.trim();
-        if (!val) return true; // Opcional
-        var regex = /^[6-9]\d{8}$/;
-        if (!regex.test(val.replace(/\s/g, ''))) return mostrarError(inputTelefono, document.getElementById('errorTelefono'), 'Teléfono no válido. Ej: 612 345 678'), false;
-        limpiarError(inputTelefono, document.getElementById('errorTelefono'));
-        return true;
-    }
-
-    function validarPassword() {
-        var val = inputPassword.value;
-        if (!val) return mostrarError(inputPassword, document.getElementById('errorPassword'), 'La contraseña es obligatoria.'), false;
-        if (val.length < 8) return mostrarError(inputPassword, document.getElementById('errorPassword'), 'Mínimo 8 caracteres.'), false;
-        limpiarError(inputPassword, document.getElementById('errorPassword'));
-        return true;
-    }
-
-    function validarPasswordConfirm() {
-        var val = inputPasswordConfirm.value;
-        if (!val) return mostrarError(inputPasswordConfirm, document.getElementById('errorPasswordConfirm'), 'Repite la contraseña.'), false;
-        if (val !== inputPassword.value) return mostrarError(inputPasswordConfirm, document.getElementById('errorPasswordConfirm'), 'Las contraseñas no coinciden.'), false;
-        limpiarError(inputPasswordConfirm, document.getElementById('errorPasswordConfirm'));
-        return true;
-    }
-
-    function validarTerminos() {
-        if (!inputTerminos.checked) {
-            document.getElementById('errorTerminos').textContent = 'Debes aceptar los términos para continuar.';
-            return false;
-        }
-        document.getElementById('errorTerminos').textContent = '';
-        return true;
-    }
-
-    function mostrarError(input, span, msg) {
-        if (input) { input.classList.remove('input-ok'); input.classList.add('input-error'); }
-        span.textContent = msg;
-    }
-
-    function limpiarError(input, span) {
-        if (input) { input.classList.remove('input-error'); input.classList.add('input-ok'); }
-        span.textContent = '';
-    }
-
-    // ----------------------------------------------------------------
-    // Envío del formulario
-
-    formRegistro.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        var ok = validarNombre()
-            & validarUsername()
-            & validarEmail()
-            & validarLocalidad()
-            & validarTelefono()
-            & validarPassword()
-            & validarPasswordConfirm()
-            & validarTerminos();
-
-        if (!ok) {
-            // Scroll al primer error
-            var primerError = formRegistro.querySelector('.input-error');
-            if (primerError) primerError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            return;
-        }
-
-        // Estado de carga
-        btnRegistro.disabled = true;
-        btnRegistro.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Creando cuenta...';
-        alertaRegistro.classList.add('d-none');
-
-        setTimeout(function() {
-            btnRegistro.disabled = false;
-            btnRegistro.innerHTML = '<i class="fa-solid fa-user-plus me-2"></i>Crear cuenta gratis';
-            alertaRegistro.classList.remove('d-none');
-        }, 1200);
-    });
-
-});
+} else {
+    if (document.getElementById('contenedor-mascotas')) cargarMascotasAdopta();
+    if (document.getElementById('animal-nombre')) cargarMascotaFicha();
+}

@@ -1,5 +1,6 @@
-/* footer css */
-footer{
+/* footer */
+footer {
+    border-top:#F8BA56 2px double;
     bottom: 0;
     background-color: #1B358F;
     color: #F8BA56;
@@ -9,24 +10,28 @@ footer{
     padding-top: 1em;
 }
 
+/* flecha volver arriba */
 #arrow {
-    transition: transform .5s ease;
+    border-radius: 50%;
+    border: #F8BA56 2px double;
+    transition: transform 0.5s ease;
 }
 
-
 #arrow:hover {
-  animation: subirBajar 0.5s ease-in-out infinite alternate;
+    
+    animation: subirBajar 0.5s ease-in-out infinite alternate;
 }
 
 @keyframes subirBajar {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(8%);
-  }
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(8%);
+    }
 }
-/* Tablets */
+
+/* tablets */
 @media (max-width: 1024px) {
     footer {
         font-size: 0.9rem;
@@ -34,19 +39,21 @@ footer{
     }
 }
 
-/* Celulares */
+/* celulares */
 @media (max-width: 768px) {
     footer {
-        position: relative; 
+        position: relative;
         font-size: 0.8rem;
         padding: 2em 1em;
         line-height: 1.4;
     }
+
     footer p {
         margin: 0.5em 0;
     }
+
     footer a {
-        display: block; 
+        display: block;
         margin: 0.3em 0;
     }
 }

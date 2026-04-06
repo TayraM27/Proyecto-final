@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetFamily – Solicitudes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily">
+            <span>Pet<em>Family</em></span>
+        </div>
+        <nav class="sidebar-nav">
+            <p class="sidebar-seccion">General</p>
+            <a href="dashboard.html" class="sidebar-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+            <p class="sidebar-seccion">Gestión</p>
+            <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
+            <a href="protectoras.html" class="sidebar-link"><i class="fa-solid fa-building-shield"></i> Protectoras</a>
+            <a href="usuarios.html" class="sidebar-link"><i class="fa-solid fa-users"></i> Usuarios</a>
+            <a href="solicitudes.html" class="sidebar-link activo"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
+            <p class="sidebar-seccion">Comunidad</p>
+            <a href="foro.html" class="sidebar-link"><i class="fa-solid fa-comments"></i> Foro</a>
+            <p class="sidebar-seccion">Web pública</p>
+            <a href="../index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
+        </nav>
+        <div class="sidebar-pie">
+            <div class="sidebar-usuario">
+                <div class="sidebar-avatar" id="avatarInicial">A</div>
+                <div class="sidebar-usuario-info">
+                    <p class="sidebar-usuario-nombre" id="adminNombre">Admin</p>
+                    <p class="sidebar-usuario-rol">Administrador</p>
+                </div>
+                <button class="btn-logout" onclick="cerrarSesion()"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <header class="topbar">
+        <div style="display:flex;align-items:center;gap:0.8em;">
+            <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+            <span class="topbar-titulo"><i class="fa-solid fa-file-signature" style="color:var(--gold);margin-right:0.4em;"></i>Solicitudes de adopción</span>
+        </div>
+    </header>
+
+    <main class="admin-contenido">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="toolbar" style="flex:1;">
+                    <select class="toolbar-select" id="filtroEstado" onchange="paginaActual=1;cargarSolicitudes()">
+                        <option value="pendiente">Pendientes</option>
+                        <option value="en_revision">En revisión</option>
+                        <option value="aprobada">Aprobadas</option>
+                        <option value="rechazada">Rechazadas</option>
+                        <option value="todos">Todas</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="tabla-wrap">
+                <table class="tabla">
+                    <thead>
+                        <tr>
+                            <th>Solicitante</th>
+                            <th>Mascota</th>
+                            <th>Protectora</th>
+                            <th>Mensaje</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Cambiar estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaSolicitudes">
+                        <tr><td colspan="7" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="paginacion" id="paginacion"></div>
+        </div>
+    </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var paginaActual = 1;
+var totalPaginas = 1;
+
+document.addEventListener('DOMContentLoaded', function() {
+    verificarAdmin(cargarSolicitudes);
+});
+
+function verificarAdmin(cb) {
+    fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.logueado || data.usuario.rol !== 'admin') { window.location.href = '../login.html'; return; }
+            document.getElementById('adminNombre').textContent = data.usuario.nombre;
+            document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
+            if (cb) cb();
+        });
+}
+
+function cargarSolicitudes() {
+    var estado = document.getElementById('filtroEstado').value;
+    var url = '../backend/admin/solicitudes.php?pagina=' + paginaActual + '&estado=' + estado;
+
+    fetch(url, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) return;
+            totalPaginas = data.totalPaginas || 1;
+            renderTabla(data.solicitudes);
+            renderPaginacion();
+        });
+}
+
+function renderTabla(solicitudes) {
+    var tb = document.getElementById('tablaSolicitudes');
+    if (!solicitudes.length) {
+        tb.innerHTML = '<tr><td colspan="7"><div class="estado-vacio"><i class="fa-solid fa-file-signature"></i><p>No hay solicitudes con este estado</p></div></td></tr>';
+        return;
+    }
+
+    var colores = {
+        pendiente:   'badge-gold',
+        en_revision: 'badge-azul',
+        aprobada:    'badge-verde',
+        rechazada:   'badge-rojo',
+    };
+
+    var etiquetas = {
+        pendiente:   'Pendiente',
+        en_revision: 'En revisión',
+        aprobada:    'Aprobada',
+        rechazada:   'Rechazada',
+    };
+
+    tb.innerHTML = solicitudes.map(function(s) {
+        var badgeEst = '<span class="badge ' + (colores[s.estado] || 'badge-gris') + '">' + (etiquetas[s.estado] || s.estado) + '</span>';
+
+        var selectEstado = '<select class="toolbar-select" style="font-size:0.78rem;padding:0.35em 0.6em;" onchange="cambiarEstado(' + s.idSolicitud + ', this.value)">'
+            + ['pendiente','en_revision','aprobada','rechazada'].map(function(e){
+                return '<option value="' + e + '"' + (e === s.estado ? ' selected' : '') + '>' + (etiquetas[e]) + '</option>';
+            }).join('')
+            + '</select>';
+
+        return '<tr>'
+            + '<td><strong>' + s.nombre + '</strong><br>'
+            + '<a href="mailto:' + s.email + '" style="font-size:0.78rem;color:var(--azul);">' + s.email + '</a>'
+            + (s.telefono ? '<br><span style="font-size:0.78rem;color:var(--texto-sub);">' + s.telefono + '</span>' : '')
+            + '</td>'
+            + '<td><strong>' + s.mascota_nombre + '</strong><br><span style="font-size:0.78rem;color:var(--texto-sub);">' + (s.especie === 'perro' ? '🐕' : '🐱') + '</span></td>'
+            + '<td style="font-size:0.82rem;">' + s.protectora_nombre + '</td>'
+            + '<td style="font-size:0.8rem;max-width:180px;">' + (s.mensaje ? '<span title="' + s.mensaje + '">' + s.mensaje.substring(0,60) + (s.mensaje.length > 60 ? '…' : '') + '</span>' : '—') + '</td>'
+            + '<td style="font-size:0.78rem;">' + formatFecha(s.fecha_envio) + '</td>'
+            + '<td>' + badgeEst + '</td>'
+            + '<td>' + selectEstado + '</td>'
+            + '</tr>';
+    }).join('');
+}
+
+function cambiarEstado(id, nuevoEstado) {
+    fetch('../backend/admin/solicitudes.php', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idSolicitud: id, estado: nuevoEstado }),
+        credentials: 'include',
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
+        if (data.ok) cargarSolicitudes();
+    });
+}
+
+function renderPaginacion() {
+    var pg = document.getElementById('paginacion');
+    if (totalPaginas <= 1) { pg.innerHTML = ''; return; }
+    var html = '<button class="pag-btn" onclick="irPagina(' + (paginaActual-1) + ')" '+(paginaActual===1?'disabled':'')+'><i class="fa-solid fa-chevron-left"></i></button>';
+    for (var i = 1; i <= totalPaginas; i++) {
+        html += '<button class="pag-btn '+(i===paginaActual?'activo':'')+'" onclick="irPagina('+i+')">'+i+'</button>';
+    }
+    html += '<button class="pag-btn" onclick="irPagina('+(paginaActual+1)+')" '+(paginaActual===totalPaginas?'disabled':'')+'><i class="fa-solid fa-chevron-right"></i></button>';
+    pg.innerHTML = html;
+}
+
+function irPagina(n) {
+    if (n < 1 || n > totalPaginas) return;
+    paginaActual = n;
+    cargarSolicitudes();
+}
+
+function formatFecha(f) {
+    if (!f) return '—';
+    return new Date(f).toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('abierto'); }
+function cerrarSesion() { fetch('../backend/api/auth/logout.php', { credentials: 'include' }).then(function(){ window.location.href = '../login.html'; }); }
+function mostrarToast(msg, tipo) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast visible toast-' + (tipo || 'ok');
+    setTimeout(function(){ t.className = 'toast'; }, 3000);
+}
+</script>
+
+</body>
+</html>

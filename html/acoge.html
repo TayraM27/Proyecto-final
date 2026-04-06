@@ -17,16 +17,12 @@
 <body>
 
 <header>
-
-    <!-- Logo (XL) -->
     <div id="contenedor_logo" class="d-none d-lg-block">
         <a id="logoXL" href="index.html">
             <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderXL">
             <h2 id="title-logo">Pet<span style="color:#F8BA56;">Family</span></h2>
         </a>
     </div>
-
-    <!-- Header(xs,sm, md) -->
     <div id="menu_burger" class="container-fluid justify-content-between align-content-center d-lg-none">
         <i id="btn_burger" class="fa-solid fa-bars text-center col-2 ms-n5"></i>
         <a id="logoMD" href="index.html" class="mb-2">
@@ -38,7 +34,6 @@
             <a href="register.html" class="btn-register">Registrarse</a>
         </div>
     </div>
-
     <nav id="menu" class="d-none d-lg-block">
         <ul id="lista_menu">
             <li><a href="adopta.html">Adopta</a></li>
@@ -55,15 +50,11 @@
             <li><a href="test.html">Tests</a></li>
         </ul>
     </nav>
-
-    <!-- Usuario xl -->
     <div id="user_container" class="d-none d-lg-block">
         <a href="login.html"><img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px"></a>
         <a href="register.html" class="btn-register">Registrarse</a>
     </div>
-
 </header>
-<!-- Fin html del header -->
 
 
 <main>
@@ -78,14 +69,14 @@
         </p>
 
         <h1 class="pagina-titulo">
-             Acoge a un animal
+            <i class="fa-solid fa-house-chimney-heart"></i> Acoge a un animal
         </h1>
         <p class="pagina-subtitulo">
             Acoger es abrir tu casa temporalmente a un animal que lo necesita. Sin adoptar, sin compromisos permanentes. Solo con ganas de ayudar.
         </p>
         <div class="linea-amarilla"></div>
 
-        <!-- ¿Qué es acoger? + Requisitos -->
+        <!-- qué es acoger + requisitos -->
         <div class="row g-4 mb-5">
 
             <div class="col-lg-7">
@@ -121,7 +112,7 @@
 
         </div>
 
-        <!-- 4 tipos de acogida -->
+        <!-- tipos de acogida -->
         <h2 class="acoge-titulo-seccion mb-4">Tipos de acogida</h2>
         <div class="row g-3 mb-5">
 
@@ -171,7 +162,7 @@
 
         </div>
 
-        <!-- Responsabilidades protectora / acogedor -->
+        <!-- responsabilidades -->
         <div class="row g-4 mb-5">
 
             <div class="col-lg-6">
@@ -252,16 +243,20 @@
 
         </div>
 
-        <!-- Protectoras con acogida -->
+        <!-- protectoras colaboradoras — 5 cards centradas -->
         <h2 class="acoge-titulo-seccion mb-1">¿Con qué protectora quieres colaborar?</h2>
         <p class="acoge-texto mb-4">Contacta directamente con la protectora que más te encaje y cuéntales que quieres ser familia de acogida.</p>
 
-        <div class="row g-3 mb-5">
+        <div class="row g-3 mb-5 justify-content-center">
 
             <div class="col-md-6 col-lg-4">
                 <div class="acoge-prot-card">
                     <div class="acoge-prot-header">
-                        <div class="acoge-prot-emoji">🐕</div>
+                        <img src="../img/protectora/centro-proteccion-animales-gijon.jpg"
+                             class="acoge-prot-logo"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+                             alt="Logo CPA Gijón">
+                        <div class="acoge-prot-emoji" style="display:none;">🐕</div>
                         <div>
                             <p class="acoge-prot-nombre">Centro de Protección Animal de Gijón</p>
                             <p class="acoge-prot-lugar"><i class="fa-solid fa-location-dot"></i> Gijón</p>
@@ -278,7 +273,11 @@
             <div class="col-md-6 col-lg-4">
                 <div class="acoge-prot-card">
                     <div class="acoge-prot-header">
-                        <div class="acoge-prot-emoji">💙</div>
+                        <img src="../img/protectora/protectora-de-asturias.jpg"
+                             class="acoge-prot-logo"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+                             alt="Logo Fundación Protectora de Asturias">
+                        <div class="acoge-prot-emoji" style="display:none;">💙</div>
                         <div>
                             <p class="acoge-prot-nombre">Fundación Protectora de Asturias</p>
                             <p class="acoge-prot-lugar"><i class="fa-solid fa-location-dot"></i> Siero</p>
@@ -295,7 +294,11 @@
             <div class="col-md-6 col-lg-4">
                 <div class="acoge-prot-card">
                     <div class="acoge-prot-header">
-                        <div class="acoge-prot-emoji">🐾</div>
+                        <img src="../img/protectora/nortemascota-dex.jpg"
+                             class="acoge-prot-logo"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+                             alt="Logo Nortemascotas">
+                        <div class="acoge-prot-emoji" style="display:none;">🐾</div>
                         <div>
                             <p class="acoge-prot-nombre">Nortemascotas</p>
                             <p class="acoge-prot-lugar"><i class="fa-solid fa-location-dot"></i> Gijón</p>
@@ -312,7 +315,11 @@
             <div class="col-md-6 col-lg-4">
                 <div class="acoge-prot-card">
                     <div class="acoge-prot-header">
-                        <div class="acoge-prot-emoji">🏠</div>
+                        <img src="../img/protectora/masquechuchos.jpg"
+                             class="acoge-prot-logo"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+                             alt="Logo MásQueChuchos">
+                        <div class="acoge-prot-emoji" style="display:none;">🏠</div>
                         <div>
                             <p class="acoge-prot-nombre">MÁS QUE CHUCHOS</p>
                             <p class="acoge-prot-lugar"><i class="fa-solid fa-location-dot"></i> Oviedo – Llanera</p>
@@ -329,7 +336,11 @@
             <div class="col-md-6 col-lg-4">
                 <div class="acoge-prot-card">
                     <div class="acoge-prot-header">
-                        <div class="acoge-prot-emoji">🐱</div>
+                        <img src="../img/protectora/asociacion-felina-la-esperanza.jpg"
+                             class="acoge-prot-logo"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+                             alt="Logo Asociación Felina La Esperanza">
+                        <div class="acoge-prot-emoji" style="display:none;">🐱</div>
                         <div>
                             <p class="acoge-prot-nombre">Asociación Felina La Esperanza</p>
                             <p class="acoge-prot-lugar"><i class="fa-solid fa-location-dot"></i> Asturias</p>
@@ -348,21 +359,20 @@
     </div>
 
     <div class="text-center">
-        <a href="#" class="text-align-center">
+        <a href="#">
             <img src="../img/sectionIndex/up-arrow.png" alt="Volver arriba" id="arrow" width="3%">
         </a>
     </div>
 </main>
 
 
-<!-- footer -->
 <footer>
     <p>© 2026 PetFamily. Todos los derechos reservados.</p>
+    <p><a href="privacidad.html" style="color:white;">Política de Privacidad</a> | <a href="terminos.html" style="color:white;">Términos de Servicio</a></p>
 </footer>
 
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../js/script.js"></script>
+<script src="../javascript/script.js"></script>
 
 </body>
 </html>

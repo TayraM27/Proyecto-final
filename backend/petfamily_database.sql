@@ -373,13 +373,20 @@ CREATE INDEX idx_don_estado              ON donaciones(estado);
 
 
 -- ────────────────────────────────────────────────────────────
--- DATOS DE EJEMPLO – PROTECTORA
+-- DATOS DE EJEMPLO – PROTECTORAS
 -- ────────────────────────────────────────────────────────────
 INSERT INTO protectoras (nombre, descripcion, localidad, telefono, email, latitud, longitud, verificada)
 VALUES
-('Protectora Norte Mascotas', 'Asociación sin ánimo de lucro en Gijón', 'Gijón',    '984123456', 'info@nortemascotas.com', 43.5322, -5.6611, 1),
-('Protectora de Asturias',    'Refugio central de la región',            'Oviedo',   '985234567', 'contacto@protectoraasturias.es', 43.3614, -5.8496, 1),
-('Albergue de Animales',      'Albergue municipal de animales',          'Avilés',   '985345678', 'albergue@aviles.es', 43.5547, -5.9249, 1);
+('Centro de Protección Animal de Gijón', 'Protección animal municipal de Gijón',
+ 'Gijón',   '984181507', 'cproteccionanimalgijon@gmail.com', 43.5155, -5.6940, 1),
+('Fundación Protectora de Asturias',     'Refugio central de la región',
+ 'Oviedo',  '985234567', 'info@protectoradeasturias.org',   43.3614, -5.8496, 1),
+('Asociación Felina La Esperanza',       'Especializada en gatos sin hogar en Asturias',
+ 'Avilés',  NULL,        'asociacionfelinalaesperanza@gmail.com', 43.5547, -5.9249, 1),
+('MásQueChuchos',                        'Protectora de animales en Oviedo',
+ 'Oviedo',  NULL,        'info@masquechuchos.org',          43.3572, -5.8602, 1),
+('Norte Mascotas',                       'Asociación sin ánimo de lucro en Gijón',
+ 'Gijón',   '665971933', 'info@nortemascotas.com',          43.5322, -5.6611, 1);
 
 
 -- ────────────────────────────────────────────────────────────
@@ -393,6 +400,7 @@ VALUES ('Admin', 'PetFamily', 'admin@petfamily.es',
 
 -- ────────────────────────────────────────────────────────────
 -- DATOS DE EJEMPLO – MASCOTAS (coinciden con las tarjetas del HTML)
+-- a01 Leia · a02 Haru · a03 Roy · a04 Bambi · a05 Dexter · a06 Bosque
 -- ────────────────────────────────────────────────────────────
 INSERT INTO mascotas
     (idProtectora, nombre, especie, raza, sexo, tamanyo, color, descripcion,
@@ -400,33 +408,54 @@ INSERT INTO mascotas
      compatible_ninos, compatible_perros, compatible_gatos, apto_piso,
      vacunado, esterilizado, microchip, num_vistas, fecha_entrada)
 VALUES
-(1, 'Rody',   'perro', 'Cruce de Pastor Alemán', 'macho',  'mediano', 'Marrón y negro',
- 'Rody es un perro mayor lleno de amor y tranquilidad.',
- 'Bueno',  'urgente',  'disponible', 1,  1, 0, 1, 1, 1, 1, 1, 0, '2022-03-10'),
-(2, 'Luna',   'gato',  'Común europeo',          'hembra', 'pequeño', 'Gris y blanco',
- 'Luna es una gatita curiosa y cariñosa.',
- 'Bueno',  'nuevo',    'disponible', 1,  1, 1, 0, 1, 1, 1, 1, 0, '2024-11-01'),
-(1, 'Max',    'perro', 'Labrador',               'macho',  'grande',  'Dorado',
- 'Max es un perro activo y muy sociable.',
- 'Bueno',  'normal',   'disponible', 1,  1, 1, 1, 0, 1, 1, 1, 0, '2023-06-15'),
-(3, 'Misu',   'gato',  'Siamés',                 'hembra', 'pequeño', 'Crema y marrón',
- 'Misu busca un hogar tranquilo.',
- 'Bueno',  'normal',   'disponible', 1,  0, 0, 1, 1, 1, 1, 1, 0, '2024-08-20'),
-(1, 'Dexter', 'perro', 'Cruce Pastor Alemán',    'macho',  'mediano', 'Negro y marrón',
- 'Dexter lleva muchos años esperando su familia.',
- 'Bueno',  'urgente',  'disponible', 0,  1, 0, 1, 1, 1, 1, 1, 0, '2015-05-05'),
-(2, 'Bosque', 'gato',  'Común europeo',          'hembra', 'pequeño', 'Atigrado',
- 'Bosque necesita un hogar que conozca y acepte la leucemia felina.',
+-- a01 · Leia · Centro Protección Animal Gijón
+(1, 'Leia',   'perro', 'Pit bull',             'hembra', 'mediano', 'Marrón',
+ 'Pit bull de 14 años con artrosis. Muy sociable con personas y perros. Necesita licencia PPP.',
+ 'Artrosis', 'normal',  'disponible', 1,  1, 1, 0, 1, 1, 1, 1, 0, '2010-01-01'),
+
+-- a02 · Haru · Fundación Protectora de Asturias
+(2, 'Haru',   'perro', 'Mestiza',              'hembra', 'grande',  'Marrón',
+ 'Perra de 7 años con mucha energía. Lleva 1 año esperando familia. Necesita espacio para moverse.',
+ 'Bueno',   'urgente', 'disponible', 1,  1, 0, 0, 0, 1, 1, 1, 0, '2024-01-01'),
+
+-- a03 · Roy · Asociación Felina La Esperanza
+(3, 'Roy',    'gato',  'Europeo',              'macho',  'pequeño', 'Blanco y negro',
+ 'Muy cariñoso y mimoso. Se lleva fenomenal con niños y convive con otros gatos estupendamente.',
+ 'Bueno',   'nuevo',   'disponible', 1,  1, 0, 1, 1, 1, 1, 1, 0, '2023-07-26'),
+
+-- a04 · Bambi · MásQueChuchos
+(4, 'Bambi',  'gato',  'Común europeo',        'macho',  'pequeño', 'Sin datos',
+ 'Gato tranquilo que busca un hogar donde sentirse seguro y querido.',
+ 'Bueno',   'normal',  'disponible', 1,  0, 0, 0, 1, 1, 1, 1, 0, NULL),
+
+-- a05 · Dexter · Norte Mascotas
+(5, 'Dexter', 'perro', 'Cruce Pastor Alemán',  'macho',  'mediano', 'Negro y marrón',
+ 'Lleva 9 años esperando. Fue maltratado y abandonado. Es un amor de perro que busca quien le dé el cariño que merece.',
+ 'Bueno',   'urgente', 'disponible', 0,  1, 0, 1, 1, 1, 1, 1, 0, '2015-05-05'),
+
+-- a06 · Bosque · Fundación Protectora de Asturias
+(2, 'Bosque', 'gato',  'Común europeo',        'hembra', 'pequeño', 'Atigrado',
+ 'Gatita de 8 meses positiva a leucemia felina. Necesita hogar sin otros animales y cuidados especiales.',
  'Leucemia felina+', 'normal', 'disponible', 1, 0, 0, 0, 1, 1, 1, 1, 0, '2024-12-01');
 
-
--- Fotos principales de las mascotas de ejemplo
 INSERT INTO mascotas_fotos (idMascota, ruta, es_principal, orden) VALUES
-(1, 'img/mascotas/albergue-animales-dog.jpg',       1, 0),
-(1, 'img/mascotas/nortemascotas-dog.jpg',            0, 1),
-(1, 'img/mascotas/protectora-de-asturias-dog.jpg',   0, 2),
-(2, 'img/mascotas/protectora-de-asturias-cat.jpg',   1, 0),
-(3, 'img/mascotas/nortemascotas-dog.jpg',            1, 0),
-(4, 'img/mascotas/albergue-animales-cat.jpg',        1, 0),
-(5, 'img/mascotas/nortemascotas-dog.jpg',            1, 0),
-(6, 'img/mascotas/protectora-de-asturias-cat.jpg',   1, 0);
+-- Leia (a01) — 2 fotos
+(1, 'img/mascotas/leia-centro-proteccion-animales-gijon.jpg',  1, 0),
+(1, 'img/mascotas/leai2-centro-proteccion-animales-gijon.jpg', 0, 1),
+-- Haru (a02) — 3 fotos
+(2, 'img/mascotas/haru-protectora-de-asturias-dog.jpg', 1, 0),
+(2, 'img/mascotas/haru2-protectora-de-asturias-16211153400-Mthub.jpg',0, 1),
+(2, 'img/mascotas/haru3-protectora-de-asturias.jpg',0, 2),
+-- Roy (a03) — 3 fotos
+(3, 'img/mascotas/roys-asociacion-felina-la-esperanza-cat.jpg', 1, 0),
+(3, 'img/mascotas/roy2-asociacion-felina-la-esperanza.jpg',0, 1),
+(3, 'img/mascotas/roy3-asociacion-felina-la-esperanza.jpg',0, 2),
+-- Bambi (a04) — 1 foto
+(4, 'img/mascotas/bambi-masquechuchos-cat.jpg', 1, 0),
+-- Dexter (a05) — 2 fotos
+(5, 'img/mascotas/dexter-nortemascotas-dog.jpg',1, 0),
+(5, 'img/mascotas/dexter2-nortemascotas-1461588001-ouIWI.jpg', 0, 1),
+-- Bosque (a06) — 3 fotos
+(6, 'img/mascotas/bosque-protectora-de-asturias-cat.jpg',1, 0),
+(6, 'img/mascotas/bosque2-protectora-de-asturias.jpg', 0, 1),
+(6, 'img/mascotas/bosque3-protectora-de-asturias.jpg',0, 2);
