@@ -8,7 +8,7 @@ body {
 header {
     border-bottom: #F8BA56 1.5px double;
     width: 100%;
-    height: clamp(60px, 10vh, 90px);
+    height: clamp(70px, 14vh, 100px);
     background-color: #1B358F;
     position: fixed;
     top: 0;
