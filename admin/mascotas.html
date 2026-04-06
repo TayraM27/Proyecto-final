@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetFamily – Mascotas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <!-- sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily">
+            <span>Pet<em>Family</em></span>
+        </div>
+        <nav class="sidebar-nav">
+            <p class="sidebar-seccion">General</p>
+            <a href="dashboard.html" class="sidebar-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+            <p class="sidebar-seccion">Gestión</p>
+            <a href="mascotas.html" class="sidebar-link activo"><i class="fa-solid fa-paw"></i> Mascotas</a>
+            <a href="protectoras.html" class="sidebar-link"><i class="fa-solid fa-building-shield"></i> Protectoras</a>
+            <a href="usuarios.html" class="sidebar-link"><i class="fa-solid fa-users"></i> Usuarios</a>
+            <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
+            <p class="sidebar-seccion">Comunidad</p>
+            <a href="foro.html" class="sidebar-link"><i class="fa-solid fa-comments"></i> Foro</a>
+            <p class="sidebar-seccion">Web pública</p>
+            <a href="../index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
+        </nav>
+        <div class="sidebar-pie">
+            <div class="sidebar-usuario">
+                <div class="sidebar-avatar" id="avatarInicial">A</div>
+                <div class="sidebar-usuario-info">
+                    <p class="sidebar-usuario-nombre" id="adminNombre">Admin</p>
+                    <p class="sidebar-usuario-rol">Administrador</p>
+                </div>
+                <button class="btn-logout" onclick="cerrarSesion()"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- topbar -->
+    <header class="topbar">
+        <div style="display:flex;align-items:center;gap:0.8em;">
+            <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+            <span class="topbar-titulo"><i class="fa-solid fa-paw" style="color:var(--gold);margin-right:0.4em;"></i>Mascotas</span>
+        </div>
+        <button class="btn btn-gold" onclick="abrirModalNueva()">
+            <i class="fa-solid fa-plus"></i> Nueva mascota
+        </button>
+    </header>
+
+    <!-- contenido -->
+    <main class="admin-contenido">
+
+        <div class="panel">
+            <div class="panel-header">
+                <div class="toolbar" style="flex:1;">
+                    <div class="toolbar-buscar">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="inputBuscar" placeholder="Buscar por nombre o raza..." oninput="cargarMascotas()">
+                    </div>
+                    <select class="toolbar-select" id="filtroEspecie" onchange="cargarMascotas()">
+                        <option value="todos">Todas las especies</option>
+                        <option value="perro">Perros</option>
+                        <option value="gato">Gatos</option>
+                    </select>
+                    <select class="toolbar-select" id="filtroEstado" onchange="cargarMascotas()">
+                        <option value="todos">Todos los estados</option>
+                        <option value="disponible">Disponible</option>
+                        <option value="en_proceso">En proceso</option>
+                        <option value="adoptado">Adoptado</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="tabla-wrap">
+                <table class="tabla">
+                    <thead>
+                        <tr>
+                            <th>Foto</th>
+                            <th>Nombre</th>
+                            <th>Especie</th>
+                            <th>Edad</th>
+                            <th>Protectora</th>
+                            <th>Urgencia</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaMascotas">
+                        <tr><td colspan="8" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="paginacion" id="paginacion"></div>
+        </div>
+
+    </main>
+</div>
+
+<!-- modal crear / editar -->
+<div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
+    <div class="modal">
+        <div class="modal-header">
+            <p class="modal-titulo"><i class="fa-solid fa-paw"></i> <span id="modalTitulo">Nueva mascota</span></p>
+            <button class="modal-cerrar" onclick="cerrarModalBtn()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="modalId">
+
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Nombre *</label>
+                    <input type="text" class="form-input" id="fNombre">
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Protectora *</label>
+                    <select class="form-select" id="fProtectora"></select>
+                </div>
+            </div>
+
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Especie *</label>
+                    <select class="form-select" id="fEspecie">
+                        <option value="perro">Perro</option>
+                        <option value="gato">Gato</option>
+                    </select>
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Sexo *</label>
+                    <select class="form-select" id="fSexo">
+                        <option value="macho">Macho</option>
+                        <option value="hembra">Hembra</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Raza</label>
+                    <input type="text" class="form-input" id="fRaza">
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Edad (texto)</label>
+                    <input type="text" class="form-input" id="fEdad" placeholder="Ej: 3 años, 8 meses">
+                </div>
+            </div>
+
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Tamaño *</label>
+                    <select class="form-select" id="fTamanyo">
+                        <option value="pequeño">Pequeño</option>
+                        <option value="mediano">Mediano</option>
+                        <option value="grande">Grande</option>
+                    </select>
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Color</label>
+                    <input type="text" class="form-input" id="fColor" placeholder="Ej: Negro y marrón">
+                </div>
+            </div>
+
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Urgencia</label>
+                    <select class="form-select" id="fUrgencia">
+                        <option value="normal">Normal</option>
+                        <option value="urgente">Urgente</option>
+                        <option value="nuevo">Nuevo</option>
+                    </select>
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Estado adopción</label>
+                    <select class="form-select" id="fEstado">
+                        <option value="disponible">Disponible</option>
+                        <option value="en_proceso">En proceso</option>
+                        <option value="adoptado">Adoptado</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Tiempo en adopción</label>
+                    <input type="text" class="form-input" id="fTiempo" placeholder="Ej: 9 años, Recién llegado">
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Estado de salud</label>
+                    <input type="text" class="form-input" id="fSalud" placeholder="Ej: Bueno, Leucemia felina+">
+                </div>
+            </div>
+
+            <div class="form-campo">
+                <label class="form-label">Descripción</label>
+                <textarea class="form-textarea" id="fDescripcion" rows="3"></textarea>
+            </div>
+
+            <div class="form-campo">
+                <label class="form-label">Compatibilidad y características</label>
+                <div class="form-checks-grid">
+                    <label class="form-check"><input type="checkbox" id="fNinos"> Compatible con niños</label>
+                    <label class="form-check"><input type="checkbox" id="fPerros"> Compatible con perros</label>
+                    <label class="form-check"><input type="checkbox" id="fGatos"> Compatible con gatos</label>
+                    <label class="form-check"><input type="checkbox" id="fPiso"> Apto para piso</label>
+                    <label class="form-check"><input type="checkbox" id="fVacunado"> Vacunado</label>
+                    <label class="form-check"><input type="checkbox" id="fEsterilizado"> Esterilizado</label>
+                    <label class="form-check"><input type="checkbox" id="fMicrochip"> Microchip</label>
+                    <label class="form-check"><input type="checkbox" id="fDesparasitado"> Desparasitado</label>
+                    <label class="form-check"><input type="checkbox" id="fApadrinamiento" checked> Disponible para apadrinamiento</label>
+                </div>
+            </div>
+
+            <div class="form-campo" id="campoFotos">
+                <label class="form-label">Fotos (puedes subir varias)</label>
+                <input type="file" class="form-input" id="fFotos" multiple accept="image/*">
+                <span style="font-size:0.78rem;color:var(--texto-sub);">Máx. 5 MB por foto. La primera será la principal.</span>
+            </div>
+
+            <p class="form-error" id="modalError"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="cerrarModalBtn()">Cancelar</button>
+            <button class="btn btn-primario" onclick="guardarMascota()">
+                <i class="fa-solid fa-floppy-disk"></i> Guardar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+var paginaActual  = 1;
+var totalPaginas  = 1;
+var protectorasCache = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    verificarAdmin(function() {
+        cargarProtectoras();
+        cargarMascotas();
+    });
+});
+
+function verificarAdmin(cb) {
+    fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.logueado || data.usuario.rol !== 'admin') {
+                window.location.href = '../login.html';
+                return;
+            }
+            document.getElementById('adminNombre').textContent = data.usuario.nombre;
+            document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
+            if (cb) cb();
+        });
+}
+
+function cargarProtectoras() {
+    fetch('../backend/api/protectoras/listar.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) return;
+            protectorasCache = data.protectoras;
+            var sel = document.getElementById('fProtectora');
+            sel.innerHTML = data.protectoras.map(function(p){
+                return '<option value="' + p.idProtectora + '">' + p.nombre + '</option>';
+            }).join('');
+        });
+}
+
+function cargarMascotas() {
+    var q       = document.getElementById('inputBuscar').value;
+    var especie = document.getElementById('filtroEspecie').value;
+    var estado  = document.getElementById('filtroEstado').value;
+    var url     = '../backend/admin/mascotas.php?pagina=' + paginaActual
+                + '&q=' + encodeURIComponent(q)
+                + '&especie=' + especie
+                + '&estado=' + estado;
+
+    fetch(url, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) return;
+            totalPaginas = data.totalPaginas || 1;
+            renderTabla(data.mascotas);
+            renderPaginacion();
+        });
+}
+
+function renderTabla(mascotas) {
+    var tb = document.getElementById('tablaMascotas');
+    if (!mascotas.length) {
+        tb.innerHTML = '<tr><td colspan="8"><div class="estado-vacio"><i class="fa-solid fa-paw"></i><p>No se encontraron mascotas</p></div></td></tr>';
+        return;
+    }
+    tb.innerHTML = mascotas.map(function(m) {
+        var foto = m.foto_principal
+            ? '<img src="../' + m.foto_principal + '" class="tabla-foto" alt="' + m.nombre + '">'
+            : '<div style="width:42px;height:42px;border-radius:8px;background:var(--azul-lite);display:flex;align-items:center;justify-content:center;">' + (m.especie === 'perro' ? '🐕' : '🐱') + '</div>';
+
+        var badgeUrg = m.urgencia === 'urgente'
+            ? '<span class="badge badge-rojo">Urgente</span>'
+            : m.urgencia === 'nuevo'
+            ? '<span class="badge badge-azul">Nuevo</span>'
+            : '<span class="badge badge-gris">Normal</span>';
+
+        var badgeEst = m.estado_adopcion === 'disponible'
+            ? '<span class="badge badge-verde">Disponible</span>'
+            : m.estado_adopcion === 'en_proceso'
+            ? '<span class="badge badge-gold">En proceso</span>'
+            : '<span class="badge badge-gris">Adoptado</span>';
+
+        return '<tr>'
+            + '<td>' + foto + '</td>'
+            + '<td><strong>' + m.nombre + '</strong></td>'
+            + '<td>' + (m.especie === 'perro' ? '🐕 Perro' : '🐱 Gato') + '</td>'
+            + '<td>' + (m.edad_texto || '—') + '</td>'
+            + '<td style="font-size:0.82rem;">' + m.protectora_nombre + '</td>'
+            + '<td>' + badgeUrg + '</td>'
+            + '<td>' + badgeEst + '</td>'
+            + '<td><div class="tabla-acciones">'
+            + '<button class="btn btn-sm btn-outline btn-icon" onclick="editarMascota(' + JSON.stringify(m).replace(/"/g, '&quot;') + ')" title="Editar"><i class="fa-solid fa-pen"></i></button>'
+            + '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminarMascota(' + m.idMascota + ',\'' + m.nombre + '\')" title="Eliminar"><i class="fa-solid fa-trash"></i></button>'
+            + '</div></td>'
+            + '</tr>';
+    }).join('');
+}
+
+function renderPaginacion() {
+    var pg = document.getElementById('paginacion');
+    if (totalPaginas <= 1) { pg.innerHTML = ''; return; }
+    var html = '';
+    html += '<button class="pag-btn" onclick="irPagina(' + (paginaActual - 1) + ')" ' + (paginaActual === 1 ? 'disabled' : '') + '><i class="fa-solid fa-chevron-left"></i></button>';
+    for (var i = 1; i <= totalPaginas; i++) {
+        html += '<button class="pag-btn ' + (i === paginaActual ? 'activo' : '') + '" onclick="irPagina(' + i + ')">' + i + '</button>';
+    }
+    html += '<button class="pag-btn" onclick="irPagina(' + (paginaActual + 1) + ')" ' + (paginaActual === totalPaginas ? 'disabled' : '') + '><i class="fa-solid fa-chevron-right"></i></button>';
+    pg.innerHTML = html;
+}
+
+function irPagina(n) {
+    if (n < 1 || n > totalPaginas) return;
+    paginaActual = n;
+    cargarMascotas();
+}
+
+function abrirModalNueva() {
+    document.getElementById('modalId').value      = '';
+    document.getElementById('modalTitulo').textContent = 'Nueva mascota';
+    document.getElementById('modalError').textContent  = '';
+    limpiarForm();
+    document.getElementById('campoFotos').style.display = '';
+    document.getElementById('modalOverlay').classList.add('abierto');
+}
+
+function editarMascota(m) {
+    document.getElementById('modalId').value      = m.idMascota;
+    document.getElementById('modalTitulo').textContent = 'Editar: ' + m.nombre;
+    document.getElementById('modalError').textContent  = '';
+    document.getElementById('fNombre').value      = m.nombre        || '';
+    document.getElementById('fProtectora').value  = m.idProtectora  || '';
+    document.getElementById('fEspecie').value     = m.especie       || 'perro';
+    document.getElementById('fSexo').value        = m.sexo          || 'macho';
+    document.getElementById('fRaza').value        = m.raza          || '';
+    document.getElementById('fEdad').value        = m.edad_texto    || '';
+    document.getElementById('fTamanyo').value     = m.tamanyo       || 'mediano';
+    document.getElementById('fColor').value       = m.color         || '';
+    document.getElementById('fUrgencia').value    = m.urgencia      || 'normal';
+    document.getElementById('fEstado').value      = m.estado_adopcion|| 'disponible';
+    document.getElementById('fTiempo').value      = m.tiempo_en_adopcion || '';
+    document.getElementById('fSalud').value       = m.estado_salud  || '';
+    document.getElementById('fDescripcion').value = m.descripcion   || '';
+    document.getElementById('fNinos').checked         = !!m.compatible_ninos;
+    document.getElementById('fPerros').checked        = !!m.compatible_perros;
+    document.getElementById('fGatos').checked         = !!m.compatible_gatos;
+    document.getElementById('fPiso').checked          = !!m.apto_piso;
+    document.getElementById('fVacunado').checked      = !!m.vacunado;
+    document.getElementById('fEsterilizado').checked  = !!m.esterilizado;
+    document.getElementById('fMicrochip').checked     = !!m.microchip;
+    document.getElementById('fDesparasitado').checked = !!m.desparasitado;
+    document.getElementById('fApadrinamiento').checked= !!m.disponible_apadrinamiento;
+    // No mostrar campo fotos al editar (se gestiona aparte)
+    document.getElementById('campoFotos').style.display = 'none';
+    document.getElementById('modalOverlay').classList.add('abierto');
+}
+
+function guardarMascota() {
+    var id = document.getElementById('modalId').value;
+    var datos = {
+        idMascota:              id ? parseInt(id) : undefined,
+        idProtectora:           parseInt(document.getElementById('fProtectora').value),
+        nombre:                 document.getElementById('fNombre').value.trim(),
+        especie:                document.getElementById('fEspecie').value,
+        sexo:                   document.getElementById('fSexo').value,
+        raza:                   document.getElementById('fRaza').value.trim(),
+        edad_texto:             document.getElementById('fEdad').value.trim(),
+        tamanyo:                document.getElementById('fTamanyo').value,
+        color:                  document.getElementById('fColor').value.trim(),
+        urgencia:               document.getElementById('fUrgencia').value,
+        estado_adopcion:        document.getElementById('fEstado').value,
+        tiempo_en_adopcion:     document.getElementById('fTiempo').value.trim(),
+        estado_salud:           document.getElementById('fSalud').value.trim(),
+        descripcion:            document.getElementById('fDescripcion').value.trim(),
+        compatible_ninos:       document.getElementById('fNinos').checked ? 1 : 0,
+        compatible_perros:      document.getElementById('fPerros').checked ? 1 : 0,
+        compatible_gatos:       document.getElementById('fGatos').checked ? 1 : 0,
+        apto_piso:              document.getElementById('fPiso').checked ? 1 : 0,
+        vacunado:               document.getElementById('fVacunado').checked ? 1 : 0,
+        esterilizado:           document.getElementById('fEsterilizado').checked ? 1 : 0,
+        microchip:              document.getElementById('fMicrochip').checked ? 1 : 0,
+        desparasitado:          document.getElementById('fDesparasitado').checked ? 1 : 0,
+        disponible_apadrinamiento: document.getElementById('fApadrinamiento').checked ? 1 : 0,
+        activa: 1,
+    };
+
+    if (!datos.nombre) {
+        document.getElementById('modalError').textContent = 'El nombre es obligatorio.';
+        return;
+    }
+
+    var metodo = id ? 'PUT' : 'POST';
+
+    // Si es nueva y hay fotos, usar FormData
+    var fotosInput = document.getElementById('fFotos');
+    if (!id && fotosInput.files.length) {
+        var fd = new FormData();
+        Object.keys(datos).forEach(function(k){ if (datos[k] !== undefined) fd.append(k, datos[k]); });
+        for (var i = 0; i < fotosInput.files.length; i++) {
+            fd.append('fotos[]', fotosInput.files[i]);
+        }
+        fetch('../backend/admin/mascotas.php', { method: 'POST', body: fd, credentials: 'include' })
+            .then(function(r){ return r.json(); })
+            .then(procesarRespuesta);
+    } else {
+        fetch('../backend/admin/mascotas.php', {
+            method: metodo,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos),
+            credentials: 'include',
+        })
+        .then(function(r){ return r.json(); })
+        .then(procesarRespuesta);
+    }
+}
+
+function procesarRespuesta(data) {
+    if (!data.ok) {
+        document.getElementById('modalError').textContent = data.error || 'Error al guardar.';
+        return;
+    }
+    cerrarModalBtn();
+    mostrarToast(data.mensaje, 'ok');
+    cargarMascotas();
+}
+
+function eliminarMascota(id, nombre) {
+    if (!confirm('¿Eliminar a ' + nombre + '? Esta acción no se puede deshacer.')) return;
+    fetch('../backend/admin/mascotas.php', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idMascota: id }),
+        credentials: 'include',
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        if (!data.ok) { mostrarToast(data.error, 'error'); return; }
+        mostrarToast(data.mensaje, 'ok');
+        cargarMascotas();
+    });
+}
+
+function limpiarForm() {
+    ['fNombre','fRaza','fEdad','fColor','fTiempo','fSalud','fDescripcion'].forEach(function(id){
+        document.getElementById(id).value = '';
+    });
+    ['fNinos','fPerros','fGatos','fPiso','fVacunado','fEsterilizado','fMicrochip','fDesparasitado'].forEach(function(id){
+        document.getElementById(id).checked = false;
+    });
+    document.getElementById('fApadrinamiento').checked = true;
+    document.getElementById('fFotos').value = '';
+}
+
+function cerrarModal(e) {
+    if (e.target === document.getElementById('modalOverlay')) cerrarModalBtn();
+}
+
+function cerrarModalBtn() {
+    document.getElementById('modalOverlay').classList.remove('abierto');
+}
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('abierto');
+}
+
+function cerrarSesion() {
+    fetch('../backend/api/auth/logout.php', { credentials: 'include' })
+        .then(function(){ window.location.href = '../login.html'; });
+}
+
+function mostrarToast(msg, tipo) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast visible toast-' + (tipo || 'ok');
+    setTimeout(function(){ t.className = 'toast'; }, 3000);
+}
+</script>
+
+</body>
+</html>

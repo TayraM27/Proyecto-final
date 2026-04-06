@@ -220,273 +220,22 @@
 
 <!-- footer -->
 <footer>
-    <p>© 2025 PetFamily. Todos los derechos reservados.</p>
-    <p>
-        <a href="privacidad.html" style="color:white;">Política de Privacidad</a> |
-        <a href="terminos.html"   style="color:white;">Términos de Servicio</a>
-    </p>
+    <p>© 2026 PetFamily. Todos los derechos reservados.</p>
+    <p><a href="privacidad.html" style="color:white;">Política de Privacidad</a> | <a href="terminos.html" style="color:white;">Términos de Servicio</a></p>
 </footer>
 
 <!-- script js -->
 <script src="../javascript/script.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <!-- chat -->
-<script src="//code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
+<script src="https://code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
 
 <script>
-// ==================================================================================================
-//  BASE DE DATOS LOCAL DE ANIMALES
-//  En producción esto vendrá de: fetch('backend/mascotas.php?id=aXX')
-
-var animales = {
-
-    // Leia
-    'a01': {
-        nombre: 'Leia',
-        especie: 'Perro',
-        raza: 'Pit bull',
-        sexo: 'hembra',
-        subtitulo: 'Perra · Pit bull · Mediano',
-        ubicacion: 'Gijón, Asturias',
-        edad: '14 años',
-        tamanyo: 'Mediano',
-        color: 'Marrón',
-        enAdopcion: 'Larga espera',
-        salud: 'Bueno',
-        badges: [
-            { texto: 'Vacunado',      clase: 'bg-warning text-dark' },
-            { texto: 'Licencia PPP',  clase: 'bg-secondary' },
-            { texto: 'Esterilizada',  clase: 'bg-success' },
-            { texto: 'Microchip',     clase: 'bg-secondary' }
-        ],
-        compatibilidad: {
-            ninos: true, otrosPerros: null, gatos: null, piso: true
-        },
-        fotos: [
-            '../img/mascotas/leia-centro-proteccion-animales-gijon.jpg',
-            '../img/mascotas/leai2-centro-proteccion-animales-gijon.jpg'
-        ],
-        descripcion: '<p class="descripcion-texto">Leia es una perra de 14 años llena de cariño y nobleza. A pesar de los años que lleva esperando, sigue siendo fiel y agradecida con quienes le muestran afecto.</p><p class="descripcion-texto">Necesita un hogar tranquilo y comprensivo que entienda sus necesidades. Tiene licencia PPP, por lo que su futura familia deberá obtener el permiso correspondiente.</p>',
-        protectora: {
-            emoji: '🐾',
-            nombre: 'Centro de Protección Animal de Gijón',
-            ubicacion: 'Gijón, Asturias',
-            contacto: [
-                { icono: 'fa-phone',   texto: '984 181 507' },
-                { icono: 'fa-envelope', texto: 'albergue@gijon.es' }
-            ]
-        }
-    },
-
-//---------------------------------------------------------------------------------------
-
-    // Haru
-    'a02': {
-        nombre: 'Haru',
-        especie: 'Perro',
-        raza: 'Mestiza',
-        sexo: 'hembra',
-        subtitulo: 'Perra · Mestiza · Grande',
-        ubicacion: 'Oviedo, Asturias',
-        edad: '7 años',
-        tamanyo: 'Grande',
-        color: 'Marrón',
-        enAdopcion: '1 año',
-        salud: 'Bueno',
-        badges: [
-            { texto: 'Urgente',      clase: 'bg-danger' },
-            { texto: 'Vacunado',     clase: 'bg-warning text-dark' },
-            { texto: 'Esterilizada', clase: 'bg-success' },
-            { texto: 'Microchip',    clase: 'bg-secondary' }
-        ],
-        compatibilidad: {
-            ninos: true, otrosPerros: null, gatos: null, piso: false
-        },
-        fotos: [
-            '../img/mascotas/haru-protectora-de-asturias-dog.jpg',
-            '../img/mascotas/haru2-protectora-de-asturias-1621115340-Mthub.jpg',
-            '../img/mascotas/haru3-protectora-de-asturias.jpg'
-        ],
-        descripcion: '<p class="descripcion-texto">Haru es una perra de 7 años con mucha energía y amor para dar. Lleva un año esperando su familia ideal y necesita con urgencia un hogar que le dé la oportunidad que merece.</p><p class="descripcion-texto">Es activa y necesita espacio para moverse, por lo que una casa con jardín o salidas frecuentes sería ideal para ella.</p>',
-        protectora: {
-            emoji: '🏠',
-            nombre: 'Protectora de Asturias',
-            ubicacion: 'Oviedo, Asturias',
-            contacto: [
-                { icono: 'fa-phone',    texto: '985 234 567' },
-                { icono: 'fa-envelope', texto: 'contacto@protectoraasturias.es' }
-            ]
-        }
-    },
-
-//---------------------------------------------------------------------------------------
-
-    // Roy
-    'a03': {
-        nombre: 'Roy',
-        especie: 'Gato',
-        raza: 'Europeo',
-        sexo: 'macho',
-        subtitulo: 'Gato · Europeo · Pequeño',
-        ubicacion: 'Avilés, Asturias',
-        edad: '2 años',
-        tamanyo: 'Pequeño',
-        color: 'Blanco y negro',
-        enAdopcion: 'Recién llegado',
-        salud: 'Bueno',
-        badges: [
-            { texto: 'Nuevo',        clase: 'bg-info text-dark' },
-            { texto: 'Vacunado',     clase: 'bg-warning text-dark' },
-            { texto: 'Esterilizado', clase: 'bg-success' },
-            { texto: 'Microchip',    clase: 'bg-secondary' }
-        ],
-        compatibilidad: {
-            ninos: true, otrosGatos: true, perros: null, piso: true
-        },
-        fotos: [
-            '../img/mascotas/roys-asociacion-felina-la-esperanza-cat.jpg',
-            '../img/mascotas/roy2-asociacion-felina-la-esperanza.jpg',
-            '../img/mascotas/roy3-asociacion-felina-la-esperanza.jpg'
-        ],
-        descripcion: '<p class="descripcion-texto">Roy es un gatito blanco y negro de raza Europeo, de tan solo 2 años. Es <strong>muy cariñoso y mimoso</strong>, le encanta recibir atención y mimos de las personas.</p><p class="descripcion-texto">Se lleva fenomenal con niños y convive con otros gatos estupendamente. Roy busca una familia que le dé el amor que merece.</p>',
-        protectora: {
-            emoji: '🐱',
-            nombre: 'Asociación Felina La Esperanza',
-            ubicacion: 'Asturias',
-            contacto: [
-                { icono: 'fa-envelope', texto: 'asociacionfelinalaesperanza@gmail.com' },
-                { icono: 'fa-brands fa-facebook', texto: 'AsociacionFelinaEsperanza', href: 'https://facebook.com/AsociacionFelinaEsperanza' }
-            ]
-        }
-    },
-
-//---------------------------------------------------------------------------------------
-
-    // Bambi
-    'a04': {
-        nombre: 'Bambi',
-        especie: 'Gato',
-        raza: 'Común europeo',
-        sexo: 'macho',
-        subtitulo: 'Gato · Común europeo · Pequeño',
-        ubicacion: 'Oviedo, Asturias',
-        edad: 'Sin determinar',
-        tamanyo: 'Pequeño',
-        color: 'Sin datos',
-        enAdopcion: 'Sin datos',
-        salud: 'Bueno',
-        badges: [
-            { texto: 'Vacunado',     clase: 'bg-warning text-dark' },
-            { texto: 'Esterilizado', clase: 'bg-success' },
-            { texto: 'Microchip',    clase: 'bg-secondary' }
-        ],
-        compatibilidad: {
-            ninos: null, otrosGatos: null, perros: null, piso: true
-        },
-        fotos: [
-            '../img/mascotas/bambi-masquechuchos-cat.jpg'
-        ],
-        descripcion: '<p class="descripcion-texto">Bambi es un gato tranquilo que busca un hogar donde sentirse seguro y querido. Aunque aún no tenemos muchos datos sobre él, está disponible para adopción y esperando a su familia ideal.</p>',
-        protectora: {
-            emoji: '🐾',
-            nombre: 'MásQueChuchos',
-            ubicacion: 'Oviedo, Asturias',
-            contacto: [
-                { icono: 'fa-envelope', texto: 'info@masquechuchos.es' }
-            ]
-        }
-    },
-
-//---------------------------------------------------------------------------------------
-
-    // Dexter
-    'a05': {
-        nombre: 'Dexter',
-        especie: 'Perro',
-        raza: 'Cruce Pastor Alemán',
-        sexo: 'macho',
-        subtitulo: 'Perro · Cruce Pastor Alemán · Mediano',
-        ubicacion: 'Gijón, Asturias',
-        edad: '10 años',
-        tamanyo: 'Mediano',
-        color: 'Negro y marrón',
-        enAdopcion: '9 años',
-        salud: 'Bueno',
-        badges: [
-            { texto: 'Urgente',      clase: 'bg-danger' },
-            { texto: 'Vacunado',     clase: 'bg-warning text-dark' },
-            { texto: 'Esterilizado', clase: 'bg-success' },
-            { texto: 'Microchip',    clase: 'bg-secondary' }
-        ],
-        compatibilidad: {
-            ninos: true, otrosPerros: false, gatos: true, piso: true
-        },
-        fotos: [
-            '../img/mascotas/dexter-nortemascotas-dog.jpg',
-            '../img/mascotas/dexter2-nortemascotas-1461588001-ouIWI.jpg'
-        ],
-        descripcion: '<p class="descripcion-texto">Dexter lleva <strong>9 años</strong> esperando en la protectora. Es un perro de 10 años con mucho amor que dar, tranquilo y obediente. Ha demostrado una paciencia infinita esperando a alguien que le dé una oportunidad.</p><p class="descripcion-texto">Se lleva bien con niños y gatos, aunque prefiere ser el único perro del hogar. Un hogar tranquilo sería ideal para él.</p>',
-        protectora: {
-            emoji: '🏠',
-            nombre: 'Norte Mascotas',
-            ubicacion: 'Gijón, Asturias',
-            contacto: [
-                { icono: 'fa-phone',    texto: '984 123 456' },
-                { icono: 'fa-envelope', texto: 'info@nortemascotas.com' }
-            ]
-        }
-    },
-
-//---------------------------------------------------------------------------------------
-
-    // Bosque
-    'a06': {
-        nombre: 'Bosque',
-        especie: 'Gato',
-        raza: 'Común europeo',
-        sexo: 'hembra',
-        subtitulo: 'Gata · Común europeo · Pequeño',
-        ubicacion: 'Oviedo, Asturias',
-        edad: '8 meses',
-        tamanyo: 'Pequeño',
-        color: 'Atigrado',
-        enAdopcion: '3 meses',
-        salud: 'Leucemia felina+',
-        badges: [
-            { texto: 'Vacunado',       clase: 'bg-warning text-dark' },
-            { texto: 'Leucemia felina+', clase: 'bg-dark' },
-            { texto: 'Esterilizada',   clase: 'bg-success' },
-            { texto: 'Microchip',      clase: 'bg-secondary' }
-        ],
-        compatibilidad: {
-            ninos: false, otrosGatos: false, perros: false, piso: true
-        },
-        fotos: [
-            '../img/mascotas/bosque-protectora-de-asturias-cat.jpg',
-            '../img/mascotas/bosque2-protectora-de-asturias.jpg',
-            '../img/mascotas/bosque3-protectora-de-asturias.jpg'
-        ],
-        descripcion: '<p class="descripcion-texto">Bosque es una gatita de 8 meses con leucemia felina positivo. Necesita un hogar sin otros animales que comprenda y acepte su condición. Con los cuidados adecuados puede tener una vida feliz y de calidad.</p><p class="descripcion-texto">Es una gata tranquila que necesita una familia comprometida y consciente de sus necesidades especiales.</p>',
-        protectora: {
-            emoji: '🏠',
-            nombre: 'Protectora de Asturias',
-            ubicacion: 'Oviedo, Asturias',
-            contacto: [
-                { icono: 'fa-phone',    texto: '985 234 567' },
-                { icono: 'fa-envelope', texto: 'contacto@protectoraasturias.es' }
-            ]
-        }
-    }
-};
+// Elimina la base de datos local de animales, todo se carga por JS desde backend
 
 // ==================================================================================================
-//  ICONOS SVG DE SEXO
-
-var svgMacho  = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="28px" fill="#0419CC" title="Macho"><path d="M768-768v216h-72v-93L564-513q17.54 26.15 26.77 55.58Q600-428 600-396.41q0 85.48-59.28 144.95Q481.44-192 396.22-192T251.5-251.28Q192-310.56 192-395.78t59.35-144.72Q310.69-600 396-600q32 0 61.5 8.5T513-564l132-132h-93v-72h216Z"/></svg>';
-var svgHembra = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="28px" fill="#CC0479" title="Hembra"><path d="M440-120v-80h-80v-80h80v-84q-79-14-129.5-75.5T260-582q0-91 64.5-154.5T480-800q91 0 155.5 63.5T700-582q0 81-50.5 142.5T520-364v84h80v80h-80v80h-80Zm139-361q41-41 41-99t-41-99q-41-41-99-41t-99 41q-41 41-41 99t41 99q41 41 99 41t99-41Z"/></svg>';
-
-// ==============================================================================
 //  CARGAR FICHA SEGÚN ?id= DE LA URL
+
 document.addEventListener('DOMContentLoaded', function() {
 
     // Leer el parámetro ?id= de la URL
@@ -500,10 +249,13 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
+    // ------ Título de la página ------
     document.title = 'PetFamily – ' + animal.nombre;
 
+    // ------ Miga de pan ------
     document.getElementById('miga-nombre').textContent = animal.nombre;
 
+    // ------ Galería dinámica ------
     var fotoPrincipal = document.getElementById('foto-principal');
     fotoPrincipal.src = animal.fotos[0];
     fotoPrincipal.alt = 'Foto de ' + animal.nombre;
@@ -520,12 +272,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // ------ Nombre y sexo ------
     document.getElementById('animal-nombre').textContent    = animal.nombre;
     document.getElementById('animal-sexo-icono').innerHTML  = animal.sexo === 'macho' ? svgMacho : svgHembra;
     document.getElementById('animal-subtitulo').textContent = animal.subtitulo;
 
+    // ------ Botones ------
     document.getElementById('btn-apadrinar-texto').textContent = 'Apadrinar a ' + animal.nombre;
 
+    // ------ Badges ------
     var badgesEl = document.getElementById('animal-badges');
     animal.badges.forEach(function(b) {
         var span = document.createElement('span');
@@ -534,6 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
         badgesEl.appendChild(span);
     });
 
+    // ------ Características ------
     var caract = document.getElementById('animal-caracteristicas');
     var filas = [
         { icono: 'fa-location-dot', label: 'Ubicación',       valor: animal.ubicacion  },
@@ -563,10 +319,11 @@ document.addEventListener('DOMContentLoaded', function() {
         compat.innerHTML += '<li><span class="etiqueta"><i class="fa-solid ' + f.icono + '"></i> ' + f.label + '</span>' + valHTML + '</li>';
     });
 
+    // ------ Descripción ------
     document.getElementById('descripcion-titulo').innerHTML = '<i class="fa-solid fa-align-left"></i> Sobre ' + animal.nombre;
     document.getElementById('animal-descripcion').innerHTML = animal.descripcion;
 
-    //  Protectora 
+    // ------ Protectora ------
     document.getElementById('protectora-emoji').textContent    = animal.protectora.emoji;
     document.getElementById('protectora-nombre').textContent   = animal.protectora.nombre;
     document.getElementById('protectora-ubicacion').innerHTML  = '<i class="fa-solid fa-location-dot"></i> ' + animal.protectora.ubicacion;
@@ -579,8 +336,7 @@ document.addEventListener('DOMContentLoaded', function() {
         contactoEl.innerHTML += '<li><span class="etiqueta"><i class="fa-solid ' + c.icono + '"></i></span><span class="valor" style="font-size:0.82rem;">' + valor + '</span></li>';
     });
 
-    // ------------------------------------------------------------------------------
-    //Modal adopción 
+    // ------ Modal adopción ------
     document.getElementById('modal-titulo').textContent = '¿Quieres adoptar a ' + animal.nombre + '?';
     var contactoModal = animal.protectora.contacto.map(function(c) {
         if (c.href) return '<li>📘 <a href="' + c.href + '" target="_blank" style="color:#1B358F;">' + c.texto + '</a></li>';
@@ -591,13 +347,13 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('modal-body').innerHTML =
         '<p style="color:#444; font-size:0.95rem;">Para iniciar el proceso de adopción, ponte en contacto con <strong>' + animal.protectora.nombre + '</strong>. Ellos te guiarán en cada paso. 🐾</p><ul style="font-size:0.9rem; color:#555;">' + contactoModal + '</ul>';
 
-    //  Otros animales 
+    // ------ Otros animales (todos menos el actual) ------
     var otrosEl = document.getElementById('otros-animales');
     Object.keys(animales).forEach(function(key) {
         if (key === id) return;
         var a = animales[key];
         otrosEl.innerHTML +=
-            '<div class="col-6 col-md-3">' +
+            '<div class="col-6 col-md-4">' +
             '  <div class="card-sugerencia card" onclick="window.location.href=\'fichaAnimal.html?id=' + key + '\'">' +
             '    <img src="' + a.fotos[0] + '" alt="' + a.nombre + '">' +
             '    <div class="card-body">' +
@@ -608,7 +364,7 @@ document.addEventListener('DOMContentLoaded', function() {
             '</div>';
     });
 
-    //  Favorito: comprobar si ya estaba guardado ------
+    // ------ Favorito: comprobar si ya estaba guardado ------
     var favs = obtenerFavoritos();
     var btnFav = document.getElementById('btn-fav-ficha');
     if (favs.indexOf(id) !== -1) {
@@ -617,22 +373,32 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// ==================================================================================================
 //  CAMBIAR FOTO PRINCIPAL
+//  350ms de fade para evitar flash brusco
+//  Con prefers-reduced-motion activo en el sistema: cambio directo sin animación
 
 function cambiarFoto(miniatura, ruta) {
     var fotoPrincipal = document.getElementById('foto-principal');
-    fotoPrincipal.style.opacity = '0';
-    setTimeout(function() {
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         fotoPrincipal.src = ruta;
-        fotoPrincipal.style.opacity = '1';
-    }, 200);
+    } else {
+        fotoPrincipal.style.transition = 'opacity 0.35s ease';
+        fotoPrincipal.style.opacity    = '0';
+        setTimeout(function() {
+            fotoPrincipal.src           = ruta;
+            fotoPrincipal.style.opacity = '1';
+        }, 350);
+    }
+
     document.querySelectorAll('.miniatura').forEach(function(m) {
         m.classList.remove('activa');
     });
     miniatura.classList.add('activa');
 }
 
-
+// ==================================================================================================
 //  FAVORITOS
 
 var CLAVE_FAVORITOS = 'petfamily_favoritos';
@@ -660,7 +426,7 @@ function toggleFavoritoFicha() {
     localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify(favs));
 }
 
-
+// ==================================================================================================
 //  MODAL ADOPCIÓN
 
 function mostrarModalAdopcion() {

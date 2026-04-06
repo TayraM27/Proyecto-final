@@ -13,26 +13,25 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/093cf7cd82.js" crossorigin="anonymous"></script>
+
 </head>
 
 <body>
 
+<!-- header -->
 <header>
-
-    <!-- Logo (XL) -->
     <div id="contenedor_logo" class="d-none d-lg-block">
         <a id="logoXL" href="index.html">
             <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderXL">
-            <h2 id="title-logo">Pet<span style="color: #F8BA56;">Family</span></h2>
+            <h2 id="title-logo">Pet<span style="color:#F8BA56;">Family</span></h2>
         </a>
     </div>
 
-    <!-- Header(xs,sm, md) -->
     <div id="menu_burger" class="container-fluid justify-content-between align-content-center d-lg-none">
         <i id="btn_burger" class="fa-solid fa-bars text-center col-2 ms-n5"></i>
         <a id="logoMD" href="index.html" class="mb-2">
             <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderMD" class="mb-2">
-            <h2 id="burger_logo">Pet<span style="color: #F8BA56;">Family</span></h2>
+            <h2 id="burger_logo">Pet<span style="color:#F8BA56;">Family</span></h2>
         </a>
         <div id="user_burger" class="align-content-center d-lg-none">
             <a href="login.html"><img src="../img/iconosHeader/iconUser.png" width="15px" alt="Usuario"></a>
@@ -45,10 +44,10 @@
             <li><a href="adopta.html">Adopta</a></li>
             <li><a href="colabora.html" class="colabora">Colabora</a>
                 <ul class="submenuColabora d-none">
-                <li><a href="dona.html">Dona</a></li>
-                <li><a href="apadrina.html">Apadrina</a></li>
-                <li><a href="acoge.html">Acoge</a></li>
-              </ul>
+                    <li><a href="dona.html">Dona</a></li>
+                    <li><a href="apadrina.html">Apadrina</a></li>
+                    <li><a href="acoge.html">Acoge</a></li>
+                </ul>
             </li>
             <li><a href="protectoras.html">Protectoras</a></li>
             <li><a href="foro.html">Foro</a></li>
@@ -57,14 +56,12 @@
         </ul>
     </nav>
 
-    <!-- Usuario xl -->
     <div id="user_container" class="d-none d-lg-block">
         <a href="login.html"><img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px"></a>
         <a href="register.html" class="btn-register">Registrarse</a>
     </div>
-
 </header>
-<!-- Fin html del header -->
+<!-- fin header-->
 
 
 <main>
@@ -88,7 +85,6 @@
 
         <div class="row g-4">
 
-            <!-- Columna izquierda -->
             <div class="col-lg-7">
 
                 <div class="tarjeta">
@@ -142,22 +138,15 @@
                         <i class="fa-solid fa-building-shield"></i> Elige una protectora
                     </p>
 
-                    <div class="aviso-teaming">
-                        <i class="fa-solid fa-mug-hot"></i>
-                        <strong>¿Qué es Teaming?</strong> Es una plataforma de microdonaciones donde
-                        colaboras con solo <strong>1 €/mes</strong>. Individualmente parece poco, pero
-                        sumado al de muchas personas permite a las protectoras cubrir gastos fijos mes a mes.
-                    </div>
-
                     <div class="d-flex flex-column gap-3">
 
                         <label class="card-protectora seleccionada" id="prot-1"
                                onclick="toggleProtectora('prot-1')">
                             <input type="checkbox" name="protectora" value="prot-1" checked>
                             <img class="logo-protectora"
-                                 src="../img/mascotas/centro-proteccion-animales-gijon-logo.jpg"
+                                 src="../img/protectora/centro-proteccion-animales-gijon.jpg"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                                 alt="Logo Centro de Protección Animal de Gijón">
+                                 alt="Logo CPA Gijón">
                             <div class="icono-prot-fb">🐕</div>
                             <div style="flex:1;">
                                 <p class="protectora-nombre">Centro de Protección Animal de Gijón</p>
@@ -174,7 +163,7 @@
                                onclick="toggleProtectora('prot-2')">
                             <input type="checkbox" name="protectora" value="prot-2">
                             <img class="logo-protectora"
-                                 src="../img/mascotas/nortemascotas-logo.jpg"
+                                 src="../img/protectora/nortemascota-dex.jpg"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                                  alt="Logo Nortemascotas">
                             <div class="icono-prot-fb">🐾</div>
@@ -193,7 +182,7 @@
                                onclick="toggleProtectora('prot-3')">
                             <input type="checkbox" name="protectora" value="prot-3">
                             <img class="logo-protectora"
-                                 src="../img/mascotas/masquechuchos-logo.jpg"
+                                 src="../img/protectora/masquechuchos.jpg"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                                  alt="Logo MÁS QUE CHUCHOS">
                             <div class="icono-prot-fb">🏠</div>
@@ -212,7 +201,7 @@
                                onclick="toggleProtectora('prot-4')">
                             <input type="checkbox" name="protectora" value="prot-4">
                             <img class="logo-protectora"
-                                 src="../img/mascotas/protectora-de-asturias-logo.jpg"
+                                 src="../img/protectora/protectora-de-asturias.jpg"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                                  alt="Logo Fundación Protectora de Asturias">
                             <div class="icono-prot-fb">💙</div>
@@ -231,7 +220,7 @@
                                onclick="toggleProtectora('prot-5')">
                             <input type="checkbox" name="protectora" value="prot-5">
                             <img class="logo-protectora"
-                                 src="../img/mascotas/asociacion-felina-la-esperanza-logo.jpg"
+                                 src="../img/protectora/asociacion-felina-la-esperanza.jpg"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                                  alt="Logo Asociación Felina La Esperanza">
                             <div class="icono-prot-fb">🐱</div>
@@ -247,29 +236,27 @@
                         </label>
 
                     </div>
-
                     <p class="aviso-seleccion-multiple">
                         <i class="fa-solid fa-circle-info" style="color:#1B358F;"></i>
                         Puedes seleccionar una o varias protectoras. Se abrirá la información de cada una.
                     </p>
 
-                    <div class="aviso mt-2">
+                    <div class="aviso mt-3">
                         <i class="fa-solid fa-circle-info"></i>
                         El pago se realiza directamente en la web de la protectora.
                         PetFamily no gestiona ni almacena ningún dato bancario.
                     </div>
-
-                    <button class="btn-donar mt-3" onclick="mostrarModalDona()">
+                    <div class="text-center">
+                    <button class="btn-amarillo mt-3" onclick="mostrarModalDona()">
                         <i class="fa-solid fa-arrow-right me-2"></i>
                         Ver información para donar
                     </button>
+                    </div>
                 </div>
 
             </div>
-
-            <!-- Columna derecha -->
             <div class="col-lg-5">
-                <div class="tarjeta tarjeta-sticky">
+                <div class="tarjeta" style="position: sticky; top: 100px;">
                     <p class="tarjeta-titulo">
                         <i class="fa-solid fa-chart-simple"></i> El abandono en cifras
                     </p>
@@ -312,27 +299,16 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
-    <!-- flecha para subir al inicio tiene los estilos en footer.css -->
-    <div class="text-center">
-        <a href="#" class="text-align-center">
-            <img src="../img/sectionIndex/up-arrow.png" alt="Flecha que te devuelve a la parte superior" id="arrow" width="3%">
-        </a>
     </div>
-    </main>
+</main>
 
-<!-- footer -->
-    <footer>
-        <p>© 2026 PetFamily. Todos los derechos reservados.</p>
-        <p><a href="privacidad.html" style="color: white;">Política de Privacidad</a> | <a href="terminos.html" style="color: white;">Términos de Servicio</a></p>
-    </footer>
 
-<!-- modal donación -->
 <div class="modal fade" id="modalDonacion" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content modal-content-pf">
+        <div class="modal-content" style="border-radius:14px; border:none;">
+
             <div class="modal-header modal-header-pf">
                 <h5 class="modal-title text-white fw-bold">
                     <i class="fa-solid fa-building-shield me-2" style="color:#F8BA56;"></i>
@@ -340,22 +316,39 @@
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body modal-body-pf">
-                <p class="modal-intro">
+
+            <div class="modal-body" style="padding:1.5em;">
+                <p style="font-size:0.85rem; color:#6c757d; margin-bottom:1em;">
                     El proceso de donación se realiza directamente en la página de cada protectora.
                 </p>
                 <div id="modal-datos-protectora"></div>
             </div>
+
         </div>
     </div>
 </div>
 
-    <!-- script js -->
-    <script src="../javascript/script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
-    </script>
-<!-- chat -->
-    <script src="//code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
+
+<!-- Flecha arriba -->
+<div class="text-center mb-4">
+    <a href="#">
+        <img src="../img/sectionIndex/up-arrow.png" alt="Volver arriba" id="arrow" width="54.35px">
+    </a>
+</div>
+
+
+<!-- footer -->
+<footer>
+    <p>© 2026 PetFamily. Todos los derechos reservados.</p>
+    <p><a href="privacidad.html" style="color:white;">Política de Privacidad</a> | <a href="terminos.html" style="color:white;">Términos de Servicio</a></p>
+</footer>
+<!-- fin footer -->
+
+
+<script src="../javascript/script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
+
 
 </body>
 </html>

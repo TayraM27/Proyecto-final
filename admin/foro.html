@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetFamily – Foro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily">
+            <span>Pet<em>Family</em></span>
+        </div>
+        <nav class="sidebar-nav">
+            <p class="sidebar-seccion">General</p>
+            <a href="dashboard.html" class="sidebar-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+            <p class="sidebar-seccion">Gestión</p>
+            <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
+            <a href="protectoras.html" class="sidebar-link"><i class="fa-solid fa-building-shield"></i> Protectoras</a>
+            <a href="usuarios.html" class="sidebar-link"><i class="fa-solid fa-users"></i> Usuarios</a>
+            <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
+            <p class="sidebar-seccion">Comunidad</p>
+            <a href="foro.html" class="sidebar-link activo"><i class="fa-solid fa-comments"></i> Foro</a>
+            <p class="sidebar-seccion">Web pública</p>
+            <a href="../index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
+        </nav>
+        <div class="sidebar-pie">
+            <div class="sidebar-usuario">
+                <div class="sidebar-avatar" id="avatarInicial">A</div>
+                <div class="sidebar-usuario-info">
+                    <p class="sidebar-usuario-nombre" id="adminNombre">Admin</p>
+                    <p class="sidebar-usuario-rol">Administrador</p>
+                </div>
+                <button class="btn-logout" onclick="cerrarSesion()"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <header class="topbar">
+        <div style="display:flex;align-items:center;gap:0.8em;">
+            <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+            <span class="topbar-titulo"><i class="fa-solid fa-comments" style="color:var(--gold);margin-right:0.4em;"></i>Moderación del foro</span>
+        </div>
+        <div style="display:flex;gap:0.6em;">
+            <button class="btn btn-outline btn-sm" onclick="setVista('publicaciones')" id="btnPub">Publicaciones</button>
+            <button class="btn btn-outline btn-sm" onclick="setVista('comentarios')" id="btnCom">Comentarios</button>
+        </div>
+    </header>
+
+    <main class="admin-contenido">
+        <div class="panel" id="panelPublicaciones">
+            <div class="panel-header">
+                <p class="panel-titulo"><i class="fa-solid fa-newspaper"></i> Publicaciones</p>
+            </div>
+            <div class="tabla-wrap">
+                <table class="tabla">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Autor</th>
+                            <th>Categoría</th>
+                            <th>Likes</th>
+                            <th>Comentarios</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaPublicaciones">
+                        <tr><td colspan="8" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="paginacion" id="paginacionPub"></div>
+        </div>
+
+        <div class="panel d-none" id="panelComentarios">
+            <div class="panel-header">
+                <p class="panel-titulo"><i class="fa-solid fa-comment"></i> Comentarios</p>
+            </div>
+            <div class="tabla-wrap">
+                <table class="tabla">
+                    <thead>
+                        <tr>
+                            <th>Contenido</th>
+                            <th>Autor</th>
+                            <th>Publicación</th>
+                            <th>Likes</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaComentarios">
+                        <tr><td colspan="7" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var vistaActual  = 'publicaciones';
+var paginaActual = 1;
+var totalPaginas = 1;
+
+document.addEventListener('DOMContentLoaded', function() {
+    verificarAdmin(function() {
+        cargarPublicaciones();
+    });
+});
+
+function verificarAdmin(cb) {
+    fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.logueado || data.usuario.rol !== 'admin') { window.location.href = '../login.html'; return; }
+            document.getElementById('adminNombre').textContent = data.usuario.nombre;
+            document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
+            if (cb) cb();
+        });
+}
+
+function setVista(v) {
+    vistaActual = v;
+    paginaActual = 1;
+    document.getElementById('panelPublicaciones').classList.toggle('d-none', v !== 'publicaciones');
+    document.getElementById('panelComentarios').classList.toggle('d-none', v !== 'comentarios');
+    document.getElementById('btnPub').className = 'btn btn-sm ' + (v === 'publicaciones' ? 'btn-primario' : 'btn-outline');
+    document.getElementById('btnCom').className = 'btn btn-sm ' + (v === 'comentarios' ? 'btn-primario' : 'btn-outline');
+    if (v === 'publicaciones') cargarPublicaciones();
+    else cargarComentarios();
+}
+
+function cargarPublicaciones() {
+    fetch('../backend/admin/foro.php?tipo=publicaciones&pagina=' + paginaActual, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) return;
+            var tb = document.getElementById('tablaPublicaciones');
+            if (!data.publicaciones.length) {
+                tb.innerHTML = '<tr><td colspan="8"><div class="estado-vacio"><i class="fa-solid fa-comments"></i><p>Sin publicaciones</p></div></td></tr>';
+                return;
+            }
+            tb.innerHTML = data.publicaciones.map(function(p) {
+                var badgeCat = '<span class="badge badge-azul">' + p.categoria + '</span>';
+                var badgeEst = p.activa
+                    ? '<span class="badge badge-verde">Activa</span>'
+                    : '<span class="badge badge-rojo">Eliminada</span>';
+                var fijado = p.fijada
+                    ? '<span class="badge badge-gold" style="margin-left:0.3em;"><i class="fa-solid fa-thumbtack"></i></span>'
+                    : '';
+
+                return '<tr>'
+                    + '<td style="max-width:200px;"><strong>' + p.titulo.substring(0,50) + (p.titulo.length>50?'…':'') + '</strong>' + fijado + '</td>'
+                    + '<td style="font-size:0.82rem;">' + p.autor_nombre + '<br><span style="color:var(--texto-sub);">@' + p.autor_username + '</span></td>'
+                    + '<td>' + badgeCat + '</td>'
+                    + '<td>' + p.num_likes + '</td>'
+                    + '<td>' + p.num_comentarios + '</td>'
+                    + '<td style="font-size:0.78rem;">' + formatFecha(p.fecha) + '</td>'
+                    + '<td>' + badgeEst + '</td>'
+                    + '<td><div class="tabla-acciones">'
+                    + (p.fijada
+                        ? '<button class="btn btn-sm btn-outline btn-icon" onclick="accionPub('+p.idPublicacion+',\'desfijar\')" title="Desfijar"><i class="fa-solid fa-thumbtack-slash"></i></button>'
+                        : '<button class="btn btn-sm btn-outline btn-icon" onclick="accionPub('+p.idPublicacion+',\'fijar\')" title="Fijar"><i class="fa-solid fa-thumbtack"></i></button>')
+                    + (p.activa
+                        ? '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminarPub('+p.idPublicacion+')" title="Eliminar"><i class="fa-solid fa-trash"></i></button>'
+                        : '<button class="btn btn-sm btn-outline btn-icon" onclick="accionPub('+p.idPublicacion+',\'reactivar_publicacion\')" title="Reactivar"><i class="fa-solid fa-rotate-left"></i></button>')
+                    + '</div></td>'
+                    + '</tr>';
+            }).join('');
+        });
+}
+
+function cargarComentarios() {
+    fetch('../backend/admin/foro.php?tipo=comentarios&pagina=' + paginaActual, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) return;
+            var tb = document.getElementById('tablaComentarios');
+            if (!data.comentarios.length) {
+                tb.innerHTML = '<tr><td colspan="7"><div class="estado-vacio"><i class="fa-solid fa-comment"></i><p>Sin comentarios</p></div></td></tr>';
+                return;
+            }
+            tb.innerHTML = data.comentarios.map(function(c) {
+                var badgeEst = c.activo
+                    ? '<span class="badge badge-verde">Activo</span>'
+                    : '<span class="badge badge-rojo">Eliminado</span>';
+
+                return '<tr>'
+                    + '<td style="max-width:220px;font-size:0.85rem;">' + c.contenido.substring(0,80) + (c.contenido.length>80?'…':'') + '</td>'
+                    + '<td style="font-size:0.82rem;">' + c.autor_nombre + '</td>'
+                    + '<td style="font-size:0.82rem;max-width:160px;">' + c.publicacion_titulo.substring(0,50) + '…</td>'
+                    + '<td>' + c.num_likes + '</td>'
+                    + '<td style="font-size:0.78rem;">' + formatFecha(c.fecha) + '</td>'
+                    + '<td>' + badgeEst + '</td>'
+                    + '<td><div class="tabla-acciones">'
+                    + (c.activo
+                        ? '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminarCom('+c.idComentario+')" title="Eliminar"><i class="fa-solid fa-trash"></i></button>'
+                        : '<button class="btn btn-sm btn-outline btn-icon" onclick="accionCom('+c.idComentario+',\'reactivar_comentario\')" title="Reactivar"><i class="fa-solid fa-rotate-left"></i></button>')
+                    + '</div></td>'
+                    + '</tr>';
+            }).join('');
+        });
+}
+
+function accionPub(id, accion) {
+    fetch('../backend/admin/foro.php', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accion: accion, idPublicacion: id }),
+        credentials: 'include',
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
+        if (data.ok) cargarPublicaciones();
+    });
+}
+
+function accionCom(id, accion) {
+    fetch('../backend/admin/foro.php', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accion: accion, idComentario: id }),
+        credentials: 'include',
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
+        if (data.ok) cargarComentarios();
+    });
+}
+
+function eliminarPub(id) {
+    if (!confirm('¿Eliminar esta publicación? También se ocultarán sus comentarios.')) return;
+    fetch('../backend/admin/foro.php', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tipo: 'publicacion', idPublicacion: id }),
+        credentials: 'include',
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
+        if (data.ok) cargarPublicaciones();
+    });
+}
+
+function eliminarCom(id) {
+    if (!confirm('¿Eliminar este comentario?')) return;
+    fetch('../backend/admin/foro.php', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tipo: 'comentario', idComentario: id }),
+        credentials: 'include',
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
+        if (data.ok) cargarComentarios();
+    });
+}
+
+function formatFecha(f) {
+    if (!f) return '—';
+    return new Date(f).toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('abierto'); }
+function cerrarSesion() { fetch('../backend/api/auth/logout.php', { credentials: 'include' }).then(function(){ window.location.href = '../login.html'; }); }
+function mostrarToast(msg, tipo) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast visible toast-' + (tipo || 'ok');
+    setTimeout(function(){ t.className = 'toast'; }, 3000);
+}
+
+// inicializar botones de vista
+setVista('publicaciones');
+</script>
+
+</body>
+</html>

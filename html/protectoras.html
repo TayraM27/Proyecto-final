@@ -12,6 +12,461 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/093cf7cd82.js" crossorigin="anonymous"></script>
+
+    <style>
+        /* ── Filtro de búsqueda ── */
+        .filtro-prot-wrap {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .filtro-prot-input {
+            flex: 1;
+            min-width: 220px;
+            border: 2px solid #e9ecef;
+            border-radius: 50px;
+            padding: 0.6em 1.2em;
+            font-size: 0.88rem;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .filtro-prot-input:focus {
+            border-color: #1B358F;
+        }
+
+        .filtro-prot-btn {
+            background: none;
+            border: 2px solid #e9ecef;
+            border-radius: 50px;
+            padding: 0.55em 1.1em;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #555;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4em;
+        }
+
+        .filtro-prot-btn:hover,
+        .filtro-prot-btn.activo {
+            background: #1B358F;
+            border-color: #1B358F;
+            color: #fff;
+        }
+
+        /* ── Tarjeta protectora mejorada ── */
+        .card-protectora-pag {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 14px rgba(0,0,0,0.07);
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.25s, box-shadow 0.25s;
+            border: 2px solid transparent;
+        }
+
+        .card-protectora-pag:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 32px rgba(27,53,143,0.13);
+            border-color: #F8BA56;
+        }
+
+        /* Cabecera con franja de color */
+        .prot-franja {
+            height: 5px;
+            background: #1B358F;
+        }
+
+        .prot-franja-gold {
+            background: #F8BA56;
+        }
+
+        .prot-header {
+            background-color: #f8f9fb;
+            padding: 1.3em 1.3em 1em;
+            display: flex;
+            align-items: center;
+            gap: 1em;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        /* Logo con fallback limpio */
+        .prot-logo-container {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            overflow: hidden;
+            border: 2px solid #e9ecef;
+            background: #f0f4ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .prot-logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .prot-logo-emoji {
+            font-size: 1.6rem;
+            line-height: 1;
+        }
+
+        .prot-nombre {
+            font-weight: 700;
+            color: #1B358F;
+            font-size: 0.93rem;
+            margin-bottom: 0.2em;
+            line-height: 1.3;
+        }
+
+        .prot-lugar {
+            font-size: 0.78rem;
+            color: #6c757d;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.3em;
+        }
+
+        .prot-lugar i {
+            color: #F8BA56;
+        }
+
+        /* Años de experiencia badge */
+        .prot-badge-anos {
+            margin-left: auto;
+            background: #fff8e6;
+            border: 1px solid #F8BA56;
+            color: #9a6d00;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.2em 0.6em;
+            border-radius: 20px;
+            white-space: nowrap;
+            align-self: flex-start;
+        }
+
+        .prot-desc {
+            padding: 1.1em 1.3em 0.6em;
+            flex: 1;
+        }
+
+        .prot-desc p {
+            font-size: 0.83rem;
+            color: #555;
+            line-height: 1.65;
+            margin: 0;
+        }
+
+        /* Tags */
+        .prot-tags {
+            padding: 0 1.3em 1em;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4em;
+        }
+
+        .prot-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3em;
+            background-color: #f0f4ff;
+            color: #1B358F;
+            border: 1px solid #d0daff;
+            border-radius: 20px;
+            padding: 0.25em 0.75em;
+            font-size: 0.74rem;
+            font-weight: 600;
+        }
+
+        .prot-tag i {
+            font-size: 0.7rem;
+        }
+
+        .prot-tag-gold {
+            background-color: #fff8e6;
+            color: #9a6d00;
+            border-color: #F8BA56;
+        }
+
+        .prot-tag-verde {
+            background-color: #e8fff0;
+            color: #1e7e34;
+            border-color: #b8dfc7;
+        }
+
+        /* Datos de contacto */
+        .prot-contacto {
+            padding: 0.9em 1.3em;
+            border-top: 1px solid #f0f0f0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45em;
+        }
+
+        .prot-dato {
+            display: flex;
+            align-items: center;
+            gap: 0.6em;
+            font-size: 0.8rem;
+            color: #444;
+            word-break: break-all;
+        }
+
+        .prot-dato i {
+            color: #1B358F;
+            width: 14px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .prot-dato a {
+            color: #444;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .prot-dato a:hover {
+            color: #1B358F;
+            text-decoration: underline;
+        }
+
+        /* Animales disponibles */
+        .prot-animales-chip {
+            padding: 0.7em 1.3em;
+            background: #f8f9fb;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 0.6em;
+            font-size: 0.78rem;
+            color: #555;
+        }
+
+        .prot-animales-chip i {
+            color: #F8BA56;
+        }
+
+        .prot-animales-num {
+            font-weight: 700;
+            color: #1B358F;
+        }
+
+        /* Acciones */
+        .prot-acciones {
+            padding: 1em 1.3em;
+            display: flex;
+            gap: 0.6em;
+            flex-wrap: wrap;
+        }
+
+        .prot-acciones .btn-azul {
+            flex: 1;
+            padding: 0.65em;
+            font-size: 0.83rem;
+            text-align: center;
+            min-width: 0;
+        }
+
+        .btn-ver-animales {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f4ff;
+            color: #1B358F;
+            border: 2px solid #d0daff;
+            border-radius: 10px;
+            padding: 0.65em 1em;
+            font-weight: 700;
+            font-size: 0.83rem;
+            text-decoration: none;
+            flex: 1;
+            transition: background-color 0.2s, color 0.2s, transform 0.2s;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .btn-ver-animales:hover {
+            background-color: #1B358F;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .btn-prot-web {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            color: #1B358F;
+            border: 2px solid #1B358F;
+            border-radius: 10px;
+            padding: 0.65em 1em;
+            font-weight: 700;
+            font-size: 0.83rem;
+            text-decoration: none;
+            transition: background-color 0.2s, color 0.2s, transform 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-prot-web:hover {
+            background-color: #1B358F;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* ── Sin resultados ── */
+        .no-resultados {
+            display: none;
+            text-align: center;
+            padding: 4em 2em;
+            color: #6c757d;
+        }
+
+        .no-resultados i {
+            font-size: 3rem;
+            color: #dee2e6;
+            margin-bottom: 0.6em;
+            display: block;
+        }
+
+        /* ── Bloque CTA colabora ── */
+        .cta-colabora {
+            background: #1B358F;
+            border-radius: 18px;
+            padding: 2.5em 2em;
+            margin-top: 3em;
+            margin-bottom: 1em;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2em;
+            flex-wrap: wrap;
+        }
+
+        .cta-colabora-texto h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #F8BA56;
+            margin-bottom: 0.4em;
+        }
+
+        .cta-colabora-texto p {
+            font-size: 0.88rem;
+            color: rgba(255,255,255,0.8);
+            margin: 0;
+            max-width: 480px;
+            line-height: 1.6;
+        }
+
+        .cta-colabora-bots {
+            display: flex;
+            gap: 0.8em;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+
+        .cta-colabora-bots a {
+            border-radius: 10px;
+            padding: 0.75em 1.4em;
+            font-size: 0.88rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.4em;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+
+        .cta-colabora-bots a:hover {
+            opacity: 0.88;
+            transform: translateY(-2px);
+        }
+
+        .btn-cta-amarillo {
+            background: #F8BA56;
+            color: #1B358F;
+        }
+
+        .btn-cta-outline {
+            background: transparent;
+            color: #fff;
+            border: 2px solid rgba(255,255,255,0.4);
+        }
+
+        .btn-cta-outline:hover {
+            border-color: #fff;
+        }
+
+        /* ── Aviso IBAN ── */
+        .prot-dato-iban {
+            background: #f8f9fb;
+            border-radius: 8px;
+            padding: 0.4em 0.7em;
+            font-size: 0.72rem;
+            font-family: 'Courier New', monospace;
+            color: #444;
+            letter-spacing: 0.03em;
+            word-break: break-all;
+        }
+
+        .prot-dato-iban i {
+            color: #F8BA56;
+        }
+
+        /* Responsive */
+        @media (max-width: 767px) {
+            .protectoras-hero {
+                padding: 2em 1.4em;
+            }
+
+            .protectoras-hero h1 {
+                font-size: 1.5rem;
+            }
+
+            .stats-row {
+                gap: 0.6rem;
+            }
+
+            .stat-chip {
+                font-size: 0.74rem;
+                padding: 0.35em 0.8em;
+            }
+
+            .cta-colabora {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 575px) {
+            .prot-acciones {
+                flex-direction: column;
+            }
+
+            .btn-ver-animales,
+            .btn-prot-web,
+            .prot-acciones .btn-azul {
+                width: 100%;
+                flex: unset;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -68,46 +523,88 @@
 
 <main>
     <div class="container">
-
+        <!-- Migas -->
         <p class="migas">
             <a href="index.html">Inicio</a>
             <span>›</span>
             Protectoras
         </p>
+            <div class="protectoras-hero">
+                <h1><i class="fa-solid fa-building-shield icon-yellow"></i> Protectoras colaboradoras</h1>
+                <p>
+                    Estas son las organizaciones que hay detrás de cada animal en PetFamily. Todas son sin ánimo de lucro, dependen de voluntarios y de personas como tú para seguir adelante.
+                </p>
+                <div class="linea-amarilla" style="margin-top:1.2em;"></div>
+            </div>
 
-        <h1 class="pagina-titulo">
-            <i class="fa-solid fa-building-shield" style="color:#F8BA56;"></i> Protectoras colaboradoras
-        </h1>
-        <p class="pagina-subtitulo">
-            Estas son las organizaciones que hay detrás de cada animal en PetFamily. Todas son sin ánimo de lucro, dependen de voluntarios y de personas como tú para seguir adelante.
-        </p>
-        <div class="linea-amarilla"></div>
+        <!-- Barra de búsqueda / filtros -->
+        <div class="filtro-prot-wrap">
+            <input
+                type="text"
+                class="filtro-prot-input"
+                id="buscadorProt"
+                placeholder="🔍  Buscar por nombre o localidad..."
+                oninput="filtrarProtectoras()"
+            >
+            <button class="filtro-prot-btn activo" data-filtro="todas" onclick="setFiltro(this, 'todas')">
+                <i class="fa-solid fa-layer-group"></i> Todas
+            </button>
+            <button class="filtro-prot-btn" data-filtro="perros" onclick="setFiltro(this, 'perros')">
+                <i class="fa-solid fa-dog"></i> Perros
+            </button>
+            <button class="filtro-prot-btn" data-filtro="gatos" onclick="setFiltro(this, 'gatos')">
+                <i class="fa-solid fa-cat"></i> Gatos
+            </button>
+            <button class="filtro-prot-btn" data-filtro="teaming" onclick="setFiltro(this, 'teaming')">
+                <i class="fa-solid fa-mug-hot"></i> Teaming
+            </button>
+        </div>
 
-        <div class="row g-4 mb-5">
+        <!-- Grid de tarjetas -->
+        <div class="row g-4 mb-2" id="gridProtectoras">
 
-            <!-- Centro de Protección Animal de Gijón -->
-            <div class="col-md-6 col-lg-4">
+            <!-- 1. Centro de Protección Animal de Gijón              -->
+            <div class="col-md-6 col-lg-4 prot-item" data-especie="perros gatos" data-nombre="Centro de Protección Animal de Gijón Gijón" data-teaming="no">
                 <div class="card-protectora-pag">
+                    <div class="prot-franja"></div>
                     <div class="prot-header">
-                        <img src="../img/mascotas/centro-proteccion-animales-gijon-logo.jpg"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                             alt="Logo CPA Gijón" class="prot-logo">
-                        <div class="prot-logo-fb">🐕</div>
-                        <div>
-                            <p class="prot-nombre">Centro de Protección Animal de Gijón</p>
-                            <p class="prot-lugar"><i class="fa-solid fa-location-dot"></i> Gijón, Camino de Liervado S/n (Serín)</p>
+                        <div class="prot-logo-container">
+                            <img src="../img/mascotas/centro-proteccion-animales-gijon-logo.jpg"
+                                 alt="Logo CPA Gijón"
+                                 onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'prot-logo-emoji\'>🐕</span>';">
                         </div>
+                        <div style="flex:1; min-width:0;">
+                            <p class="prot-nombre">Centro de Protección Animal de Gijón</p>
+                            <p class="prot-lugar">
+                                <i class="fa-solid fa-location-dot"></i> Gijón, Camino de Liervado S/n (Serín)
+                            </p>
+                        </div>
+                        <span class="prot-badge-anos">Desde 2025</span>
                     </div>
 
                     <div class="prot-desc">
-                        <p>Instalación municipal gestionada por la Fundación Protectora de Asturias desde 2025. Recogen animales perdidos o abandonados en Gijón, les dan atención veterinaria completa y los preparan para la adopción. Tienen especial sensibilidad con animales mayores y de razas consideradas peligrosas, como Leia, que llevan años esperando una oportunidad.</p>
+                        <p>
+                            Instalación municipal gestionada por la Fundación Protectora de Asturias. Recogen animales
+                            perdidos o abandonados en Gijón, les dan atención veterinaria completa y los preparan para
+                            la adopción. Tienen especial sensibilidad con animales mayores y de razas PPP, como Leia,
+                            que lleva años esperando una oportunidad.
+                        </p>
                     </div>
 
                     <div class="prot-tags">
                         <span class="prot-tag"><i class="fa-solid fa-dog"></i> Perros y gatos</span>
                         <span class="prot-tag"><i class="fa-solid fa-shield-heart"></i> Gestión municipal</span>
                         <span class="prot-tag"><i class="fa-solid fa-heart"></i> Animales mayores</span>
+                        <span class="prot-tag"><i class="fa-solid fa-certificate"></i> Licencia PPP</span>
                     </div>
+
+                    <!-- Animales disponibles -->
+                    <div class="prot-animales-chip">
+                        <i class="fa-solid fa-paw"></i>
+                        <span>Animales disponibles actualmente: <strong class="prot-animales-num">2</strong></span>
+                        <span style="color:#aaa; font-size:0.72rem;">(Leia, Dexter)</span>
+                    </div>
+
 
                     <div class="prot-contacto">
                         <div class="prot-dato">
@@ -128,7 +625,7 @@
                         <a href="adopta.html" class="btn-ver-animales">
                             <i class="fa-solid fa-paw me-1"></i> Ver animales
                         </a>
-                        <a href="dona.html?prot=prot-1" class="btn-azul">
+                        <a href="dona.html" class="btn-azul">
                             <i class="fa-solid fa-hand-holding-heart me-1"></i> Donar
                         </a>
                         <a href="https://www.albergaria.es/protectoras/centro-proteccion-animales-gijon/" target="_blank" rel="noopener" class="btn-prot-web">
@@ -138,42 +635,62 @@
                 </div>
             </div>
 
-            <!-- Fundación Protectora de Asturias -->
-            <div class="col-md-6 col-lg-4">
+            <!-- Fundación Protectora de Asturias                  -->
+            <div class="col-md-6 col-lg-4 prot-item" data-especie="perros gatos" data-nombre="Fundación Protectora de Asturias Siero" data-teaming="si">
                 <div class="card-protectora-pag">
+                    <div class="prot-franja prot-franja-gold"></div>
                     <div class="prot-header">
-                        <img src="../img/mascotas/protectora-de-asturias-logo.jpg"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                             alt="Logo Fundación Protectora de Asturias" class="prot-logo">
-                        <div class="prot-logo-fb">💙</div>
-                        <div>
-                            <p class="prot-nombre">Fundación Protectora de Asturias</p>
-                            <p class="prot-lugar"><i class="fa-solid fa-location-dot"></i> Siero, Asturias</p>
+                        <div class="prot-logo-container">
+                            <img src="../img/mascotas/protectora-de-asturias-logo.jpg"
+                                 alt="Logo Fundación Protectora de Asturias"
+                                 onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'prot-logo-emoji\'>💙</span>';">
                         </div>
+                        <div style="flex:1; min-width:0;">
+                            <p class="prot-nombre">Fundación Protectora de Asturias</p>
+                            <p class="prot-lugar">
+                                <i class="fa-solid fa-location-dot"></i> Siero, Asturias
+                            </p>
+                        </div>
+                        <span class="prot-badge-anos">Desde 2012</span>
                     </div>
 
                     <div class="prot-desc">
-                        <p>Fundada en 2012 como respuesta al abandono masivo y a la falta de atención institucional. Trabajan con casas de acogida como base principal y tienen refugio propio en Siero. Todos sus animales se entregan vacunados, esterilizados, con microchip y pasaporte, y el proceso incluye un contrato de adopción con seguimiento posterior.</p>
+                        <p>
+                            Fundada en 2012 como respuesta al abandono masivo. Trabajan con casas de acogida como base
+                            principal y tienen refugio propio en Siero. Todos sus animales se entregan vacunados,
+                            esterilizados, con microchip y pasaporte, y el proceso incluye un contrato de adopción
+                            con seguimiento posterior.
+                        </p>
                     </div>
 
                     <div class="prot-tags">
                         <span class="prot-tag"><i class="fa-solid fa-dog"></i> Perros y gatos</span>
                         <span class="prot-tag"><i class="fa-solid fa-house-chimney-heart"></i> Casas de acogida</span>
                         <span class="prot-tag prot-tag-gold"><i class="fa-solid fa-star"></i> Fundación oficial</span>
+                        <span class="prot-tag prot-tag-verde"><i class="fa-solid fa-mug-hot"></i> Teaming</span>
                     </div>
+
+                    <div class="prot-animales-chip">
+                        <i class="fa-solid fa-paw"></i>
+                        <span>Animales disponibles actualmente: <strong class="prot-animales-num">2</strong></span>
+                        <span style="color:#aaa; font-size:0.72rem;">(Haru, Bosque)</span>
+                    </div>
+
 
                     <div class="prot-contacto">
                         <div class="prot-dato">
                             <i class="fa-solid fa-envelope"></i>
                             <a href="mailto:info@protectoradeasturias.org">info@protectoradeasturias.org</a>
                         </div>
-                        <div class="prot-dato">
+                        <div class="prot-dato prot-dato-iban">
                             <i class="fa-solid fa-building-columns"></i>
-                            <span>ES15 0081 5665 2400 0109 0516 (Sabadell)</span>
+                            ES15 0081 5665 2400 0109 0516 (Sabadell)
                         </div>
                         <div class="prot-dato">
                             <i class="fa-solid fa-mug-hot"></i>
-                            <a href="https://www.teaming.net/fundacionprotectoradeanimalesasturias" target="_blank" rel="noopener">Teaming · solo 1 €/mes</a>
+                            <a href="https://www.teaming.net/fundacionprotectoradeanimalesasturias" target="_blank" rel="noopener">
+                                Teaming · solo 1 €/mes
+                            </a>
                         </div>
                     </div>
 
@@ -181,7 +698,7 @@
                         <a href="adopta.html" class="btn-ver-animales">
                             <i class="fa-solid fa-paw me-1"></i> Ver animales
                         </a>
-                        <a href="dona.html?prot=prot-4" class="btn-azul">
+                        <a href="dona.html" class="btn-azul">
                             <i class="fa-solid fa-hand-holding-heart me-1"></i> Donar
                         </a>
                         <a href="http://www.protectoradeasturias.org" target="_blank" rel="noopener" class="btn-prot-web">
@@ -191,22 +708,31 @@
                 </div>
             </div>
 
-            <!-- Nortemascotas -->
-            <div class="col-md-6 col-lg-4">
+            <!--  Nortemascotas                                     -->
+            <div class="col-md-6 col-lg-4 prot-item" data-especie="perros" data-nombre="Nortemascotas Gijón" data-teaming="no">
                 <div class="card-protectora-pag">
+                    <div class="prot-franja"></div>
                     <div class="prot-header">
-                        <img src="../img/mascotas/nortemascotas-logo.jpg"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                             alt="Logo Nortemascotas" class="prot-logo">
-                        <div class="prot-logo-fb">🐾</div>
-                        <div>
+                        <div class="prot-logo-container">
+                            <img src="../img/mascotas/nortemascotas-logo.jpg"
+                                 alt="Logo Nortemascotas"
+                                 onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'prot-logo-emoji\'>🐾</span>';">
+                        </div>
+                        <div style="flex:1; min-width:0;">
                             <p class="prot-nombre">Nortemascotas</p>
-                            <p class="prot-lugar"><i class="fa-solid fa-location-dot"></i> Gijón, Pumarín</p>
+                            <p class="prot-lugar">
+                                <i class="fa-solid fa-location-dot"></i> Gijón, Pumarín
+                            </p>
                         </div>
                     </div>
 
                     <div class="prot-desc">
-                        <p>Asociación sin ánimo de lucro que lucha por los derechos de los animales desde Gijón. Trabajan con voluntarios y casas de acogida particulares, sin instalaciones propias. Su modelo cercano y familiar permite un seguimiento muy personalizado de cada animal. Entre sus casos más llamativos está Dexter, un Pastor Alemán que lleva casi una década esperando un hogar.</p>
+                        <p>
+                            Asociación sin ánimo de lucro que lucha por los derechos de los animales desde Gijón.
+                            Trabajan con voluntarios y casas de acogida particulares, sin instalaciones propias.
+                            Su modelo cercano y familiar permite un seguimiento muy personalizado de cada animal.
+                            Entre sus casos está Dexter, un Pastor Alemán que lleva casi una década esperando un hogar.
+                        </p>
                     </div>
 
                     <div class="prot-tags">
@@ -214,6 +740,13 @@
                         <span class="prot-tag"><i class="fa-solid fa-people-group"></i> 100% voluntarios</span>
                         <span class="prot-tag"><i class="fa-solid fa-hand-holding-heart"></i> Trato familiar</span>
                     </div>
+
+                    <div class="prot-animales-chip">
+                        <i class="fa-solid fa-paw"></i>
+                        <span>Animales disponibles actualmente: <strong class="prot-animales-num">1</strong></span>
+                        <span style="color:#aaa; font-size:0.72rem;">(Dexter)</span>
+                    </div>
+
 
                     <div class="prot-contacto">
                         <div class="prot-dato">
@@ -224,9 +757,9 @@
                             <i class="fa-solid fa-envelope"></i>
                             <a href="mailto:Mariasol.ferreyra2014@gmail.com">Mariasol.ferreyra2014@gmail.com</a>
                         </div>
-                        <div class="prot-dato">
+                        <div class="prot-dato prot-dato-iban">
                             <i class="fa-solid fa-building-columns"></i>
-                            <span>ES39 0182 2800 1902 0163 9405 (BBVA)</span>
+                            ES39 0182 2800 1902 0163 9405 (BBVA)
                         </div>
                     </div>
 
@@ -234,7 +767,7 @@
                         <a href="adopta.html" class="btn-ver-animales">
                             <i class="fa-solid fa-paw me-1"></i> Ver animales
                         </a>
-                        <a href="dona.html?prot=prot-2" class="btn-azul">
+                        <a href="dona.html" class="btn-azul">
                             <i class="fa-solid fa-hand-holding-heart me-1"></i> Donar
                         </a>
                         <a href="https://www.facebook.com/Asociacionnortemascotas/" target="_blank" rel="noopener" class="btn-prot-web">
@@ -244,29 +777,47 @@
                 </div>
             </div>
 
-            <!-- MÁS QUE CHUCHOS -->
-            <div class="col-md-6 col-lg-4">
+            <!-- MÁS QUE CHUCHOS                                  -->
+            <div class="col-md-6 col-lg-4 prot-item" data-especie="perros" data-nombre="MÁS QUE CHUCHOS Oviedo Llanera" data-teaming="si">
                 <div class="card-protectora-pag">
+                    <div class="prot-franja prot-franja-gold"></div>
                     <div class="prot-header">
-                        <img src="../img/mascotas/masquechuchos-logo.jpg"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                             alt="Logo MÁS QUE CHUCHOS" class="prot-logo">
-                        <div class="prot-logo-fb">🏠</div>
-                        <div>
-                            <p class="prot-nombre">MÁS QUE CHUCHOS</p>
-                            <p class="prot-lugar"><i class="fa-solid fa-location-dot"></i> Oviedo – Llanera</p>
+                        <div class="prot-logo-container">
+                            <img src="../img/mascotas/masquechuchos-logo.jpg"
+                                 alt="Logo MÁS QUE CHUCHOS"
+                                 onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'prot-logo-emoji\'>🏠</span>';">
                         </div>
+                        <div style="flex:1; min-width:0;">
+                            <p class="prot-nombre">MÁS QUE CHUCHOS</p>
+                            <p class="prot-lugar">
+                                <i class="fa-solid fa-location-dot"></i> Oviedo – Llanera
+                            </p>
+                        </div>
+                        <span class="prot-badge-anos">Desde 1993</span>
                     </div>
 
                     <div class="prot-desc">
-                        <p>Nacida en 1993, es una de las protectoras con más trayectoria de Asturias. Han conseguido cientos de adopciones responsables y evolucionaron hasta crear el Centro de Adopción y Empatía Animal, un espacio pensado no solo para cuidar animales, sino también para educar y concienciar a la sociedad. Su lema: el abandono no es una opción.</p>
+                        <p>
+                            Nacida en 1993, es una de las protectoras con más trayectoria de Asturias. Han conseguido
+                            cientos de adopciones responsables y evolucionaron hasta crear el Centro de Adopción y
+                            Empatía Animal, un espacio pensado no solo para cuidar animales, sino también para educar
+                            y concienciar a la sociedad. Su lema: el abandono no es una opción.
+                        </p>
                     </div>
 
                     <div class="prot-tags">
                         <span class="prot-tag"><i class="fa-solid fa-dog"></i> Principalmente perros</span>
-                        <span class="prot-tag prot-tag-gold"><i class="fa-solid fa-star"></i> Desde 1993</span>
+                        <span class="prot-tag prot-tag-gold"><i class="fa-solid fa-star"></i> +30 años</span>
                         <span class="prot-tag"><i class="fa-solid fa-graduation-cap"></i> Educación animal</span>
+                        <span class="prot-tag prot-tag-verde"><i class="fa-solid fa-mug-hot"></i> Teaming</span>
                     </div>
+
+                    <div class="prot-animales-chip">
+                        <i class="fa-solid fa-paw"></i>
+                        <span>Animales disponibles actualmente: <strong class="prot-animales-num">1</strong></span>
+                        <span style="color:#aaa; font-size:0.72rem;">(Bambi)</span>
+                    </div>
+
 
                     <div class="prot-contacto">
                         <div class="prot-dato">
@@ -275,7 +826,9 @@
                         </div>
                         <div class="prot-dato">
                             <i class="fa-solid fa-mug-hot"></i>
-                            <a href="https://www.teaming.net/masquechuchos/" target="_blank" rel="noopener">Teaming · solo 1 €/mes</a>
+                            <a href="https://www.teaming.net/masquechuchos/" target="_blank" rel="noopener">
+                                Teaming · solo 1 €/mes
+                            </a>
                         </div>
                         <div class="prot-dato">
                             <i class="fa-solid fa-globe"></i>
@@ -287,7 +840,7 @@
                         <a href="adopta.html" class="btn-ver-animales">
                             <i class="fa-solid fa-paw me-1"></i> Ver animales
                         </a>
-                        <a href="dona.html?prot=prot-3" class="btn-azul">
+                        <a href="dona.html" class="btn-azul">
                             <i class="fa-solid fa-hand-holding-heart me-1"></i> Donar
                         </a>
                         <a href="http://masquechuchos.org" target="_blank" rel="noopener" class="btn-prot-web">
@@ -297,29 +850,47 @@
                 </div>
             </div>
 
-            <!-- Asociación Felina La Esperanza -->
-            <div class="col-md-6 col-lg-4">
+            <!-- Asociación Felina La Esperanza                    -->
+            <div class="col-md-6 col-lg-4 prot-item" data-especie="gatos" data-nombre="Asociación Felina La Esperanza Asturias" data-teaming="si">
                 <div class="card-protectora-pag">
+                    <div class="prot-franja prot-franja-gold"></div>
                     <div class="prot-header">
-                        <img src="../img/mascotas/asociacion-felina-la-esperanza-logo.jpg"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                             alt="Logo Asociación Felina La Esperanza" class="prot-logo">
-                        <div class="prot-logo-fb">🐱</div>
-                        <div>
+                        <div class="prot-logo-container">
+                            <img src="../img/mascotas/asociacion-felina-la-esperanza-logo.jpg"
+                                 alt="Logo Asociación Felina La Esperanza"
+                                 onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'prot-logo-emoji\'>🐱</span>';">
+                        </div>
+                        <div style="flex:1; min-width:0;">
                             <p class="prot-nombre">Asociación Felina La Esperanza</p>
-                            <p class="prot-lugar"><i class="fa-solid fa-location-dot"></i> Asturias</p>
+                            <p class="prot-lugar">
+                                <i class="fa-solid fa-location-dot"></i> Asturias
+                            </p>
                         </div>
                     </div>
 
                     <div class="prot-desc">
-                        <p>Asociación especializada exclusivamente en gatos, con especial atención a los casos más difíciles: felinos con enfermedades crónicas como la leucemia felina, gatos de edad avanzada o con necesidades especiales. Su trabajo se centra en darles una vida digna y encontrarles familias comprometidas que entiendan que cuidar de ellos es un acto de amor, no de sacrificio.</p>
+                        <p>
+                            Asociación especializada exclusivamente en gatos, con especial atención a los casos más
+                            difíciles: felinos con enfermedades crónicas como la leucemia felina, gatos de edad
+                            avanzada o con necesidades especiales. Su trabajo se centra en darles una vida digna
+                            y encontrarles familias comprometidas que entiendan que cuidar de ellos es un acto de
+                            amor, no de sacrificio.
+                        </p>
                     </div>
 
                     <div class="prot-tags">
                         <span class="prot-tag"><i class="fa-solid fa-cat"></i> Solo gatos</span>
                         <span class="prot-tag"><i class="fa-solid fa-kit-medical"></i> Enfermedades crónicas</span>
                         <span class="prot-tag"><i class="fa-solid fa-heart-pulse"></i> Casos especiales</span>
+                        <span class="prot-tag prot-tag-verde"><i class="fa-solid fa-mug-hot"></i> Teaming</span>
                     </div>
+
+                    <div class="prot-animales-chip">
+                        <i class="fa-solid fa-paw"></i>
+                        <span>Animales disponibles actualmente: <strong class="prot-animales-num">2</strong></span>
+                        <span style="color:#aaa; font-size:0.72rem;">(Roy, Bosque)</span>
+                    </div>
+
 
                     <div class="prot-contacto">
                         <div class="prot-dato">
@@ -328,7 +899,9 @@
                         </div>
                         <div class="prot-dato">
                             <i class="fa-solid fa-mug-hot"></i>
-                            <a href="https://www.teaming.net/asociacionfelinalaesperanza" target="_blank" rel="noopener">Teaming · solo 1 €/mes</a>
+                            <a href="https://www.teaming.net/asociacionfelinalaesperanza" target="_blank" rel="noopener">
+                                Teaming · solo 1 €/mes
+                            </a>
                         </div>
                     </div>
 
@@ -336,7 +909,7 @@
                         <a href="adopta.html" class="btn-ver-animales">
                             <i class="fa-solid fa-paw me-1"></i> Ver animales
                         </a>
-                        <a href="dona.html?prot=prot-5" class="btn-azul">
+                        <a href="dona.html" class="btn-azul">
                             <i class="fa-solid fa-hand-holding-heart me-1"></i> Donar
                         </a>
                         <a href="https://www.teaming.net/asociacionfelinalaesperanza" target="_blank" rel="noopener" class="btn-prot-web">
@@ -346,27 +919,112 @@
                 </div>
             </div>
 
+        </div><!-- /row -->
+
+        <!-- Sin resultados -->
+        <div class="no-resultados" id="noResultados">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <p style="font-size:1rem; font-weight:600; color:#444;">No se encontraron protectoras con esos criterios.</p>
+            <p style="font-size:0.85rem;">Prueba con otro término o elimina los filtros activos.</p>
+            <button class="btn-azul mt-3" style="width:auto; display:inline-flex; align-items:center; gap:0.4em;" onclick="resetFiltros()">
+                <i class="fa-solid fa-rotate-left"></i> Mostrar todas
+            </button>
         </div>
 
-    </div>
+        <!-- CTA colabora -->
+        <div class="cta-colabora">
+            <div class="cta-colabora-texto">
+                <h3><i class="fa-solid fa-paw me-2"></i>¿Tu protectora no está aquí?</h3>
+                <p>
+                    Si representas una protectora o refugio de Asturias y quieres aparecer en PetFamily,
+                    escríbenos. La colaboración es gratuita y te ayudamos a dar más visibilidad a tus animales.
+                </p>
+            </div>
+            <div class="cta-colabora-bots">
+                <a href="mailto:info@petfamily.es" class="btn-cta-amarillo">
+                    <i class="fa-solid fa-envelope"></i> Contactar
+                </a>
+                <a href="colabora.html" class="btn-cta-outline">
+                    <i class="fa-solid fa-hand-holding-heart"></i> Colaborar
+                </a>
+            </div>
+        </div>
 
-    <!-- flecha para subir al inicio tiene los estilos en footer.css -->
-    <div class="text-center">
-        <a href="#" class="text-align-center"><img src="../img/sectionIndex/up-arrow.png" alt="Flecha que te devuelve a la parte superior" id="arrow" width="3%"></a>
+    </div><!-- /container -->
+
+    <!-- Flecha arriba -->
+    <div class="text-center mt-4 mb-2">
+        <a href="#" class="text-align-center">
+            <img src="../img/sectionIndex/up-arrow.png" alt="Volver al inicio" id="arrow" width="3%">
+        </a>
     </div>
 </main>
 
+
 <!-- footer -->
 <footer>
-    <p>© 2024 PetFamily. Todos los derechos reservados.</p>
-    <p><a href="privacidad.html" style="color: white;">Política de Privacidad</a> | <a href="terminos.html" style="color: white;">Términos de Servicio</a></p>
+    <p>© 2026 PetFamily. Todos los derechos reservados.</p>
+    <p>
+        <a href="privacidad.html" style="color: white;">Política de Privacidad</a> |
+        <a href="terminos.html"   style="color: white;">Términos de Servicio</a>
+    </p>
 </footer>
 
-<!-- script js -->
+
+<!-- Scripts -->
 <script src="../javascript/script.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<!-- chat -->
-<script src="//code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
+<!-- Chat -->
+<script src="https://code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
+
+<script>
+    /*  Filtrado de protectoras                                 */
+
+    var filtroActivo = 'todas';
+
+    function setFiltro(btn, filtro) {
+        filtroActivo = filtro;
+        document.querySelectorAll('.filtro-prot-btn').forEach(function(b) {
+            b.classList.remove('activo');
+        });
+        btn.classList.add('activo');
+        filtrarProtectoras();
+    }
+
+    function filtrarProtectoras() {
+        var texto = document.getElementById('buscadorProt').value.toLowerCase().trim();
+        var items = document.querySelectorAll('.prot-item');
+        var visibles = 0;
+
+        items.forEach(function(item) {
+            var nombre  = (item.dataset.nombre  || '').toLowerCase();
+            var especie = (item.dataset.especie || '').toLowerCase();
+            var teaming = (item.dataset.teaming || '').toLowerCase();
+
+            var pasaTexto = !texto || nombre.includes(texto);
+
+            var pasaFiltro = true;
+            if (filtroActivo === 'perros')  pasaFiltro = especie.includes('perros');
+            if (filtroActivo === 'gatos')   pasaFiltro = especie.includes('gatos');
+            if (filtroActivo === 'teaming') pasaFiltro = teaming === 'si';
+
+            var mostrar = pasaTexto && pasaFiltro;
+            item.style.display = mostrar ? '' : 'none';
+            if (mostrar) visibles++;
+        });
+
+        document.getElementById('noResultados').style.display = visibles === 0 ? 'block' : 'none';
+    }
+
+    function resetFiltros() {
+        document.getElementById('buscadorProt').value = '';
+        filtroActivo = 'todas';
+        document.querySelectorAll('.filtro-prot-btn').forEach(function(b) {
+            b.classList.toggle('activo', b.dataset.filtro === 'todas');
+        });
+        filtrarProtectoras();
+    }
+</script>
 
 </body>
 </html>

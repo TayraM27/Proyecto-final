@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetFamily – Usuarios</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily">
+            <span>Pet<em>Family</em></span>
+        </div>
+        <nav class="sidebar-nav">
+            <p class="sidebar-seccion">General</p>
+            <a href="dashboard.html" class="sidebar-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+            <p class="sidebar-seccion">Gestión</p>
+            <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
+            <a href="protectoras.html" class="sidebar-link"><i class="fa-solid fa-building-shield"></i> Protectoras</a>
+            <a href="usuarios.html" class="sidebar-link activo"><i class="fa-solid fa-users"></i> Usuarios</a>
+            <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
+            <p class="sidebar-seccion">Comunidad</p>
+            <a href="foro.html" class="sidebar-link"><i class="fa-solid fa-comments"></i> Foro</a>
+            <p class="sidebar-seccion">Web pública</p>
+            <a href="../index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
+        </nav>
+        <div class="sidebar-pie">
+            <div class="sidebar-usuario">
+                <div class="sidebar-avatar" id="avatarInicial">A</div>
+                <div class="sidebar-usuario-info">
+                    <p class="sidebar-usuario-nombre" id="adminNombre">Admin</p>
+                    <p class="sidebar-usuario-rol">Administrador</p>
+                </div>
+                <button class="btn-logout" onclick="cerrarSesion()"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <header class="topbar">
+        <div style="display:flex;align-items:center;gap:0.8em;">
+            <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+            <span class="topbar-titulo"><i class="fa-solid fa-users" style="color:var(--gold);margin-right:0.4em;"></i>Usuarios</span>
+        </div>
+    </header>
+
+    <main class="admin-contenido">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="toolbar" style="flex:1;">
+                    <div class="toolbar-buscar">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="inputBuscar" placeholder="Buscar por nombre, usuario o email..." oninput="cargarUsuarios()">
+                    </div>
+                    <select class="toolbar-select" id="filtroEstado" onchange="cargarUsuarios()">
+                        <option value="todos">Todos</option>
+                        <option value="activo">Activos</option>
+                        <option value="bloqueado">Bloqueados</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="tabla-wrap">
+                <table class="tabla">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Localidad</th>
+                            <th>Registro</th>
+                            <th>Último acceso</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaUsuarios">
+                        <tr><td colspan="7" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="paginacion" id="paginacion"></div>
+        </div>
+    </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var paginaActual = 1;
+var totalPaginas = 1;
+
+document.addEventListener('DOMContentLoaded', function() {
+    verificarAdmin(cargarUsuarios);
+});
+
+function verificarAdmin(cb) {
+    fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.logueado || data.usuario.rol !== 'admin') { window.location.href = '../login.html'; return; }
+            document.getElementById('adminNombre').textContent = data.usuario.nombre;
+            document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
+            if (cb) cb();
+        });
+}
+
+function cargarUsuarios() {
+    var q      = document.getElementById('inputBuscar').value;
+    var estado = document.getElementById('filtroEstado').value;
+    var url    = '../backend/admin/usuarios.php?pagina=' + paginaActual
+               + '&q=' + encodeURIComponent(q)
+               + '&estado=' + estado;
+
+    fetch(url, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) return;
+            totalPaginas = data.totalPaginas || 1;
+            renderTabla(data.usuarios);
+            renderPaginacion();
+        });
+}
+
+function renderTabla(usuarios) {
+    var tb = document.getElementById('tablaUsuarios');
+    if (!usuarios.length) {
+        tb.innerHTML = '<tr><td colspan="7"><div class="estado-vacio"><i class="fa-solid fa-users"></i><p>No se encontraron usuarios</p></div></td></tr>';
+        return;
+    }
+    tb.innerHTML = usuarios.map(function(u) {
+        var estado = u.activo
+            ? '<span class="badge badge-verde"><i class="fa-solid fa-circle"></i> Activo</span>'
+            : '<span class="badge badge-rojo"><i class="fa-solid fa-circle"></i> Bloqueado</span>';
+
+        var accionBloqueo = u.activo
+            ? '<button class="btn btn-sm btn-danger btn-icon" onclick="accion(' + u.idUsuario + ',\'bloquear\')" title="Bloquear"><i class="fa-solid fa-ban"></i></button>'
+            : '<button class="btn btn-sm btn-outline btn-icon" onclick="accion(' + u.idUsuario + ',\'desbloquear\')" title="Desbloquear"><i class="fa-solid fa-circle-check"></i></button>';
+
+        return '<tr>'
+            + '<td><strong>' + u.nombre + '</strong><br><span style="font-size:0.78rem;color:var(--texto-sub);">@' + u.username + '</span></td>'
+            + '<td style="font-size:0.82rem;">' + u.email + '</td>'
+            + '<td style="font-size:0.82rem;">' + (u.localidad || '—') + '</td>'
+            + '<td style="font-size:0.78rem;">' + formatFecha(u.fecha_registro) + '</td>'
+            + '<td style="font-size:0.78rem;">' + (u.ultimo_login ? formatFecha(u.ultimo_login) : 'Nunca') + '</td>'
+            + '<td>' + estado + '</td>'
+            + '<td><div class="tabla-acciones">'
+            + accionBloqueo
+            + '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminar(' + u.idUsuario + ',\'' + u.nombre + '\')" title="Eliminar"><i class="fa-solid fa-trash"></i></button>'
+            + '</div></td>'
+            + '</tr>';
+    }).join('');
+}
+
+function accion(id, accion) {
+    var msg = accion === 'bloquear' ? '¿Bloquear este usuario?' : '¿Desbloquear este usuario?';
+    if (!confirm(msg)) return;
+
+    fetch('../backend/admin/usuarios.php', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idUsuario: id, accion: accion }),
+        credentials: 'include',
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
+        if (data.ok) cargarUsuarios();
+    });
+}
+
+function eliminar(id, nombre) {
+    if (!confirm('¿Eliminar al usuario ' + nombre + '? Esta acción no se puede deshacer.')) return;
+
+    fetch('../backend/admin/usuarios.php', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idUsuario: id }),
+        credentials: 'include',
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
+        if (data.ok) cargarUsuarios();
+    });
+}
+
+function renderPaginacion() {
+    var pg = document.getElementById('paginacion');
+    if (totalPaginas <= 1) { pg.innerHTML = ''; return; }
+    var html = '<button class="pag-btn" onclick="irPagina(' + (paginaActual - 1) + ')" ' + (paginaActual === 1 ? 'disabled' : '') + '><i class="fa-solid fa-chevron-left"></i></button>';
+    for (var i = 1; i <= totalPaginas; i++) {
+        html += '<button class="pag-btn ' + (i === paginaActual ? 'activo' : '') + '" onclick="irPagina(' + i + ')">' + i + '</button>';
+    }
+    html += '<button class="pag-btn" onclick="irPagina(' + (paginaActual + 1) + ')" ' + (paginaActual === totalPaginas ? 'disabled' : '') + '><i class="fa-solid fa-chevron-right"></i></button>';
+    pg.innerHTML = html;
+}
+
+function irPagina(n) {
+    if (n < 1 || n > totalPaginas) return;
+    paginaActual = n;
+    cargarUsuarios();
+}
+
+function formatFecha(f) {
+    if (!f) return '—';
+    return new Date(f).toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('abierto'); }
+function cerrarSesion() { fetch('../backend/api/auth/logout.php', { credentials: 'include' }).then(function(){ window.location.href = '../login.html'; }); }
+function mostrarToast(msg, tipo) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast visible toast-' + (tipo || 'ok');
+    setTimeout(function(){ t.className = 'toast'; }, 3000);
+}
+</script>
+
+</body>
+</html>

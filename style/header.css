@@ -1,9 +1,12 @@
+/* body base */
 body {
     overflow-x: hidden;
     font-family: 'Poppins', sans-serif;
 }
 
+/* header */
 header {
+    border-bottom: #F8BA56 1.5px double;
     width: 100%;
     height: clamp(60px, 10vh, 90px);
     background-color: #1B358F;
@@ -16,13 +19,21 @@ header {
     padding: 0 2em;
     box-sizing: border-box;
     z-index: 10;
+    transition: transform 0.3s ease;
 }
 
-#contenedor_logo, #menu, #user_container, #menu_burger {
+header.header-oculto {
+    transform: translateY(-100%);
+}
+
+#contenedor_logo,
+#menu,
+#user_container,
+#menu_burger {
     justify-self: center;
 }
 
-/* Logo */
+/* logo */
 #logoXL {
     display: flex;
     align-items: center;
@@ -53,7 +64,7 @@ header {
     font-size: 2em;
 }
 
-/* Menú */
+/* menú */
 #lista_menu {
     list-style: none;
     display: flex;
@@ -62,72 +73,59 @@ header {
     padding: 0;
 }
 
-#lista_menu li a {
-    color: #F8BA56;
-    padding: 0.5em;
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: transform .4s, color .4s;
-    transform: scale(1);
-}
-
-#lista_menu li a:hover {
-    color: white;
-    text-decoration: none;
-    background-color: rgba(248, 186, 86, 0.1);
-    padding: .5em;
-    border-radius: 10%;
-}
-
-#lista_menu li:hover {
-    transform: scale(1.1);
-    color: white;
-}
-
-#adopta img {
-    width: 1em;
-    opacity: 0;
-}
-
-#adopta:hover img {
-    opacity: 1;
-}
-
-/* Submenú Colabora */
-.colabora {
+#lista_menu li {
     position: relative;
 }
 
+#lista_menu li a {
+    color: #F8BA56;
+    padding: 0.45em 0.9em;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: background-color 0.25s, color 0.25s;
+}
+
+#lista_menu > li > a:hover {
+    color: #1B358F;
+    background-color: #F8BA56;
+}
+
+/* submenú colabora */
 .submenuColabora {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 0.3em);
     left: 0;
     background-color: #1B358F;
     padding: 0.5em 0;
     flex-direction: column;
     align-items: flex-start;
-    min-width: 130px;
+    min-width: 140px;
     border-radius: 0 0 10px 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-    z-index: 1000;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
 }
 
-.submenuColabora ul, .submenuColabora li {
+.submenuColabora ul,
+.submenuColabora li {
     list-style: none;
     padding-left: 0;
     margin-left: 0;
+    width: 100%;
 }
 
 .submenuColabora li a {
     color: #F8BA56;
-    padding: 0.4em 1em;
+    padding: 0.5em 1em;
     text-decoration: none;
-    font-size: 0.85em;
+    font-size: 1rem;
     font-weight: 500;
     display: block;
-    transition: background 0.3s, color 0.3s;
+    width: 100%;
+    border-radius: 0;
     border-bottom: 1px solid rgba(248, 186, 86, 0.2);
+    transition: background 0.2s, color 0.2s;
 }
 
 .submenuColabora li:last-child a {
@@ -135,11 +133,11 @@ header {
 }
 
 .submenuColabora li a:hover {
-    color: white;
-    background-color: rgba(248, 186, 86, 0.18);
+    color: #1B358F !important;
+    background-color: #F8BA56;
 }
 
-/* Menú burger */
+/* menú burger */
 #menu_burger i {
     color: white;
     cursor: pointer;
@@ -160,7 +158,7 @@ header {
     z-index: 999;
 }
 
-/* Usuario */
+/* usuario */
 #user_container {
     display: flex;
     align-items: center;
@@ -170,8 +168,8 @@ header {
     width: 3.4em;
     padding: 10px;
     cursor: pointer;
-    transition: transform .3s, filter .1s;
     filter: brightness(130%);
+    transition: transform 0.3s, filter 0.1s;
 }
 
 #user_container img:hover {
@@ -186,8 +184,8 @@ header {
     border-radius: 8px;
     text-decoration: none;
     font-weight: bold;
-    transition: background-color 0.3s, color .3s, font-size .3s;
     margin-right: -2%;
+    transition: background-color 0.3s, color 0.3s, font-size 0.3s;
 }
 
 .btn-register:hover {
@@ -196,7 +194,7 @@ header {
     font-size: 1.05em;
 }
 
-/* (992px–1238px) */
+/* responsive 992px–1238px */
 @media (min-width: 992px) and (max-width: 1238px) {
 
     header {
@@ -237,11 +235,12 @@ header {
 
     .btn-register {
         font-size: 1em;
-        padding: 0.7em 0.7em;
+        padding: 0.7em;
         margin-right: 0;
     }
 }
 
+/* responsive 746px–1090px */
 @media (min-width: 746px) and (max-width: 1090px) {
 
     #logoMD {
@@ -249,15 +248,12 @@ header {
         z-index: 5;
     }
 
-    a.btn-register {
-        position: relative;
-    }
-
     #menu_burger {
         align-items: center;
     }
 }
 
+/* responsive hasta 1090px */
 @media (max-width: 1090px) {
 
     #logoMD {
@@ -265,12 +261,11 @@ header {
         align-items: center;
         gap: 0.4em;
         text-decoration: none;
-        margin-right: -16%;
         text-align: center;
+        margin-right: -16%;
     }
 
     #logoMD img {
-        text-align: center;
         width: 4.2em;
     }
 
@@ -286,14 +281,14 @@ header {
         font-size: 1.1em;
     }
 
-    #user_burger img {
-        width: 2.5em;
-        transition: transform .3s, filter .1s;
-        filter: brightness(130%);
-    }
-
     #menu_burger {
         display: flex;
+    }
+
+    #user_burger img {
+        width: 2.5em;
+        filter: brightness(130%);
+        transition: transform 0.3s, filter 0.1s;
     }
 
     #user_burger img:hover {
@@ -303,18 +298,19 @@ header {
 
     .btn-register {
         text-align: center;
-        margin-right: .4em;
-        margin-left: .2em;
-        padding: 0.7em 0.7em;
+        margin-right: 0.4em;
+        margin-left: 0.2em;
+        padding: 0.7em;
     }
 
     .btn-register:hover {
         background-color: #ffc66a;
-        transform: scale(1.02);
         color: #2742a2;
+        transform: scale(1.02);
     }
 }
 
+/* responsive hasta 991px */
 @media (max-width: 991px) {
 
     #lista_menu {
@@ -327,8 +323,8 @@ header {
     #lista_menu li {
         transform: none !important;
         border-bottom: 1px solid rgba(248, 186, 86, 0.2);
-        transition: background-color 0.3s;
         overflow: hidden;
+        transition: background-color 0.3s;
     }
 
     #lista_menu li:last-child {
@@ -341,12 +337,11 @@ header {
     }
 
     #lista_menu li a {
+        display: block;
         width: 100%;
         padding: 1em;
         font-size: 1.2em;
         text-align: left;
-        display: block;
-        border-bottom: none;
         border-radius: 0;
         transform: none !important;
         transition: color 0.3s;
@@ -360,15 +355,10 @@ header {
         transform: none !important;
     }
 
-    #lista_menu li:last-child a {
-        border-bottom: none;
-    }
-
     #user_burger img {
         width: 2.2em;
-        text-align: center;
-        transition: transform .3s, filter .1s;
-        margin-right: .5em;
+        margin-right: 0.5em;
+        transition: transform 0.3s, filter 0.1s;
     }
 
     #user_burger img:hover {
@@ -377,17 +367,13 @@ header {
     }
 
     .btn-register {
-        padding: .7em;
+        padding: 0.7em;
     }
 
     .btn-register:hover {
         background-color: #ffc66a;
-        transform: scale(1.05);
         color: #2742a2;
-    }
-
-    i {
-        margin-left: -1%;
+        transform: scale(1.05);
     }
 
     .submenuColabora {
@@ -407,8 +393,7 @@ header {
     .submenuColabora li a:hover {
         color: white;
         background-color: rgba(248, 186, 86, 0.18);
-        border-radius: 10%;
-        transform: none;
+        border-radius: 0;
     }
 
     .submenuColabora ul {
@@ -416,6 +401,7 @@ header {
     }
 }
 
+/* responsive hasta 650px */
 @media (max-width: 650px) {
 
     #logoMD img {
@@ -433,7 +419,7 @@ header {
     #user_burger img {
         margin-top: 2%;
         width: 2.3em;
-        transition: transform .3s, filter .1s;
+        transition: transform 0.3s, filter 0.1s;
     }
 
     #user_burger img:hover {
@@ -442,18 +428,18 @@ header {
     }
 
     .btn-register {
-        padding: .8em;
+        padding: 0.8em;
         font-size: 0.9em;
-        width: 10%;
     }
 
     .btn-register:hover {
         background-color: #ffc66a;
-        transform: scale(1.05);
         color: #2742a2;
+        transform: scale(1.05);
     }
 }
 
+/* responsive hasta 520px */
 @media (max-width: 520px) {
 
     header {
@@ -469,15 +455,6 @@ header {
         margin-right: 1.5em;
     }
 
-    #lista_menu li a {
-        font-size: 0.85em;
-        margin-left: -2%;
-    }
-
-    #user_burger {
-        display: none;
-    }
-
     #lista_menu {
         flex-direction: column;
         gap: 0;
@@ -488,6 +465,11 @@ header {
         display: block;
         width: 100%;
         padding: 1em;
+        font-size: 0.85em;
         text-align: left;
+    }
+
+    #user_burger {
+        display: none;
     }
 }
