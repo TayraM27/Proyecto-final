@@ -630,6 +630,7 @@
 
 /* hero */
 .mapa-hero {
+    margin-top: 8em;
     background: linear-gradient(135deg, #1B358F 0%, #2a4db5 60%, #F8BA56 100%);
     color: white;
     padding: 3rem 1.5rem 2.5rem;
@@ -661,6 +662,7 @@
 
 /* filtros mapa */
 .filtros-mapa {
+    margin-top: 4em;
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
@@ -668,11 +670,11 @@
     padding: 0.9rem 1rem;
     background: white;
     border-bottom: 1px solid #e9ecef;
-    position: fixed;
+    position: absolute;
     top: clamp(60px, 10vh, 90px);
     left: 0;
     right: 0;
-    z-index: 900;
+    z-index: 10;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
@@ -987,5 +989,15 @@ body.mapa-fullscreen .mapa-layout {
 
     .mapa-hero h1 {
         font-size: 1.5rem;
+    }
+}
+@media (max-width: 447px) {
+    .mapa-hero{
+        margin-top: 12em;
+    }
+}
+@media (max-width: 308px) {
+    .mapa-hero{
+        margin-top: 15em;
     }
 }
