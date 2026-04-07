@@ -661,6 +661,7 @@
 
 /* filtros mapa */
 .filtros-mapa {
+    margin-top: 2.2em;
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
@@ -668,7 +669,7 @@
     padding: 0.9rem 1rem;
     background: white;
     border-bottom: 1px solid #e9ecef;
-    position: fixed;
+    position: absolute;
     top: clamp(60px, 10vh, 90px);
     left: 0;
     right: 0;
