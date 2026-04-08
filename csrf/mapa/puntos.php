@@ -1,11 +1,10 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-api/mapa/puntos.php
 GET — devuelve todos los puntos del mapa con filtro de categoria
 Parametros: categoria (protectora|veterinaria|tienda|donacion|refugio|todos)
 Usado por mapa.html para sustituir los datos hardcodeados en el JS */
 
-require_once __DIR__ . '/../../includes/funciones.php';
+require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 

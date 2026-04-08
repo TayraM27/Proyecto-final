@@ -1,11 +1,10 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-api/foro/publicaciones.php
 GET  — lista publicaciones con filtro de categoria y busqueda
 POST — crea nueva publicacion (requiere login)
 Usado por foro.html */
 
-require_once __DIR__ . '/../../includes/funciones.php';
+require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 

@@ -3,7 +3,7 @@
 GET ?id=1 — devuelve todos los datos de una mascota para fichaAnimal.html
 Incluye fotos, datos de la protectora y otras mascotas de la misma */
 
-require_once __DIR__ . '/../../includes/funciones.php';
+require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 

@@ -4,7 +4,7 @@ GET  — lista los favoritos del usuario logueado
 POST { idMascota } — toggle: añade si no esta, quita si ya estaba
 Usado por adopta.html y fichaAnimal.html */
 
-require_once __DIR__ . '/../../includes/funciones.php';
+require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 requerirLogin();

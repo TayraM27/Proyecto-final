@@ -1,11 +1,10 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-api/donaciones/donar.php
 POST — registra una donacion puntual
 No requiere login (dona.html no pide cuenta)
 Recibe: { idProtectora, nombre_donante, email_donante, importe, mensaje } */
 
-require_once __DIR__ . '/../../includes/funciones.php';
+require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 

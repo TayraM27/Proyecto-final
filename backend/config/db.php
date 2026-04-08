@@ -1,14 +1,16 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-config/db.php
-Conexion a la base de datos mediante PDO
-Cambiar las credenciales segun el entorno (local/produccion) */
+Conexión a base de datos mediante PDO */
 
+/* Variables de entorno - cambiar según tu entorno */
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'petfamily');
 define('DB_USER', 'root');
 define('DB_PASS', 'tayra27');
 define('DB_CHARSET', 'utf8mb4');
+
+/*--------------------------------------------------------------------------------------------
+conectar */
 
 function conectar(): PDO {
     static $pdo = null;
@@ -32,7 +34,7 @@ function conectar(): PDO {
         return $pdo;
     } catch (PDOException $e) {
         http_response_code(500);
-        echo json_encode(['error' => 'Error de conexion con la base de datos.']);
+        echo json_encode(['error' => 'Error de conexión con la base de datos.']);
         exit;
     }
 }

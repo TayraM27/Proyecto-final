@@ -1,6 +1,6 @@
 <?php
-require_once 'db.php';
-require_once 'protectoras_crud.php';
+require_once __DIR__ . '/../backend/config/db.php';
+require_once __DIR__ . '/protectoras_crud.php';
 
 header('Content-Type: application/json');
 

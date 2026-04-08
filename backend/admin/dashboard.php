@@ -1,6 +1,6 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-admin/dashboard.php
+admin/.php
 Panel principal del administrador
 Muestra resumen: mascotas, usuarios, solicitudes pendientes, donaciones */
 

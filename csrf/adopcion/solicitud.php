@@ -4,7 +4,7 @@ POST — guarda una solicitud de adopcion
 No requiere login (visitantes tambien pueden solicitarla)
 Recibe: { idMascota, nombre, email, telefono, mensaje } */
 
-require_once __DIR__ . '/../../includes/funciones.php';
+require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 

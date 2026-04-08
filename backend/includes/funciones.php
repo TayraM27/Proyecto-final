@@ -1,18 +1,17 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-includes/funciones.php
-Utilidades compartidas: sesion, respuestas JSON, validaciones, seguridad */
+Utilidades compartidas: sesión, respuestas JSON, validaciones, seguridad */
 
 require_once __DIR__ . '/../config/db.php';
-
 /*--------------------------------------------------------------------------------------------
-sesion */
+sesión */
+
 function iniciarSesionSegura(): void {
     if (session_status() === PHP_SESSION_NONE) {
         session_set_cookie_params([
             'lifetime' => 0,
             'path'     => '/',
-            'secure'   => false,   // true en produccion con HTTPS
+            'secure'   => true,
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
@@ -25,6 +24,11 @@ function usuarioLogueado(): bool {
     return isset($_SESSION['idUsuario']);
 }
 
+/**
+ * Comprueba si el usuario actual es administrador
+ *
+ * @return bool Verdadero TRUE si el usuario es administrador, FALSE en caso contrario
+ */
 function esAdmin(): bool {
     iniciarSesionSegura();
     return isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin';
@@ -32,7 +36,7 @@ function esAdmin(): bool {
 
 function requerirLogin(): void {
     if (!usuarioLogueado()) {
-        respuestaError('Debes iniciar sesion para realizar esta accion.', 401);
+        respuestaError('Debes iniciar sesión para realizar esta acción.', 401);
     }
 }
 
@@ -44,6 +48,7 @@ function requerirAdmin(): void {
 
 /*--------------------------------------------------------------------------------------------
 respuestas JSON */
+
 function respuestaOk(array $datos = []): void {
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(['ok' => true] + $datos);
@@ -59,6 +64,7 @@ function respuestaError(string $mensaje, int $codigo = 400): void {
 
 /*--------------------------------------------------------------------------------------------
 validaciones */
+
 function validarEmail(string $email): bool {
     return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
 }
@@ -76,7 +82,8 @@ function soloNumerico(mixed $valor): bool {
 }
 
 /*--------------------------------------------------------------------------------------------
-CSRF — token simple para formularios */
+CSRF */
+
 function generarTokenCSRF(): string {
     iniciarSesionSegura();
     if (empty($_SESSION['csrf_token'])) {
@@ -92,9 +99,10 @@ function verificarTokenCSRF(string $token): bool {
 }
 
 /*--------------------------------------------------------------------------------------------
-paginacion */
+paginación */
+
 function paginacion(int $pagina, int $porPagina = 12): array {
-    $pagina   = max(1, $pagina);
-    $offset   = ($pagina - 1) * $porPagina;
+    $pagina = max(1, $pagina);
+    $offset = ($pagina - 1) * $porPagina;
     return ['limite' => $porPagina, 'offset' => $offset, 'pagina' => $pagina];
 }

@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/093cf7cd82.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
@@ -67,18 +67,394 @@
 
 <main>
     <div class="container mt-5 mb-5">
+        <p class="migas">
+            <a href="index.html">Inicio</a><span>›</span>Adopta
+        </p>
 
-        <div class="container mt-5 mb-5">
-            <p class="migas">
-                <a href="index.html">Inicio</a><span>›</span>Adopta
-            </p>
+        <!-- Filtros -->
+        <div class="adopta-filtros mb-4">
+            <div class="filtro-barra">
 
-            <!-- Filtros (sin cambios, puedes restaurar si los necesitas) -->
-            <!-- ... -->
+                <!-- Imágenes especie clickeables -->
+                <div class="filtro-especies">
+                    <img src="../img/filtro/pet_filtro.png"  class="filtro-especie-img activo" data-especie="todos" title="Todos"  alt="Todos">
+                    <img src="../img/filtro/dog_filtro.png"  class="filtro-especie-img"        data-especie="perro" title="Perros" alt="Perros">
+                    <img src="../img/filtro/cat_filtro.png"  class="filtro-especie-img"        data-especie="gato"  title="Gatos"  alt="Gatos">
+                </div>
 
-            <!-- Contenedor dinámico de mascotas -->
-            <div class="row g-4" id="contenedor-mascotas"></div>
+                <div class="filtro-separador"></div>
+
+                <div class="filtro-select-wrap">
+                    <i class="fa-solid fa-triangle-exclamation filtro-ico"></i>
+                    <select class="filtro-select" id="filtro-urgencia">
+                        <option value="todos" disabled selected hidden>Urgencia</option>
+                        <option value="todos">Todas</option>
+                        <option value="urgente">Urgente</option>
+                        <option value="nuevo">Nuevo</option>
+                        <option value="espera">Larga espera</option>
+                    </select>
+                </div>
+
+                <div class="filtro-select-wrap">
+                    <i class="fa-solid fa-location-dot filtro-ico"></i>
+                    <select class="filtro-select" id="filtro-ubicacion">
+                        <option value="todos" disabled selected hidden>Ubicación</option>
+                        <option value="todos">Todas</option>
+                        <option value="gijon">Gijón</option>
+                        <option value="oviedo">Oviedo</option>
+                        <option value="aviles">Avilés</option>
+                    </select>
+                </div>
+
+                <div class="filtro-select-wrap">
+                    <i class="fa-solid fa-dog filtro-ico"></i>
+                    <select class="filtro-select" id="filtro-tamano">
+                        <option value="todos" disabled selected hidden>Tamaño</option>
+                        <option value="todos">Todos</option>
+                        <option value="pequeno">Pequeño</option>
+                        <option value="mediano">Mediano</option>
+                        <option value="grande">Grande</option>
+                    </select>
+                </div>
+
+                <!-- Más filtros -->
+                <button class="filtro-btn-mas" id="btn-mas-filtros">
+                    <i class="fa-solid fa-plus me-1"></i>Más filtros
+                </button>
+
+                <!-- Limpiar filtros -->
+                <button class="filtro-btn-limpiar" id="btn-limpiar" style="display:none">
+                    <i class="fa-solid fa-xmark me-1"></i>Limpiar
+                </button>
+
+            </div>
+
+            <!-- Panel más filtros (oculto por defecto) -->
+            <div class="filtro-extra" id="filtro-extra" style="display:none">
+                <div class="filtro-select-wrap">
+                    <i class="fa-solid fa-calendar filtro-ico"></i>
+                    <select class="filtro-select" id="filtro-edad">
+                        <option value="todos" disabled selected hidden>Edad</option>
+                        <option value="todos">Todas</option>
+                        <option value="cachorro">Cachorro (0-1 año)</option>
+                        <option value="joven">Joven (1-3 años)</option>
+                        <option value="adulto">Adulto (3-8 años)</option>
+                        <option value="senior">Senior (8+ años)</option>
+                    </select>
+                </div>
+                <div class="filtro-select-wrap">
+                    <i class="fa-solid fa-palette filtro-ico"></i>
+                    <select class="filtro-select" id="filtro-color">
+                        <option value="todos" disabled selected hidden>Color</option>
+                        <option value="todos">Todos</option>
+                        <option value="negro">Negro</option>
+                        <option value="blanco">Blanco</option>
+                        <option value="marron">Marrón</option>
+                        <option value="atigrado">Atigrado</option>
+                        <option value="bicolor">Bicolor</option>
+                    </select>
+                </div>
+                <div class="filtro-select-wrap">
+                    <i class="fa-solid fa-heart-pulse filtro-ico"></i>
+                    <select class="filtro-select" id="filtro-salud">
+                        <option value="todos" disabled selected hidden>Estado de salud</option>
+                        <option value="todos">Todos</option>
+                        <option value="bueno">Bueno</option>
+                        <option value="especial">Necesidades especiales</option>
+                    </select>
+                </div>
+                <div class="filtro-select-wrap">
+                    <i class="fa-solid fa-venus-mars filtro-ico"></i>
+                    <select class="filtro-select" id="filtro-sexo">
+                        <option value="todos" disabled selected hidden>Sexo</option>
+                        <option value="todos">Todos</option>
+                        <option value="macho">Macho</option>
+                        <option value="hembra">Hembra</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Tags de filtros activos -->
+            <div class="filtro-tags" id="filtro-tags"></div>
+
         </div>
+
+        <div class="row g-4">
+
+            <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="perro" data-urgencia="espera" data-ubicacion="gijon" data-tamano="mediano">
+                <div class="card h-100 shadow-sm">
+                    <div class="contenedor-imagen">
+                        <img src="../img/mascotas/leia-centro-proteccion-animales-gijon.jpg"
+                             class="card-img-top" alt="Leia">
+                        <button class="btn-fav" data-id="a01" onclick="toggleFavorito(event, 'a01')" title="Agregar a favoritos">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                        <div class="image-badges">
+                            <span class="badge bg-secondary">Licencia PPP</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            Leia
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#CC0479" title="Hembra">
+                                <path d="M440-120v-80h-80v-80h80v-84q-79-14-129.5-75.5T260-582q0-91 64.5-154.5T480-800q91 0 155.5 63.5T700-582q0 81-50.5 142.5T520-364v84h80v80h-80v80h-80Zm139-361q41-41 41-99t-41-99q-41-41-99-41t-99 41q-41 41-41 99t41 99q41 41 99 41t99-41Z"/>
+                            </svg>
+                        </h5>
+                        <ul class="card-meta">
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M536.5-503.5Q560-527 560-560t-23.5-56.5Q513-640 480-640t-56.5 23.5Q400-593 400-560t23.5 56.5Q447-480 480-480t56.5-23.5ZM480-186q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
+                                Gijón
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg>
+                                14 años
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M120-120v-200l160-160-160-160v-200h200l160 160 160-160h200v200L680-480l160 160v200H640L480-280 320-120H120Zm80-80h114l166-166 166 166h114v-114L590-480l170-170v-114H646L480-598 314-764H200v114l170 170-170 170v114Z"/></svg>
+                                Mediano · Pit bull
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M360-840v-80h240v80H360Zm80 440h80v-240h-80v240Zm40 320q-74 0-139.5-28.5T226-186q-49-49-77.5-114.5T120-440q0-74 28.5-139.5T226-694q49-49 114.5-77.5T480-800q62 0 119 20t107 58l56-56 56 56-56 56q38 50 58 107t20 119q0 74-28.5 139.5T734-186q-49 49-114.5 77.5T480-80Z"/></svg>
+                                <strong>En adopción:</strong>&nbsp;Larga espera
+                            </li>
+                        </ul>
+                        <div class="contador-vistas mt-2">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>Vista <strong id="vistas-a01">0</strong> veces</span>
+                        </div>
+                        <a href="fichaAnimal.html?id=a01" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('a01')">Ver ficha</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="perro" data-urgencia="urgente" data-ubicacion="oviedo" data-tamano="grande">
+                <div class="card h-100 shadow-sm">
+                    <div class="contenedor-imagen">
+                        <img src="../img/mascotas/haru-protectora-de-asturias-dog.jpg"
+                             class="card-img-top" alt="Haru">
+                        <button class="btn-fav" data-id="a02" onclick="toggleFavorito(event, 'a02')" title="Agregar a favoritos">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                        <div class="image-badges">
+                            <span class="badge bg-danger">Urgente</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            Haru
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#CC0479" title="Hembra">
+                                <path d="M440-120v-80h-80v-80h80v-84q-79-14-129.5-75.5T260-582q0-91 64.5-154.5T480-800q91 0 155.5 63.5T700-582q0 81-50.5 142.5T520-364v84h80v80h-80v80h-80Zm139-361q41-41 41-99t-41-99q-41-41-99-41t-99 41q-41 41-41 99t41 99q41 41 99 41t99-41Z"/>
+                            </svg>
+                        </h5>
+                        <ul class="card-meta">
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M536.5-503.5Q560-527 560-560t-23.5-56.5Q513-640 480-640t-56.5 23.5Q400-593 400-560t23.5 56.5Q447-480 480-480t56.5-23.5ZM480-186q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
+                                Oviedo
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg>
+                                7 años
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M120-120v-200l160-160-160-160v-200h200l160 160 160-160h200v200L680-480l160 160v200H640L480-280 320-120H120Zm80-80h114l166-166 166 166h114v-114L590-480l170-170v-114H646L480-598 314-764H200v114l170 170-170 170v114Z"/></svg>
+                                Grande
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M360-840v-80h240v80H360Zm80 440h80v-240h-80v240Zm40 320q-74 0-139.5-28.5T226-186q-49-49-77.5-114.5T120-440q0-74 28.5-139.5T226-694q49-49 114.5-77.5T480-800q62 0 119 20t107 58l56-56 56 56-56 56q38 50 58 107t20 119q0 74-28.5 139.5T734-186q-49 49-114.5 77.5T480-80Z"/></svg>
+                                <strong>En adopción:</strong>&nbsp;1 año
+                            </li>
+                        </ul>
+                        <div class="contador-vistas mt-2">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>Vista <strong id="vistas-a02">0</strong> veces</span>
+                        </div>
+                        <a href="fichaAnimal.html?id=a02" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('a02')">Ver ficha</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="gato" data-urgencia="nuevo" data-ubicacion="aviles" data-tamano="pequeno">
+                <div class="card h-100 shadow-sm">
+                    <div class="contenedor-imagen">
+                        <img src="../img/mascotas/roys-asociacion-felina-la-esperanza-cat.jpg"
+                             class="card-img-top" alt="Roy">
+                        <button class="btn-fav" data-id="a03" onclick="toggleFavorito(event, 'a03')" title="Agregar a favoritos">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                        <div class="image-badges">
+                            <span class="badge bg-info text-dark">Nuevo</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            Roy
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#0419CC" title="Macho">
+                                <path d="M768-768v216h-72v-93L564-513q17.54 26.15 26.77 55.58Q600-428 600-396.41q0 85.48-59.28 144.95Q481.44-192 396.22-192T251.5-251.28Q192-310.56 192-395.78t59.35-144.72Q310.69-600 396-600q32 0 61.5 8.5T513-564l132-132h-93v-72h216Z"/>
+                            </svg>
+                        </h5>
+                        <ul class="card-meta">
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M536.5-503.5Q560-527 560-560t-23.5-56.5Q513-640 480-640t-56.5 23.5Q400-593 400-560t23.5 56.5Q447-480 480-480t56.5-23.5ZM480-186q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
+                                Avilés
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg>
+                                2 años
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M120-120v-200l160-160-160-160v-200h200l160 160 160-160h200v200L680-480l160 160v200H640L480-280 320-120H120Zm80-80h114l166-166 166 166h114v-114L590-480l170-170v-114H646L480-598 314-764H200v114l170 170-170 170v114Z"/></svg>
+                                Pequeño · Europeo
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M360-840v-80h240v80H360Zm80 440h80v-240h-80v240Zm40 320q-74 0-139.5-28.5T226-186q-49-49-77.5-114.5T120-440q0-74 28.5-139.5T226-694q49-49 114.5-77.5T480-800q62 0 119 20t107 58l56-56 56 56-56 56q38 50 58 107t20 119q0 74-28.5 139.5T734-186q-49 49-114.5 77.5T480-80Z"/></svg>
+                                <strong>En adopción:</strong>&nbsp;Recién llegado
+                            </li>
+                        </ul>
+                        <div class="contador-vistas mt-2">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>Vista <strong id="vistas-a03">0</strong> veces</span>
+                        </div>
+                        <a href="fichaAnimal.html?id=a03" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('a03')">Ver ficha</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="gato" data-urgencia="todos" data-ubicacion="oviedo" data-tamano="pequeno">
+                <div class="card h-100 shadow-sm">
+                    <div class="contenedor-imagen">
+                        <img src="../img/mascotas/bambi-masquechuchos-cat.jpg"
+                             class="card-img-top" alt="Bambi">
+                        <button class="btn-fav" data-id="a04" onclick="toggleFavorito(event, 'a04')" title="Agregar a favoritos">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                        <div class="image-badges">
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            Bambi
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#0419CC" title="Macho">
+                                <path d="M768-768v216h-72v-93L564-513q17.54 26.15 26.77 55.58Q600-428 600-396.41q0 85.48-59.28 144.95Q481.44-192 396.22-192T251.5-251.28Q192-310.56 192-395.78t59.35-144.72Q310.69-600 396-600q32 0 61.5 8.5T513-564l132-132h-93v-72h216Z"/>
+                            </svg>
+                        </h5>
+                        <ul class="card-meta">
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M536.5-503.5Q560-527 560-560t-23.5-56.5Q513-640 480-640t-56.5 23.5Q400-593 400-560t23.5 56.5Q447-480 480-480t56.5-23.5ZM480-186q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
+                                Oviedo
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg>
+                                Sin determinar
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M120-120v-200l160-160-160-160v-200h200l160 160 160-160h200v200L680-480l160 160v200H640L480-280 320-120H120Zm80-80h114l166-166 166 166h114v-114L590-480l170-170v-114H646L480-598 314-764H200v114l170 170-170 170v114Z"/></svg>
+                                Pequeño
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M360-840v-80h240v80H360Zm80 440h80v-240h-80v240Zm40 320q-74 0-139.5-28.5T226-186q-49-49-77.5-114.5T120-440q0-74 28.5-139.5T226-694q49-49 114.5-77.5T480-800q62 0 119 20t107 58l56-56 56 56-56 56q38 50 58 107t20 119q0 74-28.5 139.5T734-186q-49 49-114.5 77.5T480-80Z"/></svg>
+                                <strong>En adopción:</strong>&nbsp;Sin datos
+                            </li>
+                        </ul>
+                        <div class="contador-vistas mt-2">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>Vista <strong id="vistas-a04">0</strong> veces</span>
+                        </div>
+                        <a href="fichaAnimal.html?id=a04" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('a04')">Ver ficha</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="perro" data-urgencia="urgente" data-ubicacion="gijon" data-tamano="mediano">
+                <div class="card h-100 shadow-sm">
+                    <div class="contenedor-imagen">
+                        <img src="../img/mascotas/dexter-nortemascotas-dog.jpg"
+                             class="card-img-top" alt="Dexter">
+                        <button class="btn-fav" data-id="a05" onclick="toggleFavorito(event, 'a05')" title="Agregar a favoritos">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                        <div class="image-badges">
+                            <span class="badge bg-danger">Urgente</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            Dexter
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#0419CC" title="Macho">
+                                <path d="M768-768v216h-72v-93L564-513q17.54 26.15 26.77 55.58Q600-428 600-396.41q0 85.48-59.28 144.95Q481.44-192 396.22-192T251.5-251.28Q192-310.56 192-395.78t59.35-144.72Q310.69-600 396-600q32 0 61.5 8.5T513-564l132-132h-93v-72h216Z"/>
+                            </svg>
+                        </h5>
+                        <ul class="card-meta">
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M536.5-503.5Q560-527 560-560t-23.5-56.5Q513-640 480-640t-56.5 23.5Q400-593 400-560t23.5 56.5Q447-480 480-480t56.5-23.5ZM480-186q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
+                                Gijón
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg>
+                                10 años
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M120-120v-200l160-160-160-160v-200h200l160 160 160-160h200v200L680-480l160 160v200H640L480-280 320-120H120Zm80-80h114l166-166 166 166h114v-114L590-480l170-170v-114H646L480-598 314-764H200v114l170 170-170 170v114Z"/></svg>
+                                Mediano · Cruce Pastor Alemán
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M360-840v-80h240v80H360Zm80 440h80v-240h-80v240Zm40 320q-74 0-139.5-28.5T226-186q-49-49-77.5-114.5T120-440q0-74 28.5-139.5T226-694q49-49 114.5-77.5T480-800q62 0 119 20t107 58l56-56 56 56-56 56q38 50 58 107t20 119q0 74-28.5 139.5T734-186q-49 49-114.5 77.5T480-80Z"/></svg>
+                                <strong style="color:#e53935">En adopción: 9 años</strong>
+                            </li>
+                        </ul>
+                        <div class="contador-vistas mt-2">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>Vista <strong id="vistas-a05">0</strong> veces</span>
+                        </div>
+                        <a href="fichaAnimal.html?id=a05" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('a05')">Ver ficha</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="gato" data-urgencia="todos" data-ubicacion="oviedo" data-tamano="pequeno">
+                <div class="card h-100 shadow-sm">
+                    <div class="contenedor-imagen">
+                        <img src="../img/mascotas/bosque-protectora-de-asturias-cat.jpg"
+                             class="card-img-top" alt="Bosque">
+                        <button class="btn-fav" data-id="a06" onclick="toggleFavorito(event, 'a06')" title="Agregar a favoritos">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                        <div class="image-badges">
+                            <span class="badge bg-dark">Leucemia felina+</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            Bosque
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#CC0479" title="Hembra">
+                                <path d="M440-120v-80h-80v-80h80v-84q-79-14-129.5-75.5T260-582q0-91 64.5-154.5T480-800q91 0 155.5 63.5T700-582q0 81-50.5 142.5T520-364v84h80v80h-80v80h-80Zm139-361q41-41 41-99t-41-99q-41-41-99-41t-99 41q-41 41-41 99t41 99q41 41 99 41t99-41Z"/>
+                            </svg>
+                        </h5>
+                        <ul class="card-meta">
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M536.5-503.5Q560-527 560-560t-23.5-56.5Q513-640 480-640t-56.5 23.5Q400-593 400-560t23.5 56.5Q447-480 480-480t56.5-23.5ZM480-186q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
+                                Oviedo
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg>
+                                8 meses
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M120-120v-200l160-160-160-160v-200h200l160 160 160-160h200v200L680-480l160 160v200H640L480-280 320-120H120Zm80-80h114l166-166 166 166h114v-114L590-480l170-170v-114H646L480-598 314-764H200v114l170 170-170 170v114Z"/></svg>
+                                Pequeño
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M360-840v-80h240v80H360Zm80 440h80v-240h-80v240Zm40 320q-74 0-139.5-28.5T226-186q-49-49-77.5-114.5T120-440q0-74 28.5-139.5T226-694q49-49 114.5-77.5T480-800q62 0 119 20t107 58l56-56 56 56-56 56q38 50 58 107t20 119q0 74-28.5 139.5T734-186q-49 49-114.5 77.5T480-80Z"/></svg>
+                                <strong>En adopción:</strong>&nbsp;3 meses
+                            </li>
+                        </ul>
+                        <div class="contador-vistas mt-2">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>Vista <strong id="vistas-a06">0</strong> veces</span>
+                        </div>
+                        <a href="fichaAnimal.html?id=a06" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('a06')">Ver ficha</a>
+                    </div>
+                </div>
+            </div>
 
         </div>
     </div>
@@ -86,8 +462,6 @@
     <!-- flecha para subir al inicio tiene los estilos en footer.css -->
     <div class="text-center">
         <a href="#"><img src="../img/sectionIndex/up-arrow.png" alt="Flecha que te devuelve a la parte superior" id="arrow" width="3%"></a>
-            <a href="#"><img src="../img/sectionIndex/up-arrow.png" alt="Flecha que te devuelve a la parte superior" id="arrow" width="40px"></a>
-            <a href="#"><img src="../img/sectionIndex/up-arrow.png" alt="Flecha que te devuelve a la parte superior" id="arrow" width="40px"></a>
     </div>
 </main>
 
@@ -101,7 +475,7 @@
 <script src="../javascript/script.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <!-- chat -->
-<script src="https://code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
+<script src="//code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

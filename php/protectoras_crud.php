@@ -1,65 +1,71 @@
 <?php
-require_once 'db.php';
+/*--------------------------------------------------------------------------------------------
+ gestión de protectoras */
 
-// Obtener todas las protectoras
+require_once __DIR__ . '/../backend/config/db.php';
+/*--------------------------------------------------------------------------------------------
+obtener todas las protectoras activas */
+
 function getProtectoras($pdo) {
-    $stmt = $pdo->query('SELECT * FROM protectoras WHERE activa = 1');
+    $stmt = $pdo->query('SELECT * FROM protectoras WHERE activa = 1 ORDER BY nombre ASC');
     return $stmt->fetchAll();
 }
 
-// Obtener una protectora por ID
+/*--------------------------------------------------------------------------------------------
+obtener protectora por ID */
+
 function getProtectoraById($pdo, $id) {
-    $stmt = $pdo->prepare('SELECT * FROM protectoras WHERE idProtectora = ?');
+    $stmt = $pdo->prepare('SELECT * FROM protectoras WHERE idProtectora = ? AND activa = 1');
     $stmt->execute([$id]);
     return $stmt->fetch();
 }
 
-// Crear una nueva protectora
+/*--------------------------------------------------------------------------------------------
+crear protectora */
+
 function createProtectora($pdo, $data) {
-    $sql = 'INSERT INTO protectoras (nombre, descripcion, direccion, localidad, telefono, email, web, foto_logo, latitud, longitud, verificada, activa) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    $sql = 'INSERT INTO protectoras (nombre, descripcion, email, telefono, direccion, ciudad, logo, sitioWeb, activa)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)';
     $stmt = $pdo->prepare($sql);
     return $stmt->execute([
         $data['nombre'],
-        $data['descripcion'],
-        $data['direccion'],
-        $data['localidad'],
-        $data['telefono'],
+        $data['descripcion'] ?? null,
         $data['email'],
-        $data['web'],
-        $data['foto_logo'],
-        $data['latitud'],
-        $data['longitud'],
-        $data['verificada'],
-        $data['activa']
+        $data['telefono'] ?? null,
+        $data['direccion'] ?? null,
+        $data['ciudad'] ?? null,
+        $data['logo'] ?? null,
+        $data['sitioWeb'] ?? null,
     ]);
 }
 
-// Actualizar protectora
+/*--------------------------------------------------------------------------------------------
+actualizar protectora */
+
 function updateProtectora($pdo, $id, $data) {
-    $sql = 'UPDATE protectoras SET nombre=?, descripcion=?, direccion=?, localidad=?, telefono=?, email=?, web=?, foto_logo=?, latitud=?, longitud=?, verificada=?, activa=? WHERE idProtectora=?';
+    $sql = 'UPDATE protectoras
+            SET nombre=?, descripcion=?, email=?, telefono=?, direccion=?, ciudad=?, logo=?, sitioWeb=?, activa=?
+            WHERE idProtectora=?';
     $stmt = $pdo->prepare($sql);
     return $stmt->execute([
         $data['nombre'],
-        $data['descripcion'],
-        $data['direccion'],
-        $data['localidad'],
-        $data['telefono'],
+        $data['descripcion'] ?? null,
         $data['email'],
-        $data['web'],
-        $data['foto_logo'],
-        $data['latitud'],
-        $data['longitud'],
-        $data['verificada'],
-        $data['activa'],
+        $data['telefono'] ?? null,
+        $data['direccion'] ?? null,
+        $data['ciudad'] ?? null,
+        $data['logo'] ?? null,
+        $data['sitioWeb'] ?? null,
+        $data['activa'] ?? 1,
         $id
     ]);
 }
 
-// Eliminar (desactivar) protectora
+/*--------------------------------------------------------------------------------------------
+eliminar  protectora */
+
 function deleteProtectora($pdo, $id) {
     $sql = 'UPDATE protectoras SET activa = 0 WHERE idProtectora = ?';
     $stmt = $pdo->prepare($sql);
     return $stmt->execute([$id]);
 }
-
-?>

@@ -4,7 +4,7 @@ GET — devuelve mascotas con filtros opcionales
 Parametros query: especie, urgencia, ubicacion, tamano, edad, color, salud, sexo, pagina
 Usado por adopta.html para el catalogo filtrado */
 
-require_once __DIR__ . '/../../includes/funciones.php';
+require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 

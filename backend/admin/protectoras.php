@@ -1,6 +1,5 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-admin/protectoras.php
 CRUD de protectoras para el administrador
 GET    — lista protectoras
 POST   — crea protectora

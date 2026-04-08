@@ -1,6 +1,6 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-api/auth/registro.php
+
 Recibe: POST multipart/form-data o JSON
 Campos: nombre, username, email, localidad, telefono, password, password_confirm, terminos
 Devuelve: JSON ok o error */
@@ -10,26 +10,28 @@ require_once __DIR__ . '/../../includes/funciones.php';
 header('Content-Type: application/json; charset=utf-8');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    respuestaError('Metodo no permitido.', 405);
+    respuestaError('Método no permitido.', 405);
 }
 
-// Puede venir como form-data (con foto) o JSON
+/* Puede venir como form-data (con foto) o JSON */
 if (!empty($_POST)) {
     $datos = $_POST;
 } else {
     $datos = json_decode(file_get_contents('php://input'), true) ?? [];
 }
 
-$nombre   = limpiar($datos['nombre']   ?? '');
+$nombre   = limpiar($datos['nombre'] ?? '');
 $username = limpiar($datos['username'] ?? '');
-$email    = trim($datos['email']       ?? '');
-$localidad= limpiar($datos['localidad']?? '');
+$email    = limpiar($datos['email'] ?? '');
+$localidad= limpiar($datos['localidad'] ?? '');
 $telefono = limpiar($datos['telefono'] ?? '');
-$password = $datos['password']         ?? '';
+$password = $datos['password'] ?? '';
 $confirm  = $datos['password_confirm'] ?? '';
-$terminos = $datos['terminos']         ?? '';
+$terminos = $datos['terminos'] ?? '';
 
-// Validaciones
+/*--------------------------------------------------------------------------------------------
+validaciones */
+
 if (!$nombre || !$username || !$email || !$localidad || !$password) {
     respuestaError('Faltan campos obligatorios.');
 }
@@ -43,46 +45,51 @@ if (strlen($username) < 3 || preg_match('/\s/', $username)) {
 }
 
 if (!validarEmail($email)) {
-    respuestaError('Email no valido.');
+    respuestaError('Email no válido.');
 }
 
 if (!validarPassword($password)) {
-    respuestaError('La contrasena debe tener al menos 8 caracteres.');
+    respuestaError('La contraseña debe tener al menos 8 caracteres.');
 }
 
 if ($password !== $confirm) {
-    respuestaError('Las contrasenas no coinciden.');
+    respuestaError('Las contraseñas no coinciden.');
 }
 
 if (!$terminos) {
-    respuestaError('Debes aceptar los terminos y condiciones.');
+    respuestaError('Debes aceptar los términos y condiciones.');
 }
 
 if ($telefono && !preg_match('/^[6-9]\d{8}$/', preg_replace('/\s/', '', $telefono))) {
-    respuestaError('Telefono no valido.');
+    respuestaError('Teléfono no válido.');
 }
 
 $pdo = conectar();
 
-// Comprobar email unico
+/*--------------------------------------------------------------------------------------------
+verificar unicidad */
+
+/* Comprobar email único */
 $stmt = $pdo->prepare('SELECT idUsuario FROM usuarios WHERE email = ? LIMIT 1');
 $stmt->execute([$email]);
 if ($stmt->fetch()) {
-    respuestaError('Este email ya esta registrado.');
+    respuestaError('Este email ya está registrado.');
 }
 
-// Comprobar username unico
+/* Comprobar username único */
 $stmt = $pdo->prepare('SELECT idUsuario FROM usuarios WHERE username = ? LIMIT 1');
 $stmt->execute([$username]);
 if ($stmt->fetch()) {
-    respuestaError('Este nombre de usuario ya esta en uso.');
+    respuestaError('Este nombre de usuario ya está en uso.');
 }
 
-// Subida de foto de perfil
+/*--------------------------------------------------------------------------------------------
+subida de foto */
+
 $rutaFoto = null;
 if (!empty($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] === UPLOAD_ERR_OK) {
-    $archivo   = $_FILES['foto_perfil'];
-    $extension = strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION));
+    $archivo    = $_FILES['foto_perfil'];
+    $extension  = strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION));
     $permitidos = ['jpg', 'jpeg', 'png', 'gif'];
 
     if (!in_array($extension, $permitidos)) {
@@ -93,7 +100,7 @@ if (!empty($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] === UPLOAD
         respuestaError('La imagen no puede superar 2 MB.');
     }
 
-    $directorio = __DIR__ . '/../../uploads/usuarios/';
+    $directorio = __DIR__ . '/uploads/usuarios/';
     if (!is_dir($directorio)) {
         mkdir($directorio, 0755, true);
     }
@@ -103,7 +110,9 @@ if (!empty($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] === UPLOAD
     $rutaFoto = 'uploads/usuarios/' . $nombreArchivo;
 }
 
-// Insertar usuario
+/*--------------------------------------------------------------------------------------------
+insertar usuario */
+
 $hash = password_hash($password, PASSWORD_BCRYPT);
 $stmt = $pdo->prepare(
     'INSERT INTO usuarios (nombre, username, email, password_hash, localidad, telefono, foto_perfil)
@@ -113,14 +122,14 @@ $stmt->execute([$nombre, $username, $email, $hash, $localidad, $telefono ?: null
 
 $idNuevo = $pdo->lastInsertId();
 
-// Iniciar sesion directamente
+/* Iniciar sesión */
 iniciarSesionSegura();
 session_regenerate_id(true);
-$_SESSION['idUsuario']  = $idNuevo;
-$_SESSION['nombre']     = $nombre;
-$_SESSION['username']   = $username;
-$_SESSION['rol']        = 'usuario';
-$_SESSION['foto_perfil']= $rutaFoto;
+$_SESSION['idUsuario']   = $idNuevo;
+$_SESSION['nombre']      = $nombre;
+$_SESSION['username']    = $username;
+$_SESSION['rol']         = 'usuario';
+$_SESSION['foto_perfil'] = $rutaFoto;
 
 respuestaOk([
     'mensaje'  => 'Cuenta creada correctamente.',

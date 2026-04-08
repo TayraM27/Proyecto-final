@@ -1,11 +1,10 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-api/foro/comentarios.php
 GET  ?idPublicacion=1 — lista comentarios de una publicacion
 POST — crea comentario (requiere login)
 PUT  — like a un comentario (requiere login) */
 
-require_once __DIR__ . '/../../includes/funciones.php';
+require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 

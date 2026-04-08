@@ -4,7 +4,7 @@ POST — registra un apadrinamiento
 Requiere login (apadrina.html lo indica con aviso)
 Recibe: { idMascota, cuota, nombre_pagador, email_pagador } */
 
-require_once __DIR__ . '/../../includes/funciones.php';
+require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 

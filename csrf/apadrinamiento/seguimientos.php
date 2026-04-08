@@ -3,7 +3,7 @@
 GET ?idMascota=1 — devuelve los seguimientos de una mascota apadrinada por el usuario
 Solo puede ver sus propios apadrinamientos */
 
-require_once __DIR__ . '/../../includes/funciones.php';
+require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 

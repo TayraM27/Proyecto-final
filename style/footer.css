@@ -1,13 +1,27 @@
 /* footer */
 footer {
-    border-top:#F8BA56 2px double;
-    bottom: 0;
+    border-top: #F8BA56 2px double;
     background-color: #1B358F;
     color: #F8BA56;
     width: 100%;
-    height: 15vh;
     text-align: center;
-    padding-top: 1em;
+    padding: 2em 1em;
+}
+
+footer p {
+    margin: 0.5em 0;
+    font-size: 0.95rem;
+}
+
+footer a {
+    color: white;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+footer a:hover {
+    color: #F8BA56;
+    text-decoration: underline;
 }
 
 /* flecha volver arriba */
@@ -18,7 +32,6 @@ footer {
 }
 
 #arrow:hover {
-    
     animation: subirBajar 0.5s ease-in-out infinite alternate;
 }
 
@@ -34,26 +47,27 @@ footer {
 /* tablets */
 @media (max-width: 1024px) {
     footer {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         padding: 1.5em;
-    }
-}
-
-/* celulares */
-@media (max-width: 768px) {
-    footer {
-        position: relative;
-        font-size: 0.8rem;
-        padding: 2em 1em;
-        line-height: 1.4;
     }
 
     footer p {
-        margin: 0.5em 0;
+        margin: 0.4em 0;
+    }
+}
+
+/* mobile */
+@media (max-width: 768px) {
+    footer {
+        font-size: 0.75rem;
+        padding: 1.2em;
+    }
+
+    footer p {
+        margin: 0.3em 0;
     }
 
     footer a {
-        display: block;
-        margin: 0.3em 0;
+        display: inline;
     }
 }

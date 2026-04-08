@@ -796,29 +796,98 @@ async function cargarMascotasAdopta() {
     }
 }
 
-// Renderiza una tarjeta de mascota (ajusta según tu HTML)
+/* Renderiza una tarjeta de mascota COMPLETA */
 function renderTarjetaMascota(m) {
+    
+    /* Calcular edad desde fecha_nacimiento */
+    var edad = '';
+    if (m.fecha_nacimiento) {
+        var nacimiento = new Date(m.fecha_nacimiento);
+        var hoy = new Date();
+        var edadAños = hoy.getFullYear() - nacimiento.getFullYear();
+        var mes = hoy.getMonth() - nacimiento.getMonth();
+        if (mes < 0) edadAños--;
+        edad = edadAños;
+    }
+    
+    /* Determinar badge de urgencia/estado */
+    var badgeHtml = '';
+    if (m.urgencia === 'urgente') {
+        badgeHtml = '<span class="badge bg-danger">Urgente</span>';
+    } else if (m.urgencia === 'nuevo') {
+        badgeHtml = '<span class="badge bg-info">Nuevo</span>';
+    }
+    
+    /* Información adicional según propiedades */
+    var infoExtra = '';
+    if (m.compatible_ninos) infoExtra += '<span class="badge bg-light text-dark me-1"><i class="fa-solid fa-child"></i></span>';
+    if (m.compatible_perros) infoExtra += '<span class="badge bg-light text-dark me-1"><i class="fa-solid fa-dog"></i></span>';
+    if (m.compatible_gatos) infoExtra += '<span class="badge bg-light text-dark me-1"><i class="fa-solid fa-cat"></i></span>';
+    if (m.apto_piso) infoExtra += '<span class="badge bg-light text-dark me-1"><i class="fa-solid fa-home"></i></span>';
+    
     return `
-    <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="${m.especie}" data-ubicacion="${m.ubicacion || ''}" data-tamano="${m.tamano || ''}">
+    <div class="col-sm-12 col-md-6 col-lg-4 animalCard" 
+         data-especie="${m.especie}" 
+         data-ubicacion="${m.ubicacion || ''}" 
+         data-tamano="${m.tamano || ''}"
+         data-urgencia="${m.urgencia || ''}"
+         data-edad="${edad}"
+         data-sexo="${m.sexo || ''}"
+         data-color="${m.color || ''}"
+         data-salud="${m.estado_salud || ''}">
+        
         <div class="card h-100 shadow-sm">
-            <div class="contenedor-imagen">
-                <img src="${m.foto || '../img/mascotas/default.jpg'}" class="card-img-top" alt="${m.nombre}">
-                <button class="btn-fav" data-id="${m.idMascota}" onclick="toggleFavorito(event, '${m.idMascota}')" title="Agregar a favoritos">
+            
+            <!-- Imagen con badge de urgencia/estado -->
+            <div class="contenedor-imagen position-relative">
+                <img src="${m.foto}" class="card-img-top" alt="${m.nombre}">
+                
+                <!-- Badge urgencia/estado -->
+                ${badgeHtml}
+                
+                <!-- Botón favorito -->
+                <button class="btn-fav" onclick="toggleFavorito(event, '${m.idMascota}')" title="Agregar a favoritos">
                     <i class="fa-regular fa-heart"></i>
                 </button>
             </div>
-            <div class="card-body">
-                <h5 class="card-title">${m.nombre}</h5>
-                <ul class="card-meta">
-                    <li>${m.raza || ''}</li>
-                    <li>${m.edad || ''} años</li>
-                    <li>${m.sexo || ''}</li>
+            
+            <!-- Cuerpo de la tarjeta -->
+            <div class="card-body d-flex flex-column">
+                
+                <!-- Nombre y sexo -->
+                <div class="d-flex align-items-center mb-2">
+                    <h5 class="card-title mb-0">${m.nombre}</h5>
+                    <span class="ms-2 fs-6">
+                        ${m.sexo === 'hembra' ? '<i class="fa-solid fa-venus" style="color: #E91E63;"></i>' : '<i class="fa-solid fa-mars" style="color: #2196F3;"></i>'}
+                    </span>
+                </div>
+                
+                <!-- Información del animal -->
+                <ul class="card-meta list-unstyled small text-secondary mb-2">
+                    ${m.raza ? '<li><i class="fa-solid fa-dog"></i> ' + m.raza + '</li>' : ''}
+                    ${edad ? '<li><i class="fa-solid fa-calendar"></i> ' + edad + ' años</li>' : ''}
+                    ${m.tamano ? '<li><i class="fa-solid fa-expand"></i> ' + (m.tamano.charAt(0).toUpperCase() + m.tamano.slice(1)) + '</li>' : ''}
                 </ul>
-                <div class="contador-vistas mt-2">
+                
+                <!-- Ubicación (protectora) -->
+                ${m.ubicacion ? '<div class="small text-muted mb-2"><i class="fa-solid fa-location-dot"></i> ' + m.ubicacion + '</div>' : ''}
+                
+                <!-- Información del estado de adopción -->
+                ${m.estado_adopcion ? '<div class="small text-muted mb-2"><i class="fa-solid fa-hourglass-end"></i> En adopción: ' + m.estado_adopcion.replace('_', ' ') + '</div>' : ''}
+                
+                <!-- Badges de compatibilidad -->
+                ${infoExtra ? '<div class="mb-2">' + infoExtra + '</div>' : ''}
+                
+                <!-- Contador de vistas -->
+                <div class="contador-vistas small text-warning mt-2">
                     <i class="fa-solid fa-eye"></i>
                     <span>Vista <strong id="vistas-${m.idMascota}">0</strong> veces</span>
                 </div>
-                <a href="fichaAnimal.html?id=${m.idMascota}" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('${m.idMascota}')">Ver ficha</a>
+                
+                <!-- Botón Ver ficha -->
+                <a href="fichaAnimal.html?id=${m.idMascota}" class="btn btn-primary w-100 mt-auto" onclick="registrarVistaFicha('${m.idMascota}')">
+                    Ver ficha
+                </a>
             </div>
         </div>
     </div>
@@ -836,7 +905,7 @@ async function cargarMascotaFicha() {
         if (!json.success) throw new Error(json.error || 'No encontrada');
         const m = json.data;
         document.getElementById('animal-nombre').textContent = m.nombre;
-        document.getElementById('animal-subtitulo').textContent = `${m.raza || ''} · ${m.edad || ''} años · ${m.sexo || ''}`;
+        document.getElementById('animal-subtitulo').textContent = `${m.raza || ''} · ${m.sexo || ''}`;
         document.getElementById('animal-descripcion').textContent = m.descripcion || '';
         document.getElementById('foto-principal').src = m.foto || '../img/mascotas/default.jpg';
         // Puedes completar más campos según tu HTML

@@ -1,6 +1,5 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-admin/usuarios.php
 Gestion de usuarios para el administrador
 GET    — lista usuarios con filtros
 PUT    — bloquea/desbloquea usuario

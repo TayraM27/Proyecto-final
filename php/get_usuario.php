@@ -1,6 +1,6 @@
 <?php
-require_once 'db.php';
-require_once 'usuarios_crud.php';
+require_once __DIR__ . '/../backend/config/db.php';
+require_once __DIR__ . '/usuarios_crud.php';
 
 header('Content-Type: application/json');
 

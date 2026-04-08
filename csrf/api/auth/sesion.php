@@ -1,6 +1,6 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-devuelve si hay sesion activa y datos basicos del usuario
+Devuelve si hay sesión activa y datos básicos del usuario
 El frontend puede llamar a esto al cargar para mostrar/ocultar elementos */
 
 require_once __DIR__ . '/../../includes/funciones.php';

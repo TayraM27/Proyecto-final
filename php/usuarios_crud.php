@@ -1,56 +1,48 @@
 <?php
-require_once 'db.php';
+/*--------------------------------------------------------------------------------------------
+gestión de usuarios */
 
-// Obtener todos los usuarios activos
+require_once __DIR__ . '/../backend/config/db.php';
+
+/*--------------------------------------------------------------------------------------------
+obtener todos los usuarios */
+
 function getUsuarios($pdo) {
-    $stmt = $pdo->query('SELECT * FROM usuarios WHERE activo = 1');
+    $stmt = $pdo->query('SELECT idUsuario, nombre, username, email, rol, activo FROM usuarios ORDER BY nombre ASC');
     return $stmt->fetchAll();
 }
 
-// Obtener usuario por ID
+/*--------------------------------------------------------------------------------------------
+obtener usuario por ID */
+
 function getUsuarioById($pdo, $id) {
-    $stmt = $pdo->prepare('SELECT * FROM usuarios WHERE idUsuario = ?');
+    $stmt = $pdo->prepare('SELECT idUsuario, nombre, username, email, rol, activo FROM usuarios WHERE idUsuario = ?');
     $stmt->execute([$id]);
     return $stmt->fetch();
 }
 
-// Crear usuario
-function createUsuario($pdo, $data) {
-    $sql = 'INSERT INTO usuarios (nombre, apellidos, email, password_hash, telefono, foto_perfil, rol, activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    $stmt = $pdo->prepare($sql);
-    return $stmt->execute([
-        $data['nombre'],
-        $data['apellidos'],
-        $data['email'],
-        $data['password_hash'],
-        $data['telefono'],
-        $data['foto_perfil'],
-        $data['rol'],
-        $data['activo'] ?? 1
-    ]);
-}
+/*--------------------------------------------------------------------------------------------
+actualizar usuario */
 
-// Actualizar usuario
 function updateUsuario($pdo, $id, $data) {
-    $sql = 'UPDATE usuarios SET nombre=?, apellidos=?, email=?, password_hash=?, telefono=?, foto_perfil=?, rol=?, activo=? WHERE idUsuario=?';
+    $sql = 'UPDATE usuarios
+            SET nombre=?, email=?, rol=?, activo=?
+            WHERE idUsuario=?';
     $stmt = $pdo->prepare($sql);
     return $stmt->execute([
         $data['nombre'],
-        $data['apellidos'],
         $data['email'],
-        $data['password_hash'],
-        $data['telefono'],
-        $data['foto_perfil'],
-        $data['rol'],
+        $data['rol'] ?? 'usuario',
         $data['activo'] ?? 1,
         $id
     ]);
 }
 
-// Eliminar (desactivar) usuario
+/*--------------------------------------------------------------------------------------------
+eliminar (desactivar) usuario */
+
 function deleteUsuario($pdo, $id) {
     $sql = 'UPDATE usuarios SET activo = 0 WHERE idUsuario = ?';
     $stmt = $pdo->prepare($sql);
     return $stmt->execute([$id]);
 }
-?>

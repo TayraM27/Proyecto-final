@@ -12,461 +12,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/093cf7cd82.js" crossorigin="anonymous"></script>
-
-    <style>
-        /* ── Filtro de búsqueda ── */
-        .filtro-prot-wrap {
-            display: flex;
-            gap: 0.6rem;
-            flex-wrap: wrap;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .filtro-prot-input {
-            flex: 1;
-            min-width: 220px;
-            border: 2px solid #e9ecef;
-            border-radius: 50px;
-            padding: 0.6em 1.2em;
-            font-size: 0.88rem;
-            font-family: 'Poppins', sans-serif;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .filtro-prot-input:focus {
-            border-color: #1B358F;
-        }
-
-        .filtro-prot-btn {
-            background: none;
-            border: 2px solid #e9ecef;
-            border-radius: 50px;
-            padding: 0.55em 1.1em;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #555;
-            cursor: pointer;
-            font-family: 'Poppins', sans-serif;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 0.4em;
-        }
-
-        .filtro-prot-btn:hover,
-        .filtro-prot-btn.activo {
-            background: #1B358F;
-            border-color: #1B358F;
-            color: #fff;
-        }
-
-        /* ── Tarjeta protectora mejorada ── */
-        .card-protectora-pag {
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 2px 14px rgba(0,0,0,0.07);
-            overflow: hidden;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.25s, box-shadow 0.25s;
-            border: 2px solid transparent;
-        }
-
-        .card-protectora-pag:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 32px rgba(27,53,143,0.13);
-            border-color: #F8BA56;
-        }
-
-        /* Cabecera con franja de color */
-        .prot-franja {
-            height: 5px;
-            background: #1B358F;
-        }
-
-        .prot-franja-gold {
-            background: #F8BA56;
-        }
-
-        .prot-header {
-            background-color: #f8f9fb;
-            padding: 1.3em 1.3em 1em;
-            display: flex;
-            align-items: center;
-            gap: 1em;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        /* Logo con fallback limpio */
-        .prot-logo-container {
-            width: 58px;
-            height: 58px;
-            border-radius: 50%;
-            flex-shrink: 0;
-            overflow: hidden;
-            border: 2px solid #e9ecef;
-            background: #f0f4ff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .prot-logo-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .prot-logo-emoji {
-            font-size: 1.6rem;
-            line-height: 1;
-        }
-
-        .prot-nombre {
-            font-weight: 700;
-            color: #1B358F;
-            font-size: 0.93rem;
-            margin-bottom: 0.2em;
-            line-height: 1.3;
-        }
-
-        .prot-lugar {
-            font-size: 0.78rem;
-            color: #6c757d;
-            margin-bottom: 0;
-            display: flex;
-            align-items: center;
-            gap: 0.3em;
-        }
-
-        .prot-lugar i {
-            color: #F8BA56;
-        }
-
-        /* Años de experiencia badge */
-        .prot-badge-anos {
-            margin-left: auto;
-            background: #fff8e6;
-            border: 1px solid #F8BA56;
-            color: #9a6d00;
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 0.2em 0.6em;
-            border-radius: 20px;
-            white-space: nowrap;
-            align-self: flex-start;
-        }
-
-        .prot-desc {
-            padding: 1.1em 1.3em 0.6em;
-            flex: 1;
-        }
-
-        .prot-desc p {
-            font-size: 0.83rem;
-            color: #555;
-            line-height: 1.65;
-            margin: 0;
-        }
-
-        /* Tags */
-        .prot-tags {
-            padding: 0 1.3em 1em;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.4em;
-        }
-
-        .prot-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3em;
-            background-color: #f0f4ff;
-            color: #1B358F;
-            border: 1px solid #d0daff;
-            border-radius: 20px;
-            padding: 0.25em 0.75em;
-            font-size: 0.74rem;
-            font-weight: 600;
-        }
-
-        .prot-tag i {
-            font-size: 0.7rem;
-        }
-
-        .prot-tag-gold {
-            background-color: #fff8e6;
-            color: #9a6d00;
-            border-color: #F8BA56;
-        }
-
-        .prot-tag-verde {
-            background-color: #e8fff0;
-            color: #1e7e34;
-            border-color: #b8dfc7;
-        }
-
-        /* Datos de contacto */
-        .prot-contacto {
-            padding: 0.9em 1.3em;
-            border-top: 1px solid #f0f0f0;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            flex-direction: column;
-            gap: 0.45em;
-        }
-
-        .prot-dato {
-            display: flex;
-            align-items: center;
-            gap: 0.6em;
-            font-size: 0.8rem;
-            color: #444;
-            word-break: break-all;
-        }
-
-        .prot-dato i {
-            color: #1B358F;
-            width: 14px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-
-        .prot-dato a {
-            color: #444;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .prot-dato a:hover {
-            color: #1B358F;
-            text-decoration: underline;
-        }
-
-        /* Animales disponibles */
-        .prot-animales-chip {
-            padding: 0.7em 1.3em;
-            background: #f8f9fb;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            align-items: center;
-            gap: 0.6em;
-            font-size: 0.78rem;
-            color: #555;
-        }
-
-        .prot-animales-chip i {
-            color: #F8BA56;
-        }
-
-        .prot-animales-num {
-            font-weight: 700;
-            color: #1B358F;
-        }
-
-        /* Acciones */
-        .prot-acciones {
-            padding: 1em 1.3em;
-            display: flex;
-            gap: 0.6em;
-            flex-wrap: wrap;
-        }
-
-        .prot-acciones .btn-azul {
-            flex: 1;
-            padding: 0.65em;
-            font-size: 0.83rem;
-            text-align: center;
-            min-width: 0;
-        }
-
-        .btn-ver-animales {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f0f4ff;
-            color: #1B358F;
-            border: 2px solid #d0daff;
-            border-radius: 10px;
-            padding: 0.65em 1em;
-            font-weight: 700;
-            font-size: 0.83rem;
-            text-decoration: none;
-            flex: 1;
-            transition: background-color 0.2s, color 0.2s, transform 0.2s;
-            white-space: nowrap;
-            text-align: center;
-        }
-
-        .btn-ver-animales:hover {
-            background-color: #1B358F;
-            color: #fff;
-            transform: translateY(-2px);
-        }
-
-        .btn-prot-web {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #fff;
-            color: #1B358F;
-            border: 2px solid #1B358F;
-            border-radius: 10px;
-            padding: 0.65em 1em;
-            font-weight: 700;
-            font-size: 0.83rem;
-            text-decoration: none;
-            transition: background-color 0.2s, color 0.2s, transform 0.2s;
-            white-space: nowrap;
-        }
-
-        .btn-prot-web:hover {
-            background-color: #1B358F;
-            color: #fff;
-            transform: translateY(-2px);
-        }
-
-        /* ── Sin resultados ── */
-        .no-resultados {
-            display: none;
-            text-align: center;
-            padding: 4em 2em;
-            color: #6c757d;
-        }
-
-        .no-resultados i {
-            font-size: 3rem;
-            color: #dee2e6;
-            margin-bottom: 0.6em;
-            display: block;
-        }
-
-        /* ── Bloque CTA colabora ── */
-        .cta-colabora {
-            background: #1B358F;
-            border-radius: 18px;
-            padding: 2.5em 2em;
-            margin-top: 3em;
-            margin-bottom: 1em;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 2em;
-            flex-wrap: wrap;
-        }
-
-        .cta-colabora-texto h3 {
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: #F8BA56;
-            margin-bottom: 0.4em;
-        }
-
-        .cta-colabora-texto p {
-            font-size: 0.88rem;
-            color: rgba(255,255,255,0.8);
-            margin: 0;
-            max-width: 480px;
-            line-height: 1.6;
-        }
-
-        .cta-colabora-bots {
-            display: flex;
-            gap: 0.8em;
-            flex-wrap: wrap;
-            flex-shrink: 0;
-        }
-
-        .cta-colabora-bots a {
-            border-radius: 10px;
-            padding: 0.75em 1.4em;
-            font-size: 0.88rem;
-            font-weight: 700;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.4em;
-            transition: opacity 0.2s, transform 0.15s;
-        }
-
-        .cta-colabora-bots a:hover {
-            opacity: 0.88;
-            transform: translateY(-2px);
-        }
-
-        .btn-cta-amarillo {
-            background: #F8BA56;
-            color: #1B358F;
-        }
-
-        .btn-cta-outline {
-            background: transparent;
-            color: #fff;
-            border: 2px solid rgba(255,255,255,0.4);
-        }
-
-        .btn-cta-outline:hover {
-            border-color: #fff;
-        }
-
-        /* ── Aviso IBAN ── */
-        .prot-dato-iban {
-            background: #f8f9fb;
-            border-radius: 8px;
-            padding: 0.4em 0.7em;
-            font-size: 0.72rem;
-            font-family: 'Courier New', monospace;
-            color: #444;
-            letter-spacing: 0.03em;
-            word-break: break-all;
-        }
-
-        .prot-dato-iban i {
-            color: #F8BA56;
-        }
-
-        /* Responsive */
-        @media (max-width: 767px) {
-            .protectoras-hero {
-                padding: 2em 1.4em;
-            }
-
-            .protectoras-hero h1 {
-                font-size: 1.5rem;
-            }
-
-            .stats-row {
-                gap: 0.6rem;
-            }
-
-            .stat-chip {
-                font-size: 0.74rem;
-                padding: 0.35em 0.8em;
-            }
-
-            .cta-colabora {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-
-        @media (max-width: 575px) {
-            .prot-acciones {
-                flex-direction: column;
-            }
-
-            .btn-ver-animales,
-            .btn-prot-web,
-            .prot-acciones .btn-azul {
-                width: 100%;
-                flex: unset;
-            }
-        }
-    </style>
 </head>
 
 <body>
@@ -569,7 +114,7 @@
                     <div class="prot-franja"></div>
                     <div class="prot-header">
                         <div class="prot-logo-container">
-                            <img src="../img/mascotas/centro-proteccion-animales-gijon-logo.jpg"
+                            <img src="../img/protectora/centro-proteccion-animales-gijon.jpg"
                                  alt="Logo CPA Gijón"
                                  onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'prot-logo-emoji\'>🐕</span>';">
                         </div>
@@ -641,7 +186,7 @@
                     <div class="prot-franja prot-franja-gold"></div>
                     <div class="prot-header">
                         <div class="prot-logo-container">
-                            <img src="../img/mascotas/protectora-de-asturias-logo.jpg"
+                            <img src="../img/protectora/protectora-de-asturias.jpg"
                                  alt="Logo Fundación Protectora de Asturias"
                                  onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'prot-logo-emoji\'>💙</span>';">
                         </div>
@@ -714,7 +259,7 @@
                     <div class="prot-franja"></div>
                     <div class="prot-header">
                         <div class="prot-logo-container">
-                            <img src="../img/mascotas/nortemascotas-logo.jpg"
+                            <img src="../img/protectora/nortemascota-dex.jpg"
                                  alt="Logo Nortemascotas"
                                  onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'prot-logo-emoji\'>🐾</span>';">
                         </div>
@@ -783,7 +328,7 @@
                     <div class="prot-franja prot-franja-gold"></div>
                     <div class="prot-header">
                         <div class="prot-logo-container">
-                            <img src="../img/mascotas/masquechuchos-logo.jpg"
+                            <img src="../img/protectora/masquechuchos.jpg"
                                  alt="Logo MÁS QUE CHUCHOS"
                                  onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'prot-logo-emoji\'>🏠</span>';">
                         </div>
@@ -856,7 +401,7 @@
                     <div class="prot-franja prot-franja-gold"></div>
                     <div class="prot-header">
                         <div class="prot-logo-container">
-                            <img src="../img/mascotas/asociacion-felina-la-esperanza-logo.jpg"
+                            <img src="../img/protectora/asociacion-felina-la-esperanza.jpg"
                                  alt="Logo Asociación Felina La Esperanza"
                                  onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'prot-logo-emoji\'>🐱</span>';">
                         </div>
@@ -955,8 +500,6 @@
     <!-- Flecha arriba -->
     <div class="text-center mt-4 mb-2">
         <a href="#" class="text-align-center">
-            <img src="../img/sectionIndex/up-arrow.png" alt="Volver al inicio" id="arrow" width="3%">
-                <img src="../img/sectionIndex/up-arrow.png" alt="Volver al inicio" id="arrow" width="40px">
                 <img src="../img/sectionIndex/up-arrow.png" alt="Volver al inicio" id="arrow" width="40px">
         </a>
     </div>

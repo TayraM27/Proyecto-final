@@ -1,6 +1,8 @@
 <?php
-require_once 'db.php';
-require_once 'mascotas_crud.php';
+/*--------------------------------------------------------------------------------------------
+Crea una nueva mascota */
+require_once __DIR__ . '/../backend/config/db.php';
+require_once __DIR__ . '/mascotas_crud.php';
 
 header('Content-Type: application/json');
 
@@ -19,18 +21,19 @@ if (!$data || empty($data['nombre']) || empty($data['especie']) || empty($data['
 }
 
 $campos = [
-    'nombre' => $data['nombre'],
-    'especie' => $data['especie'],
-    'raza' => $data['raza'] ?? null,
-    'edad' => $data['edad'] ?? null,
-    'sexo' => $data['sexo'] ?? null,
-    'descripcion' => $data['descripcion'] ?? null,
-    'foto' => $data['foto'] ?? null,
+    'nombre'       => $data['nombre'],
+    'especie'      => $data['especie'],
+    'raza'         => $data['raza'] ?? null,
+    'edad'         => $data['edad'] ?? null,
+    'sexo'         => $data['sexo'] ?? null,
+    'descripcion'  => $data['descripcion'] ?? null,
+    'foto'         => $data['foto'] ?? null,
     'idProtectora' => $data['idProtectora'],
-    'activa' => $data['activa'] ?? 1
+    'activa'       => $data['activa'] ?? 1
 ];
 
 try {
+    $pdo = conectar();
     $ok = createMascota($pdo, $campos);
     echo json_encode(['success' => $ok]);
 } catch (Exception $e) {
