@@ -7,7 +7,7 @@ Cambiar las credenciales segun el entorno (local/produccion) */
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'petfamily');
 define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_PASS', 'tayra27');
 define('DB_CHARSET', 'utf8mb4');
 
 function conectar(): PDO {

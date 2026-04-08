@@ -11,10 +11,8 @@ CREATE DATABASE IF NOT EXISTS petfamily
 
 USE petfamily;
 
--- ────────────────────────────────────────────────────────────
 -- 1. PROTECTORAS
 --    Organizaciones que gestionan animales y verifican adopciones
--- ────────────────────────────────────────────────────────────
 CREATE TABLE protectoras (
     idProtectora   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nombre         VARCHAR(120)  NOT NULL,
