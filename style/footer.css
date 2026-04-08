@@ -26,6 +26,7 @@ footer a:hover {
 
 /* flecha volver arriba */
 #arrow {
+    margin-top: 30px;
     border-radius: 50%;
     border: #F8BA56 2px double;
     transition: transform 0.5s ease;

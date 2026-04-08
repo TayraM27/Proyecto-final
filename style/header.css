@@ -145,8 +145,11 @@ header.header-oculto {
     margin-right: -2em;
     display: flex;
     align-items: center;
+    transition: transform 0.2s;
 }
-
+#menu_burger i:hover {
+    transform: scale(1.001);
+}
 #menu.d-block {
     position: fixed;
     top: clamp(60px, 10vh, 90px);

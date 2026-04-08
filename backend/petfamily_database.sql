@@ -442,7 +442,7 @@ INSERT INTO mascotas_fotos (idMascota, ruta, es_principal, orden) VALUES
 (1, 'img/mascotas/leai2-centro-proteccion-animales-gijon.jpg', 0, 1),
 -- Haru (a02) — 3 fotos
 (2, 'img/mascotas/haru-protectora-de-asturias-dog.jpg', 1, 0),
-(2, 'img/mascotas/haru2-protectora-de-asturias-16211153400-Mthub.jpg',0, 1),
+(2, 'img/mascotas/haru2-protectora-de-asturias.jpg',0, 1),
 (2, 'img/mascotas/haru3-protectora-de-asturias.jpg',0, 2),
 -- Roy (a03) — 3 fotos
 (3, 'img/mascotas/roys-asociacion-felina-la-esperanza-cat.jpg', 1, 0),

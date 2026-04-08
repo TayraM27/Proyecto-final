@@ -18,8 +18,6 @@
 <body>
 
 <header>
-
-    <!-- Logo (XL) -->
     <div id="contenedor_logo" class="d-none d-lg-block">
         <a id="logoXL" href="index.html">
             <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderXL">
@@ -27,7 +25,6 @@
         </a>
     </div>
 
-    <!-- Header(xs,sm, md) -->
     <div id="menu_burger" class="container-fluid justify-content-between align-content-center d-lg-none">
         <i id="btn_burger" class="fa-solid fa-bars text-center col-2 ms-n5"></i>
         <a id="logoMD" href="index.html" class="mb-2">
@@ -57,20 +54,16 @@
         </ul>
     </nav>
 
-    <!-- Usuario xl -->
     <div id="user_container" class="d-none d-lg-block">
         <a href="login.html"><img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px"></a>
         <a href="register.html" class="btn-register">Registrarse</a>
     </div>
 
 </header>
-<!-- Fin html del header -->
-
 
 <main>
     <div class="container">
 
-        <!-- Migas -->
         <p class="migas">
             <a href="index.html">Inicio</a>
             <span>›</span>
@@ -81,13 +74,11 @@
 
         <div class="row g-4">
 
-            <!-- Columna izquierda: galería dinámica -->
             <div class="col-lg-6">
                 <img id="foto-principal" src="" alt="Foto del animal">
                 <div class="miniaturas" id="contenedor-miniaturas"></div>
             </div>
 
-            <!-- Columna derecha: datos del animal -->
             <div class="col-lg-6">
 
                 <div class="d-flex align-items-center gap-3 flex-wrap mb-1">
@@ -99,7 +90,6 @@
 
                 <div class="d-flex gap-2 flex-wrap mb-3" id="animal-badges"></div>
 
-                <!-- Características -->
                 <div class="tarjeta">
                     <p class="tarjeta-titulo">
                         <i class="fa-solid fa-list-check"></i> Características
@@ -107,7 +97,6 @@
                     <ul class="caracteristicas" id="animal-caracteristicas"></ul>
                 </div>
 
-                <!-- Compatible con -->
                 <div class="tarjeta">
                     <p class="tarjeta-titulo">
                         <i class="fa-solid fa-circle-check"></i> Compatible con
@@ -115,7 +104,6 @@
                     <ul class="caracteristicas" id="animal-compatibilidad"></ul>
                 </div>
 
-                <!-- Botones acción -->
                 <div class="d-flex flex-column gap-2">
                     <button class="btn-adoptar" onclick="mostrarModalAdopcion()">
                         <i class="fa-solid fa-house-heart me-1"></i> Quiero adoptarlo
@@ -123,8 +111,7 @@
                     <button class="btn-apadrinar" onclick="window.location.href='apadrina.html'">
                         <i class="fa-solid fa-star me-1"></i> <span id="btn-apadrinar-texto">Apadrinar</span>
                     </button>
-                    <button class="btn-favorito-ficha" id="btn-fav-ficha"
-                            onclick="toggleFavoritoFicha()">
+                    <button class="btn-favorito-ficha" id="btn-fav-ficha" onclick="toggleFavoritoFicha()">
                         <i class="fa-regular fa-heart me-1"></i> Guardar en favoritos
                     </button>
                 </div>
@@ -136,7 +123,6 @@
 
         <div class="row g-4 mt-1">
 
-            <!-- Descripción -->
             <div class="col-lg-8">
                 <div class="tarjeta">
                     <p class="tarjeta-titulo" id="descripcion-titulo">
@@ -152,14 +138,13 @@
                 </div>
             </div>
 
-            <!-- Protectora -->
             <div class="col-lg-4">
                 <div class="tarjeta">
                     <p class="tarjeta-titulo">
                         <i class="fa-solid fa-building-shield"></i> Protectora responsable
                     </p>
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="protectora-logo" id="protectora-emoji">🏠</div>
+                        <img id="protectora-logo" src="" alt="Logo protectora" style="width:60px; height:60px; object-fit:contain; border-radius:8px; border:1px solid #eee;">
                         <div>
                             <p class="protectora-nombre mb-0" id="protectora-nombre"></p>
                             <p class="protectora-info mb-0" id="protectora-ubicacion"></p>
@@ -169,17 +154,14 @@
                     <button class="btn-contactar w-100 mb-2">
                         <i class="fa-solid fa-paper-plane me-1"></i> Contactar protectora
                     </button>
-                    <a href="protectoras.html"
-                       style="display:block; text-align:center; font-size:0.83rem; color:#1B358F; font-weight:500;">
-                        Ver ficha de la protectora →
+                    <a href="protectoras.html" style="display:block; text-align:center; font-size:0.83rem; color:#1B358F; font-weight:500;">
+                        Ver todas las protectoras
                     </a>
                 </div>
             </div>
 
         </div>
 
-
-        <!-- Otros animales -->
         <div class="seccion-mas">
             <h4><i class="fa-solid fa-paw" style="color:#F8BA56;"></i> Otros animales en adopción</h4>
             <div class="row g-3" id="otros-animales"></div>
@@ -187,14 +169,12 @@
 
     </div>
 
-    <!-- flecha para subir al inicio tiene los estilos en footer.css -->
     <div class="text-center">
-            <a href="#"><img src="../img/sectionIndex/up-arrow.png" alt="Volver arriba" id="arrow" width="40px"></a>
+        <a href="#"><img src="../img/sectionIndex/up-arrow.png" alt="Volver arriba" id="arrow" width="40px"></a>
     </div>
 </main>
 
 
-<!-- Modal adopción -->
 <div class="modal fade" id="modalAdopcion" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-content-pf">
@@ -207,9 +187,7 @@
             </div>
             <div class="modal-body modal-body-pf" id="modal-body"></div>
             <div class="modal-footer" style="border:none; padding-top:0;">
-                <button type="button" class="btn-adoptar"
-                        style="border-radius:8px; padding:0.6em 1.5em; width:auto;"
-                        data-bs-dismiss="modal">
+                <button type="button" class="btn-adoptar" style="border-radius:8px; padding:0.6em 1.5em; width:auto;" data-bs-dismiss="modal">
                     Entendido
                 </button>
             </div>
@@ -218,188 +196,193 @@
 </div>
 
 
-<!-- footer -->
 <footer>
     <p>© 2026 PetFamily. Todos los derechos reservados.</p>
     <p><a href="privacidad.html" style="color:white;">Política de Privacidad</a> | <a href="terminos.html" style="color:white;">Términos de Servicio</a></p>
 </footer>
 
-<!-- script js -->
 <script src="../javascript/script.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<!-- chat -->
 <script src="https://code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
 
 <script>
-// Elimina la base de datos local de animales, todo se carga por JS desde backend
-
-// ==================================================================================================
-//  CARGAR FICHA SEGÚN ?id= DE LA URL
-
 document.addEventListener('DOMContentLoaded', function() {
-
-    // Leer el parámetro ?id= de la URL
     var params = new URLSearchParams(window.location.search);
-    var id     = params.get('id') || 'a01';   // por defecto a01 si no hay id
-    var animal = animales[id];
-
-    // Si el id no existe redirigir al catálogo
-    if (!animal) {
+    var id = params.get('id');
+    
+    if (!id) {
         window.location.href = 'adopta.html';
         return;
     }
-
-    // ------ Título de la página ------
-    document.title = 'PetFamily – ' + animal.nombre;
-
-    // ------ Miga de pan ------
-    document.getElementById('miga-nombre').textContent = animal.nombre;
-
-    // ------ Galería dinámica ------
-    var fotoPrincipal = document.getElementById('foto-principal');
-    fotoPrincipal.src = animal.fotos[0];
-    fotoPrincipal.alt = 'Foto de ' + animal.nombre;
-
-    var contenedorMiniaturas = document.getElementById('contenedor-miniaturas');
-    if (animal.fotos.length > 1) {
-        animal.fotos.forEach(function(ruta, i) {
-            var img = document.createElement('img');
-            img.src       = ruta;
-            img.alt       = animal.nombre + ' foto ' + (i + 1);
-            img.className = 'miniatura' + (i === 0 ? ' activa' : '');
-            img.addEventListener('click', function() { cambiarFoto(img, ruta); });
-            contenedorMiniaturas.appendChild(img);
+    
+    fetch('../php/get_mascota.php?id=' + encodeURIComponent(id))
+        .then(function(response) {
+            if (!response.ok) throw new Error('Error ' + response.status);
+            return response.json();
+        })
+        .then(function(response) {
+            if (!response.success) {
+                window.location.href = 'adopta.html';
+                return;
+            }
+            
+            var mascota = response.data;
+            renderizarFicha(mascota);
+            cargarOtrosAnimales(id);
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            window.location.href = 'adopta.html';
         });
-    }
-
-    // ------ Nombre y sexo ------
-    document.getElementById('animal-nombre').textContent    = animal.nombre;
-    document.getElementById('animal-sexo-icono').innerHTML  = animal.sexo === 'macho' ? svgMacho : svgHembra;
-    document.getElementById('animal-subtitulo').textContent = animal.subtitulo;
-
-    // ------ Botones ------
-    document.getElementById('btn-apadrinar-texto').textContent = 'Apadrinar a ' + animal.nombre;
-
-    // ------ Badges ------
-    var badgesEl = document.getElementById('animal-badges');
-    animal.badges.forEach(function(b) {
-        var span = document.createElement('span');
-        span.className   = 'badge badge-estado ' + b.clase;
-        span.textContent = b.texto;
-        badgesEl.appendChild(span);
-    });
-
-    // ------ Características ------
-    var caract = document.getElementById('animal-caracteristicas');
-    var filas = [
-        { icono: 'fa-location-dot', label: 'Ubicación',       valor: animal.ubicacion  },
-        { icono: 'fa-cake-candles', label: 'Edad',            valor: animal.edad       },
-        { icono: 'fa-weight-scale', label: 'Tamaño',          valor: animal.tamanyo    },
-        { icono: 'fa-palette',      label: 'Color',           valor: animal.color      },
-        { icono: 'fa-clock',        label: 'En adopción',     valor: animal.enAdopcion },
-        { icono: 'fa-heart-pulse',  label: 'Estado de salud', valor: animal.salud      }
-    ];
-    filas.forEach(function(f) {
-        caract.innerHTML += '<li><span class="etiqueta"><i class="fa-solid ' + f.icono + '"></i> ' + f.label + '</span><span class="valor">' + f.valor + '</span></li>';
-    });
-
-    // ------ Compatibilidad ------
-    var compat = document.getElementById('animal-compatibilidad');
-    var filasCompat = [
-        { icono: 'fa-child',  label: 'Niños',        val: animal.compatibilidad.ninos       },
-        { icono: 'fa-dog',    label: 'Perros',        val: animal.compatibilidad.otrosPerros !== undefined ? animal.compatibilidad.otrosPerros : animal.compatibilidad.perros },
-        { icono: 'fa-cat',    label: 'Gatos',         val: animal.compatibilidad.gatos       !== undefined ? animal.compatibilidad.gatos       : animal.compatibilidad.otrosGatos },
-        { icono: 'fa-house',  label: 'Piso',          val: animal.compatibilidad.piso        }
-    ];
-    filasCompat.forEach(function(f) {
-        var valHTML;
-        if (f.val === true)       valHTML = '<span class="valor icono-si"><i class="fa-solid fa-check"></i> Sí</span>';
-        else if (f.val === false) valHTML = '<span class="valor icono-no"><i class="fa-solid fa-xmark"></i> No</span>';
-        else                      valHTML = '<span class="valor" style="color:#aaa;">Sin datos</span>';
-        compat.innerHTML += '<li><span class="etiqueta"><i class="fa-solid ' + f.icono + '"></i> ' + f.label + '</span>' + valHTML + '</li>';
-    });
-
-    // ------ Descripción ------
-    document.getElementById('descripcion-titulo').innerHTML = '<i class="fa-solid fa-align-left"></i> Sobre ' + animal.nombre;
-    document.getElementById('animal-descripcion').innerHTML = animal.descripcion;
-
-    // ------ Protectora ------
-    document.getElementById('protectora-emoji').textContent    = animal.protectora.emoji;
-    document.getElementById('protectora-nombre').textContent   = animal.protectora.nombre;
-    document.getElementById('protectora-ubicacion').innerHTML  = '<i class="fa-solid fa-location-dot"></i> ' + animal.protectora.ubicacion;
-
-    var contactoEl = document.getElementById('protectora-contacto');
-    animal.protectora.contacto.forEach(function(c) {
-        var valor = c.href
-            ? '<a href="' + c.href + '" target="_blank" style="color:#1B358F; font-size:0.82rem;">' + c.texto + '</a>'
-            : c.texto;
-        contactoEl.innerHTML += '<li><span class="etiqueta"><i class="fa-solid ' + c.icono + '"></i></span><span class="valor" style="font-size:0.82rem;">' + valor + '</span></li>';
-    });
-
-    // ------ Modal adopción ------
-    document.getElementById('modal-titulo').textContent = '¿Quieres adoptar a ' + animal.nombre + '?';
-    var contactoModal = animal.protectora.contacto.map(function(c) {
-        if (c.href) return '<li>📘 <a href="' + c.href + '" target="_blank" style="color:#1B358F;">' + c.texto + '</a></li>';
-        if (c.icono.indexOf('phone') !== -1)    return '<li>📞 <strong>' + c.texto + '</strong></li>';
-        if (c.icono.indexOf('envelope') !== -1) return '<li>📧 <strong>' + c.texto + '</strong></li>';
-        return '<li>' + c.texto + '</li>';
-    }).join('');
-    document.getElementById('modal-body').innerHTML =
-        '<p style="color:#444; font-size:0.95rem;">Para iniciar el proceso de adopción, ponte en contacto con <strong>' + animal.protectora.nombre + '</strong>. Ellos te guiarán en cada paso. 🐾</p><ul style="font-size:0.9rem; color:#555;">' + contactoModal + '</ul>';
-
-    // ------ Otros animales (todos menos el actual) ------
-    var otrosEl = document.getElementById('otros-animales');
-    Object.keys(animales).forEach(function(key) {
-        if (key === id) return;
-        var a = animales[key];
-        otrosEl.innerHTML +=
-            '<div class="col-6 col-md-4">' +
-            '  <div class="card-sugerencia card" onclick="window.location.href=\'fichaAnimal.html?id=' + key + '\'">' +
-            '    <img src="' + a.fotos[0] + '" alt="' + a.nombre + '">' +
-            '    <div class="card-body">' +
-            '      <p class="card-title">' + a.nombre + '</p>' +
-            '      <p class="card-text">' + a.subtitulo + '</p>' +
-            '    </div>' +
-            '  </div>' +
-            '</div>';
-    });
-
-    // ------ Favorito: comprobar si ya estaba guardado ------
-    var favs = obtenerFavoritos();
-    var btnFav = document.getElementById('btn-fav-ficha');
-    if (favs.indexOf(id) !== -1) {
-        btnFav.classList.add('activo');
-        btnFav.innerHTML = '<i class="fa-solid fa-heart me-1"></i> Guardado en favoritos';
+    
+    function renderizarFicha(mascota) {
+        document.title = 'PetFamily – ' + mascota.nombre;
+        document.getElementById('miga-nombre').textContent = mascota.nombre;
+        
+        var fotoPrincipal = document.getElementById('foto-principal');
+        fotoPrincipal.src = mascota.foto;
+        fotoPrincipal.alt = 'Foto de ' + mascota.nombre;
+        
+        var contenedorMiniaturas = document.getElementById('contenedor-miniaturas');
+        if (mascota.fotos && mascota.fotos.length > 1) {
+            mascota.fotos.forEach(function(fotoObj, i) {
+                var img = document.createElement('img');
+                img.src = fotoObj.ruta;
+                img.alt = mascota.nombre + ' foto ' + (i + 1);
+                img.className = 'miniatura' + (i === 0 ? ' activa' : '');
+                img.addEventListener('click', function() { cambiarFoto(img, fotoObj.ruta); });
+                contenedorMiniaturas.appendChild(img);
+            });
+        }
+        
+        document.getElementById('animal-nombre').textContent = mascota.nombre;
+        document.getElementById('animal-sexo-icono').innerHTML = mascota.sexo === 'macho' ? svgMacho : svgHembra;
+        
+        var subtitulo = mascota.raza || 'Sin especificar';
+        if (mascota.tamano) subtitulo = mascota.tamano.charAt(0).toUpperCase() + mascota.tamano.slice(1) + ' · ' + subtitulo;
+        document.getElementById('animal-subtitulo').textContent = subtitulo;
+        
+        document.getElementById('btn-apadrinar-texto').textContent = 'Apadrinar a ' + mascota.nombre;
+        
+        var badgesEl = document.getElementById('animal-badges');
+        badgesEl.innerHTML = '';
+        if (mascota.vacunado) badgesEl.innerHTML += '<span class="badge badge-estado badge-verde"><i class="fa-solid fa-syringe me-1"></i>Vacunado</span>';
+        if (mascota.esterilizado) badgesEl.innerHTML += '<span class="badge badge-estado badge-verde"><i class="fa-solid fa-check-circle me-1"></i>Esterilizado</span>';
+        if (mascota.microchip) badgesEl.innerHTML += '<span class="badge badge-estado badge-verde"><i class="fa-solid fa-microchip me-1"></i>Microchip</span>';
+        if (mascota.desparasitado) badgesEl.innerHTML += '<span class="badge badge-estado badge-verde"><i class="fa-solid fa-check-circle me-1"></i>Desparasitado</span>';
+        
+        var caract = document.getElementById('animal-caracteristicas');
+        caract.innerHTML = '';
+        
+        var edad = 'Sin datos';
+        if (mascota.fecha_nacimiento) {
+            var hoy = new Date();
+            var nac = new Date(mascota.fecha_nacimiento);
+            var anos = hoy.getFullYear() - nac.getFullYear();
+            var mes = hoy.getMonth() - nac.getMonth();
+            if (mes < 0) anos--;
+            edad = anos + ' año' + (anos !== 1 ? 's' : '');
+        }
+        
+        var filas = [
+            { icono: 'fa-location-dot', label: 'Ubicación', valor: mascota.ubicacion || 'Sin datos' },
+            { icono: 'fa-cake-candles', label: 'Edad', valor: edad },
+            { icono: 'fa-weight-scale', label: 'Tamaño', valor: mascota.tamano ? mascota.tamano.charAt(0).toUpperCase() + mascota.tamano.slice(1) : 'Sin datos' },
+            { icono: 'fa-palette', label: 'Color', valor: mascota.color || 'Sin datos' },
+            { icono: 'fa-clock', label: 'En adopción', valor: (mascota.estado_adopcion || 'Sin datos').charAt(0).toUpperCase() + (mascota.estado_adopcion || 'sin datos').slice(1) },
+            { icono: 'fa-heart-pulse', label: 'Estado de salud', valor: mascota.estado_salud || 'Sin datos' }
+        ];
+        filas.forEach(function(f) {
+            caract.innerHTML += '<li><span class="etiqueta"><i class="fa-solid ' + f.icono + '"></i> ' + f.label + '</span><span class="valor">' + f.valor + '</span></li>';
+        });
+        
+        var compat = document.getElementById('animal-compatibilidad');
+        compat.innerHTML = '';
+        var filasCompat = [
+            { icono: 'fa-child', label: 'Niños', val: mascota.compatible_ninos },
+            { icono: 'fa-dog', label: 'Perros', val: mascota.compatible_perros },
+            { icono: 'fa-cat', label: 'Gatos', val: mascota.compatible_gatos },
+            { icono: 'fa-house', label: 'Piso', val: mascota.apto_piso }
+        ];
+        filasCompat.forEach(function(f) {
+            var valHTML;
+            if (f.val === true || f.val === 1) valHTML = '<span class="valor icono-si"><i class="fa-solid fa-check"></i> Sí</span>';
+            else if (f.val === false || f.val === 0) valHTML = '<span class="valor icono-no"><i class="fa-solid fa-xmark"></i> No</span>';
+            else valHTML = '<span class="valor" style="color:#aaa;">Sin datos</span>';
+            compat.innerHTML += '<li><span class="etiqueta"><i class="fa-solid ' + f.icono + '"></i> ' + f.label + '</span>' + valHTML + '</li>';
+        });
+        
+        document.getElementById('descripcion-titulo').innerHTML = '<i class="fa-solid fa-align-left"></i> Sobre ' + mascota.nombre;
+        document.getElementById('animal-descripcion').innerHTML = mascota.descripcion || 'Sin descripción disponible';
+        
+        var logoUrl = '../img/iconosHeader/gato_logo.png';
+        if (mascota.logo_protectora) {
+            logoUrl = '../' + mascota.logo_protectora;
+        }
+        document.getElementById('protectora-logo').src = logoUrl;
+        document.getElementById('protectora-nombre').textContent = mascota.protectora || 'Sin especificar';
+        document.getElementById('protectora-ubicacion').innerHTML = '<i class="fa-solid fa-location-dot"></i> ' + (mascota.ubicacion || 'Sin ubicación');
+        
+        var contactoEl = document.getElementById('protectora-contacto');
+        contactoEl.innerHTML = '';
+        if (mascota.email_protectora) {
+            contactoEl.innerHTML += '<li><span class="etiqueta"><i class="fa-solid fa-envelope"></i></span><span class="valor"><a href="mailto:' + mascota.email_protectora + '" style="color:#1B358F; font-size:0.82rem;">' + mascota.email_protectora + '</a></span></li>';
+        }
+        if (mascota.telefono_protectora) {
+            contactoEl.innerHTML += '<li><span class="etiqueta"><i class="fa-solid fa-phone"></i></span><span class="valor"><a href="tel:' + mascota.telefono_protectora + '" style="color:#1B358F; font-size:0.82rem;">' + mascota.telefono_protectora + '</a></span></li>';
+        }
+        
+        document.getElementById('modal-titulo').textContent = '¿Quieres adoptar a ' + mascota.nombre + '?';
+        var contactoModal = '<p style="color:#444; font-size:0.95rem;">Para iniciar el proceso de adopción, ponte en contacto con <strong>' + (mascota.protectora || 'la protectora') + '</strong>. Ellos te guiarán en cada paso. 🐾</p><ul style="font-size:0.9rem; color:#555;">';
+        if (mascota.email_protectora) {
+            contactoModal += '<li>📧 <a href="mailto:' + mascota.email_protectora + '" style="color:#1B358F;"><strong>' + mascota.email_protectora + '</strong></a></li>';
+        }
+        if (mascota.telefono_protectora) {
+            contactoModal += '<li>📞 <strong>' + mascota.telefono_protectora + '</strong></li>';
+        }
+        contactoModal += '</ul>';
+        document.getElementById('modal-body').innerHTML = contactoModal;
     }
 });
 
-// ==================================================================================================
-//  CAMBIAR FOTO PRINCIPAL
-//  350ms de fade para evitar flash brusco
-//  Con prefers-reduced-motion activo en el sistema: cambio directo sin animación
-
-function cambiarFoto(miniatura, ruta) {
-    var fotoPrincipal = document.getElementById('foto-principal');
-
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        fotoPrincipal.src = ruta;
-    } else {
-        fotoPrincipal.style.transition = 'opacity 0.35s ease';
-        fotoPrincipal.style.opacity    = '0';
-        setTimeout(function() {
-            fotoPrincipal.src           = ruta;
-            fotoPrincipal.style.opacity = '1';
-        }, 350);
-    }
-
-    document.querySelectorAll('.miniatura').forEach(function(m) {
-        m.classList.remove('activa');
-    });
-    miniatura.classList.add('activa');
+function cargarOtrosAnimales(idActual) {
+    fetch('../php/get_mascotas.php')
+        .then(function(response) {
+            if (!response.ok) throw new Error('Error cargando mascotas');
+            return response.json();
+        })
+        .then(function(response) {
+            if (!response.success || !response.data) {
+                document.getElementById('otros-animales').innerHTML = '<p style="text-align:center; color:#999; grid-column:1/-1;">No hay otros animales disponibles</p>';
+                return;
+            }
+            
+            var otrosEl = document.getElementById('otros-animales');
+            otrosEl.innerHTML = '';
+            
+            response.data.forEach(function(mascota) {
+                if (String(mascota.idMascota) === String(idActual)) return;
+                
+                var card = document.createElement('div');
+                card.className = 'col-12 col-sm-6 col-lg-4';
+                card.innerHTML = '<div class="card-sugerencia card" onclick="window.location.href=\'fichaAnimal.html?id=' + mascota.idMascota + '\'" style="cursor:pointer;"><img src="' + mascota.foto + '" alt="' + mascota.nombre + '" style="height:420px; object-fit:cover;"><div class="card-body"><p class="card-title" style="font-weight:600; margin:0;">' + mascota.nombre + '</p><p class="card-text" style="font-size:0.85rem; color:#666; margin:5px 0 0 0;">' + (mascota.raza || 'Sin especificar') + '</p></div></div>';
+                otrosEl.appendChild(card);
+            });
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+        });
 }
 
-// ==================================================================================================
-//  FAVORITOS
+var svgMacho = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#3B9DFF" title="Macho"><path d="M640-280q-17 0-28.5-11.5T600-320v-120h-80q-17 0-28.5-11.5T480-480q0-17 11.5-28.5T520-520h80v-80q0-17 11.5-28.5T640-640q17 0 28.5 11.5T680-600v80h80q17 0 28.5 11.5T800-480q0 17-11.5 28.5T760-440h-80v120q0 17-11.5 28.5T640-280ZM480-80q-83 0-156-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-156t86-127.5Q252-817 325-848.5T480-880q83 0 156 31.5t127.5 86Q817-708 848.5-635T880-480q0 83-31.5 156T763-197q-54 54.5-127 86T480-80Z"/></svg>';
+
+var svgHembra = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#CC0479" title="Hembra"><path d="M440-120v-80h-80v-80h80v-84q-79-14-129.5-75.5T260-582q0-91 64.5-154.5T480-800q91 0 155.5 63.5T700-582q0 81-50.5 142.5T520-364v84h80v80h-80v80h-80Zm139-361q41-41 41-99t-41-99q-41-41-99-41t-99 41q-41 41-41 99t41 99q41 41 99 41t99-41Z"/></svg>';
+
+function cambiarFoto(img, ruta) {
+    document.querySelectorAll('.miniatura').forEach(function(m) { m.classList.remove('activa'); });
+    img.classList.add('activa');
+    document.getElementById('foto-principal').src = ruta;
+}
 
 var CLAVE_FAVORITOS = 'petfamily_favoritos';
 
@@ -410,10 +393,10 @@ function obtenerFavoritos() {
 
 function toggleFavoritoFicha() {
     var params = new URLSearchParams(window.location.search);
-    var id     = params.get('id') || 'a01';
-    var favs   = obtenerFavoritos();
-    var pos    = favs.indexOf(id);
-    var btn    = document.getElementById('btn-fav-ficha');
+    var id = params.get('id');
+    var favs = obtenerFavoritos();
+    var pos = favs.indexOf(id);
+    var btn = document.getElementById('btn-fav-ficha');
     if (pos !== -1) {
         favs.splice(pos, 1);
         btn.classList.remove('activo');
@@ -425,9 +408,6 @@ function toggleFavoritoFicha() {
     }
     localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify(favs));
 }
-
-// ==================================================================================================
-//  MODAL ADOPCIÓN
 
 function mostrarModalAdopcion() {
     var modal = new bootstrap.Modal(document.getElementById('modalAdopcion'));

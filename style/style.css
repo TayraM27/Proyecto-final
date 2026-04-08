@@ -174,7 +174,6 @@ main {
 }
 
 .tarjeta:hover {
-    border-left: 3px solid rgba(248, 186, 86, 0.5);
 }
 
 .tarjeta-sticky {
@@ -1454,12 +1453,6 @@ main {
     min-width: 330px;
 }
 
-.card-protectora-pag:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 32px rgba(27,53,143,0.13);
-    border-color: #F8BA56;
-}
-
 .prot-franja {
     height: 5px;
     background: #1B358F;
@@ -2357,9 +2350,9 @@ main {
 .acoge-prot-contacto {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5em;
+    gap: 0.6em;
     margin-top: auto;
-    padding-top: 0.5em;
+    padding-top: 0.6em;
     border-top: 1px solid #f0f0f0;
 }
 
@@ -2367,14 +2360,16 @@ main {
     display: inline-flex;
     align-items: center;
     gap: 0.35em;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: #1B358F;
     background: #f0f4ff;
     border: 1px solid #d0daff;
     border-radius: 20px;
-    padding: 0.3em 0.8em;
+    padding: 0.45em 0.9em;
     text-decoration: none;
+    flex: 1 1 auto;
+    justify-content: center;
     transition: background 0.2s, color 0.2s;
 }
 
@@ -2393,11 +2388,6 @@ main {
     display: flex;
     flex-direction: column;
     transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.card-protectora-pag:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.11);
 }
 
 .prot-header {
@@ -3722,6 +3712,13 @@ main {
     }
 
     .reg-fila { grid-template-columns: 1fr; }
+
+    /* Mejorar botones contacto acoge en mobile */
+    .acoge-prot-contacto a {
+        flex: 1 1 calc(50% - 0.3em);
+        padding: 0.5em 0.8em;
+        font-size: 0.8rem;
+    }
 }
 
 @media (max-width: 480px) {

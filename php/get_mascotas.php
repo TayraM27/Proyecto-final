@@ -36,6 +36,9 @@ try {
             m.fecha_entrada,
             p.nombre AS protectora,
             p.localidad AS ubicacion,
+            p.email AS email_protectora,
+            p.telefono AS telefono_protectora,
+            p.foto_logo AS logo_protectora,
             COALESCE(mf.ruta, "img/mascotas/default.jpg") AS foto
         FROM mascotas m
         JOIN protectoras p ON m.idProtectora = p.idProtectora
