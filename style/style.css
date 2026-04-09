@@ -173,13 +173,6 @@ main {
     margin-bottom: 1.2em;
 }
 
-.tarjeta:hover {
-}
-
-.tarjeta-sticky {
-    position: sticky;
-    top: calc(clamp(60px, 10vh, 90px) + 10px);
-}
 
 .tarjeta-titulo {
     font-size: 1.05rem;
@@ -1217,22 +1210,25 @@ main {
     color: #6c757d;
 }
 
-.btn-contactar {
-    background-color: #1B358F;
-    color: #fff;
+.separador-protectora {
     border: none;
-    border-radius: 8px;
-    padding: 0.5em 1.2em;
-    font-weight: 600;
-    font-size: 0.85rem;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background-color 0.3s;
+    border-top: 1px solid #e0e0e0;
+    margin: 1.2em 0;
 }
 
-.btn-contactar:hover {
-    background-color: #2742A2;
-    color: #fff;
+.enlace-ver-protectoras {
+    display: block;
+    text-align: center;
+    font-size: 0.83rem;
+    color: #1B358F;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.enlace-ver-protectoras:hover {
+    color: #3d5fd6;
+    transform: scale(1.08);
 }
 
 .aviso-responsable {

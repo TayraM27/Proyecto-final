@@ -151,10 +151,8 @@
                         </div>
                     </div>
                     <ul class="caracteristicas mb-3" id="protectora-contacto"></ul>
-                    <button class="btn-contactar w-100 mb-2">
-                        <i class="fa-solid fa-paper-plane me-1"></i> Contactar protectora
-                    </button>
-                    <a href="protectoras.html" style="display:block; text-align:center; font-size:0.83rem; color:#1B358F; font-weight:500;">
+                    <hr class="separador-protectora">
+                    <a href="protectoras.html" class="enlace-ver-protectoras">
                         Ver todas las protectoras
                     </a>
                 </div>
@@ -326,10 +324,10 @@ document.addEventListener('DOMContentLoaded', function() {
         var contactoEl = document.getElementById('protectora-contacto');
         contactoEl.innerHTML = '';
         if (mascota.email_protectora) {
-            contactoEl.innerHTML += '<li><span class="etiqueta"><i class="fa-solid fa-envelope"></i></span><span class="valor"><a href="mailto:' + mascota.email_protectora + '" style="color:#1B358F; font-size:0.82rem;">' + mascota.email_protectora + '</a></span></li>';
+            contactoEl.innerHTML += '<li><span class="etiqueta"><i class="fa-solid fa-envelope"></i></span><span class="valor"><a href="mailto:' + mascota.email_protectora + '" class="enlace-contacto">' + mascota.email_protectora + '</a></span></li>';
         }
         if (mascota.telefono_protectora) {
-            contactoEl.innerHTML += '<li><span class="etiqueta"><i class="fa-solid fa-phone"></i></span><span class="valor"><a href="tel:' + mascota.telefono_protectora + '" style="color:#1B358F; font-size:0.82rem;">' + mascota.telefono_protectora + '</a></span></li>';
+            contactoEl.innerHTML += '<li><span class="etiqueta"><i class="fa-solid fa-phone"></i></span><span class="valor"><a href="tel:' + mascota.telefono_protectora + '" class="enlace-contacto">' + mascota.telefono_protectora + '</a></span></li>';
         }
         
         document.getElementById('modal-titulo').textContent = '¿Quieres adoptar a ' + mascota.nombre + '?';

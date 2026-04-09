@@ -660,6 +660,65 @@
     margin: 0 auto;
 }
 
+/* buscador direccion */
+.buscador-mapa {
+    background: white;
+    border-bottom: 1px solid #e9ecef;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    margin-top: 2em;
+}
+
+.buscador-contenedor {
+    max-width: 500px;
+    margin: 0 auto;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.buscador-input {
+    flex: 1;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 0.55rem 1rem;
+    font-size: 0.9rem;
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+    transition: all 0.2s;
+}
+
+.buscador-input:focus {
+    outline: none;
+    border-color: #1B358F;
+    box-shadow: 0 0 0 3px rgba(27, 53, 143, 0.1);
+}
+
+.buscador-btn {
+    background: #1B358F;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0.55rem 1rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.buscador-btn:hover {
+    background: #2742A2;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(27, 53, 143, 0.2);
+}
+
+.buscador-btn.spin i {
+    animation: girar 1s linear infinite;
+}
+
 /* filtros mapa */
 .filtros-mapa {
     margin-top: 4em;
