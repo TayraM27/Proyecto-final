@@ -140,9 +140,10 @@
 
                     <div class="d-flex flex-column gap-3">
 
-                        <label class="card-protectora seleccionada" id="prot-1"
+                        <!-- prot-1: sin opciones de donacion — no pre-seleccionada -->
+                        <label class="card-protectora" id="prot-1"
                                onclick="toggleProtectora('prot-1')">
-                            <input type="checkbox" name="protectora" value="prot-1" checked>
+                            <input type="checkbox" name="protectora" value="prot-1">
                             <img class="logo-protectora"
                                  src="../img/protectora/centro-proteccion-animales-gijon.jpg"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
@@ -159,6 +160,7 @@
                             </div>
                         </label>
 
+                        <!-- prot-2: solo IBAN -->
                         <label class="card-protectora" id="prot-2"
                                onclick="toggleProtectora('prot-2')">
                             <input type="checkbox" name="protectora" value="prot-2">
@@ -178,6 +180,7 @@
                             </div>
                         </label>
 
+                        <!-- prot-3: solo Teaming -->
                         <label class="card-protectora" id="prot-3"
                                onclick="toggleProtectora('prot-3')">
                             <input type="checkbox" name="protectora" value="prot-3">
@@ -197,6 +200,7 @@
                             </div>
                         </label>
 
+                        <!-- prot-4: web + IBAN + Teaming -->
                         <label class="card-protectora" id="prot-4"
                                onclick="toggleProtectora('prot-4')">
                             <input type="checkbox" name="protectora" value="prot-4">
@@ -216,6 +220,7 @@
                             </div>
                         </label>
 
+                        <!-- prot-5: solo Teaming -->
                         <label class="card-protectora" id="prot-5"
                                onclick="toggleProtectora('prot-5')">
                             <input type="checkbox" name="protectora" value="prot-5">
@@ -236,6 +241,7 @@
                         </label>
 
                     </div>
+
                     <p class="aviso-seleccion-multiple">
                         <i class="fa-solid fa-circle-info" style="color:#1B358F;"></i>
                         Puedes seleccionar una o varias protectoras. Se abrirá la información de cada una.
@@ -247,14 +253,19 @@
                         PetFamily no gestiona ni almacena ningún dato bancario.
                     </div>
                     <div class="text-center">
-                    <button class="btn-amarillo mt-3" onclick="mostrarModalDona()">
-                        <i class="fa-solid fa-arrow-right me-2"></i>
-                        Ver información para donar
-                    </button>
+                        <button class="btn-amarillo mt-3" onclick="mostrarModalDona()">
+                            <i class="fa-solid fa-arrow-right me-2"></i>
+                            Ver información para donar
+                        </button>
+                        <p id="errorSeleccion" class="dona-error-seleccion" style="display:none;">
+                            <i class="fa-solid fa-circle-exclamation me-1"></i>
+                            Selecciona al menos una protectora.
+                        </p>
                     </div>
                 </div>
 
             </div>
+
             <div class="col-lg-5">
                 <div class="tarjeta" style="top: 100px;">
                     <p class="tarjeta-titulo">
@@ -299,6 +310,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
 
     </div>
@@ -318,7 +330,7 @@
             </div>
 
             <div class="modal-body" style="padding:1.5em;">
-                <p style="font-size:0.85rem; color:#6c757d; margin-bottom:1em;">
+                <p class="modal-intro">
                     El proceso de donación se realiza directamente en la página de cada protectora.
                 </p>
                 <div id="modal-datos-protectora"></div>
@@ -332,7 +344,7 @@
 <!-- Flecha arriba -->
 <div class="text-center mb-4">
     <a href="#">
-            <img src="../img/sectionIndex/up-arrow.png" alt="Volver arriba" id="arrow" width="40px">
+        <img src="../img/sectionIndex/up-arrow.png" alt="Volver arriba" id="arrow" width="40px">
     </a>
 </div>
 

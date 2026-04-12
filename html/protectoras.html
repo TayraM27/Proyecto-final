@@ -12,23 +12,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/093cf7cd82.js" crossorigin="anonymous"></script>
-
-   
 </head>
-
 <body>
 
 <header>
-
-    <!-- Logo (XL) -->
     <div id="contenedor_logo" class="d-none d-lg-block">
         <a id="logoXL" href="index.html">
             <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderXL">
             <h2 id="title-logo">Pet<span style="color:#F8BA56;">Family</span></h2>
         </a>
     </div>
-
-    <!-- Header(xs,sm, md) -->
     <div id="menu_burger" class="container-fluid justify-content-between align-content-center d-lg-none">
         <i id="btn_burger" class="fa-solid fa-bars text-center col-2 ms-n5"></i>
         <a id="logoMD" href="index.html" class="mb-2">
@@ -40,7 +33,6 @@
             <a href="register.html" class="btn-register">Registrarse</a>
         </div>
     </div>
-
     <nav id="menu" class="d-none d-lg-block">
         <ul id="lista_menu">
             <li><a href="adopta.html">Adopta</a></li>
@@ -57,42 +49,31 @@
             <li><a href="test.html">Tests</a></li>
         </ul>
     </nav>
-
-    <!-- Usuario xl -->
     <div id="user_container" class="d-none d-lg-block">
         <a href="login.html"><img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px"></a>
         <a href="register.html" class="btn-register">Registrarse</a>
     </div>
-
 </header>
-<!-- Fin html del header -->
-
 
 <main>
     <div class="container">
-        <!-- Migas -->
         <p class="migas">
             <a href="index.html">Inicio</a>
             <span>›</span>
             Protectoras
         </p>
-            <div class="protectoras-hero">
-                <h1><i class="fa-solid fa-building-shield icon-yellow"></i> Protectoras colaboradoras</h1>
-                <p>
-                    Estas son las organizaciones que hay detrás de cada animal en PetFamily. Todas son sin ánimo de lucro, dependen de voluntarios y de personas como tú para seguir adelante.
-                </p>
-                <div class="linea-amarilla" style="margin-top:1.2em;"></div>
-            </div>
+        <div class="protectoras-hero">
+            <h1><i class="fa-solid fa-building-shield icon-yellow"></i> Protectoras colaboradoras</h1>
+            <p>
+                Estas son las organizaciones que hay detrás de cada animal en PetFamily. Todas son sin ánimo de lucro, dependen de voluntarios y de personas como tú para seguir adelante.
+            </p>
+            <div class="linea-amarilla" style="margin-top:1.2em;"></div>
+        </div>
 
-        <!-- Barra de búsqueda / filtros -->
         <div class="filtro-prot-wrap">
-            <input
-                type="text"
-                class="filtro-prot-input"
-                id="buscadorProt"
+            <input type="text" class="filtro-prot-input" id="buscadorProt"
                 placeholder="🔍  Buscar por nombre o localidad..."
-                oninput="filtrarProtectoras()"
-            >
+                oninput="filtrarProtectoras()">
             <button class="filtro-prot-btn activo" data-filtro="todas" onclick="setFiltro(this, 'todas')">
                 <i class="fa-solid fa-layer-group"></i> Todas
             </button>
@@ -107,10 +88,9 @@
             </button>
         </div>
 
-        <!-- Grid de tarjetas -->
         <div class="row g-4 mb-2" id="gridProtectoras">
 
-            <!-- 1. Centro de Protección Animal de Gijón              -->
+            <!-- 1. Centro de Protección Animal de Gijón -->
             <div class="col-md-6 col-lg-4 prot-item" data-especie="perros gatos" data-nombre="Centro de Protección Animal de Gijón Gijón" data-teaming="no">
                 <div class="card-protectora-pag">
                     <div class="prot-franja"></div>
@@ -122,30 +102,19 @@
                         </div>
                         <div style="flex:1; min-width:0;">
                             <p class="prot-nombre">Centro de Protección Animal de Gijón</p>
-                            <p class="prot-lugar">
-                                <i class="fa-solid fa-location-dot"></i> Gijón, Camino de Liervado S/n
-                            </p>
+                            <p class="prot-lugar"><i class="fa-solid fa-location-dot"></i> Gijón, Camino de Liervado S/n</p>
                         </div>
                         <span class="prot-badge-anos">Desde 2025</span>
                     </div>
-
                     <div class="prot-desc">
-                        <p>
-                            Instalación municipal gestionada por la Fundación Protectora de Asturias. Recogen animales
-                            perdidos o abandonados en Gijón, les dan atención veterinaria completa y los preparan para
-                            la adopción. Tienen especial sensibilidad con animales mayores y de razas PPP, como Leia,
-                            que lleva años esperando una oportunidad.
-                        </p>
+                        <p>Instalación municipal gestionada por la Fundación Protectora de Asturias. Recogen animales perdidos o abandonados en Gijón, les dan atención veterinaria completa y los preparan para la adopción. Tienen especial sensibilidad con animales mayores y de razas PPP, como Leia, que lleva años esperando una oportunidad.</p>
                     </div>
-
                     <div class="prot-tags">
                         <span class="prot-tag"><i class="fa-solid fa-dog"></i> Perros y gatos</span>
                         <span class="prot-tag"><i class="fa-solid fa-shield-heart"></i> Gestión municipal</span>
                         <span class="prot-tag"><i class="fa-solid fa-heart"></i> Animales mayores</span>
                         <span class="prot-tag"><i class="fa-solid fa-certificate"></i> Licencia PPP</span>
                     </div>
-
-
                     <div class="prot-contacto">
                         <div class="prot-dato">
                             <i class="fa-solid fa-phone"></i>
@@ -153,29 +122,21 @@
                         </div>
                         <div class="prot-dato">
                             <i class="fa-solid fa-envelope"></i>
-                            <a href="mailto:cproteccionanimalgijon@gmail.com">cproteccionanimalgijon@gmail.com</a>
+                            <a href="mailto:cproteccionanimalgijon@gmail.com?subject=Como%20colaborar">cproteccionanimalgijon@gmail.com</a>
                         </div>
                         <div class="prot-dato">
                             <i class="fa-brands fa-facebook"></i>
                             <a href="http://www.facebook.com/cpagijon" target="_blank" rel="noopener">facebook.com/cpagijon</a>
                         </div>
                     </div>
-
                     <div class="prot-acciones">
-                        <a href="adopta.html" class="btn-ver-animales">
-                            <i class="fa-solid fa-paw me-1"></i> Ver animales
-                        </a>
-                        <a href="dona.html" class="btn-azul">
-                            <i class="fa-solid fa-hand-holding-heart me-1"></i> Donar
-                        </a>
-                        <a href="https://www.albergaria.es/protectoras/centro-proteccion-animales-gijon/" target="_blank" rel="noopener" class="btn-prot-web">
-                            <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Web
-                        </a>
+                        <button class="btn-prot-donar" onclick="abrirModalDonarProt('prot-1')"><i class="fa-solid fa-hand-holding-heart me-1"></i> Donar</button>
+                        <a href="https://www.gijon.es/es/directorio/deposito-municipal-de-animales" target="_blank" rel="noopener" class="btn-prot-ext"><i class="fa-solid fa-landmark me-1"></i> Web oficial</a>
                     </div>
                 </div>
             </div>
 
-            <!-- Fundación Protectora de Asturias                  -->
+            <!-- 2. Fundación Protectora de Asturias -->
             <div class="col-md-6 col-lg-4 prot-item" data-especie="perros gatos" data-nombre="Fundación Protectora de Asturias Siero" data-teaming="si">
                 <div class="card-protectora-pag">
                     <div class="prot-franja prot-franja-gold"></div>
@@ -187,62 +148,42 @@
                         </div>
                         <div style="flex:1; min-width:0;">
                             <p class="prot-nombre">Fundación Protectora de Asturias</p>
-                            <p class="prot-lugar">
-                                <i class="fa-solid fa-location-dot"></i> Siero, Asturias
-                            </p>
+                            <p class="prot-lugar"><i class="fa-solid fa-location-dot"></i> Siero, Asturias</p>
                         </div>
                         <span class="prot-badge-anos">Desde 2012</span>
                     </div>
-
                     <div class="prot-desc">
-                        <p>
-                            Fundada en 2012 como respuesta al abandono masivo. Trabajan con casas de acogida como base
-                            principal y tienen refugio propio en Siero. Todos sus animales se entregan vacunados,
-                            esterilizados, con microchip y pasaporte, y el proceso incluye un contrato de adopción
-                            con seguimiento posterior.
-                        </p>
+                        <p>Fundada en 2012 como respuesta al abandono masivo. Trabajan con casas de acogida como base principal y tienen refugio propio en Siero. Todos sus animales se entregan vacunados, esterilizados, con microchip y pasaporte, y el proceso incluye un contrato de adopción con seguimiento posterior.</p>
                     </div>
-
                     <div class="prot-tags">
                         <span class="prot-tag"><i class="fa-solid fa-dog"></i> Perros y gatos</span>
                         <span class="prot-tag"><i class="fa-solid fa-house-chimney-heart"></i> Casas de acogida</span>
                         <span class="prot-tag prot-tag-gold"><i class="fa-solid fa-star"></i> Fundación oficial</span>
                         <span class="prot-tag prot-tag-verde"><i class="fa-solid fa-mug-hot"></i> Teaming</span>
                     </div>
-
-
                     <div class="prot-contacto">
                         <div class="prot-dato">
                             <i class="fa-solid fa-envelope"></i>
-                            <a href="mailto:info@protectoradeasturias.org">info@protectoradeasturias.org</a>
+                            <a href="mailto:info@protectoradeasturias.org?subject=Como%20colaborar">info@protectoradeasturias.org</a>
+                        </div>
+                        <div class="prot-dato">
+                            <i class="fa-solid fa-mug-hot"></i>
+                            <a href="https://www.teaming.net/fundacionprotectoradeanimalesasturias" target="_blank" rel="noopener">Teaming · solo 1 €/mes</a>
                         </div>
                         <div class="prot-dato prot-dato-iban">
                             <i class="fa-solid fa-building-columns"></i>
                             ES15 0081 5665 2400 0109 0516 (Sabadell)
-                        </div>
-                        <div class="prot-dato">
-                            <i class="fa-solid fa-mug-hot"></i>
-                            <a href="https://www.teaming.net/fundacionprotectoradeanimalesasturias" target="_blank" rel="noopener">
-                                Teaming · solo 1 €/mes
-                            </a>
+                            <button onclick="copiarTexto(this,'ES1500815665240001090516')" title="Copiar IBAN" style="background:none;border:none;cursor:pointer;color:#1B358F;padding:0 0 0 0.4em;font-size:0.85rem;line-height:1;"><i class="fa-regular fa-copy"></i></button>
                         </div>
                     </div>
-
                     <div class="prot-acciones">
-                        <a href="adopta.html" class="btn-ver-animales">
-                            <i class="fa-solid fa-paw me-1"></i> Ver animales
-                        </a>
-                        <a href="dona.html" class="btn-azul">
-                            <i class="fa-solid fa-hand-holding-heart me-1"></i> Donar
-                        </a>
-                        <a href="http://www.protectoradeasturias.org" target="_blank" rel="noopener" class="btn-prot-web">
-                            <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Web
-                        </a>
+                        <a href="http://www.protectoradeasturias.org/index.php/colabora/donaciones" target="_blank" rel="noopener" class="btn-prot-donar"><i class="fa-solid fa-hand-holding-heart me-1"></i> Donar</a>
+                        <a href="http://www.protectoradeasturias.org" target="_blank" rel="noopener" class="btn-prot-ext"><i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Web</a>
                     </div>
                 </div>
             </div>
 
-            <!--  Nortemascotas                                     -->
+            <!-- 3. Nortemascotas -->
             <div class="col-md-6 col-lg-4 prot-item" data-especie="perros" data-nombre="Nortemascotas Gijón" data-teaming="no">
                 <div class="card-protectora-pag">
                     <div class="prot-franja"></div>
@@ -254,28 +195,17 @@
                         </div>
                         <div style="flex:1; min-width:0;">
                             <p class="prot-nombre">Nortemascotas</p>
-                            <p class="prot-lugar">
-                                <i class="fa-solid fa-location-dot"></i> Gijón, Pumarín
-                            </p>
+                            <p class="prot-lugar"><i class="fa-solid fa-location-dot"></i> Gijón, Pumarín</p>
                         </div>
                     </div>
-
                     <div class="prot-desc">
-                        <p>
-                            Asociación sin ánimo de lucro que lucha por los derechos de los animales desde Gijón.
-                            Trabajan con voluntarios y casas de acogida particulares, sin instalaciones propias.
-                            Su modelo cercano y familiar permite un seguimiento muy personalizado de cada animal.
-                            Entre sus casos está Dexter, un Pastor Alemán que lleva casi una década esperando un hogar.
-                        </p>
+                        <p>Asociación sin ánimo de lucro que lucha por los derechos de los animales desde Gijón. Trabajan con voluntarios y casas de acogida particulares, sin instalaciones propias. Su modelo cercano y familiar permite un seguimiento muy personalizado de cada animal. Entre sus casos está Dexter, un Pastor Alemán que lleva casi una década esperando un hogar.</p>
                     </div>
-
                     <div class="prot-tags">
                         <span class="prot-tag"><i class="fa-solid fa-dog"></i> Principalmente perros</span>
                         <span class="prot-tag"><i class="fa-solid fa-people-group"></i> 100% voluntarios</span>
                         <span class="prot-tag"><i class="fa-solid fa-hand-holding-heart"></i> Trato familiar</span>
                     </div>
-
-
                     <div class="prot-contacto">
                         <div class="prot-dato">
                             <i class="fa-solid fa-phone"></i>
@@ -283,29 +213,22 @@
                         </div>
                         <div class="prot-dato">
                             <i class="fa-solid fa-envelope"></i>
-                            <a href="mailto:Mariasol.ferreyra2014@gmail.com">Mariasol.ferreyra2014@gmail.com</a>
+                            <a href="mailto:Mariasol.ferreyra2014@gmail.com?subject=Como%20colaborar">Mariasol.ferreyra2014@gmail.com</a>
                         </div>
                         <div class="prot-dato prot-dato-iban">
                             <i class="fa-solid fa-building-columns"></i>
                             ES39 0182 2800 1902 0163 9405 (BBVA)
+                            <button onclick="copiarTexto(this,'ES3901822800190201639405')" title="Copiar IBAN" style="background:none;border:none;cursor:pointer;color:#1B358F;padding:0 0 0 0.4em;font-size:0.85rem;line-height:1;"><i class="fa-regular fa-copy"></i></button>
                         </div>
                     </div>
-
                     <div class="prot-acciones">
-                        <a href="adopta.html" class="btn-ver-animales">
-                            <i class="fa-solid fa-paw me-1"></i> Ver animales
-                        </a>
-                        <a href="dona.html" class="btn-azul">
-                            <i class="fa-solid fa-hand-holding-heart me-1"></i> Donar
-                        </a>
-                        <a href="https://www.facebook.com/Asociacionnortemascotas/" target="_blank" rel="noopener" class="btn-prot-web">
-                            <i class="fa-brands fa-facebook me-1"></i> Facebook
-                        </a>
+                        <button class="btn-prot-donar" onclick="abrirModalDonarProt('prot-2')"><i class="fa-solid fa-hand-holding-heart me-1"></i> Donar</button>
+                        <a href="https://www.albergaria.es/protectoras/nortemascotas/" target="_blank" rel="noopener" class="btn-prot-ext"><i class="fa-solid fa-paw me-1"></i> Ver perfil</a>
                     </div>
                 </div>
             </div>
 
-            <!-- MÁS QUE CHUCHOS                                  -->
+            <!-- 4. MÁS QUE CHUCHOS -->
             <div class="col-md-6 col-lg-4 prot-item" data-especie="perros" data-nombre="MÁS QUE CHUCHOS Oviedo Llanera" data-teaming="si">
                 <div class="card-protectora-pag">
                     <div class="prot-franja prot-franja-gold"></div>
@@ -317,62 +240,41 @@
                         </div>
                         <div style="flex:1; min-width:0;">
                             <p class="prot-nombre">MÁS QUE CHUCHOS</p>
-                            <p class="prot-lugar">
-                                <i class="fa-solid fa-location-dot"></i> Oviedo – Llanera
-                            </p>
+                            <p class="prot-lugar"><i class="fa-solid fa-location-dot"></i> Oviedo – Llanera</p>
                         </div>
                         <span class="prot-badge-anos">Desde 1993</span>
                     </div>
-
                     <div class="prot-desc">
-                        <p>
-                            Nacida en 1993, es una de las protectoras con más trayectoria de Asturias. Han conseguido
-                            cientos de adopciones responsables y evolucionaron hasta crear el Centro de Adopción y
-                            Empatía Animal, un espacio pensado no solo para cuidar animales, sino también para educar
-                            y concienciar a la sociedad. Su lema: el abandono no es una opción.
-                        </p>
+                        <p>Nacida en 1993, es una de las protectoras con más trayectoria de Asturias. Han conseguido cientos de adopciones responsables y evolucionaron hasta crear el Centro de Adopción y Empatía Animal, un espacio pensado no solo para cuidar animales, sino también para educar y concienciar a la sociedad. Su lema: el abandono no es una opción.</p>
                     </div>
-
                     <div class="prot-tags">
                         <span class="prot-tag"><i class="fa-solid fa-dog"></i> Principalmente perros</span>
                         <span class="prot-tag prot-tag-gold"><i class="fa-solid fa-star"></i> +30 años</span>
                         <span class="prot-tag"><i class="fa-solid fa-graduation-cap"></i> Educación animal</span>
                         <span class="prot-tag prot-tag-verde"><i class="fa-solid fa-mug-hot"></i> Teaming</span>
                     </div>
-
-
                     <div class="prot-contacto">
                         <div class="prot-dato">
                             <i class="fa-solid fa-envelope"></i>
-                            <a href="mailto:info@masquechuchos.org">info@masquechuchos.org</a>
+                            <a href="mailto:info@masquechuchos.org?subject=Como%20colaborar">info@masquechuchos.org</a>
                         </div>
                         <div class="prot-dato">
                             <i class="fa-solid fa-mug-hot"></i>
-                            <a href="https://www.teaming.net/masquechuchos/" target="_blank" rel="noopener">
-                                Teaming · solo 1 €/mes
-                            </a>
+                            <a href="https://www.teaming.net/masquechuchos/" target="_blank" rel="noopener">Teaming · solo 1 €/mes</a>
                         </div>
                         <div class="prot-dato">
                             <i class="fa-solid fa-globe"></i>
                             <a href="http://masquechuchos.org" target="_blank" rel="noopener">masquechuchos.org</a>
                         </div>
                     </div>
-
                     <div class="prot-acciones">
-                        <a href="adopta.html" class="btn-ver-animales">
-                            <i class="fa-solid fa-paw me-1"></i> Ver animales
-                        </a>
-                        <a href="dona.html" class="btn-azul">
-                            <i class="fa-solid fa-hand-holding-heart me-1"></i> Donar
-                        </a>
-                        <a href="http://masquechuchos.org" target="_blank" rel="noopener" class="btn-prot-web">
-                            <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Web
-                        </a>
+                        <button class="btn-prot-donar" onclick="abrirModalDonarProt('prot-3')"><i class="fa-solid fa-hand-holding-heart me-1"></i> Donar</button>
+                        <a href="http://masquechuchos.org" target="_blank" rel="noopener" class="btn-prot-ext"><i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Web</a>
                     </div>
                 </div>
             </div>
 
-            <!-- Asociación Felina La Esperanza                    -->
+            <!-- 5. Asociación Felina La Esperanza -->
             <div class="col-md-6 col-lg-4 prot-item" data-especie="gatos" data-nombre="Asociación Felina La Esperanza Asturias" data-teaming="si">
                 <div class="card-protectora-pag">
                     <div class="prot-franja prot-franja-gold"></div>
@@ -384,53 +286,31 @@
                         </div>
                         <div style="flex:1; min-width:0;">
                             <p class="prot-nombre">Asociación Felina La Esperanza</p>
-                            <p class="prot-lugar">
-                                <i class="fa-solid fa-location-dot"></i> Asturias
-                            </p>
+                            <p class="prot-lugar"><i class="fa-solid fa-location-dot"></i> Asturias</p>
                         </div>
                     </div>
-
                     <div class="prot-desc">
-                        <p>
-                            Asociación especializada exclusivamente en gatos, con especial atención a los casos más
-                            difíciles: felinos con enfermedades crónicas como la leucemia felina, gatos de edad
-                            avanzada o con necesidades especiales. Su trabajo se centra en darles una vida digna
-                            y encontrarles familias comprometidas que entiendan que cuidar de ellos es un acto de
-                            amor, no de sacrificio.
-                        </p>
+                        <p>Asociación especializada exclusivamente en gatos, con especial atención a los casos más difíciles: felinos con enfermedades crónicas como la leucemia felina, gatos de edad avanzada o con necesidades especiales. Su trabajo se centra en darles una vida digna y encontrarles familias comprometidas que entiendan que cuidar de ellos es un acto de amor, no de sacrificio.</p>
                     </div>
-
                     <div class="prot-tags">
                         <span class="prot-tag"><i class="fa-solid fa-cat"></i> Solo gatos</span>
                         <span class="prot-tag"><i class="fa-solid fa-kit-medical"></i> Enfermedades crónicas</span>
                         <span class="prot-tag"><i class="fa-solid fa-heart-pulse"></i> Casos especiales</span>
                         <span class="prot-tag prot-tag-verde"><i class="fa-solid fa-mug-hot"></i> Teaming</span>
                     </div>
-
-
                     <div class="prot-contacto">
                         <div class="prot-dato">
                             <i class="fa-solid fa-envelope"></i>
-                            <a href="mailto:asociacionfelinalaesperanza@gmail.com">asociacionfelinalaesperanza@gmail.com</a>
+                            <a href="mailto:asociacionfelinalaesperanza@gmail.com?subject=Como%20colaborar">asociacionfelinalaesperanza@gmail.com</a>
                         </div>
                         <div class="prot-dato">
                             <i class="fa-solid fa-mug-hot"></i>
-                            <a href="https://www.teaming.net/asociacionfelinalaesperanza" target="_blank" rel="noopener">
-                                Teaming · solo 1 €/mes
-                            </a>
+                            <a href="https://www.teaming.net/asociacionfelinalaesperanza" target="_blank" rel="noopener">Teaming · solo 1 €/mes</a>
                         </div>
                     </div>
-
                     <div class="prot-acciones">
-                        <a href="adopta.html" class="btn-ver-animales">
-                            <i class="fa-solid fa-paw me-1"></i> Ver animales
-                        </a>
-                        <a href="dona.html" class="btn-azul">
-                            <i class="fa-solid fa-hand-holding-heart me-1"></i> Donar
-                        </a>
-                        <a href="https://www.teaming.net/asociacionfelinalaesperanza" target="_blank" rel="noopener" class="btn-prot-web">
-                            <i class="fa-solid fa-mug-hot me-1"></i> Teaming
-                        </a>
+                        <button class="btn-prot-donar" onclick="abrirModalDonarProt('prot-5')"><i class="fa-solid fa-hand-holding-heart me-1"></i> Donar</button>
+                        <a href="https://asociacionfelinalaesperanza.com/" target="_blank" rel="noopener" class="btn-prot-ext"><i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Web</a>
                     </div>
                 </div>
             </div>
@@ -451,51 +331,94 @@
         <div class="cta-colabora">
             <div class="cta-colabora-texto">
                 <h3><i class="fa-solid fa-paw me-2"></i>¿Tu protectora no está aquí?</h3>
-                <p>
-                    Si representas una protectora o refugio de Asturias y quieres aparecer en PetFamily,
-                    escríbenos. La colaboración es gratuita y te ayudamos a dar más visibilidad a tus animales.
-                </p>
+                <p>Si representas una protectora o refugio de Asturias y quieres aparecer en PetFamily, escríbenos. La colaboración es gratuita y te ayudamos a dar más visibilidad a tus animales.</p>
             </div>
             <div class="cta-colabora-bots">
-                <a href="mailto:info@petfamily.es" class="btn-cta-amarillo">
-                    <i class="fa-solid fa-envelope"></i> Contactar
+                <a href="mailto:petfamilycontact@yopmail.com?subject=Contacto%20PetFamily" class="btn-cta-contactar">
+                    <i class="fa-solid fa-envelope me-1"></i> Contactar
                 </a>
-                <a href="colabora.html" class="btn-cta-outline">
-                    <i class="fa-solid fa-hand-holding-heart"></i> Colaborar
-                </a>
+                <button class="btn-cta-apoyar" onclick="abrirModalDonarPetFamily()">
+                    <i class="fa-solid fa-heart me-1"></i> Apoyar la web
+                </button>
             </div>
         </div>
 
     </div><!-- /container -->
 
-    <!-- Flecha arriba -->
     <div class="text-center mt-4 mb-2">
         <a href="#" class="text-align-center">
-                <img src="../img/sectionIndex/up-arrow.png" alt="Volver al inicio" id="arrow" width="40px">
+            <img src="../img/sectionIndex/up-arrow.png" alt="Volver al inicio" id="arrow" width="40px">
         </a>
     </div>
 </main>
 
+<!-- modal donar protectora -->
+<div class="modal fade" id="modalDonarProt" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:14px;border:none;">
+            <div class="modal-header modal-header-pf">
+                <h5 class="modal-title text-white fw-bold">
+                    <i class="fa-solid fa-building-shield me-2" style="color:#F8BA56;"></i>Información para donar
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5em;">
+                <div id="modal-datos-prot-pag"></div>
+                <p class="modal-intro" style="margin-top:1em;margin-bottom:0;">El proceso de donación se realiza directamente con la protectora.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal donacion petfamily -->
+<div class="modal fade" id="modalDonarPetFamily" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:14px;border:none;">
+            <div class="modal-header modal-header-pf">
+                <h5 class="modal-title text-white fw-bold">
+                    <i class="fa-solid fa-heart me-2" style="color:#F8BA56;"></i>Apoyar PetFamily
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5em;">
+                <div style="display:flex;align-items:center;gap:0.5em;margin-bottom:0.9em;padding-bottom:0.7em;border-bottom:2px solid #1B358F;">
+                    <i class="fa-solid fa-paw" style="color:#1B358F;"></i>
+                    <strong style="font-size:0.97rem;color:#1B358F;">PetFamily</strong>
+                </div>
+                <div class="aviso-teaming" style="margin-bottom:1em;">
+                    <i class="fa-solid fa-circle-info"></i>
+                    PetFamily es un proyecto sin ánimo de lucro. Mantener la plataforma tiene costes reales: hosting, dominio, desarrollo y soporte. Cada aportación ayuda a que sigamos conectando animales con familias.
+                </div>
+                <div class="modal-dato">
+                    <i class="fa-solid fa-building-columns"></i>
+                    <span>ES91 2100 0418 4502 0005 1332 (CaixaBank)</span>
+                    <button onclick="copiarIban(this,'ES91 2100 0418 4502 0005 1332')" title="Copiar IBAN" style="background:none;border:none;cursor:pointer;color:#1B358F;padding:0 0 0 0.5em;font-size:0.9rem;"><i class="fa-regular fa-copy"></i></button>
+                </div>
+                <div class="modal-dato">
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                    <span>Bizum: <strong>612 345 678</strong></span>
+                    <button onclick="copiarTexto(this,'612345678')" title="Copiar número Bizum" style="background:none;border:none;cursor:pointer;color:#1B358F;padding:0 0 0 0.5em;font-size:0.9rem;"><i class="fa-regular fa-copy"></i></button>
+                </div>
+                <p class="modal-intro" style="margin-top:1em;margin-bottom:0;">Concepto recomendado: <em>"Apoyo PetFamily"</em>.</p>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- footer -->
 <footer>
     <p>© 2026 PetFamily. Todos los derechos reservados.</p>
     <p>
         <a href="privacidad.html" style="color: white;">Política de Privacidad</a> |
-        <a href="terminos.html"   style="color: white;">Términos de Servicio</a>
+        <a href="terminos.html" style="color: white;">Términos de Servicio</a>
     </p>
 </footer>
 
-
-<!-- Scripts -->
 <script src="../javascript/script.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Chat -->
 <script src="https://code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
 
 <script>
-    /*  Filtrado de protectoras                                 */
-
     var filtroActivo = 'todas';
 
     function setFiltro(btn, filtro) {
@@ -511,34 +434,53 @@
         var texto = document.getElementById('buscadorProt').value.toLowerCase().trim();
         var items = document.querySelectorAll('.prot-item');
         var visibles = 0;
-
         items.forEach(function(item) {
             var nombre  = (item.dataset.nombre  || '').toLowerCase();
             var especie = (item.dataset.especie || '').toLowerCase();
             var teaming = (item.dataset.teaming || '').toLowerCase();
-
-            var pasaTexto = !texto || nombre.includes(texto);
-
+            var pasaTexto  = !texto || nombre.includes(texto) || especie.includes(texto);
             var pasaFiltro = true;
             if (filtroActivo === 'perros')  pasaFiltro = especie.includes('perros');
             if (filtroActivo === 'gatos')   pasaFiltro = especie.includes('gatos');
             if (filtroActivo === 'teaming') pasaFiltro = teaming === 'si';
-
-            var mostrar = pasaTexto && pasaFiltro;
-            item.style.display = mostrar ? '' : 'none';
-            if (mostrar) visibles++;
+            var visible = pasaTexto && pasaFiltro;
+            item.style.display = visible ? '' : 'none';
+            if (visible) visibles++;
         });
-
         document.getElementById('noResultados').style.display = visibles === 0 ? 'block' : 'none';
     }
 
     function resetFiltros() {
         document.getElementById('buscadorProt').value = '';
-        filtroActivo = 'todas';
-        document.querySelectorAll('.filtro-prot-btn').forEach(function(b) {
-            b.classList.toggle('activo', b.dataset.filtro === 'todas');
-        });
-        filtrarProtectoras();
+        setFiltro(document.querySelector('.filtro-prot-btn[data-filtro="todas"]'), 'todas');
+    }
+
+    function abrirModalDonarProt(id) {
+        var p = protectoras[id];
+        if (!p) return;
+        document.getElementById('modal-datos-prot-pag').innerHTML = buildDatosProt(p);
+        new bootstrap.Modal(document.getElementById('modalDonarProt')).show();
+    }
+
+    function abrirModalDonarPetFamily() {
+        new bootstrap.Modal(document.getElementById('modalDonarPetFamily')).show();
+    }
+
+    function copiarTexto(btn, texto) {
+        var icono = btn.querySelector('i');
+        function feedback() {
+            icono.className = 'fa-solid fa-check';
+            setTimeout(function() { icono.className = 'fa-regular fa-copy'; }, 2000);
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(texto).then(feedback);
+        } else {
+            var el = document.createElement('textarea');
+            el.value = texto; el.style.position = 'fixed'; el.style.opacity = '0';
+            document.body.appendChild(el); el.select();
+            document.execCommand('copy'); document.body.removeChild(el);
+            feedback();
+        }
     }
 </script>
 

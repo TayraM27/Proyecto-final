@@ -150,8 +150,12 @@
                         <option value="negro">Negro</option>
                         <option value="blanco">Blanco</option>
                         <option value="marron">Marrón</option>
+                        <option value="naranja">Naranja / Rojizo</option>
+                        <option value="gris">Gris / Azul</option>
+                        <option value="dorado">Dorado / Arena</option>
                         <option value="atigrado">Atigrado</option>
                         <option value="bicolor">Bicolor</option>
+                        <option value="tricolor">Tricolor</option>
                     </select>
                 </div>
                 <div class="filtro-select-wrap">
@@ -159,8 +163,8 @@
                     <select class="filtro-select" id="filtro-salud">
                         <option value="todos" disabled selected hidden>Estado de salud</option>
                         <option value="todos">Todos</option>
-                        <option value="bueno">Bueno</option>
-                        <option value="especial">Necesidades especiales</option>
+                        <option value="bueno">Sano</option>
+                        <option value="especial">Cuidados especiales</option>
                     </select>
                 </div>
                 <div class="filtro-select-wrap">
@@ -181,7 +185,7 @@
 
         <div class="row g-4">
 
-            <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="perro" data-urgencia="espera" data-ubicacion="gijon" data-tamano="mediano">
+            <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="perro" data-urgencia="espera" data-ubicacion="gijon" data-tamano="mediano" data-protectora="cpa-gijon" data-edad="senior" data-sexo="hembra" data-color="marron" data-salud="especial">
                 <div class="card h-100 shadow-sm">
                     <div class="contenedor-imagen">
                         <img src="../img/mascotas/leia-centro-proteccion-animales-gijon.jpg"
@@ -222,12 +226,12 @@
                             <i class="fa-solid fa-eye"></i>
                             <span>Vista <strong id="vistas-1">0</strong> veces</span>
                         </div>
-                        <a href="fichaAnimal.html?id=1" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('1')">Ver ficha</a>
+                        <a href="fichaAnimal.html?id=1" class="btn-ver-ficha w-100 mt-3" onclick="registrarVistaFicha('1')">Ver ficha</a>
                     </div>
                 </div>
             </div>
 
-            <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="perro" data-urgencia="urgente" data-ubicacion="oviedo" data-tamano="grande">
+            <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="perro" data-urgencia="urgente" data-ubicacion="oviedo" data-tamano="grande" data-protectora="fundacion-protectora" data-edad="adulto" data-sexo="hembra" data-color="marron" data-salud="bueno">
                 <div class="card h-100 shadow-sm">
                     <div class="contenedor-imagen">
                         <img src="../img/mascotas/haru-protectora-de-asturias-dog.jpg"
@@ -268,12 +272,12 @@
                             <i class="fa-solid fa-eye"></i>
                             <span>Vista <strong id="vistas-2">0</strong> veces</span>
                         </div>
-                        <a href="fichaAnimal.html?id=2" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('2')">Ver ficha</a>
+                        <a href="fichaAnimal.html?id=2" class="btn-ver-ficha w-100 mt-3" onclick="registrarVistaFicha('2')">Ver ficha</a>
                     </div>
                 </div>
             </div>
 
-            <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="gato" data-urgencia="nuevo" data-ubicacion="aviles" data-tamano="pequeno">
+            <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="gato" data-urgencia="nuevo" data-ubicacion="aviles" data-tamano="pequeno" data-protectora="la-esperanza" data-edad="joven" data-sexo="macho" data-color="negro" data-salud="bueno">
                 <div class="card h-100 shadow-sm">
                     <div class="contenedor-imagen">
                         <img src="../img/mascotas/roys-asociacion-felina-la-esperanza-cat.jpg"
@@ -314,12 +318,12 @@
                             <i class="fa-solid fa-eye"></i>
                             <span>Vista <strong id="vistas-3">0</strong> veces</span>
                         </div>
-                        <a href="fichaAnimal.html?id=3" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('3')">Ver ficha</a>
+                        <a href="fichaAnimal.html?id=3" class="btn-ver-ficha w-100 mt-3" onclick="registrarVistaFicha('3')">Ver ficha</a>
                     </div>
                 </div>
             </div>
 
-            <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="gato" data-urgencia="todos" data-ubicacion="oviedo" data-tamano="pequeno">
+            <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="gato" data-urgencia="todos" data-ubicacion="oviedo" data-tamano="pequeno" data-protectora="masquechuchos" data-edad="adulto" data-sexo="macho" data-color="bicolor" data-salud="bueno">
                 <div class="card h-100 shadow-sm">
                     <div class="contenedor-imagen">
                         <img src="../img/mascotas/bambi-masquechuchos-cat.jpg"
@@ -359,12 +363,12 @@
                             <i class="fa-solid fa-eye"></i>
                             <span>Vista <strong id="vistas-4">0</strong> veces</span>
                         </div>
-                        <a href="fichaAnimal.html?id=4" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('4')">Ver ficha</a>
+                        <a href="fichaAnimal.html?id=4" class="btn-ver-ficha w-100 mt-3" onclick="registrarVistaFicha('4')">Ver ficha</a>
                     </div>
                 </div>
             </div>
 
-            <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="perro" data-urgencia="urgente" data-ubicacion="gijon" data-tamano="mediano">
+            <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="perro" data-urgencia="urgente" data-ubicacion="gijon" data-tamano="mediano" data-protectora="nortemascotas" data-edad="senior" data-sexo="macho" data-color="marron" data-salud="bueno">
                 <div class="card h-100 shadow-sm">
                     <div class="contenedor-imagen">
                         <img src="../img/mascotas/dexter-nortemascotas-dog.jpg"
@@ -405,12 +409,12 @@
                             <i class="fa-solid fa-eye"></i>
                             <span>Vista <strong id="vistas-5">0</strong> veces</span>
                         </div>
-                        <a href="fichaAnimal.html?id=5" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('5')">Ver ficha</a>
+                        <a href="fichaAnimal.html?id=5" class="btn-ver-ficha w-100 mt-3" onclick="registrarVistaFicha('5')">Ver ficha</a>
                     </div>
                 </div>
             </div>
 
-            <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="gato" data-urgencia="todos" data-ubicacion="oviedo" data-tamano="pequeno">
+            <div class="col-sm-12 col-md-6 col-lg-4 animalCard" data-especie="gato" data-urgencia="todos" data-ubicacion="oviedo" data-tamano="pequeno" data-protectora="fundacion-protectora" data-edad="cachorro" data-sexo="hembra" data-color="bicolor" data-salud="especial">
                 <div class="card h-100 shadow-sm">
                     <div class="contenedor-imagen">
                         <img src="../img/mascotas/bosque-protectora-de-asturias-cat.jpg"
@@ -451,13 +455,23 @@
                             <i class="fa-solid fa-eye"></i>
                             <span>Vista <strong id="vistas-6">0</strong> veces</span>
                         </div>
-                        <a href="fichaAnimal.html?id=6" class="btn btn-primary w-100 mt-3" onclick="registrarVistaFicha('6')">Ver ficha</a>
+                        <a href="fichaAnimal.html?id=6" class="btn-ver-ficha w-100 mt-3" onclick="registrarVistaFicha('6')">Ver ficha</a>
                     </div>
                 </div>
             </div>
 
         </div>
     </div>
+
+        <!-- Sin resultados -->
+        <div id="sin-resultados" style="display:none;text-align:center;padding:4em 2em;">
+            <i class="fa-solid fa-magnifying-glass" style="font-size:3rem;color:#dee2e6;display:block;margin-bottom:0.8em;"></i>
+            <p style="font-size:1rem;font-weight:600;color:#444;margin-bottom:0.4em;">No se encontraron animales con esos filtros.</p>
+            <p style="font-size:0.85rem;color:#6c757d;margin-bottom:1.2em;">Prueba con otros criterios o elimina algunos filtros.</p>
+            <button class="btn-azul" style="width:auto;display:inline-flex;align-items:center;gap:0.5em;" onclick="document.getElementById('btn-limpiar').click()">
+                <i class="fa-solid fa-rotate-left"></i> Quitar filtros
+            </button>
+        </div>
 
     <!-- flecha para subir al inicio tiene los estilos en footer.css -->
     <div class="text-center">
@@ -471,6 +485,37 @@
     <p><a href="privacidad.html" style="color: white;">Política de Privacidad</a> | <a href="terminos.html" style="color: white;">Términos de Servicio</a></p>
 </footer>
 
+<!-- modal favoritos — requiere login -->
+<div class="modal fade" id="modalLoginFav" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content" style="border-radius:14px;border:none;">
+            <div class="modal-header modal-header-pf">
+                <h5 class="modal-title text-white fw-bold">
+                    <i class="fa-solid fa-heart me-2" style="color:#F8BA56;"></i>
+                    Guardar favoritos
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5em;text-align:center;">
+                <div style="font-size:2.5rem;margin-bottom:0.5em;">🐾</div>
+                <p style="font-size:0.95rem;color:#333;margin-bottom:1.2em;">
+                    Para guardar animales en favoritos y hacerles seguimiento necesitas una cuenta.
+                </p>
+                <div style="display:flex;flex-direction:column;gap:0.6em;">
+                    <a href="register.html" class="btn-azul" style="text-align:center;">
+                        <i class="fa-solid fa-user-plus me-2"></i>Crear cuenta gratis
+                    </a>
+                    <a href="login.html" style="text-align:center;display:block;padding:0.7em;border-radius:10px;border:2px solid #1B358F;color:#1B358F;font-weight:700;text-decoration:none;font-size:0.9rem;">
+                        <i class="fa-solid fa-right-to-bracket me-2"></i>Ya tengo cuenta
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- fin modal favoritos -->
+
+
 <!-- script js -->
 <script src="../javascript/script.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -479,38 +524,58 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var ids = ['a01', 'a02', 'a03', 'a04', 'a05', 'a06'];
-        for (var i = 0; i < ids.length; i++) {
-            var cantidad = obtenerNumeroVistas(ids[i]);
-            var elemento = document.getElementById('vistas-' + ids[i]);
-            if (elemento) {
-                elemento.textContent = cantidad;
+        /* Vistas: leer del backend si disponible, sino localStorage */
+        var idsVistas = ['1','2','3','4','5','6'];
+        for (var i = 0; i < idsVistas.length; i++) {
+            var el = document.getElementById('vistas-' + idsVistas[i]);
+            if (el) {
+                el.textContent = obtenerNumeroVistas(idsVistas[i]);
             }
+        }
+        /* Limpiar favoritos localStorage si no hay sesion activa */
+        if (!estaLogueado()) {
+            localStorage.removeItem('petfamily_favoritos');
+        }
+        /* Aplicar filtro de protectora desde URL */
+        if (_protUrlVal !== 'todos') {
+            aplicarFiltros();
         }
     });
 </script>
 
 <script>
 
+    /* Leer filtro de ubicacion desde URL si viene de protectoras.html */
+    var _urlParams   = new URLSearchParams(window.location.search);
+    var _ubicUrlVal  = _urlParams.get('ubicacion') || 'todos';
+    var _ubicValidos = ['todos', 'gijon', 'oviedo', 'aviles'];
+    if (_ubicValidos.indexOf(_ubicUrlVal) === -1) { _ubicUrlVal = 'todos'; }
+
+    var _protUrlVal  = _urlParams.get('protectora') || 'todos';
+    var _protValidos = ['todos','cpa-gijon','nortemascotas','masquechuchos','fundacion-protectora','la-esperanza'];
+    if (_protValidos.indexOf(_protUrlVal) === -1) { _protUrlVal = 'todos'; }
+
     var FILTROS = {
-        especie:   'todos',
-        urgencia:  'todos',
-        ubicacion: 'todos',
-        tamano:    'todos',
-        edad:      'todos',
-        color:     'todos',
-        salud:     'todos',
-        sexo:      'todos'
+        especie:    'todos',
+        urgencia:   'todos',
+        ubicacion:  'todos',
+        protectora: _protUrlVal,
+        tamano:     'todos',
+        edad:       'todos',
+        color:      'todos',
+        salud:      'todos',
+        sexo:       'todos'
     };
 
     var ETIQUETAS = {
         especie:   { todos:'Todos', perro:'Perros', gato:'Gatos' },
         urgencia:  { todos:'Urgencia', urgente:'Urgente', nuevo:'Nuevo', espera:'Larga espera' },
-        ubicacion: { todos:'Ubicación', gijon:'Gijón', oviedo:'Oviedo', aviles:'Avilés' },
+        ubicacion:  { todos:'Ubicación', gijon:'Gijón', oviedo:'Oviedo', aviles:'Avilés' },
+        protectora: { todos:'Protectora', 'cpa-gijon':'CPA Gijón', nortemascotas:'Nortemascotas', masquechuchos:'MÁS QUE CHUCHOS', 'fundacion-protectora':'Fund. Protectora', 'la-esperanza':'La Esperanza' },
         tamano:    { todos:'Tamaño', pequeno:'Pequeño', mediano:'Mediano', grande:'Grande' },
         edad:      { todos:'Edad', cachorro:'Cachorro', joven:'Joven', adulto:'Adulto', senior:'Senior' },
-        color:     { todos:'Color', negro:'Negro', blanco:'Blanco', marron:'Marrón', atigrado:'Atigrado', bicolor:'Bicolor' },
-        salud:     { todos:'Salud', bueno:'Bueno', especial:'Necesidades especiales' },
+        color:     { todos:'Color', negro:'Negro', blanco:'Blanco', marron:'Marrón', naranja:'Naranja/Rojizo', gris:'Gris/Azul', dorado:'Dorado/Arena', atigrado:'Atigrado', bicolor:'Bicolor', tricolor:'Tricolor' },
+        salud:     { todos:'Salud', bueno:'Sano', especial:'Cuidados especiales' },
         sexo:      { todos:'Sexo', macho:'Macho', hembra:'Hembra' }
     };
 
@@ -518,7 +583,8 @@
         document.querySelectorAll('.animalCard').forEach(function(card) {
             var ok = (FILTROS.especie   === 'todos' || (card.dataset.especie   || '') === FILTROS.especie)
                   && (FILTROS.urgencia  === 'todos' || (card.dataset.urgencia  || '') === FILTROS.urgencia)
-                  && (FILTROS.ubicacion === 'todos' || (card.dataset.ubicacion || '') === FILTROS.ubicacion)
+                  && (FILTROS.ubicacion  === 'todos' || (card.dataset.ubicacion  || '') === FILTROS.ubicacion)
+                  && (FILTROS.protectora === 'todos' || (card.dataset.protectora || '') === FILTROS.protectora)
                   && (FILTROS.tamano    === 'todos' || (card.dataset.tamano    || '') === FILTROS.tamano)
                   && (FILTROS.edad      === 'todos' || (card.dataset.edad      || '') === FILTROS.edad)
                   && (FILTROS.color     === 'todos' || (card.dataset.color     || '') === FILTROS.color)
@@ -526,6 +592,9 @@
                   && (FILTROS.sexo      === 'todos' || (card.dataset.sexo      || '') === FILTROS.sexo);
             card.style.display = ok ? '' : 'none';
         });
+        var visibles = document.querySelectorAll('.animalCard:not([style*="display: none"]):not([style*="display:none"])').length;
+        var sinResultados = document.getElementById('sin-resultados');
+        if (sinResultados) sinResultados.style.display = visibles === 0 ? 'block' : 'none';
         actualizarTags();
         actualizarLimpiar();
     }

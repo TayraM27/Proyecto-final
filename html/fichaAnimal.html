@@ -390,6 +390,12 @@ function obtenerFavoritos() {
 }
 
 function toggleFavoritoFicha() {
+    /* Comprobar login */
+    if (sessionStorage.getItem('petfamily_logueado') !== '1') {
+        new bootstrap.Modal(document.getElementById('modalLoginFav')).show();
+        return;
+    }
+
     var params = new URLSearchParams(window.location.search);
     var id = params.get('id');
     var favs = obtenerFavoritos();
@@ -412,6 +418,37 @@ function mostrarModalAdopcion() {
     modal.show();
 }
 </script>
+
+
+<!-- modal favoritos — requiere login -->
+<div class="modal fade" id="modalLoginFav" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content" style="border-radius:14px; border:none;">
+            <div class="modal-header modal-header-pf">
+                <h5 class="modal-title text-white fw-bold">
+                    <i class="fa-solid fa-heart me-2" style="color:#F8BA56;"></i>
+                    Guardar favoritos
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5em; text-align:center;">
+                <div style="font-size:2.5rem; margin-bottom:0.5em;">🐾</div>
+                <p style="font-size:0.95rem; color:#333; margin-bottom:1.2em;">
+                    Para guardar animales en favoritos y hacerles seguimiento necesitas una cuenta.
+                </p>
+                <div style="display:flex; flex-direction:column; gap:0.6em;">
+                    <a href="register.html" class="btn-azul" style="text-align:center;">
+                        <i class="fa-solid fa-user-plus me-2"></i>Crear cuenta gratis
+                    </a>
+                    <a href="login.html" class="btn-outline-azul" style="text-align:center; display:block; padding:0.7em; border-radius:10px; border:2px solid #1B358F; color:#1B358F; font-weight:700; text-decoration:none; font-size:0.9rem;">
+                        <i class="fa-solid fa-right-to-bracket me-2"></i>Ya tengo cuenta
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- fin modal favoritos -->
 
 </body>
 </html>

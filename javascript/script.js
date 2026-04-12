@@ -201,19 +201,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Inicializar botones de favoritos al cargar
-    var botonesFav = document.querySelectorAll('.btn-fav[data-id]');
-    for (var i = 0; i < botonesFav.length; i++) {
-        actualizarBotonFavorito(botonesFav[i].dataset.id);
-    }
-
-    // Inicializar contadores de vistas en adopta.html
-    var ids = ['a01', 'a02', 'a03', 'a04', 'a05', 'a06'];
-    for (var j = 0; j < ids.length; j++) {
-        var elVistas = document.getElementById('vistas-' + ids[j]);
-        if (elVistas) {
-            elVistas.textContent = obtenerNumeroVistas(ids[j]);
+    // Inicializar botones de favoritos al cargar — solo si hay sesion
+    if (estaLogueado()) {
+        var botonesFav = document.querySelectorAll('.btn-fav[data-id]');
+        for (var i = 0; i < botonesFav.length; i++) {
+            actualizarBotonFavorito(botonesFav[i].dataset.id);
         }
+    } else {
+        // Sin sesion: limpiar posibles favoritos guardados previamente
+        localStorage.removeItem('petfamily_favoritos');
     }
 
     // ----------------------------------------------------------------
@@ -618,8 +614,26 @@ document.addEventListener('DOMContentLoaded', function() {
 /* ------------------------------------------------------------------ */
 /* toggleFavorito — llamado desde onclick en adopta.html y fichaAnimal */
 /* ------------------------------------------------------------------ */
+function estaLogueado() {
+    /* BACKEND: sustituir por verificacion real de sesion PHP cuando este disponible */
+    /* Ej: return window.PF_LOGUEADO === true; (variable inyectada por PHP en el head) */
+    return false;
+}
+
+function mostrarModalLoginFav() {
+    var modal = document.getElementById('modalLoginFav');
+    if (!modal) return;
+    new bootstrap.Modal(modal).show();
+}
+
 function toggleFavorito(evento, id) {
     evento.stopPropagation();
+
+    if (!estaLogueado()) {
+        mostrarModalLoginFav();
+        return;
+    }
+
     var CLAVE_FAVORITOS = 'petfamily_favoritos';
     var favoritos = JSON.parse(localStorage.getItem(CLAVE_FAVORITOS) || '[]');
     var posicion  = favoritos.indexOf(id);
@@ -657,7 +671,7 @@ var protectoras = {
         nombre:   'Centro de Proteccion Animal de Gijon',
         telefono: '615 411 417',
         email:    'cproteccionanimalgijon@gmail.com',
-        web:      'https://www.albergaria.es/protectoras/centro-proteccion-animales-gijon/',
+        web:      null,
         teaming:  null,
         iban:     null
     },
@@ -665,7 +679,7 @@ var protectoras = {
         nombre:   'Nortemascotas',
         telefono: '665 971 933',
         email:    'Mariasol.ferreyra2014@gmail.com',
-        web:      'https://www.facebook.com/Asociacionnortemascotas/',
+        web:      null,
         teaming:  null,
         iban:     'ES39 0182 2800 1902 0163 9405 (BBVA)'
     },
@@ -673,7 +687,7 @@ var protectoras = {
         nombre:   'MAS QUE CHUCHOS',
         telefono: null,
         email:    'info@masquechuchos.org',
-        web:      'http://masquechuchos.org',
+        web:      null,
         teaming:  'https://www.teaming.net/masquechuchos/'
     },
     'prot-4': {
@@ -699,27 +713,146 @@ function toggleProtectora(id) {
     card.classList.toggle('seleccionada', checkbox.checked);
 }
 
+function copiarTexto(btn, texto) {
+    var icono = btn.querySelector('i');
+    function feedback() {
+        icono.className = 'fa-solid fa-check';
+        setTimeout(function() { icono.className = 'fa-regular fa-copy'; }, 2000);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(feedback);
+    } else {
+        var el = document.createElement('textarea');
+        el.value = texto; el.style.position = 'fixed'; el.style.opacity = '0';
+        document.body.appendChild(el); el.select();
+        document.execCommand('copy'); document.body.removeChild(el);
+        feedback();
+    }
+}
+
+function copiarIban(btn, iban) {
+    var texto = iban.replace(/\s*\([^)]*\)/, '').trim();
+    var icono = btn.querySelector('i');
+    function feedback() {
+        icono.className = 'fa-solid fa-check';
+        setTimeout(function() { icono.className = 'fa-regular fa-copy'; }, 2000);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(feedback);
+    } else {
+        var el = document.createElement('textarea');
+        el.value = texto;
+        el.style.position = 'fixed';
+        el.style.opacity = '0';
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        feedback();
+    }
+}
+
 function buildDatosProt(p) {
     var html = '<div class="modal-prot-bloque">';
-    html += '<p class="modal-prot-nombre">' + p.nombre + '</p>';
-    if (p.telefono) html += '<div class="modal-dato"><i class="fa-solid fa-phone"></i><span>' + p.telefono + '</span></div>';
-    if (p.email)    html += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i><span>' + p.email + '</span></div>';
-    if (p.iban)     html += '<div class="modal-dato"><i class="fa-solid fa-building-columns"></i><span>' + p.iban + '</span></div>';
-    if (p.web)      html += '<a href="' + p.web + '" target="_blank" class="btn-ir-web"><i class="fa-solid fa-arrow-up-right-from-square me-2"></i>Ir a la pagina de donaciones</a>';
-    if (p.teaming)  html += '<a href="' + p.teaming + '" target="_blank" class="btn-ir-web btn-ir-web-teaming"><i class="fa-solid fa-mug-hot me-2"></i>Colaborar con 1 mes en Teaming</a>';
+
+    /* Nombre */
+    html += '<div style="display:flex;align-items:center;gap:0.5em;'
+          + 'margin-bottom:0.7em;padding-bottom:0.7em;border-bottom:2px solid #1B358F;">'
+          + '<i class="fa-solid fa-building-shield" style="color:#1B358F;"></i>'
+          + '<strong style="font-size:0.97rem;color:#1B358F;letter-spacing:0.01em;">' + p.nombre + '</strong>'
+          + '</div>';
+
+    /* Aviso sin web — justo tras el nombre */
+    if (!p.web) {
+        if (p.teaming) {
+            html += '<div class="aviso-teaming" style="margin-bottom:0.8em;">'
+                  + '<i class="fa-solid fa-mug-hot" style="color:#1B358F;margin-right:0.3em;"></i>'
+                  + 'Esta protectora no dispone de p&aacute;gina oficial de donaciones, pero puedes '
+                  + 'apoyarles con <strong>1&nbsp;&euro;/mes</strong> a trav&eacute;s de '
+                  + '<strong>Teaming</strong>, una plataforma de microdonaciones continuadas.'
+                  + '</div>';
+        } else {
+            html += '<div class="aviso-teaming" style="margin-bottom:0.8em;">'
+                  + '<i class="fa-solid fa-circle-info"></i> '
+                  + 'Esta protectora no dispone de p&aacute;gina oficial de donaciones. '
+                  + 'Puedes contactarles directamente por tel&eacute;fono o email.'
+                  + '</div>';
+        }
+    }
+
+    /* Contacto */
+    if (p.telefono) {
+        html += '<div class="modal-dato">'
+              + '<i class="fa-solid fa-phone"></i>'
+              + '<a href="tel:' + p.telefono.replace(/\s/g, '') + '">' + p.telefono + '</a>'
+              + '</div>';
+    }
+    if (p.email) {
+        html += '<div class="modal-dato">'
+              + '<i class="fa-solid fa-envelope"></i>'
+              + '<a href="mailto:' + p.email + '?subject=%C2%BFC%C3%B3mo%20puedo%20ayudar%3F">'
+              + p.email
+              + '</a>'
+              + '</div>';
+    }
+
+    /* Teaming button */
+    if (p.teaming) {
+        html += '<a href="' + p.teaming + '" target="_blank" rel="noopener" class="btn-ir-web btn-ir-web-teaming" style="margin-top:0.6em;">'
+              + '<i class="fa-solid fa-mug-hot me-2"></i>Colaborar con 1&nbsp;&euro;/mes en Teaming'
+              + '</a>';
+    }
+
+    /* Web donaciones */
+    if (p.web) {
+        html += '<a href="' + p.web + '" target="_blank" rel="noopener" class="btn-ir-web" style="margin-top:0.6em;">'
+              + '<i class="fa-solid fa-arrow-up-right-from-square me-2"></i>Ir a la p&aacute;gina de donaciones'
+              + '</a>';
+        if (p.teaming) {
+            html += '<div class="aviso-teaming" style="margin-top:0.6em;background:#f0f4ff;border-left-color:#1B358F;">'
+                  + '<i class="fa-solid fa-mug-hot" style="color:#1B358F;"></i> '
+                  + 'Tambi&eacute;n puedes colaborar con <strong>1&nbsp;&euro;/mes</strong> a trav&eacute;s de Teaming.'
+                  + '</div>';
+        }
+    }
+
+    /* IBAN siempre al final */
+    if (p.iban) {
+        var ibanEsc = p.iban.replace(/'/g, "\'");
+        html += '<div class="modal-dato" style="margin-top:0.8em;padding-top:0.6em;border-top:1px solid #f0f0f0;">'
+              + '<i class="fa-solid fa-building-columns"></i>'
+              + '<span>' + p.iban + '</span>'
+              + '<button onclick="copiarIban(this,\'' + ibanEsc + '\')" title="Copiar IBAN" '
+              + 'style="background:none;border:none;cursor:pointer;color:#1B358F;'
+              + 'padding:0 0 0 0.5em;font-size:0.9rem;">'
+              + '<i class="fa-regular fa-copy"></i>'
+              + '</button>'
+              + '</div>';
+    }
+
     html += '</div>';
     return html;
 }
 
 function mostrarModalDona() {
-    var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-    if (checkboxes.length === 0) { alert('Por favor, selecciona al menos una protectora.'); return; }
-    var contenido = '';
+    var checkboxes  = document.querySelectorAll('input[type="checkbox"]:checked');
+    var errorEl     = document.getElementById('errorSeleccion');
+    if (checkboxes.length === 0) {
+        if (errorEl) {
+            errorEl.style.display = 'block';
+            errorEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        return;
+    }
+    if (errorEl) errorEl.style.display = 'none';
+    var bloques = [];
     for (var i = 0; i < checkboxes.length; i++) {
         var id = checkboxes[i].closest('label').id;
-        contenido += buildDatosProt(protectoras[id]);
+        bloques.push(buildDatosProt(protectoras[id]));
     }
-    document.getElementById('modal-datos-protectora').innerHTML = contenido;
+    document.getElementById('modal-datos-protectora').innerHTML = bloques.join(
+        '<hr style="border:none;border-top:1px solid #e9ecef;margin:1.4em 0;">'
+    );
     new bootstrap.Modal(document.getElementById('modalDonacion')).show();
 }
 

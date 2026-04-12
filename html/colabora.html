@@ -77,12 +77,19 @@
             <!-- DONAR -->
             <div class="col-md-6">
                 <div class="card-colabora">
-                    <div class="card-header-pf header-azul">
-                        <div class="card-icono icono-bg-blanco">
-                            <i class="fa-solid fa-hand-holding-heart" style="color:#F8BA56;"></i>
+                    <div class="card-header-pf header-azul" style="padding:0;flex-direction:column;">
+                        <img src="../img/imagenes-animales/colabora-cat.jpeg"
+                             alt="Animal recibiendo cuidados"
+                             class="card-colabora-img"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="card-colabora-img-fallback header-azul" style="display:none;"></div>
+                        <div style="padding:1.4em 2em 1.2em; display:flex; flex-direction:column; align-items:flex-start; gap:0.5em;">
+                            <h3 style="display:flex;align-items:center;gap:0.5em;margin:0;">
+                                <i class="fa-solid fa-hand-holding-heart" style="color:#F8BA56;font-size:1.2rem;"></i>
+                                Donar
+                            </h3>
+                            <p>Haz una aportación puntual a la protectora que tú elijas.</p>
                         </div>
-                        <h3>Donar</h3>
-                        <p>Haz una aportación puntual a la protectora que tú elijas.</p>
                     </div>
                     <div class="card-body-pf">
                         <ul class="lista-incluye">
@@ -102,17 +109,24 @@
             <!-- APADRINAR -->
             <div class="col-md-6">
                 <div class="card-colabora card-colabora-apadrina">
-                    <div class="card-header-pf header-amarillo">
-                        <div class="card-icono icono-bg-azul">
-                            <i class="fa-solid fa-star" style="color:#1B358F;"></i>
+                    <div class="card-header-pf header-amarillo" style="padding:0;flex-direction:column;">
+                        <img src="../img/imagenes-animales/apadrinar.jpg"
+                             alt="Animal esperando ser apadrinado"
+                             class="card-colabora-img"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="card-colabora-img-fallback header-amarillo" style="display:none;"></div>
+                        <div style="padding:1.4em 2em 1.2em; display:flex; flex-direction:column; align-items:flex-start; gap:0.5em;">
+                            <h3 style="display:flex;align-items:center;gap:0.5em;margin:0;">
+                                <i class="fa-solid fa-star" style="color:#1B358F;font-size:1.2rem;"></i>
+                                Apadrinar
+                            </h3>
+                            <p>Apoya mensualmente a un animal y sigue su evolución de cerca.</p>
                         </div>
-                        <h3>Apadrinar</h3>
-                        <p>Apoya mensualmente a un animal y sigue su evolución de cerca.</p>
                     </div>
                     <div class="card-body-pf">
                         <ul class="lista-incluye">
                             <li><i class="fa-solid fa-check"></i> Elige el animal que quieres apadrinar</li>
-                            <li><i class="fa-solid fa-check"></i> Cuota mensual desde 3 €/mes</li>
+                            <li><i class="fa-solid fa-check"></i> Cuota mensual flexible</li>
                             <li><i class="fa-solid fa-check"></i> Recibe fotos y vídeos de su evolución</li>
                             <li><i class="fa-solid fa-check"></i> Seguimiento de su estado de salud</li>
                             <li><i class="fa-solid fa-check"></i> Certificado digital de padrino/madrina</li>

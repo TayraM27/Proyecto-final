@@ -620,6 +620,10 @@ main {
     border-left: 3px solid rgba(248, 186, 86, 0.5);
 }
 
+.card-colabora-apadrina:hover {
+    border-left: 3px solid #1B358F;
+}
+
 .card-header-pf {
     padding: 2.2em 2em 1.5em;
     display: flex;
@@ -925,10 +929,91 @@ main {
     transition: background-color 0.3s, transform 0.2s;
 }
 
+.btn-ver-ficha {
+    display: block;
+    background-color: #1B358F;
+    color: #fff;
+    text-align: center;
+    border-radius: 10px;
+    padding: 0.7em;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background-color 0.2s, transform 0.2s;
+    font-family: 'Poppins', sans-serif;
+}
+
+.btn-ver-ficha:hover {
+    background-color: #2742A2;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+
 .btn-donar:hover {
     background-color: #ffc66a;
     transform: translateY(-2px);
 }
+
+/*--------------------------------------------------------------------------------------------
+card-colabora imagen */
+
+.card-colabora-img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    object-position: center 35%;
+    display: block;
+}
+
+.card-colabora-img-fallback {
+    width: 100%;
+    height: 300px;
+}
+
+/*--------------------------------------------------------------------------------------------
+test-card imagen */
+
+.test-card-img {
+    width: 100%;
+    height: 170px;
+    object-fit: cover;
+    object-position: center 25%;
+    display: block;
+}
+
+/*--------------------------------------------------------------------------------------------
+acoge hero imagen */
+
+.acoge-hero-img-wrap {
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 2.5em;
+    height: 400px;
+}
+
+.acoge-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 45%;
+    display: block;
+}
+
+
+.dona-error-seleccion {
+    color: #c0392b;
+    background: #fdf0ef;
+    border: 1px solid #f5c6c2;
+    border-radius: 8px;
+    padding: 0.5em 0.9em;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 0.8em;
+    display: inline-block;
+}
+
 
 /* apadrina */
 .apadrina-que-item {
@@ -1680,6 +1765,110 @@ main {
     transform: translateY(-2px);
 }
 
+/*--------------------------------------------------------------------------------------------
+prot-acciones botones nuevos */
+
+.btn-prot-donar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1B358F;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 0.7em 0.8em;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-decoration: none;
+    flex: 1;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    transition: background-color 0.2s, transform 0.2s;
+    white-space: nowrap;
+}
+
+.btn-prot-donar:hover {
+    background-color: #2742A2;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.btn-prot-ext {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    color: #1B358F;
+    border: 2px solid #1B358F;
+    border-radius: 10px;
+    padding: 0.7em 0.8em;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-decoration: none;
+    flex: 1;
+    transition: background-color 0.2s, color 0.2s, transform 0.2s;
+    white-space: nowrap;
+}
+
+.btn-prot-ext:hover {
+    background-color: #1B358F;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/*--------------------------------------------------------------------------------------------
+cta botones */
+
+.btn-cta-contactar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4em;
+    background-color: transparent;
+    color: #fff;
+    border: 2px solid rgba(255,255,255,0.7);
+    border-radius: 10px;
+    padding: 0.7em 1.4em;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+}
+
+.btn-cta-contactar:hover {
+    background-color: rgba(255,255,255,0.15);
+    border-color: #fff;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.btn-cta-apoyar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4em;
+    background-color: #F8BA56;
+    color: #1B358F;
+    border: none;
+    border-radius: 10px;
+    padding: 0.7em 1.4em;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(248,186,86,0.4);
+}
+
+.btn-cta-apoyar:hover {
+    background-color: #ffc66a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(248,186,86,0.5);
+}
+
 .no-resultados {
     display: none;
     text-align: center;
@@ -1731,7 +1920,8 @@ main {
     justify-content: center;
 }
 
-.cta-colabora-bots a {
+.cta-colabora-bots a,
+.cta-colabora-bots button {
     border-radius: 10px;
     padding: 0.75em 1.4em;
     font-size: 0.88rem;
@@ -1740,10 +1930,13 @@ main {
     display: flex;
     align-items: center;
     gap: 0.4em;
+    font-family: 'Poppins', sans-serif;
     transition: opacity 0.2s, transform 0.15s;
+    cursor: pointer;
 }
 
-.cta-colabora-bots a:hover {
+.cta-colabora-bots a:hover,
+.cta-colabora-bots button:hover {
     opacity: 0.88;
     transform: translateY(-2px);
 }
@@ -1761,6 +1954,84 @@ main {
 
 .btn-cta-outline:hover {
     border-color: #fff;
+}
+
+/*--------------------------------------------------------------------------------------------
+cta botones nuevos */
+
+.btn-cta-contactar {
+    background: transparent;
+    color: #fff;
+    border: 2px solid rgba(255,255,255,0.6);
+}
+
+.btn-cta-contactar:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: #fff;
+    color: #fff;
+}
+
+.btn-cta-apoyar {
+    background-color: #F8BA56;
+    color: #1B358F;
+    border: none;
+    box-shadow: 0 4px 14px rgba(248,186,86,0.45);
+}
+
+.btn-cta-apoyar:hover {
+    background-color: #ffc66a;
+    box-shadow: 0 6px 18px rgba(248,186,86,0.55);
+}
+
+/*--------------------------------------------------------------------------------------------
+prot-acciones botones */
+
+.btn-prot-donar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1B358F;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 0.7em 0.8em;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-decoration: none;
+    flex: 1;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    transition: background-color 0.2s, transform 0.2s;
+    white-space: nowrap;
+}
+
+.btn-prot-donar:hover {
+    background-color: #2742A2;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.btn-prot-ext {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    color: #F8BA56;
+    border: 2px solid #F8BA56;
+    border-radius: 10px;
+    padding: 0.7em 0.8em;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-decoration: none;
+    flex: 1;
+    transition: background-color 0.2s, color 0.2s, transform 0.2s;
+    white-space: nowrap;
+}
+
+.btn-prot-ext:hover {
+    background-color: #F8BA56;
+    color: #1B358F;
+    transform: translateY(-2px);
 }
 
 .prot-dato-iban {
@@ -1811,7 +2082,9 @@ main {
 
     .btn-ver-animales,
     .prot-acciones .btn-azul,
-    .btn-prot-web {
+    .btn-prot-web,
+    .btn-prot-donar,
+    .btn-prot-ext {
         flex: none;
         width: 100%;
         padding: 0.8em 0.6em;
@@ -1839,7 +2112,9 @@ main {
 
     .btn-ver-animales,
     .prot-acciones .btn-azul,
-    .btn-prot-web {
+    .btn-prot-web,
+    .btn-prot-donar,
+    .btn-prot-ext {
         flex: none;
         width: 100%;
         padding: 0.8em 0.6em;
