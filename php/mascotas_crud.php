@@ -1,13 +1,20 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-Funciones CRUD para gestión de mascotas */
+Funciones CRUD para gestión de mascotas (php/) */
 
 require_once __DIR__ . '/../backend/config/db.php';
+
 /*--------------------------------------------------------------------------------------------
 obtener todas las mascotas activas */
 
 function getMascotas($pdo) {
-    $stmt = $pdo->query('SELECT * FROM mascotas WHERE activa = 1 ORDER BY idMascota DESC');
+    $stmt = $pdo->query(
+        'SELECT m.*, p.nombre AS protectora_nombre, p.localidad AS ubicacion
+         FROM mascotas m
+         JOIN protectoras p ON m.idProtectora = p.idProtectora
+         WHERE m.activa = 1
+         ORDER BY m.idMascota DESC'
+    );
     return $stmt->fetchAll();
 }
 
@@ -15,7 +22,12 @@ function getMascotas($pdo) {
 obtener mascota por ID */
 
 function getMascotaById($pdo, $id) {
-    $stmt = $pdo->prepare('SELECT * FROM mascotas WHERE idMascota = ? AND activa = 1');
+    $stmt = $pdo->prepare(
+        'SELECT m.*, p.nombre AS protectora_nombre, p.localidad AS ubicacion
+         FROM mascotas m
+         JOIN protectoras p ON m.idProtectora = p.idProtectora
+         WHERE m.idMascota = ? AND m.activa = 1'
+    );
     $stmt->execute([$id]);
     return $stmt->fetch();
 }
@@ -24,18 +36,36 @@ function getMascotaById($pdo, $id) {
 crear mascota */
 
 function createMascota($pdo, $data) {
-    $sql = 'INSERT INTO mascotas (nombre, especie, raza, edad, sexo, descripcion, foto, idProtectora, activa)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)';
+    $sql = 'INSERT INTO mascotas
+                (idProtectora, nombre, especie, raza, sexo, tamanyo, color, descripcion,
+                 estado_salud, urgencia, fecha_nacimiento, fecha_entrada,
+                 vacunado, esterilizado, microchip, desparasitado,
+                 compatible_ninos, compatible_perros, compatible_gatos, apto_piso,
+                 disponible_apadrinamiento)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
     $stmt = $pdo->prepare($sql);
     return $stmt->execute([
+        $data['idProtectora'],
         $data['nombre'],
         $data['especie'],
-        $data['raza'] ?? null,
-        $data['edad'] ?? null,
-        $data['sexo'] ?? null,
-        $data['descripcion'] ?? null,
-        $data['foto'] ?? null,
-        $data['idProtectora'],
+        $data['raza']              ?? null,
+        $data['sexo']              ?? 'macho',
+        $data['tamanyo']           ?? 'mediano',
+        $data['color']             ?? null,
+        $data['descripcion']       ?? null,
+        $data['estado_salud']      ?? null,
+        $data['urgencia']          ?? 'normal',
+        $data['fecha_nacimiento']  ?? null,
+        $data['fecha_entrada']     ?? null,
+        (int)($data['vacunado']    ?? 0),
+        (int)($data['esterilizado']?? 0),
+        (int)($data['microchip']   ?? 0),
+        (int)($data['desparasitado']?? 0),
+        (int)($data['compatible_ninos'] ?? 0),
+        (int)($data['compatible_perros']?? 0),
+        (int)($data['compatible_gatos'] ?? 0),
+        (int)($data['apto_piso']   ?? 0),
+        (int)($data['disponible_apadrinamiento'] ?? 1),
     ]);
 }
 
@@ -44,28 +74,45 @@ actualizar mascota */
 
 function updateMascota($pdo, $id, $data) {
     $sql = 'UPDATE mascotas
-            SET nombre=?, especie=?, raza=?, edad=?, sexo=?, descripcion=?, foto=?, idProtectora=?, activa=?
+            SET idProtectora=?, nombre=?, especie=?, raza=?, sexo=?, tamanyo=?,
+                color=?, descripcion=?, estado_salud=?, urgencia=?,
+                fecha_nacimiento=?, fecha_entrada=?,
+                vacunado=?, esterilizado=?, microchip=?, desparasitado=?,
+                compatible_ninos=?, compatible_perros=?, compatible_gatos=?,
+                apto_piso=?, disponible_apadrinamiento=?, activa=?
             WHERE idMascota=?';
     $stmt = $pdo->prepare($sql);
     return $stmt->execute([
+        $data['idProtectora'],
         $data['nombre'],
         $data['especie'],
-        $data['raza'] ?? null,
-        $data['edad'] ?? null,
-        $data['sexo'] ?? null,
-        $data['descripcion'] ?? null,
-        $data['foto'] ?? null,
-        $data['idProtectora'],
-        $data['activa'] ?? 1,
-        $id
+        $data['raza']              ?? null,
+        $data['sexo']              ?? 'macho',
+        $data['tamanyo']           ?? 'mediano',
+        $data['color']             ?? null,
+        $data['descripcion']       ?? null,
+        $data['estado_salud']      ?? null,
+        $data['urgencia']          ?? 'normal',
+        $data['fecha_nacimiento']  ?? null,
+        $data['fecha_entrada']     ?? null,
+        (int)($data['vacunado']    ?? 0),
+        (int)($data['esterilizado']?? 0),
+        (int)($data['microchip']   ?? 0),
+        (int)($data['desparasitado']?? 0),
+        (int)($data['compatible_ninos'] ?? 0),
+        (int)($data['compatible_perros']?? 0),
+        (int)($data['compatible_gatos'] ?? 0),
+        (int)($data['apto_piso']   ?? 0),
+        (int)($data['disponible_apadrinamiento'] ?? 1),
+        (int)($data['activa']      ?? 1),
+        $id,
     ]);
 }
 
 /*--------------------------------------------------------------------------------------------
-eliminar  mascota */
+eliminar mascota */
 
 function deleteMascota($pdo, $id) {
-    $sql = 'UPDATE mascotas SET activa = 0 WHERE idMascota = ?';
-    $stmt = $pdo->prepare($sql);
+    $stmt = $pdo->prepare('UPDATE mascotas SET activa = 0 WHERE idMascota = ?');
     return $stmt->execute([$id]);
 }

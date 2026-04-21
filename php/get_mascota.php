@@ -31,6 +31,7 @@ try {
             m.estado_salud,
             m.urgencia,
             m.estado_adopcion,
+            m.disponible_apadrinamiento,
             m.compatible_ninos,
             m.compatible_perros,
             m.compatible_gatos,
@@ -65,6 +66,11 @@ try {
         exit;
     }
     
+    /*------- incrementar contador de vistas -------*/
+    $pdo->prepare('UPDATE mascotas SET num_vistas = num_vistas + 1 WHERE idMascota = ?')
+        ->execute([$id]);
+    $mascota['vistas']++;
+
     /*------- obtener todas las fotos de la mascota -------*/
     $stmt = $pdo->prepare('
         SELECT ruta, es_principal, orden

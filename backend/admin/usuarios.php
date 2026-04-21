@@ -1,129 +1,91 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-Gestion de usuarios para el administrador
 GET    — lista usuarios con filtros
-PUT    — bloquea/desbloquea usuario
-DELETE — elimina usuario (borrado logico) */
+PUT    — bloquear / desbloquear
+DELETE — eliminar usuario */
 
 require_once __DIR__ . '/../includes/funciones.php';
 
-requerirAdmin();
-
 header('Content-Type: application/json; charset=utf-8');
+
+requerirAdmin();
+session_write_close();
 
 $pdo    = conectar();
 $metodo = $_SERVER['REQUEST_METHOD'];
 
 /*--------------------------------------------------------------------------------------------
-GET - listar usuarios */
+GET */
 if ($metodo === 'GET') {
-    $busqueda = limpiar($_GET['q']    ?? '');
-    $estado   = $_GET['estado']       ?? 'todos';
-    $rol      = $_GET['rol']          ?? 'todos';
-    $pagina   = (int)($_GET['pagina'] ?? 1);
-    $p        = paginacion($pagina, 20);
+    $q      = limpiar($_GET['q']     ?? '');
+    $estado = $_GET['estado']        ?? 'todos';
+    $pagina = (int)($_GET['pagina']  ?? 1);
+    $p      = paginacion($pagina, 20);
 
     $where  = ["rol != 'admin'"];
     $params = [];
 
-    if ($busqueda) {
+    if ($q) {
         $where[]  = '(nombre LIKE ? OR username LIKE ? OR email LIKE ?)';
-        $like     = '%' . $busqueda . '%';
-        $params[] = $like;
-        $params[] = $like;
-        $params[] = $like;
+        $params[] = "%$q%";
+        $params[] = "%$q%";
+        $params[] = "%$q%";
     }
+    if ($estado === 'activo')    { $where[] = 'activo = 1'; }
+    if ($estado === 'bloqueado') { $where[] = 'activo = 0'; }
 
-    if ($estado === 'activo') {
-        $where[] = 'activo = 1';
-    } elseif ($estado === 'bloqueado') {
-        $where[] = 'activo = 0';
-    }
+    $cond = implode(' AND ', $where);
 
-    $condicion = implode(' AND ', $where);
+    $stmtC = $pdo->prepare("SELECT COUNT(*) FROM usuarios WHERE $cond");
+    $stmtC->execute($params);
+    $total = (int)$stmtC->fetchColumn();
 
-    $total = $pdo->prepare("SELECT COUNT(*) FROM usuarios WHERE $condicion");
-    $total->execute($params);
-    $total = (int)$total->fetchColumn();
+    $sql = "SELECT idUsuario, nombre, username, email, localidad, rol, activo,
+                   fecha_registro, ultimo_login
+            FROM usuarios
+            WHERE $cond
+            ORDER BY fecha_registro DESC
+            LIMIT ? OFFSET ?";
 
     $params[] = $p['limite'];
     $params[] = $p['offset'];
-
-    $stmt = $pdo->prepare(
-        "SELECT idUsuario, nombre, username, email, localidad,
-                rol, activo, fecha_registro, ultimo_login
-         FROM usuarios
-         WHERE $condicion
-         ORDER BY fecha_registro DESC
-         LIMIT ? OFFSET ?"
-    );
+    $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
 
     respuestaOk([
         'usuarios'    => $stmt->fetchAll(),
         'total'       => $total,
-        'totalPaginas'=> (int)ceil($total / $p['limite']),
         'pagina'      => $p['pagina'],
+        'totalPaginas'=> (int)ceil($total / $p['limite']),
     ]);
 }
 
 /*--------------------------------------------------------------------------------------------
-PUT - bloquear / desbloquear */
+PUT — bloquear / desbloquear */
 if ($metodo === 'PUT') {
-    $datos     = json_decode(file_get_contents('php://input'), true) ?? [];
-    $idUsuario = (int)($datos['idUsuario'] ?? 0);
-    $accion    = $datos['accion']          ?? '';
+    $datos  = json_decode(file_get_contents('php://input'), true) ?? [];
+    $id     = (int)($datos['idUsuario'] ?? 0);
+    $accion = $datos['accion'] ?? '';
+    if (!$id) respuestaError('idUsuario requerido.');
 
-    if (!$idUsuario || !in_array($accion, ['bloquear', 'desbloquear'])) {
-        respuestaError('Datos no validos.');
+    if ($accion === 'bloquear') {
+        $pdo->prepare('UPDATE usuarios SET activo = 0 WHERE idUsuario = ?')->execute([$id]);
+        respuestaOk(['mensaje' => 'Usuario bloqueado.']);
+    } elseif ($accion === 'desbloquear') {
+        $pdo->prepare('UPDATE usuarios SET activo = 1 WHERE idUsuario = ?')->execute([$id]);
+        respuestaOk(['mensaje' => 'Usuario desbloqueado.']);
     }
-
-    // No se puede bloquear a otro admin
-    $stmt = $pdo->prepare('SELECT rol FROM usuarios WHERE idUsuario = ? LIMIT 1');
-    $stmt->execute([$idUsuario]);
-    $u = $stmt->fetch();
-
-    if (!$u) {
-        respuestaError('Usuario no encontrado.', 404);
-    }
-    if ($u['rol'] === 'admin') {
-        respuestaError('No se puede bloquear a un administrador.');
-    }
-
-    $nuevoEstado = $accion === 'bloquear' ? 0 : 1;
-    $pdo->prepare('UPDATE usuarios SET activo = ? WHERE idUsuario = ?')
-        ->execute([$nuevoEstado, $idUsuario]);
-
-    $mensaje = $accion === 'bloquear' ? 'Usuario bloqueado.' : 'Usuario desbloqueado.';
-    respuestaOk(['mensaje' => $mensaje]);
+    respuestaError('Acción no válida.');
 }
 
 /*--------------------------------------------------------------------------------------------
-DELETE - borrado logico */
+DELETE */
 if ($metodo === 'DELETE') {
-    $datos     = json_decode(file_get_contents('php://input'), true) ?? [];
-    $idUsuario = (int)($datos['idUsuario'] ?? $_GET['id'] ?? 0);
-
-    if (!$idUsuario) {
-        respuestaError('ID de usuario requerido.');
-    }
-
-    $stmt = $pdo->prepare('SELECT rol FROM usuarios WHERE idUsuario = ? LIMIT 1');
-    $stmt->execute([$idUsuario]);
-    $u = $stmt->fetch();
-
-    if (!$u) {
-        respuestaError('Usuario no encontrado.', 404);
-    }
-    if ($u['rol'] === 'admin') {
-        respuestaError('No se puede eliminar a un administrador.');
-    }
-
-    // Borrado logico
-    $pdo->prepare('UPDATE usuarios SET activo = 0 WHERE idUsuario = ?')
-        ->execute([$idUsuario]);
-
-    respuestaOk(['mensaje' => 'Usuario eliminado correctamente.']);
+    $datos = json_decode(file_get_contents('php://input'), true) ?? [];
+    $id    = (int)($datos['idUsuario'] ?? 0);
+    if (!$id) respuestaError('idUsuario requerido.');
+    $pdo->prepare('UPDATE usuarios SET activo = 0 WHERE idUsuario = ?')->execute([$id]);
+    respuestaOk(['mensaje' => 'Usuario eliminado.']);
 }
 
-respuestaError('Metodo no permitido.', 405);
+respuestaError('Método no permitido.', 405);

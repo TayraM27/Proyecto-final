@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- Google  -->
+    <!-- Google Sign-In -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
@@ -84,6 +84,7 @@
                 <h1 class="login-titulo">Crea tu cuenta gratis</h1>
                 <p class="login-subtitulo">Únete a la comunidad PetFamily y ayuda a los animales de Asturias.</p>
 
+                <!-- BACKEND: action="register_process.php" method="POST" enctype="multipart/form-data" -->
                 <!-- PHP: validar datos, comprobar email único (SELECT), password_hash(), INSERT usuarios -->
                 <!-- Devolver error si email ya existe o datos inválidos -->
                 <form class="login-form" id="formRegistro" novalidate enctype="multipart/form-data">
@@ -262,7 +263,6 @@
                     <div class="login-separador"><span>o regístrate con</span></div>
 
                     <!-- Google Sign-In -->
-                    <!-- IMPORTANTE: mismo Client ID que en login.html -->
                     <div id="g_id_onload"
                          data-client_id="615608967925-59tc6p3spe5urj90hn8lu9aen1249852.apps.googleusercontent.com"
                          data-callback="handleGoogleRegister"

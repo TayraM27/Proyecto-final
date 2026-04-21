@@ -1,101 +1,98 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-admin/solicitudes.php
-Gestion de solicitudes de adopcion para el administrador
-GET — lista solicitudes con filtros
-PUT — cambia estado de la solicitud */
+GET — lista solicitudes con filtro de estado y paginación
+PUT — cambia estado de una solicitud */
 
 require_once __DIR__ . '/../includes/funciones.php';
 
-requerirAdmin();
-
 header('Content-Type: application/json; charset=utf-8');
+
+requerirAdmin();
+session_write_close();
 
 $pdo    = conectar();
 $metodo = $_SERVER['REQUEST_METHOD'];
 
 /*--------------------------------------------------------------------------------------------
-GET - listar */
+GET */
 if ($metodo === 'GET') {
-    $estado = $_GET['estado'] ?? 'pendiente';
+    $estado = $_GET['estado'] ?? 'todos';
     $pagina = (int)($_GET['pagina'] ?? 1);
-    $p      = paginacion($pagina, 20);
+    $p      = paginacion($pagina, 15);
 
-    $estadosValidos = ['pendiente', 'en_revision', 'aprobada', 'rechazada', 'todos'];
-    if (!in_array($estado, $estadosValidos)) {
-        $estado = 'pendiente';
-    }
-
-    $where  = ['1 = 1'];
+    $where  = [];
     $params = [];
 
-    if ($estado !== 'todos') {
+    $estadosValidos = ['pendiente','en_revision','aprobada','rechazada'];
+    if ($estado !== 'todos' && in_array($estado, $estadosValidos)) {
         $where[]  = 's.estado = ?';
         $params[] = $estado;
     }
 
-    $condicion = implode(' AND ', $where);
+    $cond = $where ? implode(' AND ', $where) : '1';
 
-    $total = $pdo->prepare("SELECT COUNT(*) FROM solicitudes_adopcion s WHERE $condicion");
-    $total->execute($params);
-    $total = (int)$total->fetchColumn();
+    $stmtC = $pdo->prepare("SELECT COUNT(*) FROM solicitudes_adopcion s WHERE $cond");
+    $stmtC->execute($params);
+    $total = (int)$stmtC->fetchColumn();
+
+    $sql = "SELECT
+                s.idSolicitud,
+                s.nombre,
+                s.email,
+                s.telefono,
+                s.mensaje,
+                s.estado,
+                s.fecha_envio,
+                m.nombre   AS mascota,
+                m.especie  AS mascota_especie,
+                p.nombre   AS protectora
+            FROM solicitudes_adopcion s
+            JOIN mascotas    m ON s.idMascota    = m.idMascota
+            JOIN protectoras p ON m.idProtectora = p.idProtectora
+            WHERE $cond
+            ORDER BY s.fecha_envio DESC
+            LIMIT ? OFFSET ?";
 
     $params[] = $p['limite'];
     $params[] = $p['offset'];
-
-    $stmt = $pdo->prepare(
-        "SELECT s.idSolicitud, s.nombre, s.email, s.telefono, s.mensaje,
-                s.estado, s.fecha_envio, s.fecha_gestion,
-                m.idMascota, m.nombre AS mascota_nombre, m.especie,
-                p.nombre AS protectora_nombre
-         FROM solicitudes_adopcion s
-         JOIN mascotas m ON s.idMascota = m.idMascota
-         JOIN protectoras p ON m.idProtectora = p.idProtectora
-         WHERE $condicion
-         ORDER BY s.fecha_envio DESC
-         LIMIT ? OFFSET ?"
-    );
+    $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
 
     respuestaOk([
-        'solicitudes' => $stmt->fetchAll(),
-        'total'       => $total,
-        'totalPaginas'=> (int)ceil($total / $p['limite']),
-        'pagina'      => $p['pagina'],
+        'solicitudes'  => $stmt->fetchAll(),
+        'total'        => $total,
+        'pagina'       => $p['pagina'],
+        'totalPaginas' => (int)ceil($total / $p['limite']),
     ]);
 }
 
 /*--------------------------------------------------------------------------------------------
-PUT - cambiar estado */
+PUT — cambiar estado */
 if ($metodo === 'PUT') {
-    $datos      = json_decode(file_get_contents('php://input'), true) ?? [];
-    $idSolicitud= (int)($datos['idSolicitud'] ?? 0);
-    $nuevoEstado= $datos['estado']            ?? '';
+    $datos       = json_decode(file_get_contents('php://input'), true) ?? [];
+    $id          = (int)($datos['idSolicitud'] ?? 0);
+    $nuevoEstado = $datos['estado'] ?? '';
 
-    $estadosValidos = ['pendiente', 'en_revision', 'aprobada', 'rechazada'];
-    if (!$idSolicitud || !in_array($nuevoEstado, $estadosValidos)) {
-        respuestaError('Datos no validos.');
-    }
+    if (!$id) respuestaError('idSolicitud requerido.');
 
-    $pdo->prepare(
-        'UPDATE solicitudes_adopcion
-         SET estado = ?, fecha_gestion = NOW()
-         WHERE idSolicitud = ?'
-    )->execute([$nuevoEstado, $idSolicitud]);
+    $estadosValidos = ['pendiente','en_revision','aprobada','rechazada'];
+    if (!in_array($nuevoEstado, $estadosValidos)) respuestaError('Estado no válido.');
 
-    // Si se aprueba la solicitud, marcar la mascota como en_proceso
+    $pdo->prepare('UPDATE solicitudes_adopcion SET estado = ? WHERE idSolicitud = ?')
+        ->execute([$nuevoEstado, $id]);
+
+    /* Si se aprueba, marcar mascota en proceso */
     if ($nuevoEstado === 'aprobada') {
-        $stmt = $pdo->prepare('SELECT idMascota FROM solicitudes_adopcion WHERE idSolicitud = ?');
-        $stmt->execute([$idSolicitud]);
-        $sol = $stmt->fetch();
+        $stmtMasc = $pdo->prepare('SELECT idMascota FROM solicitudes_adopcion WHERE idSolicitud = ?');
+        $stmtMasc->execute([$id]);
+        $sol = $stmtMasc->fetch();
         if ($sol) {
-            $pdo->prepare(
-                "UPDATE mascotas SET estado_adopcion = 'en_proceso' WHERE idMascota = ?"
-            )->execute([$sol['idMascota']]);
+            $pdo->prepare("UPDATE mascotas SET estado_adopcion = 'en_proceso' WHERE idMascota = ?")
+                ->execute([$sol['idMascota']]);
         }
     }
 
-    respuestaOk(['mensaje' => 'Estado de la solicitud actualizado a: ' . $nuevoEstado]);
+    respuestaOk(['mensaje' => 'Estado actualizado correctamente.']);
 }
 
-respuestaError('Metodo no permitido.', 405);
+respuestaError('Método no permitido.', 405);

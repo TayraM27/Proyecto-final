@@ -28,7 +28,7 @@
             <p class="sidebar-seccion">Comunidad</p>
             <a href="foro.html" class="sidebar-link"><i class="fa-solid fa-comments"></i> Foro</a>
             <p class="sidebar-seccion">Web pública</p>
-            <a href="../index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
+            <a href="../html/index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
         </nav>
         <div class="sidebar-pie">
             <div class="sidebar-usuario">
@@ -54,6 +54,15 @@
 
     <main class="admin-contenido">
         <div class="panel">
+            <div class="panel-header">
+                <div class="toolbar" style="flex:1;">
+                    <div class="toolbar-buscar">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="inputBuscar" placeholder="Buscar por nombre o localidad..." oninput="cargarProtectoras()">
+                    </div>
+                </div>
+            </div>
+
             <div class="tabla-wrap">
                 <table class="tabla">
                     <thead>
@@ -63,16 +72,16 @@
                             <th>Localidad</th>
                             <th>Contacto</th>
                             <th>Animales</th>
-                            <th>Verificada</th>
-                            <th>Activa</th>
+                            <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tablaProtectoras">
-                        <tr><td colspan="8" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                        <tr><td colspan="7" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
                     </tbody>
                 </table>
             </div>
+            <div class="paginacion" id="paginacion"></div>
         </div>
     </main>
 </div>
@@ -87,68 +96,70 @@
         <div class="modal-body">
             <input type="hidden" id="modalId">
 
-            <div class="form-campo">
-                <label class="form-label">Nombre *</label>
-                <input type="text" class="form-input" id="fNombre">
-            </div>
-
-            <div class="form-campo">
-                <label class="form-label">Descripción</label>
-                <textarea class="form-textarea" id="fDescripcion" rows="3"></textarea>
-            </div>
-
             <div class="form-fila">
                 <div class="form-campo">
-                    <label class="form-label">Dirección</label>
-                    <input type="text" class="form-input" id="fDireccion">
+                    <label class="form-label">Nombre *</label>
+                    <input type="text" class="form-input" id="fNombre">
                 </div>
                 <div class="form-campo">
                     <label class="form-label">Localidad</label>
-                    <input type="text" class="form-input" id="fLocalidad">
+                    <input type="text" class="form-input" id="fLocalidad" placeholder="Ej: Gijón, Oviedo">
                 </div>
             </div>
 
             <div class="form-fila">
-                <div class="form-campo">
-                    <label class="form-label">Teléfono</label>
-                    <input type="text" class="form-input" id="fTelefono">
-                </div>
                 <div class="form-campo">
                     <label class="form-label">Email</label>
                     <input type="email" class="form-input" id="fEmail">
                 </div>
+                <div class="form-campo">
+                    <label class="form-label">Teléfono</label>
+                    <input type="text" class="form-input" id="fTelefono">
+                </div>
+            </div>
+
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Web</label>
+                    <input type="url" class="form-input" id="fWeb" placeholder="https://...">
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">URL del logo</label>
+                    <input type="url" class="form-input" id="fLogo" placeholder="https://... o ruta img/protectora/...">
+                </div>
             </div>
 
             <div class="form-campo">
-                <label class="form-label">Web</label>
-                <input type="url" class="form-input" id="fWeb" placeholder="https://...">
+                <label class="form-label">Descripción</label>
+                <textarea class="form-textarea" id="fDescripcion" rows="2"></textarea>
+            </div>
+
+            <div class="form-campo">
+                <label class="form-label">Dirección</label>
+                <input type="text" class="form-input" id="fDireccion">
             </div>
 
             <div class="form-fila">
                 <div class="form-campo">
                     <label class="form-label">Latitud</label>
-                    <input type="text" class="form-input" id="fLatitud" placeholder="43.5322">
+                    <input type="number" step="any" class="form-input" id="fLatitud" placeholder="43.xxx">
                 </div>
                 <div class="form-campo">
                     <label class="form-label">Longitud</label>
-                    <input type="text" class="form-input" id="fLongitud" placeholder="-5.6611">
+                    <input type="number" step="any" class="form-input" id="fLongitud" placeholder="-5.xxx">
                 </div>
             </div>
 
             <div class="form-fila">
-                <label class="form-check">
-                    <input type="checkbox" id="fVerificada"> Verificada
-                </label>
-                <label class="form-check">
-                    <input type="checkbox" id="fActiva" checked> Activa
-                </label>
+                <label class="form-check"><input type="checkbox" id="fVerificada"> Verificada</label>
+                <label class="form-check"><input type="checkbox" id="fActiva" checked> Activa</label>
             </div>
 
             <p class="form-error" id="modalError"></p>
         </div>
         <div class="modal-footer">
             <button class="btn btn-outline" onclick="cerrarModalBtn()">Cancelar</button>
-            <button class="btn btn-primario" onclick="guardar()">
+            <button class="btn btn-primario" onclick="guardarProtectora()">
                 <i class="fa-solid fa-floppy-disk"></i> Guardar
             </button>
         </div>
@@ -158,6 +169,9 @@
 <div class="toast" id="toast"></div>
 
 <script>
+var paginaActual = 1;
+var totalPaginas = 1;
+
 document.addEventListener('DOMContentLoaded', function() {
     verificarAdmin(cargarProtectoras);
 });
@@ -166,7 +180,7 @@ function verificarAdmin(cb) {
     fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
-            if (!data.logueado || data.usuario.rol !== 'admin') { window.location.href = '../login.html'; return; }
+            if (!data.logueado || data.usuario.rol !== 'admin') { window.location.href = '../html/login.html'; return; }
             document.getElementById('adminNombre').textContent = data.usuario.nombre;
             document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
             if (cb) cb();
@@ -174,83 +188,93 @@ function verificarAdmin(cb) {
 }
 
 function cargarProtectoras() {
-    fetch('../backend/admin/protectoras.php', { credentials: 'include' })
+    var q = document.getElementById('inputBuscar').value;
+    fetch('../backend/admin/protectoras.php?q=' + encodeURIComponent(q), { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
             if (!data.ok) return;
-            var tb = document.getElementById('tablaProtectoras');
-            if (!data.protectoras.length) {
-                tb.innerHTML = '<tr><td colspan="8"><div class="estado-vacio"><i class="fa-solid fa-building-shield"></i><p>No hay protectoras registradas</p></div></td></tr>';
-                return;
-            }
-            tb.innerHTML = data.protectoras.map(function(p) {
-                var logo = p.foto_logo
-                    ? '<img src="../' + p.foto_logo + '" class="tabla-foto" alt="' + p.nombre + '">'
-                    : '<div style="width:42px;height:42px;border-radius:8px;background:var(--azul-lite);display:flex;align-items:center;justify-content:center;">🏠</div>';
-
-                return '<tr>'
-                    + '<td>' + logo + '</td>'
-                    + '<td><strong>' + p.nombre + '</strong></td>'
-                    + '<td>' + (p.localidad || '—') + '</td>'
-                    + '<td style="font-size:0.78rem;">'
-                    + (p.telefono ? '<div><i class="fa-solid fa-phone" style="color:var(--azul);width:14px;"></i> ' + p.telefono + '</div>' : '')
-                    + (p.email ? '<div><i class="fa-solid fa-envelope" style="color:var(--azul);width:14px;"></i> ' + p.email + '</div>' : '')
-                    + '</td>'
-                    + '<td><span class="badge badge-azul">' + p.num_animales + ' animales</span></td>'
-                    + '<td>' + (p.verificada ? '<span class="badge badge-verde"><i class="fa-solid fa-check"></i> Sí</span>' : '<span class="badge badge-gris">No</span>') + '</td>'
-                    + '<td>' + (p.activa ? '<span class="badge badge-verde">Activa</span>' : '<span class="badge badge-rojo">Inactiva</span>') + '</td>'
-                    + '<td><div class="tabla-acciones">'
-                    + '<button class="btn btn-sm btn-outline btn-icon" onclick="editar(' + JSON.stringify(p).replace(/"/g,'&quot;') + ')" title="Editar"><i class="fa-solid fa-pen"></i></button>'
-                    + '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminar(' + p.idProtectora + ',\'' + p.nombre + '\')" title="Eliminar"><i class="fa-solid fa-trash"></i></button>'
-                    + '</div></td>'
-                    + '</tr>';
-            }).join('');
+            renderTabla(data.protectoras);
         });
+}
+
+function renderTabla(protectoras) {
+    var tb = document.getElementById('tablaProtectoras');
+    if (!protectoras.length) {
+        tb.innerHTML = '<tr><td colspan="7"><div class="estado-vacio"><i class="fa-solid fa-building-shield"></i><p>No se encontraron protectoras</p></div></td></tr>';
+        return;
+    }
+    tb.innerHTML = protectoras.map(function(p) {
+        var logo = p.foto_logo
+            ? '<img src="../' + p.foto_logo + '" style="width:40px;height:40px;border-radius:8px;object-fit:contain;" onerror="this.style.display=\'none\'">'
+            : '<div style="width:40px;height:40px;border-radius:8px;background:var(--azul-lite);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🐾</div>';
+
+        var estado = p.activa
+            ? '<span class="badge badge-verde">Activa</span>'
+            : '<span class="badge badge-rojo">Inactiva</span>';
+
+        return '<tr>'
+            + '<td>' + logo + '</td>'
+            + '<td><strong>' + p.nombre + '</strong>'
+            + (p.verificada ? ' <span class="badge badge-azul" style="font-size:0.65rem;">✓ Verificada</span>' : '')
+            + '</td>'
+            + '<td style="font-size:0.82rem;">' + (p.localidad || '—') + '</td>'
+            + '<td style="font-size:0.78rem;">'
+            + (p.email ? '<div>' + p.email + '</div>' : '')
+            + (p.telefono ? '<div>' + p.telefono + '</div>' : '')
+            + (p.web ? '<div><a href="' + p.web + '" target="_blank" style="color:var(--azul);">Web</a></div>' : '')
+            + '</td>'
+            + '<td style="text-align:center;">' + (p.num_animales || 0) + '</td>'
+            + '<td>' + estado + '</td>'
+            + '<td><div class="tabla-acciones">'
+            + '<button class="btn btn-sm btn-outline btn-icon" onclick="editarProtectora(' + JSON.stringify(p).replace(/"/g, '&quot;') + ')" title="Editar"><i class="fa-solid fa-pen"></i></button>'
+            + '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminarProtectora(' + p.idProtectora + ',\'' + p.nombre.replace(/'/g, '') + '\')" title="Eliminar"><i class="fa-solid fa-trash"></i></button>'
+            + '</div></td>'
+            + '</tr>';
+    }).join('');
 }
 
 function abrirModalNueva() {
     document.getElementById('modalId').value = '';
     document.getElementById('modalTitulo').textContent = 'Nueva protectora';
-    document.getElementById('modalError').textContent  = '';
-    ['fNombre','fDescripcion','fDireccion','fLocalidad','fTelefono','fEmail','fWeb','fLatitud','fLongitud'].forEach(function(id){ document.getElementById(id).value = ''; });
-    document.getElementById('fVerificada').checked = false;
-    document.getElementById('fActiva').checked     = true;
+    document.getElementById('modalError').textContent = '';
+    limpiarForm();
     document.getElementById('modalOverlay').classList.add('abierto');
 }
 
-function editar(p) {
-    document.getElementById('modalId').value = p.idProtectora;
+function editarProtectora(p) {
+    document.getElementById('modalId').value       = p.idProtectora;
     document.getElementById('modalTitulo').textContent = 'Editar: ' + p.nombre;
     document.getElementById('modalError').textContent  = '';
-    document.getElementById('fNombre').value      = p.nombre       || '';
-    document.getElementById('fDescripcion').value = p.descripcion  || '';
-    document.getElementById('fDireccion').value   = p.direccion    || '';
-    document.getElementById('fLocalidad').value   = p.localidad    || '';
-    document.getElementById('fTelefono').value    = p.telefono     || '';
-    document.getElementById('fEmail').value       = p.email        || '';
-    document.getElementById('fWeb').value         = p.web          || '';
-    document.getElementById('fLatitud').value     = p.latitud      || '';
-    document.getElementById('fLongitud').value    = p.longitud     || '';
-    document.getElementById('fVerificada').checked= !!p.verificada;
-    document.getElementById('fActiva').checked    = !!p.activa;
+    document.getElementById('fNombre').value       = p.nombre       || '';
+    document.getElementById('fLocalidad').value    = p.localidad    || '';
+    document.getElementById('fEmail').value        = p.email        || '';
+    document.getElementById('fTelefono').value     = p.telefono     || '';
+    document.getElementById('fWeb').value          = p.web          || '';
+    document.getElementById('fLogo').value         = p.foto_logo    || '';
+    document.getElementById('fDescripcion').value  = p.descripcion  || '';
+    document.getElementById('fDireccion').value    = p.direccion    || '';
+    document.getElementById('fLatitud').value      = p.latitud      || '';
+    document.getElementById('fLongitud').value     = p.longitud     || '';
+    document.getElementById('fVerificada').checked = !!p.verificada;
+    document.getElementById('fActiva').checked     = !!p.activa;
     document.getElementById('modalOverlay').classList.add('abierto');
 }
 
-function guardar() {
-    var id = document.getElementById('modalId').value;
+function guardarProtectora() {
+    var id    = document.getElementById('modalId').value;
     var datos = {
-        idProtectora: id ? parseInt(id) : undefined,
-        nombre:       document.getElementById('fNombre').value.trim(),
-        descripcion:  document.getElementById('fDescripcion').value.trim(),
-        direccion:    document.getElementById('fDireccion').value.trim(),
-        localidad:    document.getElementById('fLocalidad').value.trim(),
-        telefono:     document.getElementById('fTelefono').value.trim(),
-        email:        document.getElementById('fEmail').value.trim(),
-        web:          document.getElementById('fWeb').value.trim(),
-        latitud:      document.getElementById('fLatitud').value.trim(),
-        longitud:     document.getElementById('fLongitud').value.trim(),
-        verificada:   document.getElementById('fVerificada').checked ? 1 : 0,
-        activa:       document.getElementById('fActiva').checked ? 1 : 0,
+        nombre:      document.getElementById('fNombre').value.trim(),
+        localidad:   document.getElementById('fLocalidad').value.trim(),
+        email:       document.getElementById('fEmail').value.trim(),
+        telefono:    document.getElementById('fTelefono').value.trim(),
+        web:         document.getElementById('fWeb').value.trim(),
+        foto_logo:   document.getElementById('fLogo').value.trim(),
+        descripcion: document.getElementById('fDescripcion').value.trim(),
+        direccion:   document.getElementById('fDireccion').value.trim(),
+        latitud:     document.getElementById('fLatitud').value || null,
+        longitud:    document.getElementById('fLongitud').value || null,
+        verificada:  document.getElementById('fVerificada').checked ? 1 : 0,
+        activa:      document.getElementById('fActiva').checked ? 1 : 0,
     };
 
     if (!datos.nombre) {
@@ -258,28 +282,30 @@ function guardar() {
         return;
     }
 
+    if (id) datos.idProtectora = parseInt(id);
+
     fetch('../backend/admin/protectoras.php', {
         method: id ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(datos),
         credentials: 'include',
+        body: JSON.stringify(datos),
     })
     .then(function(r){ return r.json(); })
     .then(function(data){
-        if (!data.ok) { document.getElementById('modalError').textContent = data.error; return; }
+        if (!data.ok) { document.getElementById('modalError').textContent = data.error || 'Error.'; return; }
         cerrarModalBtn();
         mostrarToast(data.mensaje, 'ok');
         cargarProtectoras();
     });
 }
 
-function eliminar(id, nombre) {
-    if (!confirm('¿Eliminar la protectora "' + nombre + '"?')) return;
+function eliminarProtectora(id, nombre) {
+    if (!confirm('¿Eliminar a ' + nombre + '? Si tiene animales activos no se podrá eliminar.')) return;
     fetch('../backend/admin/protectoras.php', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idProtectora: id }),
         credentials: 'include',
+        body: JSON.stringify({ idProtectora: id }),
     })
     .then(function(r){ return r.json(); })
     .then(function(data){
@@ -288,10 +314,18 @@ function eliminar(id, nombre) {
     });
 }
 
+function limpiarForm() {
+    ['fNombre','fLocalidad','fEmail','fTelefono','fWeb','fLogo','fDescripcion','fDireccion','fLatitud','fLongitud'].forEach(function(id){
+        document.getElementById(id).value = '';
+    });
+    document.getElementById('fVerificada').checked = false;
+    document.getElementById('fActiva').checked = true;
+}
+
 function cerrarModal(e) { if (e.target === document.getElementById('modalOverlay')) cerrarModalBtn(); }
 function cerrarModalBtn() { document.getElementById('modalOverlay').classList.remove('abierto'); }
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('abierto'); }
-function cerrarSesion() { fetch('../backend/api/auth/logout.php', { credentials: 'include' }).then(function(){ window.location.href = '../login.html'; }); }
+function cerrarSesion() { fetch('../backend/api/auth/logout.php', { credentials: 'include' }).then(function(){ window.location.href = '../html/login.html'; }); }
 function mostrarToast(msg, tipo) {
     var t = document.getElementById('toast');
     t.textContent = msg;

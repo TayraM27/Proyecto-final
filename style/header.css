@@ -1,3 +1,8 @@
+/* oculto en escritorio, solo visible cuando #user_burger desaparece */
+.nav-solo-movil {
+    display: none;
+}
+
 /* body base */
 body {
     overflow-x: hidden;
@@ -147,9 +152,11 @@ header.header-oculto {
     align-items: center;
     transition: transform 0.2s;
 }
+
 #menu_burger i:hover {
     transform: scale(1.001);
 }
+
 #menu.d-block {
     position: fixed;
     top: clamp(60px, 10vh, 90px);
@@ -161,13 +168,13 @@ header.header-oculto {
     z-index: 999;
 }
 
-/* usuario */
+/* usuario — sin sesión */
 #user_container {
     display: flex;
     align-items: center;
 }
 
-#user_container img {
+#user_container > a > img {
     width: 3.4em;
     padding: 10px;
     cursor: pointer;
@@ -175,7 +182,7 @@ header.header-oculto {
     transition: transform 0.3s, filter 0.1s;
 }
 
-#user_container img:hover {
+#user_container > a > img:hover {
     transform: scale(1.2);
     filter: brightness(2000%);
 }
@@ -195,6 +202,204 @@ header.header-oculto {
     background-color: #ffc66a;
     color: #2742a2;
     font-size: 1.05em;
+}
+
+/*--------------------------------------------------------------------------------------------
+user area — con sesión */
+
+.user-dropdown-wrapper,
+.notif-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+#user_container {
+    gap: 0.4em;
+}
+
+.user-dropdown-trigger {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    outline: none;
+}
+
+.user-dropdown-trigger:hover {
+    transform: scale(1.1);
+}
+
+.user-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #F8BA56;
+    display: block;
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: none;
+}
+
+.user-avatar-sm {
+    width: 34px;
+    height: 34px;
+}
+
+.user-avatar-iniciales {
+    background-color: #F8BA56;
+    color: #1B358F;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #F8BA56;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    line-height: 1;
+}
+
+.user-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 0.7em);
+    right: 0;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    min-width: 210px;
+    width: max-content;
+    max-width: 90vw;
+    z-index: 9999;
+    overflow: hidden;
+    border: 1px solid #eee;
+}
+
+.user-dropdown-wrapper.abierto .user-dropdown {
+    display: block;
+}
+
+.user-dropdown-header {
+    padding: 0.9em 1em 0.7em;
+    background-color: #1B358F;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.user-dropdown-header:hover {
+    background-color: #162d7a;
+}
+
+.user-dropdown-header-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1em;
+    min-width: 0;
+}
+
+.user-dropdown-header strong {
+    color: #fff;
+    font-size: 0.88rem;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+}
+
+.user-dropdown-header small {
+    color: #F8BA56;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+    display: block;
+}
+
+.user-dropdown-body {
+    padding: 0.4em 0;
+}
+
+.user-dropdown-sep {
+    margin: 0.3em 0;
+    border: none;
+    border-top: 1px solid #f0f0f0;
+}
+
+.user-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.65em 1em;
+    color: #333;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.user-dropdown-item i {
+    width: 16px;
+    color: #1B358F;
+    font-size: 0.85rem;
+}
+
+.user-dropdown-item:hover {
+    background-color: #f5f7ff;
+    color: #1B358F;
+}
+
+.user-dropdown-logout {
+    color: #c0392b;
+}
+
+.user-dropdown-logout i {
+    color: #c0392b;
+}
+
+.user-dropdown-logout:hover {
+    background-color: #fff5f5;
+    color: #c0392b;
+}
+
+/* badge de notificaciones sobre el avatar */
+.user-avatar-wrapper {
+    position: relative;
+    display: inline-flex;
+}
+
+.user-notif-badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    background-color: #e74c3c;
+    color: #fff;
+    font-size: 0.58rem;
+    font-weight: 700;
+    min-width: 15px;
+    height: 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    border: 1.5px solid #1B358F;
+    line-height: 1;
 }
 
 /* responsive 992px–1238px */
@@ -231,7 +436,7 @@ header.header-oculto {
         white-space: nowrap;
     }
 
-    #user_container img {
+    #user_container > a > img {
         width: 2.6em;
         padding: 6px;
     }
@@ -402,6 +607,34 @@ header.header-oculto {
     .submenuColabora ul {
         list-style: none;
     }
+
+    /* indicador de submenu en burger */
+    a.colabora::after {
+        content: ' \203A';
+        font-size: 1.2em;
+        line-height: 1;
+        display: inline-block;
+        transition: transform 0.2s;
+        margin-left: 0.3em;
+    }
+
+    li:has(.submenuColabora.d-block) > a.colabora::after {
+        transform: rotate(90deg);
+    }
+
+    /* dropdown en móvil — absolute, alineado a la derecha */
+    #user_burger .user-dropdown {
+        position: absolute;
+        top: calc(100% + 0.5em);
+        right: 0;
+        left: auto;
+        width: max-content;
+        min-width: 190px;
+        max-width: calc(100vw - 1em);
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+        z-index: 9999;
+    }
 }
 
 /* responsive hasta 650px */
@@ -475,12 +708,19 @@ header.header-oculto {
     #user_burger {
         display: none;
     }
+
+    .nav-solo-movil {
+        display: block;
+    }
 }
+
 @media (max-width: 350px) {
+
     #logoMD h2 {
         font-size: 1.9em;
         margin-left: -45px;
     }
+
     #menu_burger i {
         font-size: 1.7em;
     }

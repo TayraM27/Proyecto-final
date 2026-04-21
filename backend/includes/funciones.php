@@ -3,6 +3,7 @@
 Utilidades compartidas: sesión, respuestas JSON, validaciones, seguridad */
 
 require_once __DIR__ . '/../config/db.php';
+
 /*--------------------------------------------------------------------------------------------
 sesión */
 
@@ -11,7 +12,7 @@ function iniciarSesionSegura(): void {
         session_set_cookie_params([
             'lifetime' => 0,
             'path'     => '/',
-            'secure'   => true,
+            'secure'   => false,
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
@@ -24,11 +25,6 @@ function usuarioLogueado(): bool {
     return isset($_SESSION['idUsuario']);
 }
 
-/**
- * Comprueba si el usuario actual es administrador
- *
- * @return bool Verdadero TRUE si el usuario es administrador, FALSE en caso contrario
- */
 function esAdmin(): bool {
     iniciarSesionSegura();
     return isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin';
@@ -51,14 +47,14 @@ respuestas JSON */
 
 function respuestaOk(array $datos = []): void {
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['ok' => true] + $datos);
+    echo json_encode(['ok' => true] + $datos, JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 function respuestaError(string $mensaje, int $codigo = 400): void {
     header('Content-Type: application/json; charset=utf-8');
     http_response_code($codigo);
-    echo json_encode(['ok' => false, 'error' => $mensaje]);
+    echo json_encode(['ok' => false, 'error' => $mensaje], JSON_UNESCAPED_UNICODE);
     exit;
 }
 

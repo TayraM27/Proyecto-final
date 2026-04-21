@@ -28,7 +28,7 @@
             <p class="sidebar-seccion">Comunidad</p>
             <a href="foro.html" class="sidebar-link activo"><i class="fa-solid fa-comments"></i> Foro</a>
             <p class="sidebar-seccion">Web pública</p>
-            <a href="../index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
+            <a href="../html/index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
         </nav>
         <div class="sidebar-pie">
             <div class="sidebar-usuario">
@@ -123,7 +123,7 @@ function verificarAdmin(cb) {
     fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
-            if (!data.logueado || data.usuario.rol !== 'admin') { window.location.href = '../login.html'; return; }
+            if (!data.logueado || data.usuario.rol !== 'admin') { window.location.href = '../html/login.html'; return; }
             document.getElementById('adminNombre').textContent = data.usuario.nombre;
             document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
             if (cb) cb();
@@ -159,9 +159,16 @@ function cargarPublicaciones() {
                 var fijado = p.fijada
                     ? '<span class="badge badge-gold" style="margin-left:0.3em;"><i class="fa-solid fa-thumbtack"></i></span>'
                     : '';
+                /* icono multimedia */
+                var mediaIcono = '';
+                if (p.tipo_media === 'imagen') {
+                    mediaIcono = ' <i class="fa-solid fa-image" style="color:#0277bd;font-size:0.78rem;" title="Tiene imagen"></i>';
+                } else if (p.tipo_media === 'video') {
+                    mediaIcono = ' <i class="fa-solid fa-video" style="color:#8e24aa;font-size:0.78rem;" title="Tiene vídeo"></i>';
+                }
 
                 return '<tr>'
-                    + '<td style="max-width:200px;"><strong>' + p.titulo.substring(0,50) + (p.titulo.length>50?'…':'') + '</strong>' + fijado + '</td>'
+                    + '<td style="max-width:200px;"><strong>' + p.titulo.substring(0,50) + (p.titulo.length>50?'…':'') + '</strong>' + fijado + mediaIcono + '</td>'
                     + '<td style="font-size:0.82rem;">' + p.autor_nombre + '<br><span style="color:var(--texto-sub);">@' + p.autor_username + '</span></td>'
                     + '<td>' + badgeCat + '</td>'
                     + '<td>' + p.num_likes + '</td>'
@@ -277,7 +284,7 @@ function formatFecha(f) {
 }
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('abierto'); }
-function cerrarSesion() { fetch('../backend/api/auth/logout.php', { credentials: 'include' }).then(function(){ window.location.href = '../login.html'; }); }
+function cerrarSesion() { fetch('../backend/api/auth/logout.php', { credentials: 'include' }).then(function(){ window.location.href = '../html/login.html'; }); }
 function mostrarToast(msg, tipo) {
     var t = document.getElementById('toast');
     t.textContent = msg;
@@ -285,7 +292,6 @@ function mostrarToast(msg, tipo) {
     setTimeout(function(){ t.className = 'toast'; }, 3000);
 }
 
-// inicializar botones de vista
 setVista('publicaciones');
 </script>
 

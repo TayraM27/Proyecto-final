@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetFamily - Mi perfil</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../style/header.css">
+    <link rel="stylesheet" href="../style/footer.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+<header>
+    <div id="contenedor_logo" class="d-none d-lg-block">
+        <a id="logoXL" href="index.html">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderXL">
+            <h2 id="title-logo">Pet<span style="color:#F8BA56;">Family</span></h2>
+        </a>
+    </div>
+    <div id="menu_burger" class="container-fluid justify-content-between align-content-center d-lg-none">
+        <i id="btn_burger" class="fa-solid fa-bars text-center col-2 ms-n5"></i>
+        <a id="logoMD" href="index.html" class="mb-2">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderMD" class="mb-2">
+            <h2 id="burger_logo">Pet<span style="color:#F8BA56;">Family</span></h2>
+        </a>
+        <div id="user_burger" class="align-content-center d-lg-none">
+            <a href="login.html"><img src="../img/iconosHeader/iconUser.png" width="15px" alt="Usuario"></a>
+            <a href="register.html" class="btn-register">Registrarse</a>
+        </div>
+    </div>
+    <nav id="menu" class="d-none d-lg-block">
+        <ul id="lista_menu">
+            <li><a href="adopta.html">Adopta</a></li>
+            <li><a href="colabora.html" class="colabora">Colabora</a>
+                <ul class="submenuColabora d-none">
+                    <li><a href="dona.html">Dona</a></li>
+                    <li><a href="apadrina.html">Apadrina</a></li>
+                    <li><a href="acoge.html">Acoge</a></li>
+                </ul>
+            </li>
+            <li><a href="protectoras.html">Protectoras</a></li>
+            <li><a href="foro.html">Foro</a></li>
+            <li><a href="mapa.html">Mapa</a></li>
+            <li><a href="test.html">Tests</a></li>
+        </ul>
+    </nav>
+    <div id="user_container" class="d-none d-lg-block">
+        <a href="login.html"><img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px"></a>
+        <a href="register.html" class="btn-register">Registrarse</a>
+    </div>
+</header>
+
+<main>
+    <div class="container" id="contenidoPerfil" style="display:none;">
+
+        <p class="migas">
+            <a href="index.html">Inicio</a>
+            <span>&rsaquo;</span>
+            Mi perfil
+        </p>
+
+        <!-- tarjeta superior usuario -->
+        <div style="background:linear-gradient(135deg,#1B358F,#2742A2);border-radius:18px;padding:2em;color:white;margin-bottom:2em;display:flex;align-items:center;gap:1.5em;flex-wrap:wrap;">
+            <div id="avatarGrande" style="width:80px;height:80px;border-radius:50%;background:#F8BA56;color:#1B358F;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;flex-shrink:0;overflow:hidden;"></div>
+            <div>
+                <h2 id="perfilNombre" style="margin:0;font-weight:800;"></h2>
+                <p id="perfilEmail" style="margin:0;opacity:0.8;font-size:0.9rem;"></p>
+                <p id="perfilLocalidad" style="margin:0.3em 0 0;font-size:0.85rem;opacity:0.7;"></p>
+            </div>
+            <div class="ms-auto d-flex gap-2 flex-wrap">
+                <button class="btn-amarillo" onclick="abrirEditarPerfil()" style="font-size:0.85rem;padding:0.5em 1.2em;border-radius:8px;">
+                    <i class="fa-solid fa-pen me-2"></i>Editar perfil
+                </button>
+            </div>
+        </div>
+
+        <!-- tabs -->
+        <div style="display:flex;gap:0.5em;flex-wrap:wrap;margin-bottom:1.5em;border-bottom:2px solid #e9ecef;padding-bottom:0.5em;">
+            <button class="tab-btn activo" data-tab="favoritos" onclick="cambiarTab(this)">
+                <i class="fa-solid fa-heart me-2"></i>Favoritos
+            </button>
+            <button class="tab-btn" data-tab="apadrinamientos" onclick="cambiarTab(this)">
+                <i class="fa-solid fa-star me-2"></i>Apadrinamientos
+            </button>
+            <button class="tab-btn" data-tab="tests" onclick="cambiarTab(this)">
+                <i class="fa-solid fa-circle-question me-2"></i>Tests
+            </button>
+            <button class="tab-btn" data-tab="notificaciones" onclick="cambiarTab(this)">
+                <i class="fa-solid fa-bell me-2"></i>Notificaciones
+            </button>
+            <button class="tab-btn" data-tab="datos" onclick="cambiarTab(this)">
+                <i class="fa-solid fa-id-card me-2"></i>Mis datos
+            </button>
+        </div>
+
+        <!-- tab: favoritos -->
+        <div id="tab-favoritos" class="tab-contenido">
+            <h3 style="font-size:1.1rem;font-weight:700;color:#1B358F;margin-bottom:1em;">
+                <i class="fa-solid fa-heart me-2"></i>Mascotas favoritas
+            </h3>
+            <div id="listaFavoritos">
+                <div class="text-center py-4"><div class="spinner-border" style="color:#1B358F;"></div></div>
+            </div>
+        </div>
+
+        <!-- tab: apadrinamientos -->
+        <div id="tab-apadrinamientos" class="tab-contenido d-none">
+            <h3 style="font-size:1.1rem;font-weight:700;color:#1B358F;margin-bottom:1em;">
+                <i class="fa-solid fa-star me-2"></i>Mis apadrinamientos
+            </h3>
+            <div id="listaApadrinamientos">
+                <div class="text-center py-4"><div class="spinner-border" style="color:#1B358F;"></div></div>
+            </div>
+        </div>
+
+        <!-- tab: tests -->
+        <div id="tab-tests" class="tab-contenido d-none">
+            <h3 style="font-size:1.1rem;font-weight:700;color:#1B358F;margin-bottom:1em;">
+                <i class="fa-solid fa-circle-question me-2"></i>Resultados de tests
+            </h3>
+            <div id="listaTests">
+                <div class="text-center py-4"><div class="spinner-border" style="color:#1B358F;"></div></div>
+            </div>
+        </div>
+
+        <!-- tab: notificaciones -->
+        <div id="tab-notificaciones" class="tab-contenido d-none">
+            <h3 style="font-size:1.1rem;font-weight:700;color:#1B358F;margin-bottom:1em;">
+                <i class="fa-solid fa-bell me-2"></i>Notificaciones
+            </h3>
+            <div id="listaNotificaciones">
+                <div class="text-center py-4"><div class="spinner-border" style="color:#1B358F;"></div></div>
+            </div>
+        </div>
+
+        <!-- tab: datos -->
+        <div id="tab-datos" class="tab-contenido d-none">
+            <h3 style="font-size:1.1rem;font-weight:700;color:#1B358F;margin-bottom:1em;">
+                <i class="fa-solid fa-id-card me-2"></i>Mis datos
+            </h3>
+            <div id="listaDatos"></div>
+        </div>
+
+    </div>
+
+    <!-- modal editar perfil -->
+    <div class="modal fade" id="modalEditarPerfil" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:14px;border:none;">
+                <div class="modal-header" style="border-bottom:1px solid #f0f0f0;">
+                    <h5 class="modal-title" style="font-weight:700;color:#1B358F;">
+                        <i class="fa-solid fa-pen me-2"></i>Editar perfil
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p style="font-size:0.78rem;color:#aaa;margin-bottom:1em;">Los campos marcados con <span style="color:#c0392b;">*</span> son obligatorios.</p>
+
+                    <!-- foto de perfil -->
+                    <div class="mb-3 text-center">
+                        <div id="editAvatarPreview" style="width:70px;height:70px;border-radius:50%;background:#F8BA56;color:#1B358F;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;margin:0 auto 0.6em;overflow:hidden;border:3px solid #1B358F;"></div>
+                        <label for="editFoto" style="cursor:pointer;background:#1B358F;color:#fff;padding:0.35em 1em;border-radius:8px;font-size:0.82rem;font-weight:600;">
+                            <i class="fa-solid fa-camera me-1"></i> Cambiar foto
+                        </label>
+                        <input type="file" id="editFoto" accept="image/*" class="d-none">
+                        <p style="font-size:0.72rem;color:#aaa;margin-top:0.3em;">JPG, PNG · Máx. 2 MB</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:600;font-size:0.88rem;">Nombre completo <span style="color:#c0392b;">*</span></label>
+                        <input type="text" class="form-control" id="editNombre">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:600;font-size:0.88rem;">Nombre de usuario <span style="color:#c0392b;">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text">@</span>
+                            <input type="text" class="form-control" id="editUsername">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:600;font-size:0.88rem;">Email</label>
+                        <input type="email" class="form-control" id="editEmail" disabled>
+                        <small class="text-muted">El email no se puede modificar.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:600;font-size:0.88rem;">Localidad</label>
+                        <input type="text" class="form-control" id="editLocalidad">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:600;font-size:0.88rem;">Teléfono</label>
+                        <input type="tel" class="form-control" id="editTelefono">
+                    </div>
+                    <p class="text-danger" id="errorEditPerfil" style="font-size:0.82rem;display:none;"></p>
+                </div>
+                <div class="modal-footer" style="border-top:1px solid #f0f0f0;">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn-azul" id="btnGuardarPerfil" onclick="guardarPerfil()" style="padding:0.5em 1.4em;border-radius:8px;">
+                        <i class="fa-solid fa-floppy-disk me-2"></i>Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- modal resultados test -->
+    <div class="modal fade" id="modalResultadoTest" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content" style="border-radius:14px;border:none;">
+                <div class="modal-header" style="background:#1B358F;border-radius:14px 14px 0 0;">
+                    <h5 class="modal-title text-white fw-bold" id="modalTestTitulo"></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" style="max-height:70vh;overflow-y:auto;padding:1.5em;">
+                    <div id="modalTestCuerpo"></div>
+                </div>
+                <div class="modal-footer" style="border-top:1px solid #f0f0f0;">
+                    <a href="test.html" class="btn-azul" style="padding:0.5em 1.3em;border-radius:8px;text-decoration:none;font-size:0.88rem;">
+                        <i class="fa-solid fa-rotate-left me-2"></i>Repetir test
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- fin modal resultados test -->
+
+    <!-- sin sesión -->
+    <div class="container text-center py-5 d-none" id="sinSesion">
+        <i class="fa-solid fa-lock" style="font-size:3rem;color:#dee2e6;margin-bottom:1em;display:block;"></i>
+        <h2 style="color:#1B358F;">Área privada</h2>
+        <p style="color:#6c757d;">Debes iniciar sesión para ver tu perfil.</p>
+        <a href="login.html" class="btn-azul" style="padding:0.6em 1.5em;border-radius:8px;text-decoration:none;display:inline-block;margin-top:1em;">
+            <i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar sesión
+        </a>
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="#"><img src="../img/sectionIndex/up-arrow.png" alt="Volver arriba" id="arrow" width="40px"></a>
+    </div>
+</main>
+
+<footer>
+    <p>© 2026 PetFamily. Todos los derechos reservados.</p>
+    <p>
+        <a href="privacidad.html" style="color:white;">Política de Privacidad</a>
+        |
+        <a href="terminos.html" style="color:white;">Términos de Servicio</a>
+    </p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../javascript/script.js"></script>
+
+<script>
+var usuarioPerfil = null;
+var CLAVE_SESION  = 'pf_session';
+
+/*--------------------------------------------------------------------------------------------
+init */
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (!data.ok || !data.logueado) {
+                document.getElementById('sinSesion').classList.remove('d-none');
+                return;
+            }
+            usuarioPerfil = data.usuario;
+            sessionStorage.setItem(CLAVE_SESION, JSON.stringify(data.usuario));
+            mostrarDatosUsuario(data.usuario);
+            document.getElementById('contenidoPerfil').style.display = 'block';
+
+            /* Abrir tab indicado por ?tab= */
+            var params   = new URLSearchParams(window.location.search);
+            var tabParam = params.get('tab');
+            if (tabParam) {
+                var btnTab = document.querySelector('.tab-btn[data-tab="' + tabParam + '"]');
+                if (btnTab) {
+                    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('activo'); });
+                    btnTab.classList.add('activo');
+                    document.querySelectorAll('.tab-contenido').forEach(function(t) { t.classList.add('d-none'); });
+                    document.getElementById('tab-' + tabParam).classList.remove('d-none');
+                    if (tabParam === 'favoritos')       cargarFavoritos();
+                    if (tabParam === 'apadrinamientos') cargarApadrinamientos();
+                    if (tabParam === 'tests')           cargarTests();
+                    if (tabParam === 'notificaciones')  cargarNotificaciones();
+                    if (tabParam === 'datos')           cargarDatos();
+                    return;
+                }
+            }
+            cargarFavoritos();
+        })
+        .catch(function() {
+            document.getElementById('sinSesion').classList.remove('d-none');
+        });
+});
+
+/*--------------------------------------------------------------------------------------------
+mostrar datos en cabecera */
+function mostrarDatosUsuario(u) {
+    var partes   = (u.nombre || 'U').split(' ');
+    var iniciales = (partes[0].charAt(0) + (partes[1] ? partes[1].charAt(0) : '')).toUpperCase();
+
+    var avatarEl = document.getElementById('avatarGrande');
+    if (u.foto_perfil) {
+        var fotoSrc = (u.foto_perfil.startsWith('http') ? '' : '../backend/api/auth/') + u.foto_perfil;
+        avatarEl.innerHTML = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer" '
+            + 'style="width:80px;height:80px;border-radius:50%;object-fit:cover;" '
+            + 'onerror="this.parentElement.innerHTML=\'' + iniciales + '\'">';
+    } else {
+        avatarEl.textContent = iniciales;
+    }
+
+    document.getElementById('perfilNombre').textContent    = u.nombre    || '';
+    document.getElementById('perfilEmail').textContent     = u.email     || '';
+    document.getElementById('perfilLocalidad').textContent = u.localidad ? '📍 ' + u.localidad : '';
+
+    document.getElementById('editNombre').value    = u.nombre    || '';
+    document.getElementById('editUsername').value  = u.username  || '';
+    document.getElementById('editEmail').value     = u.email     || '';
+    document.getElementById('editLocalidad').value = u.localidad || '';
+    document.getElementById('editTelefono').value  = u.telefono  || '';
+}
+
+/*--------------------------------------------------------------------------------------------
+tabs */
+function cambiarTab(btn) {
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('activo'); });
+    btn.classList.add('activo');
+    var tab = btn.dataset.tab;
+    document.querySelectorAll('.tab-contenido').forEach(function(t) { t.classList.add('d-none'); });
+    document.getElementById('tab-' + tab).classList.remove('d-none');
+    if (tab === 'apadrinamientos') cargarApadrinamientos();
+    if (tab === 'tests')           cargarTests();
+    if (tab === 'notificaciones')  cargarNotificaciones();
+    if (tab === 'datos')           cargarDatos();}
+
+/*--------------------------------------------------------------------------------------------
+favoritos */
+function cargarFavoritos() {
+    var cont = document.getElementById('listaFavoritos');
+    fetch('../backend/mascotas/favoritos.php', { credentials: 'include' })
+        .then(function(r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+        })
+        .then(function(data) {
+            if (!data.ok || !data.favoritos || !data.favoritos.length) {
+                cont.innerHTML = vacio('fa-heart', 'Aún no tienes mascotas favoritas.', 'Explora los animales en adopción y guarda los que más te gusten.', 'adopta.html', 'Ver animales en adopción');
+                return;
+            }
+            cont.innerHTML = '<div class="row g-3">'
+                + data.favoritos.map(function(m) {
+                    var foto = m.foto ? '../' + m.foto : '../img/mascotas/default.jpg';
+                    return '<div class="col-12 col-sm-6 col-md-4 col-lg-3">'
+                        + '<div class="card-fav">'
+                        + '<div style="position:relative;">'
+                        + '<a href="fichaAnimal.html?id=' + m.idMascota + '">'
+                        + '<img src="' + foto + '" alt="' + m.nombre + '" onerror="this.src=\'../img/mascotas/default.jpg\'">'
+                        + '</a>'
+                        + '<button onclick="quitarFavoritoPerfil(event,' + m.idMascota + ')" '
+                        + 'title="Quitar de favoritos" '
+                        + 'style="position:absolute;top:0.5em;right:0.5em;background:rgba(255,255,255,0.9);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#e74c3c;box-shadow:0 1px 4px rgba(0,0,0,0.15);">'
+                        + '<i class="fa-solid fa-heart"></i>'
+                        + '</button>'
+                        + '</div>'
+                        + '<div class="card-fav-body">'
+                        + '<p class="card-fav-nombre">' + m.nombre + '</p>'
+                        + '<p class="card-fav-meta"><i class="fa-solid fa-location-dot me-1"></i>' + (m.localidad || '') + '</p>'
+                        + '<a href="fichaAnimal.html?id=' + m.idMascota + '" class="btn-azul mt-2" style="display:block;text-align:center;padding:0.35em;border-radius:8px;font-size:0.8rem;text-decoration:none;">Ver ficha</a>'
+                        + '</div>'
+                        + '</div></div>';
+                }).join('')
+                + '</div>';
+        })
+        .catch(function(err) {
+            cont.innerHTML = '<p class="text-danger text-center py-3">'
+                + '<i class="fa-solid fa-circle-exclamation me-2"></i>Error: ' + err.message + '</p>';
+            console.error('cargarFavoritos:', err);
+        });
+}
+
+function quitarFavoritoPerfil(e, idMascota) {
+    e.preventDefault();
+    e.stopPropagation();
+    var btn = e.currentTarget;
+    btn.disabled = true;
+    fetch('../backend/mascotas/favoritos.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ idMascota: parseInt(idMascota) })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.ok) {
+            var CLAVE = 'petfamily_favoritos';
+            var favs  = JSON.parse(localStorage.getItem(CLAVE) || '[]');
+            var pos   = favs.indexOf(String(idMascota));
+            if (pos !== -1) favs.splice(pos, 1);
+            localStorage.setItem(CLAVE, JSON.stringify(favs));
+            mostrarToastFav('💔 Eliminado de favoritos', '#666');
+            cargarFavoritos();
+        } else {
+            btn.disabled = false;
+        }
+    })
+    .catch(function() { btn.disabled = false; });
+}
+
+/*--------------------------------------------------------------------------------------------
+apadrinamientos */
+function cargarApadrinamientos() {
+    var cont = document.getElementById('listaApadrinamientos');
+    if (cont.dataset.cargado) return;
+    cont.dataset.cargado = '1';
+    cont.innerHTML = vacio('fa-star', 'Aún no apadrinas ningún animal.', 'Apadrinando contribuyes a sus cuidados y recibes fotos y vídeos de su evolución.', 'apadrina.html', 'Ver animales para apadrinar');
+}
+
+/*--------------------------------------------------------------------------------------------
+tests */
+function cargarTests() {
+    var cont = document.getElementById('listaTests');
+    /* Sin guard de dataset.cargado — lee localStorage que puede actualizarse */
+
+    var resConocimiento   = JSON.parse(localStorage.getItem('pf_test_conocimiento') || 'null');
+    var resCompatibilidad = JSON.parse(localStorage.getItem('pf_test_compatibilidad') || 'null');
+
+    if (!resConocimiento && !resCompatibilidad) {
+        cont.innerHTML = vacio('fa-circle-question', 'No has hecho ningún test todavía.', 'Descubre qué mascota encaja mejor con tu estilo de vida.', 'test.html', 'Hacer el test');
+        return;
+    }
+
+    var html = '';
+
+    if (resConocimiento) {
+        var colorPct = resConocimiento.pct >= 70 ? '#2e7d32' : resConocimiento.pct >= 40 ? '#c87a00' : '#c0392b';
+        html += '<div class="notif-item" style="margin-bottom:1em;cursor:pointer;" onclick="verResultadoTest(\'conocimiento\')">'
+            + '<div class="notif-icono"><i class="fa-solid fa-book-open" style="color:#1B358F;"></i></div>'
+            + '<div style="flex:1;">'
+            + '<p class="notif-texto"><strong>Test de conocimientos</strong><br>'
+            + '<span style="color:' + colorPct + ';font-weight:700;">' + resConocimiento.puntos + '/' + resConocimiento.total + ' (' + resConocimiento.pct + '%)</span></p>'
+            + '<p class="notif-fecha">' + formatFecha(resConocimiento.fecha) + ' · <em>Toca para ver detalle</em></p>'
+            + '</div>'
+            + '<div style="display:flex;gap:0.5em;align-items:center;flex-shrink:0;" onclick="event.stopPropagation()">'
+            + '<a href="test.html" class="btn-azul" style="white-space:nowrap;padding:0.4em 0.9em;border-radius:8px;font-size:0.82rem;text-decoration:none;">Repetir</a>'
+            + '<button onclick="eliminarResultadoTest(\'conocimiento\')" title="Eliminar resultado" style="background:none;border:none;cursor:pointer;color:#c0392b;font-size:1.1rem;padding:0.2em 0.4em;"><i class="fa-solid fa-trash"></i></button>'
+            + '</div>'
+            + '</div>';
+    }
+
+    if (resCompatibilidad) {
+        var labelEspecie = resCompatibilidad.especieFiltro === 'perro' ? 'Perros'
+            : resCompatibilidad.especieFiltro === 'gato' ? 'Gatos' : 'Todos';
+        html += '<div class="notif-item" style="cursor:pointer;" onclick="verResultadoTest(\'compatibilidad\')">'
+            + '<div class="notif-icono"><i class="fa-solid fa-heart" style="color:#1B358F;"></i></div>'
+            + '<div style="flex:1;">'
+            + '<p class="notif-texto"><strong>Test de compatibilidad</strong><br>'
+            + '<span style="color:#6c757d;">Preferencia: ' + labelEspecie + '</span></p>'
+            + '<p class="notif-fecha">' + formatFecha(resCompatibilidad.fecha) + ' · <em>Toca para ver ranking</em></p>'
+            + '</div>'
+            + '<div style="display:flex;gap:0.5em;align-items:center;flex-shrink:0;" onclick="event.stopPropagation()">'
+            + '<a href="test.html" class="btn-azul" style="white-space:nowrap;padding:0.4em 0.9em;border-radius:8px;font-size:0.82rem;text-decoration:none;">Repetir</a>'
+            + '<button onclick="eliminarResultadoTest(\'compatibilidad\')" title="Eliminar resultado" style="background:none;border:none;cursor:pointer;color:#c0392b;font-size:1.1rem;padding:0.2em 0.4em;"><i class="fa-solid fa-trash"></i></button>'
+            + '</div>'
+            + '</div>';
+    }
+
+    cont.innerHTML = html;
+}
+
+function eliminarResultadoTest(tipo) {
+    localStorage.removeItem('pf_test_' + tipo);
+    cargarTests();
+}
+
+/*--------------------------------------------------------------------------------------------
+notificaciones */
+function cargarNotificaciones() {
+    var cont = document.getElementById('listaNotificaciones');
+    if (cont.dataset.cargado) return;
+    cont.dataset.cargado = '1';
+
+    fetch('../backend/foro/publicaciones.php?pagina=1&categoria=todas', { credentials: 'include' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (!data.ok || !data.publicaciones || !data.publicaciones.length) {
+                cont.innerHTML = vacio('fa-bell', 'Sin notificaciones por ahora.', 'Cuando alguien reaccione a tus publicaciones o te responda aparecerá aquí.', null, null);
+                return;
+            }
+            var mias = data.publicaciones.filter(function(p) {
+                return usuarioPerfil && p.autor_username === usuarioPerfil.username;
+            });
+            if (!mias.length) {
+                cont.innerHTML = vacio('fa-bell', 'Sin notificaciones por ahora.', 'Cuando alguien reaccione a tus publicaciones o te responda aparecerá aquí.', null, null);
+                return;
+            }
+            cont.innerHTML = mias.map(function(p) {
+                return '<div class="notif-item">'
+                    + '<div class="notif-icono"><i class="fa-solid fa-newspaper" style="color:#1B358F;"></i></div>'
+                    + '<div><p class="notif-texto"><strong>' + p.titulo + '</strong><br>'
+                    + '<span style="color:#6c757d;">' + (p.num_comentarios || 0) + ' comentarios · ' + (p.num_likes || 0) + ' likes</span></p>'
+                    + '<p class="notif-fecha">' + formatFecha(p.fecha) + '</p></div>'
+                    + '</div>';
+            }).join('');
+        })
+        .catch(function() {
+            cont.innerHTML = '<p class="text-muted">Error al cargar notificaciones.</p>';
+        });
+}
+
+/*--------------------------------------------------------------------------------------------
+editar perfil */
+function abrirEditarPerfil() {
+    var u   = usuarioPerfil;
+    var prev = document.getElementById('editAvatarPreview');
+    if (u.foto_perfil) {
+        var src = (u.foto_perfil.startsWith('http') ? '' : '../backend/api/auth/') + u.foto_perfil;
+        prev.innerHTML = '<img src="' + src + '" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover;">';
+    } else {
+        var partes   = (u.nombre || 'U').split(' ');
+        var iniciales = (partes[0].charAt(0) + (partes[1] ? partes[1].charAt(0) : '')).toUpperCase();
+        prev.textContent = iniciales;
+    }
+
+    document.getElementById('editFoto').addEventListener('change', function() {
+        var archivo = this.files[0];
+        if (!archivo) return;
+        if (archivo.size > 2 * 1024 * 1024) { alert('La foto no puede superar 2 MB.'); this.value = ''; return; }
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            prev.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;">';
+        };
+        reader.readAsDataURL(archivo);
+    }, { once: true });
+
+    new bootstrap.Modal(document.getElementById('modalEditarPerfil')).show();
+}
+
+function guardarPerfil() {
+    var nombre    = document.getElementById('editNombre').value.trim();
+    var username  = document.getElementById('editUsername').value.trim();
+    var localidad = document.getElementById('editLocalidad').value.trim();
+    var telefono  = document.getElementById('editTelefono').value.trim();
+    var errorEl   = document.getElementById('errorEditPerfil');
+    var btn       = document.getElementById('btnGuardarPerfil');
+
+    errorEl.style.display = 'none';
+
+    if (!nombre) {
+        errorEl.textContent   = 'El nombre es obligatorio.';
+        errorEl.style.display = 'block';
+        return;
+    }
+    if (!username) {
+        errorEl.textContent   = 'El nombre de usuario es obligatorio.';
+        errorEl.style.display = 'block';
+        return;
+    }
+    if (username.length < 3) {
+        errorEl.textContent   = 'El nombre de usuario debe tener al menos 3 caracteres.';
+        errorEl.style.display = 'block';
+        return;
+    }
+    if (!/^[a-zA-Z0-9_\.]+$/.test(username)) {
+        errorEl.textContent   = 'Solo letras, números, puntos y guiones bajos. Sin espacios.';
+        errorEl.style.display = 'block';
+        return;
+    }
+    if (telefono && !/^[6-9]\d{8}$/.test(telefono.replace(/\s/g, ''))) {
+        errorEl.textContent   = 'Teléfono no válido. Ej: 612 345 678';
+        errorEl.style.display = 'block';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Guardando...';
+
+    var fotoFile = document.getElementById('editFoto').files[0];
+    var body, headers;
+
+    if (fotoFile) {
+        var fd = new FormData();
+        fd.append('nombre',    nombre);
+        fd.append('username',  username);
+        fd.append('localidad', localidad);
+        fd.append('telefono',  telefono);
+        fd.append('foto_perfil', fotoFile);
+        body    = fd;
+        headers = {};
+    } else {
+        body    = JSON.stringify({ nombre: nombre, username: username, localidad: localidad, telefono: telefono });
+        headers = { 'Content-Type': 'application/json' };
+    }
+
+    fetch('../backend/api/auth/actualizar_perfil.php', {
+        method: 'POST',
+        headers: headers,
+        credentials: 'include',
+        body: body,
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-floppy-disk me-2"></i>Guardar';
+        if (data.ok) {
+            usuarioPerfil.nombre    = nombre;
+            usuarioPerfil.username  = username;
+            usuarioPerfil.localidad = localidad;
+            usuarioPerfil.telefono  = telefono;
+            var sesion = JSON.parse(sessionStorage.getItem(CLAVE_SESION) || '{}');
+            sesion.nombre    = nombre;
+            sesion.username  = username;
+            sesion.localidad = localidad;
+            sesion.telefono  = telefono;
+            sessionStorage.setItem(CLAVE_SESION, JSON.stringify(sesion));
+            mostrarDatosUsuario(usuarioPerfil);
+            bootstrap.Modal.getInstance(document.getElementById('modalEditarPerfil')).hide();
+        } else {
+            errorEl.textContent   = data.error || 'Error al guardar.';
+            errorEl.style.display = 'block';
+        }
+    })
+    .catch(function() {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-floppy-disk me-2"></i>Guardar';
+        errorEl.textContent   = 'Error de conexión.';
+        errorEl.style.display = 'block';
+    });
+}
+
+/*--------------------------------------------------------------------------------------------
+datos del perfil */
+function cargarDatos() {
+    var cont = document.getElementById('listaDatos');
+    if (!usuarioPerfil) return;
+    var u = usuarioPerfil;
+    cont.innerHTML =
+        '<div style="background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,0.07);padding:1.4em;margin-bottom:1em;">' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1em 2em;">' +
+                campo('fa-user', 'Nombre', u.nombre) +
+                campo('fa-at', 'Usuario', '@' + (u.username || '')) +
+                campo('fa-envelope', 'Email', u.email) +
+                campo('fa-location-dot', 'Localidad', u.localidad || '—') +
+                campo('fa-phone', 'Teléfono', u.telefono || '—') +
+                campo('fa-shield-halved', 'Rol', u.rol === 'admin' ? 'Administrador' : 'Usuario') +
+            '</div>' +
+            '<div style="margin-top:1.2em;padding-top:1em;border-top:1px solid #f0f0f0;">' +
+                '<button class="btn-azul" onclick="abrirEditarPerfil()" style="padding:0.5em 1.3em;border-radius:8px;font-size:0.88rem;">' +
+                    '<i class="fa-solid fa-pen me-2"></i>Editar datos' +
+                '</button>' +
+            '</div>' +
+        '</div>';
+}
+
+function campo(icono, label, valor) {
+    return '<div>' +
+        '<p style="font-size:0.75rem;color:#aaa;font-weight:600;margin-bottom:0.2em;text-transform:uppercase;letter-spacing:0.04em;">' +
+            '<i class="fa-solid ' + icono + ' me-1"></i>' + label +
+        '</p>' +
+        '<p style="font-size:0.92rem;color:#222;font-weight:500;margin:0;">' + (valor || '—') + '</p>' +
+    '</div>';
+}
+
+/*--------------------------------------------------------------------------------------------
+ver resultado test en modal */
+function verResultadoTest(tipo) {
+    var cuerpo = document.getElementById('modalTestCuerpo');
+    var titulo = document.getElementById('modalTestTitulo');
+
+    if (tipo === 'conocimiento') {
+        var res = JSON.parse(localStorage.getItem('pf_test_conocimiento') || 'null');
+        if (!res) return;
+        titulo.textContent = 'Test de conocimientos — resultado';
+        var colorPct = res.pct >= 70 ? '#2e7d32' : res.pct >= 40 ? '#c87a00' : '#c0392b';
+        cuerpo.innerHTML =
+            '<div style="text-align:center;padding:1em 0 1.5em;">' +
+                '<p style="font-size:2.5rem;font-weight:800;color:' + colorPct + ';margin:0;">' + res.pct + '%</p>' +
+                '<p style="color:#555;font-size:1rem;">' + res.puntos + ' de ' + res.total + ' respuestas correctas</p>' +
+                '<p style="color:#aaa;font-size:0.8rem;">' + formatFecha(res.fecha) + '</p>' +
+            '</div>';
+    } else {
+        var res = JSON.parse(localStorage.getItem('pf_test_compatibilidad') || 'null');
+        if (!res || !res.ranking) {
+            titulo.textContent = 'Test de compatibilidad';
+            cuerpo.innerHTML = vacio('fa-heart', 'Resultado no disponible.', 'Vuelve a hacer el test para ver el ranking.', 'test.html', 'Hacer el test');
+        } else {
+            titulo.innerHTML = '<i class="fa-solid fa-ranking-star me-2" style="color:#F8BA56;"></i>Ranking de compatibilidad';
+            var labelEspecie = res.especieFiltro === 'perro' ? 'perros'
+                : res.especieFiltro === 'gato' ? 'gatos' : 'perros y gatos';
+            var html = '<p style="color:#555;font-size:0.88rem;margin-bottom:1.2em;">Hemos ordenado los ' + labelEspecie + ' de más a menos compatibles contigo.</p>';
+            res.ranking.forEach(function(item, idx) {
+                var medalla = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : (idx + 1) + 'º';
+                var color   = item.compatibilidad >= 75 ? '#2e7d32' : item.compatibilidad >= 50 ? '#c87a00' : '#aaa';
+                var fotoHtml = item.foto
+                    ? '<img src="' + item.foto + '" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #e9ecef;" onerror="this.style.display=\'none\'">'
+                    : '<i class="fa-solid ' + item.icono + '" style="color:#1B358F;font-size:1.1rem;flex-shrink:0;"></i>';
+                html += '<div style="display:flex;align-items:center;gap:0.8em;padding:0.7em 0;border-bottom:1px solid #f0f0f0;">'
+                    + '<span style="font-size:1.2rem;flex-shrink:0;">' + medalla + '</span>'
+                    + fotoHtml
+                    + '<div style="flex:1;min-width:0;">'
+                    + '<strong style="color:#1B358F;font-size:0.9rem;">' + item.nombre + '</strong>'
+                    + ' <span style="color:#aaa;font-size:0.78rem;">' + item.especie + '</span><br>'
+                    + '<span style="color:#555;font-size:0.8rem;">' + item.raza + ' · ' + item.protectora + '</span>'
+                    + '</div>'
+                    + '<div style="text-align:right;flex-shrink:0;">'
+                    + '<span style="color:' + color + ';font-weight:700;font-size:0.95rem;">' + item.compatibilidad + '%</span><br>'
+                    + '<a href="fichaAnimal.html?id=' + item.id + '" style="color:#1B358F;font-size:0.75rem;text-decoration:none;">Ver ficha →</a>'
+                    + '</div>'
+                    + '</div>';
+            });
+            cuerpo.innerHTML = html;
+        }
+    }
+
+    new bootstrap.Modal(document.getElementById('modalResultadoTest')).show();
+}
+function vacio(icono, titulo, texto, href, btnTexto) {
+    return '<div style="text-align:center;padding:3em 1em;">'
+        + '<i class="fa-solid ' + icono + '" style="font-size:2.5rem;color:#dee2e6;display:block;margin-bottom:0.8em;"></i>'
+        + '<p style="font-weight:700;color:#444;margin-bottom:0.3em;">' + titulo + '</p>'
+        + '<p style="font-size:0.88rem;color:#6c757d;margin-bottom:1em;">' + texto + '</p>'
+        + (href ? '<a href="' + href + '" class="btn-azul" style="padding:0.5em 1.3em;border-radius:8px;text-decoration:none;font-size:0.88rem;">' + btnTexto + '</a>' : '')
+        + '</div>';
+}
+
+function formatFecha(f) {
+    if (!f) return '';
+    return new Date(f).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+</script>
+
+</body>
+</html>

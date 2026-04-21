@@ -30,7 +30,327 @@ function registrarVistaFicha(id) {
 }
 
 
+/* ------------------------------------------------------------------ */
+/* Sesion                                                              */
+/* ------------------------------------------------------------------ */
+var CLAVE_SESION = 'pf_session';
+
+function estaLogueado() {
+    return sessionStorage.getItem(CLAVE_SESION) !== null;
+}
+
+function obtenerUsuario() {
+    var datos = sessionStorage.getItem(CLAVE_SESION);
+    return datos ? JSON.parse(datos) : null;
+}
+
+function cerrarSesion(e) {
+    if (e) e.preventDefault();
+    fetch('../backend/api/auth/logout.php', { credentials: 'include' })
+        .finally(function() {
+            sessionStorage.removeItem(CLAVE_SESION);
+            localStorage.removeItem('petfamily_favoritos');
+            window.location.href = 'index.html';
+        });
+}
+
+/* Fallback avatar cuando la foto no carga */
+window._pfAvatarError = function(el) {
+    var ini = el.getAttribute('data-iniciales') || '?';
+    var sm  = el.classList.contains('user-avatar-sm');
+    var d   = document.createElement('div');
+    d.className = 'user-avatar user-avatar-iniciales' + (sm ? ' user-avatar-sm' : '');
+    d.textContent = ini;
+    if (el.parentNode) el.parentNode.replaceChild(d, el);
+};
+
+/* ------------------------------------------------------------------ */
+/* Dropdown overlay — añadido a <body> para escapar del transform      */
+/* ------------------------------------------------------------------ */
+var _dropdownOverlay = null;
+var _dropdownTrigger = null;
+
+function _crearOverlay(menuHTML) {
+    _cerrarOverlay();
+    var el = document.createElement('div');
+    el.id = 'pf-dropdown-overlay';
+    el.className = 'user-dropdown';
+    el.style.cssText = 'display:block;position:fixed;z-index:99999;visibility:hidden;';
+    el.innerHTML = menuHTML;
+    document.body.appendChild(el);
+    _dropdownOverlay = el;
+}
+
+function _posicionarOverlay(triggerEl) {
+    if (!_dropdownOverlay) return;
+    requestAnimationFrame(function() {
+        var rect = triggerEl.getBoundingClientRect();
+        var dw   = _dropdownOverlay.offsetWidth;
+        var left = rect.right - dw;
+        if (left < 8) left = 8;
+        if (left + dw > window.innerWidth - 8) left = window.innerWidth - dw - 8;
+        _dropdownOverlay.style.top        = (rect.bottom + 6) + 'px';
+        _dropdownOverlay.style.left       = left + 'px';
+        _dropdownOverlay.style.visibility = 'visible';
+    });
+}
+
+function _cerrarOverlay() {
+    if (_dropdownOverlay) { _dropdownOverlay.remove(); _dropdownOverlay = null; }
+    _dropdownTrigger = null;
+}
+
+/* ------------------------------------------------------------------ */
+/* Construye el area de usuario en el header                           */
+/* ------------------------------------------------------------------ */
+function renderUserArea(usuario) {
+    var contenedor = document.getElementById('user_container');
+    var burger     = document.getElementById('user_burger');
+
+    if (!usuario) {
+        if (contenedor) {
+            contenedor.innerHTML =
+                '<a href="login.html"><img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px"></a>' +
+                '<a href="register.html" class="btn-register">Registrarse</a>';
+        }
+        if (burger) {
+            burger.innerHTML =
+                '<a href="login.html"><img src="../img/iconosHeader/iconUser.png" width="15px" alt="Usuario"></a>' +
+                '<a href="register.html" class="btn-register">Registrarse</a>';
+        }
+        /* En pantallas muy pequeñas añadir login/registro al nav */
+        var listMenuNoSes = document.getElementById('lista_menu');
+        if (listMenuNoSes && !document.getElementById('nav-li-login')) {
+            var liLogin = document.createElement('li');
+            liLogin.id = 'nav-li-login';
+            liLogin.className = 'nav-solo-movil';
+            liLogin.innerHTML = '<a href="login.html"><i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar sesión</a>';
+            var liRegistro = document.createElement('li');
+            liRegistro.id = 'nav-li-registro';
+            liRegistro.className = 'nav-solo-movil';
+            liRegistro.innerHTML = '<a href="register.html"><i class="fa-solid fa-user-plus me-2"></i>Registrarse</a>';
+            listMenuNoSes.appendChild(liLogin);
+            listMenuNoSes.appendChild(liRegistro);
+        }
+        return;
+    }
+
+    var nombre  = usuario.nombre || usuario.username || 'Usuario';
+    var esAdmin = usuario.rol === 'admin';
+
+    var partes   = nombre.trim().split(' ');
+    var iniciales = (partes.length >= 2
+        ? partes[0][0] + partes[1][0]
+        : nombre.substring(0, 2)).toUpperCase();
+
+    var avatarInner;
+    if (usuario.foto_perfil) {
+        var fotoSrc = (usuario.foto_perfil.startsWith('http') ? '' : '../backend/api/auth/') + usuario.foto_perfil;
+        avatarInner =
+            '<img src="' + fotoSrc + '" class="user-avatar"' +
+            ' referrerpolicy="no-referrer"' +
+            ' data-iniciales="' + iniciales + '"' +
+            ' alt="' + nombre + '"' +
+            ' onerror="window._pfAvatarError(this)">';
+    } else {
+        avatarInner = '<div class="user-avatar user-avatar-iniciales">' + iniciales + '</div>';
+    }
+
+    var avatarBadge =
+        '<div class="user-avatar-wrapper">' +
+            avatarInner +
+            '<span class="user-notif-badge" id="user-notif-badge" hidden></span>' +
+        '</div>';
+
+    var avatarBadgeSm = avatarBadge
+        .replace('id="user-notif-badge"', 'id="user-notif-badge-b"')
+        .replace('class="user-avatar"', 'class="user-avatar user-avatar-sm"');
+
+    var opcionAdmin = esAdmin
+        ? '<a href="../admin/dashboard.html" class="user-dropdown-item"><i class="fa-solid fa-shield-halved"></i> Panel admin</a>'
+        : '';
+
+    var menuHTML =
+        '<div class="user-dropdown-header" onclick="window.location.href=\'perfil.html\'" title="Ver mi perfil">' +
+            '<div class="user-dropdown-header-info">' +
+                '<strong>' + nombre + '</strong>' +
+                '<small>@' + (usuario.username || '') + '</small>' +
+            '</div>' +
+        '</div>' +
+        '<div class="user-dropdown-body">' +
+            '<a href="perfil.html" class="user-dropdown-item"><i class="fa-solid fa-user"></i> Mi perfil</a>' +
+            '<a href="perfil.html?tab=favoritos" class="user-dropdown-item"><i class="fa-solid fa-heart"></i> Mis favoritos</a>' +
+            '<a href="perfil.html?tab=apadrinamientos" class="user-dropdown-item"><i class="fa-solid fa-star"></i> Mis apadrinamientos</a>' +
+            '<a href="perfil.html?tab=notificaciones" class="user-dropdown-item"><i class="fa-solid fa-bell"></i> Notificaciones</a>' +
+            opcionAdmin +
+            '<hr class="user-dropdown-sep">' +
+            '<a href="#" class="user-dropdown-item user-dropdown-logout" onclick="cerrarSesion(event)"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</a>' +
+        '</div>';
+
+    function abrirDropdown(triggerBtn) {
+        if (_dropdownOverlay) { _cerrarOverlay(); return; }
+        _dropdownTrigger = triggerBtn;
+        _crearOverlay(menuHTML);
+        _posicionarOverlay(triggerBtn);
+    }
+
+    if (contenedor) {
+        contenedor.innerHTML =
+            '<button class="user-dropdown-trigger" id="user-dropdown-trigger" title="Mi cuenta">' +
+                avatarBadge + '</button>';
+        document.getElementById('user-dropdown-trigger').addEventListener('click', function(e) {
+            e.stopPropagation(); abrirDropdown(this);
+        });
+    }
+
+    if (burger) {
+        burger.innerHTML =
+            '<button class="user-dropdown-trigger" id="user-dropdown-trigger-b" title="Mi cuenta">' +
+                avatarBadgeSm + '</button>';
+        document.getElementById('user-dropdown-trigger-b').addEventListener('click', function(e) {
+            e.stopPropagation(); abrirDropdown(this);
+        });
+    }
+
+    cargarNotificaciones();
+
+    /* En pantallas muy pequeñas (#user_burger oculto) añadir accesos
+       rápidos al menú hamburguesa para que el usuario pueda navegar */
+    var listMenu = document.getElementById('lista_menu');
+    if (listMenu && !document.getElementById('nav-li-perfil')) {
+        var liPerfil = document.createElement('li');
+        liPerfil.id = 'nav-li-perfil';
+        liPerfil.className = 'nav-solo-movil';
+        liPerfil.innerHTML = '<a href="perfil.html"><i class="fa-solid fa-user me-2"></i>Mi perfil</a>';
+
+        var liSalir = document.createElement('li');
+        liSalir.id = 'nav-li-salir';
+        liSalir.className = 'nav-solo-movil';
+        liSalir.innerHTML = '<a href="#" onclick="cerrarSesion(event)"><i class="fa-solid fa-right-from-bracket me-2"></i>Cerrar sesión</a>';
+
+        listMenu.appendChild(liPerfil);
+        listMenu.appendChild(liSalir);
+    }
+}
+
+
+/* Carga notificaciones y muestra badge en el avatar */
+function cargarNotificaciones() {
+    fetch('../php/get_notificaciones.php', { credentials: 'include' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (!data.success || !data.total || data.total < 1) return;
+            /* No mostrar badge si es admin */
+            var sesion = sessionStorage.getItem('pf_session');
+            if (sesion) {
+                try { if (JSON.parse(sesion).rol === 'admin') return; } catch(e) {}
+            }
+            var texto = data.total > 9 ? '9+' : String(data.total);
+            ['user-notif-badge', 'user-notif-badge-b'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) {
+                    el.textContent = texto;
+                    el.removeAttribute('hidden');
+                }
+            });
+        })
+        .catch(function() {});
+}
+
+/* Sincroniza favoritos desde la BD al localStorage para que los corazones
+   se marquen correctamente en adopta.html y fichaAnimal.html */
+function sincronizarFavoritos() {
+    fetch('../backend/mascotas/favoritos.php', { credentials: 'include' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (!data.ok) return;
+            var ids = (data.favoritos || []).map(function(m) { return String(m.idMascota); });
+            localStorage.setItem('petfamily_favoritos', JSON.stringify(ids));
+            /* Marcar corazones visibles en la página actual */
+            document.querySelectorAll('.btn-fav[data-id]').forEach(function(btn) {
+                var id = btn.dataset.id;
+                var activo = ids.indexOf(id) !== -1;
+                btn.classList.toggle('activo', activo);
+                var ico = btn.querySelector('i');
+                if (ico) ico.className = activo ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+            });
+            /* fichaAnimal: actualizar botón específico */
+            var btnFicha = document.getElementById('btn-fav-ficha');
+            if (btnFicha) {
+                var params = new URLSearchParams(window.location.search);
+                var idFicha = params.get('id');
+                if (idFicha && ids.indexOf(String(idFicha)) !== -1) {
+                    btnFicha.classList.add('activo');
+                    btnFicha.innerHTML = '<i class="fa-solid fa-heart me-1"></i> Guardado en favoritos';
+                }
+            }
+        })
+        .catch(function() {});
+}
+
+/* Inicializa el area de usuario — siempre verifica con el servidor */
+function inicializarUserArea() {
+    /* Render rápido desde sessionStorage mientras llega la respuesta */
+    var sesionGuardada = sessionStorage.getItem(CLAVE_SESION);
+    if (sesionGuardada) {
+        renderUserArea(JSON.parse(sesionGuardada));
+    }
+
+    /* Siempre verificar con sesion.php — sessionStorage no es fuente de verdad */
+    fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.ok && data.logueado) {
+                sessionStorage.setItem(CLAVE_SESION, JSON.stringify(data.usuario));
+                renderUserArea(data.usuario);
+                sincronizarFavoritos();
+                document.dispatchEvent(new CustomEvent('pf:sesion', { detail: data.usuario }));
+            } else {
+                /* Sesión PHP no activa — limpiar y mostrar estado no logueado */
+                sessionStorage.removeItem(CLAVE_SESION);
+                localStorage.removeItem('petfamily_favoritos');
+                renderUserArea(null);
+                document.dispatchEvent(new CustomEvent('pf:sesion', { detail: null }));
+            }
+        })
+        .catch(function() {
+            /* Sin conexión — despachar con lo que hay en sessionStorage */
+            var s = sessionStorage.getItem(CLAVE_SESION);
+            document.dispatchEvent(new CustomEvent('pf:sesion', { detail: s ? JSON.parse(s) : null }));
+        });
+}
+
+
 document.addEventListener('DOMContentLoaded', function() {
+    cargarProtectorasDinamicasEnDona();
+
+    // ----------------------------------------------------------------
+    // User area
+    // ----------------------------------------------------------------
+    inicializarUserArea();
+
+    /* Cerrar dropdown al hacer click fuera */
+    document.addEventListener('click', function(e) {
+        if (_dropdownOverlay && !_dropdownOverlay.contains(e.target)) {
+            _cerrarOverlay();
+        }
+        document.querySelectorAll('.user-dropdown-wrapper.abierto').forEach(function(w) {
+            w.classList.remove('abierto');
+        });
+    });
+
+    /* Reposicionar overlay al hacer scroll o resize */
+    window.addEventListener('scroll', function() {
+        if (_dropdownOverlay) {
+            var trigger = document.getElementById('user-dropdown-trigger') || document.getElementById('user-dropdown-trigger-b');
+            if (trigger) _posicionarOverlay(trigger);
+            else _cerrarOverlay();
+        }
+    }, { passive: true });
+
+    window.addEventListener('resize', function() {
+        if (_dropdownOverlay) _cerrarOverlay();
+    });
 
     // ----------------------------------------------------------------
     // Header hide on scroll
@@ -201,14 +521,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Inicializar botones de favoritos al cargar — solo si hay sesion
+    /* Inicializar botones de favoritos al cargar — solo si hay sesion */
     if (estaLogueado()) {
         var botonesFav = document.querySelectorAll('.btn-fav[data-id]');
         for (var i = 0; i < botonesFav.length; i++) {
             actualizarBotonFavorito(botonesFav[i].dataset.id);
         }
     } else {
-        // Sin sesion: limpiar posibles favoritos guardados previamente
         localStorage.removeItem('petfamily_favoritos');
     }
 
@@ -217,9 +536,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // ----------------------------------------------------------------
     if (document.getElementById('textareaPublicar')) {
 
-        var estaLogueado = false;
+        var logueadoForo = estaLogueado();
 
-        // Filtros de categorias
+        /* Filtros de categorias */
         var btnsFiltro = document.querySelectorAll('.foro-filtro-btn');
         var posts      = document.querySelectorAll('.foro-post');
 
@@ -235,7 +554,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Ver mas comentarios
+        /* Ver mas comentarios */
         document.querySelectorAll('.foro-ver-mas-com').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 var seccion = btn.closest('.foro-comentarios-seccion');
@@ -253,7 +572,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Boton publicar
+        /* Boton publicar */
         var btnPublicar = document.getElementById('btnPublicar');
         var textarea    = document.getElementById('textareaPublicar');
         var avisoLogin  = document.getElementById('avisoLogin');
@@ -265,7 +584,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 textarea.focus();
                 return;
             }
-            if (!estaLogueado) {
+            if (!logueadoForo) {
                 sessionStorage.setItem('foroTextoPendiente', texto);
                 avisoLogin.classList.remove('d-none');
                 avisoLogin.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -276,16 +595,16 @@ document.addEventListener('DOMContentLoaded', function() {
             avisoLogin.classList.add('d-none');
         });
 
-        // Expandir textarea al escribir
+        /* Expandir textarea al escribir */
         textarea.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = this.scrollHeight + 'px';
         });
 
-        // Inputs de comentario — aviso login
+        /* Inputs de comentario — aviso login */
         document.querySelectorAll('.foro-input-com').forEach(function(inp) {
             inp.addEventListener('focus', function() {
-                if (!estaLogueado) {
+                if (!logueadoForo) {
                     this.blur();
                     avisoLogin.classList.remove('d-none');
                     avisoLogin.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -293,20 +612,20 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Adjuntos — aviso login
+        /* Adjuntos — aviso login */
         document.querySelectorAll('.foro-adj-btn').forEach(function(btn) {
             btn.addEventListener('click', function() {
-                if (!estaLogueado) {
+                if (!logueadoForo) {
                     avisoLogin.classList.remove('d-none');
                     avisoLogin.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             });
         });
 
-        // Reacciones y likes — aviso login
+        /* Reacciones y likes — aviso login */
         document.querySelectorAll('.foro-reaccion-btn, .foro-com-like').forEach(function(btn) {
             btn.addEventListener('click', function() {
-                if (!estaLogueado) {
+                if (!logueadoForo) {
                     avisoLogin.classList.remove('d-none');
                 }
             });
@@ -318,20 +637,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // ----------------------------------------------------------------
     if (document.getElementById('formLogin')) {
 
-        var formLogin     = document.getElementById('formLogin');
-        var inputEmail    = document.getElementById('loginEmail');
-        var inputPassword = document.getElementById('loginPassword');
-        var errorEmailL   = document.getElementById('errorEmail');
-        var errorPasswordL= document.getElementById('errorPassword');
-        var alertaLogin   = document.getElementById('alertaLogin');
-        var btnLogin      = document.getElementById('btnLogin');
-        var togglePwd     = document.getElementById('togglePwd');
-        var iconoPwd      = document.getElementById('iconoPwd');
-        var inputRol      = document.getElementById('inputRol');
-        var panelUsuario  = document.getElementById('panelUsuario');
-        var panelAdmin    = document.getElementById('panelAdmin');
+        var formLogin      = document.getElementById('formLogin');
+        var inputEmail     = document.getElementById('loginEmail');
+        var inputPassword  = document.getElementById('loginPassword');
+        var errorEmailL    = document.getElementById('errorEmail');
+        var errorPasswordL = document.getElementById('errorPassword');
+        var alertaLogin    = document.getElementById('alertaLogin');
+        var btnLogin       = document.getElementById('btnLogin');
+        var togglePwd      = document.getElementById('togglePwd');
+        var iconoPwd       = document.getElementById('iconoPwd');
+        var inputRol       = document.getElementById('inputRol');
+        var panelUsuario   = document.getElementById('panelUsuario');
+        var panelAdmin     = document.getElementById('panelAdmin');
 
-        // Selector de rol
+        /* Selector de rol */
         document.querySelectorAll('.login-rol-btn').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.login-rol-btn').forEach(function(b) { b.classList.remove('activo'); });
@@ -349,7 +668,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Mostrar/ocultar contrasena
+        /* Mostrar/ocultar contrasena */
         togglePwd.addEventListener('click', function() {
             var tipo = inputPassword.type === 'password' ? 'text' : 'password';
             inputPassword.type = tipo;
@@ -371,7 +690,7 @@ document.addEventListener('DOMContentLoaded', function() {
         function validarEmailL() {
             var valor = inputEmail.value.trim();
             var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!valor)           return mostrarErrorL(inputEmail, errorEmailL, 'El email es obligatorio.'), false;
+            if (!valor)             return mostrarErrorL(inputEmail, errorEmailL, 'El email es obligatorio.'), false;
             if (!regex.test(valor)) return mostrarErrorL(inputEmail, errorEmailL, 'Introduce un email valido.'), false;
             limpiarErrorL(inputEmail, errorEmailL);
             return true;
@@ -379,7 +698,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function validarPasswordL() {
             var valor = inputPassword.value;
-            if (!valor)          return mostrarErrorL(inputPassword, errorPasswordL, 'La contrasena es obligatoria.'), false;
+            if (!valor)           return mostrarErrorL(inputPassword, errorPasswordL, 'La contrasena es obligatoria.'), false;
             if (valor.length < 6) return mostrarErrorL(inputPassword, errorPasswordL, 'Minimo 6 caracteres.'), false;
             limpiarErrorL(inputPassword, errorPasswordL);
             return true;
@@ -399,11 +718,34 @@ document.addEventListener('DOMContentLoaded', function() {
             btnLogin.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Iniciando sesion...';
             alertaLogin.classList.add('d-none');
 
-            setTimeout(function() {
+            fetch('../backend/api/auth/login.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email:    inputEmail.value.trim(),
+                    password: inputPassword.value,
+                    rol:      inputRol.value || 'usuario'
+                }),
+                credentials: 'include'
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
                 btnLogin.disabled = false;
                 btnLogin.innerHTML = '<i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar sesion';
+                if (data.ok) {
+                    sessionStorage.setItem(CLAVE_SESION, JSON.stringify(data.usuario));
+                    window.location.href = data.redirigir || 'index.html';
+                } else {
+                    document.getElementById('alertaLoginMsg').textContent = data.error || 'Email o contraseña incorrectos.';
+                    alertaLogin.classList.remove('d-none');
+                }
+            })
+            .catch(function() {
+                btnLogin.disabled = false;
+                btnLogin.innerHTML = '<i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar sesion';
+                document.getElementById('alertaLoginMsg').textContent = 'Error de conexion. Intenta de nuevo.';
                 alertaLogin.classList.remove('d-none');
-            }, 1200);
+            });
         });
     }
 
@@ -427,7 +769,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var btnRegistro          = document.getElementById('btnRegistro');
         var alertaRegistro       = document.getElementById('alertaRegistro');
 
-        // Preview foto de perfil
+        /* Preview foto de perfil */
         document.querySelector('.reg-foto-label').addEventListener('click', function() {
             inputFoto.click();
         });
@@ -449,7 +791,7 @@ document.addEventListener('DOMContentLoaded', function() {
             reader.readAsDataURL(archivo);
         });
 
-        // Mostrar/ocultar contrasenas
+        /* Mostrar/ocultar contrasenas */
         document.getElementById('togglePwdReg').addEventListener('click', function() {
             var tipo = inputPasswordR.type === 'password' ? 'text' : 'password';
             inputPasswordR.type = tipo;
@@ -462,17 +804,17 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('iconoPwdConfirm').className = tipo === 'password' ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash';
         });
 
-        // Indicador fuerza contrasena
+        /* Indicador fuerza contrasena */
         inputPasswordR.addEventListener('input', function() {
-            var val    = this.value;
-            var fill   = document.getElementById('pwdFill');
-            var label  = document.getElementById('pwdLabel');
+            var val   = this.value;
+            var fill  = document.getElementById('pwdFill');
+            var label = document.getElementById('pwdLabel');
             if (!val) { fill.style.width = '0%'; label.textContent = ''; return; }
             var puntos = 0;
-            if (val.length >= 8)           puntos++;
-            if (/[A-Z]/.test(val))         puntos++;
-            if (/[0-9]/.test(val))         puntos++;
-            if (/[^A-Za-z0-9]/.test(val))  puntos++;
+            if (val.length >= 8)          puntos++;
+            if (/[A-Z]/.test(val))        puntos++;
+            if (/[0-9]/.test(val))        puntos++;
+            if (/[^A-Za-z0-9]/.test(val)) puntos++;
             if (puntos <= 1) {
                 fill.style.width = '33%'; fill.style.backgroundColor = '#e74c3c';
                 label.style.color = '#e74c3c'; label.textContent = 'Debil';
@@ -499,7 +841,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function validarNombre() {
             var val = inputNombre.value.trim();
-            if (!val)         return mostrarErrorR(inputNombre, document.getElementById('errorNombre'), 'El nombre es obligatorio.'), false;
+            if (!val)           return mostrarErrorR(inputNombre, document.getElementById('errorNombre'), 'El nombre es obligatorio.'), false;
             if (val.length < 2) return mostrarErrorR(inputNombre, document.getElementById('errorNombre'), 'Al menos 2 caracteres.'), false;
             limpiarErrorR(inputNombre, document.getElementById('errorNombre'));
             return true;
@@ -517,8 +859,8 @@ document.addEventListener('DOMContentLoaded', function() {
         function validarEmailR() {
             var val   = inputEmailR.value.trim();
             var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!val)              return mostrarErrorR(inputEmailR, document.getElementById('errorEmail'), 'El email es obligatorio.'), false;
-            if (!regex.test(val))  return mostrarErrorR(inputEmailR, document.getElementById('errorEmail'), 'Introduce un email valido.'), false;
+            if (!val)             return mostrarErrorR(inputEmailR, document.getElementById('errorEmail'), 'El email es obligatorio.'), false;
+            if (!regex.test(val)) return mostrarErrorR(inputEmailR, document.getElementById('errorEmail'), 'Introduce un email valido.'), false;
             limpiarErrorR(inputEmailR, document.getElementById('errorEmail'));
             return true;
         }
@@ -531,7 +873,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         function validarTelefono() {
-            var val   = inputTelefono.value.trim();
+            var val = inputTelefono.value.trim();
             if (!val) return true;
             var regex = /^[6-9]\d{8}$/;
             if (!regex.test(val.replace(/\s/g, ''))) return mostrarErrorR(inputTelefono, document.getElementById('errorTelefono'), 'Telefono no valido. Ej: 612 345 678'), false;
@@ -549,7 +891,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function validarPasswordConfirm() {
             var val = inputPasswordConfirm.value;
-            if (!val)                        return mostrarErrorR(inputPasswordConfirm, document.getElementById('errorPasswordConfirm'), 'Repite la contrasena.'), false;
+            if (!val)                         return mostrarErrorR(inputPasswordConfirm, document.getElementById('errorPasswordConfirm'), 'Repite la contrasena.'), false;
             if (val !== inputPasswordR.value) return mostrarErrorR(inputPasswordConfirm, document.getElementById('errorPasswordConfirm'), 'Las contrasenas no coinciden.'), false;
             limpiarErrorR(inputPasswordConfirm, document.getElementById('errorPasswordConfirm'));
             return true;
@@ -564,7 +906,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return true;
         }
 
-        // Listeners blur/input
+        /* Listeners blur/input */
         inputNombre.addEventListener('blur', validarNombre);
         inputNombre.addEventListener('input', function() { if (this.classList.contains('input-error')) validarNombre(); });
         inputUsername.addEventListener('blur', validarUsername);
@@ -578,7 +920,7 @@ document.addEventListener('DOMContentLoaded', function() {
         inputPasswordConfirm.addEventListener('blur', validarPasswordConfirm);
         inputPasswordConfirm.addEventListener('input', function() { if (this.classList.contains('input-error')) validarPasswordConfirm(); });
 
-        // Submit
+        /* Submit */
         formRegistro.addEventListener('submit', function(e) {
             e.preventDefault();
             var ok = validarNombre()
@@ -608,22 +950,35 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-}); // fin DOMContentLoaded
+}); /* fin DOMContentLoaded */
 
 
 /* ------------------------------------------------------------------ */
 /* toggleFavorito — llamado desde onclick en adopta.html y fichaAnimal */
 /* ------------------------------------------------------------------ */
-function estaLogueado() {
-    /* BACKEND: sustituir por verificacion real de sesion PHP cuando este disponible */
-    /* Ej: return window.PF_LOGUEADO === true; (variable inyectada por PHP en el head) */
-    return false;
-}
-
 function mostrarModalLoginFav() {
     var modal = document.getElementById('modalLoginFav');
     if (!modal) return;
     new bootstrap.Modal(modal).show();
+}
+
+function mostrarToastFav(msg, color) {
+    var toast = document.getElementById('pf-toast-fav');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'pf-toast-fav';
+        toast.style.cssText = 'position:fixed;bottom:1.5em;left:50%;transform:translateX(-50%);'
+            + 'background:' + color + ';color:#fff;padding:0.65em 1.4em;border-radius:30px;'
+            + 'font-family:Poppins,sans-serif;font-size:0.85rem;font-weight:600;'
+            + 'box-shadow:0 4px 14px rgba(0,0,0,0.2);z-index:99999;transition:opacity 0.3s;';
+        document.body.appendChild(toast);
+    } else {
+        toast.style.background = color;
+        toast.style.opacity = '1';
+    }
+    toast.textContent = msg;
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function() { toast.style.opacity = '0'; }, 2500);
 }
 
 function toggleFavorito(evento, id) {
@@ -634,37 +989,55 @@ function toggleFavorito(evento, id) {
         return;
     }
 
-    var CLAVE_FAVORITOS = 'petfamily_favoritos';
-    var favoritos = JSON.parse(localStorage.getItem(CLAVE_FAVORITOS) || '[]');
-    var posicion  = favoritos.indexOf(id);
+    fetch('../backend/mascotas/favoritos.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ idMascota: parseInt(id) })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (!data.ok) return;
 
-    if (posicion !== -1) {
-        favoritos.splice(posicion, 1);
-    } else {
-        favoritos.push(id);
-    }
+        var CLAVE_FAVORITOS = 'petfamily_favoritos';
+        var favoritos = JSON.parse(localStorage.getItem(CLAVE_FAVORITOS) || '[]');
+        var eliminado = data.accion === 'eliminado';
 
-    localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify(favoritos));
+        if (eliminado) {
+            var pos = favoritos.indexOf(id);
+            if (pos !== -1) favoritos.splice(pos, 1);
+        } else {
+            if (favoritos.indexOf(id) === -1) favoritos.push(id);
+        }
+        localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify(favoritos));
 
-    var boton = document.querySelector('.btn-fav[data-id="' + id + '"]');
-    if (!boton) return;
-    var icono = boton.querySelector('i');
-    var esFav = favoritos.indexOf(id) !== -1;
+        var boton = document.querySelector('.btn-fav[data-id="' + id + '"]');
+        if (boton) {
+            var icono = boton.querySelector('i');
+            if (eliminado) {
+                boton.classList.remove('activo');
+                icono.className = 'fa-regular fa-heart';
+                boton.title = 'Agregar a favoritos';
+            } else {
+                boton.classList.add('activo');
+                icono.className = 'fa-solid fa-heart';
+                boton.title = 'Quitar de favoritos';
+            }
+        }
 
-    if (esFav) {
-        boton.classList.add('activo');
-        icono.className = 'fa-solid fa-heart';
-        boton.title = 'Quitar de favoritos';
-    } else {
-        boton.classList.remove('activo');
-        icono.className = 'fa-regular fa-heart';
-        boton.title = 'Agregar a favoritos';
-    }
+        mostrarToastFav(
+            eliminado ? '💔 Eliminado de favoritos' : '❤️ Guardado en favoritos',
+            eliminado ? '#666' : '#1B358F'
+        );
+    })
+    .catch(function() {
+        mostrarToastFav('Error al guardar favorito', '#c0392b');
+    });
 }
 
 
 /* ------------------------------------------------------------------ */
-/* dona */
+/* dona                                                                */
 /* ------------------------------------------------------------------ */
 var protectoras = {
     'prot-1': {
@@ -706,6 +1079,95 @@ var protectoras = {
         teaming:  'https://www.teaming.net/asociacionfelinalaesperanza'
     }
 };
+
+/* Carga protectoras nuevas (id > 5) desde BD y las registra en el objeto protectoras */
+function cargarProtectorasDinamicasEnDona() {
+    fetch('../backend/api/protectoras/listar.php')
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok || !data.protectoras) return;
+            var nuevas = data.protectoras.filter(function(p){ return parseInt(p.idProtectora) > 5; });
+            if (!nuevas.length) return;
+
+            /* Registrar en objeto protectoras para que buildDatosProt funcione */
+            nuevas.forEach(function(p) {
+                var key = 'prot-' + p.idProtectora;
+                protectoras[key] = {
+                    nombre:   p.nombre,
+                    telefono: p.telefono || null,
+                    email:    p.email    || null,
+                    web:      p.web      || null,
+                    teaming:  null,
+                    iban:     null
+                };
+            });
+
+            /* Inyectar cards en dona.html si existe el contenedor */
+            var cont = document.getElementById('containerProtDinamicasDona');
+            if (cont) {
+                cont.innerHTML = nuevas.map(function(p) {
+                    var id  = 'prot-' + p.idProtectora;
+                    var logo = p.foto_logo
+                        ? '<img class="logo-protectora" src="../' + p.foto_logo + '" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="Logo ' + p.nombre + '">'
+                        : '';
+                    return '<label class="card-protectora" id="' + id + '" onclick="toggleProtectora('' + id + '')">'
+                        + '<input type="checkbox" name="protectora" value="' + id + '">'
+                        + logo
+                        + '<div class="icono-prot-fb">🐾</div>'
+                        + '<div style="flex:1;">'
+                        + '<p class="protectora-nombre">' + p.nombre + '</p>'
+                        + (p.localidad ? '<p class="protectora-lugar"><i class="fa-solid fa-location-dot"></i> ' + p.localidad + '</p>' : '')
+                        + (p.descripcion ? '<p class="descripcion-protectora">' + p.descripcion + '</p>' : '')
+                        + '</div></label>';
+                }).join('');
+            }
+
+            /* Inyectar en protectoras.html si existe el grid */
+            var gridProt = document.getElementById('gridProtectorasDinamicas');
+            if (gridProt) {
+                gridProt.innerHTML = nuevas.map(function(p) {
+                    var logo = p.foto_logo
+                        ? '<img src="../' + p.foto_logo + '" alt="Logo ' + p.nombre + '" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'prot-logo-emoji\'>🐾</span>'">'
+                        : '<span class="prot-logo-emoji">🐾</span>';
+                    return '<div class="col-md-6 col-lg-4 prot-item" data-especie="perros gatos" data-nombre="' + p.nombre + ' ' + (p.localidad||'') + '" data-teaming="no">'
+                        + '<div class="card-protectora-pag">'
+                        + '<div class="prot-franja"></div>'
+                        + '<div class="prot-header">'
+                        + '<div class="prot-logo-container">' + logo + '</div>'
+                        + '<div style="flex:1;min-width:0;">'
+                        + '<p class="prot-nombre">' + p.nombre + '</p>'
+                        + (p.localidad ? '<p class="prot-lugar"><i class="fa-solid fa-location-dot"></i> ' + p.localidad + '</p>' : '')
+                        + '</div>'
+                        + (p.verificada ? '<span class="prot-badge-anos">✓ Verificada</span>' : '')
+                        + '</div>'
+                        + (p.descripcion ? '<div class="prot-desc"><p>' + p.descripcion + '</p></div>' : '')
+                        + '<div class="prot-contacto">'
+                        + (p.email    ? '<div class="prot-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + p.email + '">' + p.email + '</a></div>' : '')
+                        + (p.telefono ? '<div class="prot-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + p.telefono + '">' + p.telefono + '</a></div>' : '')
+                        + (p.web      ? '<div class="prot-dato"><i class="fa-solid fa-globe"></i><a href="' + p.web + '" target="_blank" rel="noopener">' + p.web + '</a></div>' : '')
+                        + '</div>'
+                        + '<div class="prot-acciones">'
+                        + '<button class="btn-prot-donar" onclick="abrirModalDonarProtDinamica(' + p.idProtectora + ')"><i class="fa-solid fa-hand-holding-heart me-1"></i> Donar</button>'
+                        + (p.web ? '<a href="' + p.web + '" target="_blank" rel="noopener" class="btn-prot-ext"><i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Web</a>' : '')
+                        + '</div>'
+                        + '</div></div>';
+                }).join('');
+                if (typeof filtrarProtectoras === 'function') filtrarProtectoras();
+            }
+        })
+        .catch(function(){});
+}
+
+/* Modal donar para protectoras dinámicas en protectoras.html */
+function abrirModalDonarProtDinamica(idProtectora) {
+    var key = 'prot-' + idProtectora;
+    var p   = protectoras[key];
+    if (!p) return;
+    var cont = document.getElementById('modal-datos-prot-pag');
+    if (cont) cont.innerHTML = buildDatosProt(p);
+    var modal = document.getElementById('modalDonarProt');
+    if (modal) new bootstrap.Modal(modal).show();
+}
 
 function toggleProtectora(id) {
     var card     = document.getElementById(id);
@@ -755,14 +1217,12 @@ function copiarIban(btn, iban) {
 function buildDatosProt(p) {
     var html = '<div class="modal-prot-bloque">';
 
-    /* Nombre */
     html += '<div style="display:flex;align-items:center;gap:0.5em;'
           + 'margin-bottom:0.7em;padding-bottom:0.7em;border-bottom:2px solid #1B358F;">'
           + '<i class="fa-solid fa-building-shield" style="color:#1B358F;"></i>'
           + '<strong style="font-size:0.97rem;color:#1B358F;letter-spacing:0.01em;">' + p.nombre + '</strong>'
           + '</div>';
 
-    /* Aviso sin web — justo tras el nombre */
     if (!p.web) {
         if (p.teaming) {
             html += '<div class="aviso-teaming" style="margin-bottom:0.8em;">'
@@ -780,7 +1240,6 @@ function buildDatosProt(p) {
         }
     }
 
-    /* Contacto */
     if (p.telefono) {
         html += '<div class="modal-dato">'
               + '<i class="fa-solid fa-phone"></i>'
@@ -796,14 +1255,12 @@ function buildDatosProt(p) {
               + '</div>';
     }
 
-    /* Teaming button */
     if (p.teaming) {
         html += '<a href="' + p.teaming + '" target="_blank" rel="noopener" class="btn-ir-web btn-ir-web-teaming" style="margin-top:0.6em;">'
               + '<i class="fa-solid fa-mug-hot me-2"></i>Colaborar con 1&nbsp;&euro;/mes en Teaming'
               + '</a>';
     }
 
-    /* Web donaciones */
     if (p.web) {
         html += '<a href="' + p.web + '" target="_blank" rel="noopener" class="btn-ir-web" style="margin-top:0.6em;">'
               + '<i class="fa-solid fa-arrow-up-right-from-square me-2"></i>Ir a la p&aacute;gina de donaciones'
@@ -816,9 +1273,8 @@ function buildDatosProt(p) {
         }
     }
 
-    /* IBAN siempre al final */
     if (p.iban) {
-        var ibanEsc = p.iban.replace(/'/g, "\'");
+        var ibanEsc = p.iban.replace(/'/g, "\\'");
         html += '<div class="modal-dato" style="margin-top:0.8em;padding-top:0.6em;border-top:1px solid #f0f0f0;">'
               + '<i class="fa-solid fa-building-columns"></i>'
               + '<span>' + p.iban + '</span>'
@@ -835,8 +1291,8 @@ function buildDatosProt(p) {
 }
 
 function mostrarModalDona() {
-    var checkboxes  = document.querySelectorAll('input[type="checkbox"]:checked');
-    var errorEl     = document.getElementById('errorSeleccion');
+    var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+    var errorEl    = document.getElementById('errorSeleccion');
     if (checkboxes.length === 0) {
         if (errorEl) {
             errorEl.style.display = 'block';
@@ -858,7 +1314,7 @@ function mostrarModalDona() {
 
 
 /* ------------------------------------------------------------------ */
-/* apadrina */
+/* apadrina                                                            */
 /* ------------------------------------------------------------------ */
 var animalesApadrina = {
     leia: {
@@ -905,17 +1361,16 @@ function abrirModalApadrina(idAnimal) {
     new bootstrap.Modal(document.getElementById('modalApadrina')).show();
 }
 
-// ===============================
-// CARGA DINÁMICA DE MASCOTAS
-// ===============================
 
-// Renderiza tarjetas de mascotas en adopta.html
+/* ------------------------------------------------------------------ */
+/* carga dinamica de mascotas                                          */
+/* ------------------------------------------------------------------ */
 async function cargarMascotasAdopta() {
     const contenedor = document.getElementById('contenedor-mascotas');
     if (!contenedor) return;
     contenedor.innerHTML = '<div class="text-center w-100 py-5"><div class="spinner-border" role="status"></div></div>';
     try {
-        const res = await fetch('../php/get_mascotas.php');
+        const res  = await fetch('../php/get_mascotas.php');
         const json = await res.json();
         if (!json.success) throw new Error(json.error || 'Error cargando mascotas');
         const mascotas = json.data;
@@ -929,95 +1384,68 @@ async function cargarMascotasAdopta() {
     }
 }
 
-/* Renderiza una tarjeta de mascota COMPLETA */
 function renderTarjetaMascota(m) {
-    
-    /* Calcular edad desde fecha_nacimiento */
+
     var edad = '';
     if (m.fecha_nacimiento) {
         var nacimiento = new Date(m.fecha_nacimiento);
-        var hoy = new Date();
-        var edadAños = hoy.getFullYear() - nacimiento.getFullYear();
-        var mes = hoy.getMonth() - nacimiento.getMonth();
-        if (mes < 0) edadAños--;
-        edad = edadAños;
+        var hoy        = new Date();
+        var edadAnos   = hoy.getFullYear() - nacimiento.getFullYear();
+        var mes        = hoy.getMonth() - nacimiento.getMonth();
+        if (mes < 0) edadAnos--;
+        edad = edadAnos;
     }
-    
-    /* Determinar badge de urgencia/estado */
+
     var badgeHtml = '';
     if (m.urgencia === 'urgente') {
         badgeHtml = '<span class="badge bg-danger">Urgente</span>';
     } else if (m.urgencia === 'nuevo') {
         badgeHtml = '<span class="badge bg-info">Nuevo</span>';
     }
-    
-    /* Información adicional según propiedades */
+
     var infoExtra = '';
-    if (m.compatible_ninos) infoExtra += '<span class="badge bg-light text-dark me-1"><i class="fa-solid fa-child"></i></span>';
+    if (m.compatible_ninos)  infoExtra += '<span class="badge bg-light text-dark me-1"><i class="fa-solid fa-child"></i></span>';
     if (m.compatible_perros) infoExtra += '<span class="badge bg-light text-dark me-1"><i class="fa-solid fa-dog"></i></span>';
-    if (m.compatible_gatos) infoExtra += '<span class="badge bg-light text-dark me-1"><i class="fa-solid fa-cat"></i></span>';
-    if (m.apto_piso) infoExtra += '<span class="badge bg-light text-dark me-1"><i class="fa-solid fa-home"></i></span>';
-    
+    if (m.compatible_gatos)  infoExtra += '<span class="badge bg-light text-dark me-1"><i class="fa-solid fa-cat"></i></span>';
+    if (m.apto_piso)         infoExtra += '<span class="badge bg-light text-dark me-1"><i class="fa-solid fa-home"></i></span>';
+
     return `
-    <div class="col-sm-12 col-md-6 col-lg-4 animalCard" 
-         data-especie="${m.especie}" 
-         data-ubicacion="${m.ubicacion || ''}" 
+    <div class="col-sm-12 col-md-6 col-lg-4 animalCard"
+         data-especie="${m.especie}"
+         data-ubicacion="${m.ubicacion || ''}"
          data-tamano="${m.tamano || ''}"
          data-urgencia="${m.urgencia || ''}"
          data-edad="${edad}"
          data-sexo="${m.sexo || ''}"
          data-color="${m.color || ''}"
          data-salud="${m.estado_salud || ''}">
-        
         <div class="card h-100 shadow-sm">
-            
-            <!-- Imagen con badge de urgencia/estado -->
             <div class="contenedor-imagen position-relative">
                 <img src="${m.foto}" class="card-img-top" alt="${m.nombre}">
-                
-                <!-- Badge urgencia/estado -->
                 ${badgeHtml}
-                
-                <!-- Botón favorito -->
                 <button class="btn-fav" onclick="toggleFavorito(event, '${m.idMascota}')" title="Agregar a favoritos">
                     <i class="fa-regular fa-heart"></i>
                 </button>
             </div>
-            
-            <!-- Cuerpo de la tarjeta -->
             <div class="card-body d-flex flex-column">
-                
-                <!-- Nombre y sexo -->
                 <div class="d-flex align-items-center mb-2">
                     <h5 class="card-title mb-0">${m.nombre}</h5>
                     <span class="ms-2 fs-6">
-                        ${m.sexo === 'hembra' ? '<i class="fa-solid fa-venus" style="color: #E91E63;"></i>' : '<i class="fa-solid fa-mars" style="color: #2196F3;"></i>'}
+                        ${m.sexo === 'hembra' ? '<i class="fa-solid fa-venus" style="color:#E91E63;"></i>' : '<i class="fa-solid fa-mars" style="color:#2196F3;"></i>'}
                     </span>
                 </div>
-                
-                <!-- Información del animal -->
                 <ul class="card-meta list-unstyled small text-secondary mb-2">
-                    ${m.raza ? '<li><i class="fa-solid fa-dog"></i> ' + m.raza + '</li>' : ''}
-                    ${edad ? '<li><i class="fa-solid fa-calendar"></i> ' + edad + ' años</li>' : ''}
+                    ${m.raza   ? '<li><i class="fa-solid fa-dog"></i> ' + m.raza + '</li>' : ''}
+                    ${edad     ? '<li><i class="fa-solid fa-calendar"></i> ' + edad + ' años</li>' : ''}
                     ${m.tamano ? '<li><i class="fa-solid fa-expand"></i> ' + (m.tamano.charAt(0).toUpperCase() + m.tamano.slice(1)) + '</li>' : ''}
                 </ul>
-                
-                <!-- Ubicación (protectora) -->
-                ${m.ubicacion ? '<div class="small text-muted mb-2"><i class="fa-solid fa-location-dot"></i> ' + m.ubicacion + '</div>' : ''}
-                
-                <!-- Información del estado de adopción -->
+                ${m.ubicacion     ? '<div class="small text-muted mb-2"><i class="fa-solid fa-location-dot"></i> ' + m.ubicacion + '</div>' : ''}
                 ${m.estado_adopcion ? '<div class="small text-muted mb-2"><i class="fa-solid fa-hourglass-end"></i> En adopción: ' + m.estado_adopcion.replace('_', ' ') + '</div>' : ''}
-                
-                <!-- Badges de compatibilidad -->
                 ${infoExtra ? '<div class="mb-2">' + infoExtra + '</div>' : ''}
-                
-                <!-- Contador de vistas -->
                 <div class="contador-vistas small text-warning mt-2">
                     <i class="fa-solid fa-eye"></i>
                     <span>Vista <strong id="vistas-${m.idMascota}">0</strong> veces</span>
                 </div>
-                
-                <!-- Botón Ver ficha -->
                 <a href="fichaAnimal.html?id=${m.idMascota}" class="btn btn-primary w-100 mt-auto" onclick="registrarVistaFicha('${m.idMascota}')">
                     Ver ficha
                 </a>
@@ -1027,27 +1455,24 @@ function renderTarjetaMascota(m) {
     `;
 }
 
-// Cargar datos de una mascota en fichaAnimal.html
 async function cargarMascotaFicha() {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
     if (!id) return;
     try {
-        const res = await fetch(`../php/get_mascota.php?id=${id}`);
+        const res  = await fetch('../php/get_mascota.php?id=' + id);
         const json = await res.json();
         if (!json.success) throw new Error(json.error || 'No encontrada');
         const m = json.data;
-        document.getElementById('animal-nombre').textContent = m.nombre;
-        document.getElementById('animal-subtitulo').textContent = `${m.raza || ''} · ${m.sexo || ''}`;
+        document.getElementById('animal-nombre').textContent    = m.nombre;
+        document.getElementById('animal-subtitulo').textContent = (m.raza || '') + ' · ' + (m.sexo || '');
         document.getElementById('animal-descripcion').textContent = m.descripcion || '';
         document.getElementById('foto-principal').src = m.foto || '../img/mascotas/default.jpg';
-        // Puedes completar más campos según tu HTML
     } catch (e) {
-        document.querySelector('main').innerHTML = `<div class='alert alert-danger'>Error: ${e.message}</div>`;
+        document.querySelector('main').innerHTML = '<div class="alert alert-danger">Error: ' + e.message + '</div>';
     }
 }
 
-// Inicialización automática
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
         if (document.getElementById('contenedor-mascotas')) cargarMascotasAdopta();
@@ -1056,4 +1481,56 @@ if (document.readyState === 'loading') {
 } else {
     if (document.getElementById('contenedor-mascotas')) cargarMascotasAdopta();
     if (document.getElementById('animal-nombre')) cargarMascotaFicha();
+}
+
+/*--------------------------------------------------------------------------------------------
+compartir animal — función global usada en adopta, fichaAnimal, apadrina y acoge */
+function compartirAnimal(id, nombre) {
+    /* Construir URL limpia a la ficha */
+    var base = window.location.href;
+    var url;
+    if (id) {
+        var partes = base.split('/html/');
+        url = partes.length > 1
+            ? partes[0] + '/html/fichaAnimal.html?id=' + id
+            : base.replace(/[^\/]*$/, '') + 'fichaAnimal.html?id=' + id;
+    } else {
+        url = base;
+    }
+
+    /* Copiar al portapapeles — textarea con position:fixed para máxima compatibilidad */
+    try {
+        var ta = document.createElement('textarea');
+        ta.value = url;
+        ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+    } catch(e) {}
+
+    /* Toast con URL visible */
+    var toast = document.getElementById('toastCompartir');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toastCompartir';
+        toast.className = 'toast-compartir';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = '\uD83D\uDD17 Copiado: ' + url;
+    toast.classList.add('visible');
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(function() {
+        toast.classList.remove('visible');
+    }, 5000);
+
+    /* Share nativo en móvil (además del toast) */
+    if (navigator.share) {
+        navigator.share({
+            title: (nombre || 'Animal') + ' — PetFamily',
+            text: (nombre || 'Este animal') + ' busca hogar en PetFamily. \uD83D\uDC3E ',
+            url: url
+        }).catch(function() {});
+    }
 }

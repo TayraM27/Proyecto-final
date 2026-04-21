@@ -1,11 +1,23 @@
-
 /* ------------------------------------------------------------------ */
 /* Tests                                                               */
 /* ------------------------------------------------------------------ */
 
+var estaLogueado = sessionStorage.getItem('pf_session') !== null;
 
-
-var estaLogueado = false;
+/* elegirEspecie — llamada desde los botones de icono del HTML.
+   Guarda el filtro y arranca el test saltándose la primera pregunta
+   (especie) que ahora es redundante */
+function elegirEspecie(especie) {
+    estadoTest.compatibilidad.especieFiltro = especie;
+    /* Ocultar selección de especie y mostrar barra de progreso + preguntas */
+    document.getElementById('compat-seleccion-especie').classList.add('d-none');
+    document.getElementById('prog-wrap-compatibilidad').classList.remove('d-none');
+    document.getElementById('preguntas-compatibilidad').classList.remove('d-none');
+    document.getElementById('btn-siguiente-compatibilidad').classList.remove('d-none');
+    /* Saltar la pregunta 0 (especie) — empezar desde la 1 */
+    estadoTest.compatibilidad.preguntaActual = 1;
+    renderPregunta('compatibilidad');
+}
 
 // ----------------------------------------------------------------
 // test conocimientos
@@ -629,58 +641,58 @@ var todasLasPreguntas = [
 // ================================================================
 // TEST DE COMPATIBILIDAD
 
-var catalogoMascotas = [
-    {
-        id: 1, nombre: 'Bruno', especie: 'perro',
-        raza: 'Mestizo mediano', edadAnios: 3, edadTexto: '3 años',
-        protectora: 'Fundación Protectora de Asturias', icono: 'fa-dog',
-        descripcion: 'Sociable y cariñoso. Necesita salidas diarias y compañía constante.',
-        atributos: { espacio: 2, soledad: 1, actividad: 2, experiencia: 1, ninos: 2, otrosAnimales: 2, ruido: 2, pelaje: 1, presupuesto: 2, edadPref: 1, caracter: 2 }
-    },
-    {
-        id: 2, nombre: 'Leia', especie: 'perro',
-        raza: 'Pit Bull Terrier', edadAnios: 14, edadTexto: '14 años',
-        protectora: 'CPA Gijón', icono: 'fa-dog',
-        descripcion: 'Perra mayor, tranquila y muy agradecida. Ideal para un hogar calmado.',
-        atributos: { espacio: 1, soledad: 2, actividad: 0, experiencia: 1, ninos: 1, otrosAnimales: 1, ruido: 0, pelaje: 1, presupuesto: 2, edadPref: 3, caracter: 2 }
-    },
-    {
-        id: 3, nombre: 'Dexter', especie: 'perro',
-        raza: 'Pastor Alemán', edadAnios: 10, edadTexto: '10 años',
-        protectora: 'Nortemascotas', icono: 'fa-dog',
-        descripcion: 'Inteligente y leal. Necesita estimulación mental, ejercicio intenso y dueño con experiencia.',
-        atributos: { espacio: 3, soledad: 0, actividad: 3, experiencia: 2, ninos: 2, otrosAnimales: 1, ruido: 2, pelaje: 2, presupuesto: 2, edadPref: 2, caracter: 3 }
-    },
-    {
-        id: 4, nombre: 'Haru', especie: 'perro',
-        raza: 'Mestiza', edadAnios: 7, edadTexto: '7 años',
-        protectora: 'Fundación Protectora de Asturias', icono: 'fa-dog',
-        descripcion: 'Equilibrada y afectuosa. Se adapta bien a diferentes ritmos de vida.',
-        atributos: { espacio: 2, soledad: 2, actividad: 2, experiencia: 1, ninos: 3, otrosAnimales: 3, ruido: 1, pelaje: 1, presupuesto: 1, edadPref: 2, caracter: 2 }
-    },
-    {
-        id: 5, nombre: 'Roys', especie: 'gato',
-        raza: 'Mestizo', edadAnios: 1, edadTexto: '1 año',
-        protectora: 'Asoc. Felina La Esperanza', icono: 'fa-cat',
-        descripcion: 'Joven y curioso. Necesita estimulación y seguimiento veterinario por leucemia felina.',
-        atributos: { espacio: 1, soledad: 2, actividad: 2, experiencia: 2, ninos: 1, otrosAnimales: 0, ruido: 1, pelaje: 1, presupuesto: 2, edadPref: 0, caracter: 1 }
-    },
-    {
-        id: 6, nombre: 'Bosque', especie: 'gato',
-        raza: 'Mestizo', edadAnios: 0, edadTexto: '8 meses',
-        protectora: 'Fundación Protectora de Asturias', icono: 'fa-cat',
-        descripcion: 'Cachorro juguetón. Necesita seguimiento veterinario frecuente.',
-        atributos: { espacio: 1, soledad: 1, actividad: 2, experiencia: 2, ninos: 0, otrosAnimales: 0, ruido: 1, pelaje: 1, presupuesto: 3, edadPref: 0, caracter: 1 }
-    },
-    {
-        id: 7, nombre: 'Bambi', especie: 'gato',
-        raza: 'Mestizo adulto', edadAnios: 5, edadTexto: '5 años',
-        protectora: 'MÁS QUE CHUCHOS', icono: 'fa-cat',
-        descripcion: 'Tranquilo e independiente. Perfecto para personas con poco tiempo libre.',
-        atributos: { espacio: 1, soledad: 3, actividad: 1, experiencia: 0, ninos: 2, otrosAnimales: 2, ruido: 0, pelaje: 1, presupuesto: 1, edadPref: 1, caracter: 0 }
-    }
-];
+/* Atributos de compatibilidad (fijos por diseño del test) */
+var atributosBase = {
+    1: { espacio: 1, soledad: 2, actividad: 0, experiencia: 1, ninos: 2, otrosAnimales: 1, ruido: 0, pelaje: 1, presupuesto: 2, edadPref: 3, caracter: 2 },
+    2: { espacio: 2, soledad: 2, actividad: 2, experiencia: 1, ninos: 2, otrosAnimales: 1, ruido: 1, pelaje: 1, presupuesto: 1, edadPref: 2, caracter: 2 },
+    3: { espacio: 1, soledad: 2, actividad: 2, experiencia: 1, ninos: 2, otrosAnimales: 2, ruido: 1, pelaje: 1, presupuesto: 1, edadPref: 0, caracter: 2 },
+    4: { espacio: 1, soledad: 3, actividad: 1, experiencia: 0, ninos: 1, otrosAnimales: 1, ruido: 0, pelaje: 1, presupuesto: 1, edadPref: 1, caracter: 0 },
+    5: { espacio: 3, soledad: 0, actividad: 3, experiencia: 2, ninos: 2, otrosAnimales: 1, ruido: 2, pelaje: 2, presupuesto: 2, edadPref: 2, caracter: 3 },
+    6: { espacio: 1, soledad: 1, actividad: 2, experiencia: 2, ninos: 0, otrosAnimales: 0, ruido: 1, pelaje: 1, presupuesto: 3, edadPref: 0, caracter: 1 }
+};
 
+/* Catálogo dinámico — se carga desde BD al iniciar */
+var catalogoMascotas = [];
+
+function cargarCatalogoMascotas(callback) {
+    fetch('../backend/mascotas/listar.php?pagina=1&especie=todos')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (!data.mascotas) { if (callback) callback(); return; }
+            catalogoMascotas = data.mascotas.map(function(m) {
+                /* Para animales nuevos, inferir atributos desde sus datos */
+                var attrsAuto = {
+                    espacio:       m.tamanyo === 'grande' ? 2 : m.tamanyo === 'pequeno' || m.tamanyo === 'pequeño' ? 0 : 1,
+                    soledad:       m.especie === 'gato' ? 2 : 1,
+                    actividad:     m.especie === 'perro' ? (parseInt(m.edad_anos) > 8 ? 1 : 2) : 1,
+                    experiencia:   (m.estado_salud && m.estado_salud.toLowerCase() !== 'bueno') ? 2 : 1,
+                    ninos:         m.compatible_ninos ? 2 : 0,
+                    otrosAnimales: (m.compatible_perros || m.compatible_gatos) ? 2 : 0,
+                    ruido:         m.especie === 'gato' ? 0 : 1,
+                    pelaje:        1,
+                    presupuesto:   (m.estado_salud && m.estado_salud.toLowerCase() !== 'bueno') ? 3 : 1,
+                    edadPref:      parseInt(m.edad_anos) > 8 ? 3 : parseInt(m.edad_anos) > 3 ? 2 : 1,
+                    caracter:      m.compatible_ninos ? 2 : 1
+                };
+                var attrs = atributosBase[m.idMascota] || attrsAuto;
+                return {
+                    id:          m.idMascota,
+                    nombre:      m.nombre,
+                    especie:     m.especie,
+                    raza:        m.raza || '',
+                    edadAnios:   parseInt(m.edad_anos) || 0,
+                    edadTexto:   m.edad_texto || (m.edad_anos ? m.edad_anos + ' años' : ''),
+                    protectora:  m.protectora_nombre || '',
+                    icono:       m.especie === 'perro' ? 'fa-dog' : 'fa-cat',
+                    foto:        m.foto_principal ? '../' + m.foto_principal : '../img/mascotas/default.jpg',
+                    descripcion: m.descripcion || '',
+                    atributos:   attrs
+                };
+            });
+            if (callback) callback();
+        })
+        .catch(function() { if (callback) callback(); });
+}
 // ----------------------------------------------------------------
 // PREGUNTAS DEL TEST DE COMPATIBILIDAD
 var preguntasCompatibilidad = [
@@ -838,20 +850,28 @@ function seleccionarPreguntas() {
 // ----------------------------------------------------------------
 // NAVEGACIÓN
 function iniciarTest(tipo) {
+    if (catalogoMascotas.length === 0) {
+        cargarCatalogoMascotas(function() { iniciarTest(tipo); });
+        return;
+    }
     document.getElementById('test-selector').classList.add('d-none');
     document.getElementById('test-' + tipo).classList.remove('d-none');
     if (tipo === 'conocimiento') {
         estadoTest.conocimiento = { preguntaActual: 0, respuestas: [], puntuacion: 0, seleccion: seleccionarPreguntas() };
+        document.getElementById('resultado-conocimiento').classList.add('d-none');
+        document.getElementById('preguntas-conocimiento').classList.remove('d-none');
+        document.getElementById('btn-siguiente-conocimiento').classList.remove('d-none');
+        renderPregunta(tipo);
     } else {
         estadoTest.compatibilidad = { preguntaActual: 0, respuestas: {}, especieFiltro: 'indiferente' };
-    }
-    document.getElementById('resultado-' + tipo).classList.add('d-none');
-    document.getElementById('preguntas-' + tipo).classList.remove('d-none');
-    document.getElementById('btn-siguiente-' + tipo).classList.remove('d-none');
-    if (tipo === 'compatibilidad') {
+        document.getElementById('resultado-compatibilidad').classList.add('d-none');
         document.getElementById('aviso-login-compatibilidad').classList.add('d-none');
+        /* Mostrar selección de especie, ocultar el resto */
+        document.getElementById('compat-seleccion-especie').classList.remove('d-none');
+        document.getElementById('prog-wrap-compatibilidad').classList.add('d-none');
+        document.getElementById('preguntas-compatibilidad').classList.add('d-none');
+        document.getElementById('btn-siguiente-compatibilidad').classList.add('d-none');
     }
-    renderPregunta(tipo);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -865,16 +885,19 @@ function volverSelector() {
 function reiniciarTest(tipo) {
     if (tipo === 'conocimiento') {
         estadoTest.conocimiento = { preguntaActual: 0, respuestas: [], puntuacion: 0, seleccion: seleccionarPreguntas() };
+        document.getElementById('resultado-conocimiento').classList.add('d-none');
+        document.getElementById('preguntas-conocimiento').classList.remove('d-none');
+        document.getElementById('btn-siguiente-conocimiento').classList.remove('d-none');
+        renderPregunta(tipo);
     } else {
         estadoTest.compatibilidad = { preguntaActual: 0, respuestas: {}, especieFiltro: 'indiferente' };
-    }
-    document.getElementById('resultado-' + tipo).classList.add('d-none');
-    if (tipo === 'compatibilidad') {
+        document.getElementById('resultado-compatibilidad').classList.add('d-none');
         document.getElementById('aviso-login-compatibilidad').classList.add('d-none');
+        document.getElementById('compat-seleccion-especie').classList.remove('d-none');
+        document.getElementById('prog-wrap-compatibilidad').classList.add('d-none');
+        document.getElementById('preguntas-compatibilidad').classList.add('d-none');
+        document.getElementById('btn-siguiente-compatibilidad').classList.add('d-none');
     }
-    document.getElementById('preguntas-' + tipo).classList.remove('d-none');
-    document.getElementById('btn-siguiente-' + tipo).classList.remove('d-none');
-    renderPregunta(tipo);
 }
 
 
@@ -883,18 +906,22 @@ function renderPregunta(tipo) {
         ? estadoTest.conocimiento.seleccion
         : preguntasCompatibilidad;
     var estado = estadoTest[tipo];
-    var total = preguntas.length;
-    var actual = estado.preguntaActual;
+    var actual  = estado.preguntaActual;
+    /* Para compatibilidad: total de preguntas excluyendo la 0 (especie) */
+    var inicio  = tipo === 'compatibilidad' ? 1 : 0;
+    var total   = preguntas.length;
+    var numMostrado = actual - inicio + 1;
+    var totalMostrado = total - inicio;
 
-    var pct = (actual / total) * 100;
+    var pct = ((actual - inicio) / (total - inicio)) * 100;
     document.getElementById('prog-' + tipo).style.width = pct + '%';
-    document.getElementById('prog-label-' + tipo).textContent = 'Pregunta ' + (actual + 1) + ' de ' + total;
+    document.getElementById('prog-label-' + tipo).textContent =
+        'Pregunta ' + numMostrado + ' de ' + totalMostrado;
     document.getElementById('btn-siguiente-' + tipo).disabled = true;
 
     var pregunta = preguntas[actual];
     var html = '<div class="test-pregunta-bloque">';
-
-    html += '<p class="test-pregunta-numero">Pregunta ' + (actual + 1) + ' / ' + total + '</p>';
+    html += '<p class="test-pregunta-numero">Pregunta ' + numMostrado + ' / ' + totalMostrado + '</p>';
     if (tipo === 'compatibilidad' && pregunta.descripcion) {
         html += '<p class="test-pregunta-desc">' + pregunta.descripcion + '</p>';
     }
@@ -931,11 +958,6 @@ function siguientePregunta(tipo) {
     if (tipo === 'conocimiento') {
         if (respuestaIdx === preguntas[estado.preguntaActual].correcta) {
             estado.puntuacion++;
-        }
-    } else {
-        // Si es la primera pregunta (especie), guardar el filtro
-        if (estado.preguntaActual === 0) {
-            estado.especieFiltro = preguntas[0].opciones[respuestaIdx].valor;
         }
     }
 
@@ -998,6 +1020,13 @@ function mostrarResultadoConocimiento() {
     });
     document.getElementById('res-detalle-conocimiento').innerHTML = detalle;
     document.getElementById('resultado-conocimiento').classList.remove('d-none');
+    /* Guardar resultado en localStorage para perfil */
+    localStorage.setItem('pf_test_conocimiento', JSON.stringify({
+        fecha: new Date().toISOString(),
+        puntos: puntos,
+        total: total,
+        pct: pct
+    }));
 }
 
 // ----------------------------------------------------------------
@@ -1007,7 +1036,17 @@ function mostrarResultadoCompatibilidad() {
         document.getElementById('aviso-login-compatibilidad').classList.remove('d-none');
         return;
     }
-    calcularRanking();
+    /* Guardar resultado en localStorage para perfil */
+    localStorage.setItem('pf_test_compatibilidad', JSON.stringify({
+        fecha: new Date().toISOString(),
+        especieFiltro: estadoTest.compatibilidad.especieFiltro
+    }));
+    /* Si el catálogo no está cargado, cargarlo primero */
+    if (catalogoMascotas.length === 0) {
+        cargarCatalogoMascotas(calcularRanking);
+    } else {
+        calcularRanking();
+    }
 }
 
 // ----------------------------------------------------------------
@@ -1080,7 +1119,11 @@ function mostrarRanking(ranking, perfilUsuario, especieFiltro) {
 
         html += '<div class="compat-card ' + medallaClase + '">';
         html += '  <div class="compat-card-medalla">' + medallaIcono + '</div>';
-        html += '  <div class="compat-card-icono"><i class="fa-solid ' + m.icono + '"></i></div>';
+        if (m.foto) {
+            html += '  <img src="' + m.foto + '" alt="' + m.nombre + '" class="compat-card-foto" style="width:56px;height:56px;border-radius:50%;object-fit:cover;object-position:center top;flex-shrink:0;" onerror="this.style.display=\'none\'">';
+        } else {
+            html += '  <div class="compat-card-icono"><i class="fa-solid ' + m.icono + '"></i></div>';
+        }
         html += '  <div class="compat-card-info">';
         html += '    <div class="compat-card-nombre">' + m.nombre + ' <span class="compat-card-especie">' + m.especie + '</span></div>';
         html += '    <div class="compat-card-raza">' + m.raza + ' · ' + m.edadTexto + '</div>';
@@ -1093,10 +1136,28 @@ function mostrarRanking(ranking, perfilUsuario, especieFiltro) {
         html += '      <span class="compat-pct">' + pct + '% compatible</span>';
         html += '    </div>';
         html += '  </div>';
-        html += '  <a href="adopta.html" class="btn-azul compat-card-btn">Ver ficha</a>';
+        html += '  <a href="fichaAnimal.html?id=' + m.id + '" class="btn-azul compat-card-btn">Ver ficha</a>';
         html += '</div>';
     });
 
     document.getElementById('res-mascotas-compatibilidad').innerHTML = html;
     document.getElementById('resultado-compatibilidad').classList.remove('d-none');
+
+    /* Guardar ranking completo en localStorage para perfil */
+    var rankingGuardar = ranking.map(function(item) {
+        return {
+            id:            item.mascota.id,
+            nombre:        item.mascota.nombre,
+            especie:       item.mascota.especie,
+            raza:          item.mascota.raza,
+            edadTexto:     item.mascota.edadTexto,
+            protectora:    item.mascota.protectora,
+            icono:         item.mascota.icono,
+            foto:          item.mascota.foto || null,
+            compatibilidad: item.compatibilidad
+        };
+    });
+    var guardado = JSON.parse(localStorage.getItem('pf_test_compatibilidad') || '{}');
+    guardado.ranking = rankingGuardar;
+    localStorage.setItem('pf_test_compatibilidad', JSON.stringify(guardado));
 }

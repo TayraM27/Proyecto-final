@@ -80,18 +80,20 @@
             <!-- columna principal -->
             <div class="col-lg-8">
 
-                <!-- caja publicar -->
-                <div class="foro-publicar-caja mb-4">
+                <!-- caja publicar — estado SIN sesión -->
+                <div class="foro-publicar-caja mb-4" id="cajaSinSesion">
                     <div class="foro-publicar-top">
                         <div class="foro-avatar foro-avatar-gris foro-avatar-lg">
                             <i class="fa-solid fa-user"></i>
                         </div>
-                        <textarea
-                            class="foro-publicar-textarea"
+                        <input
+                            type="text"
                             id="textareaPublicar"
-                            placeholder="🐾 ¿Qué quieres compartir con la comunidad?"
-                            rows="3"
-                        ></textarea>
+                            class="foro-publicar-textarea"
+                            placeholder="🐾 ¿Qué quieres compartir?"
+                            readonly
+                            style="cursor:pointer;"
+                        >
                     </div>
                     <div class="foro-publicar-separador"></div>
                     <div class="foro-publicar-acciones">
@@ -102,9 +104,63 @@
                             <button class="foro-adj-btn" title="Archivo"><i class="fa-solid fa-paperclip"></i><span>Archivo</span></button>
                             <button class="foro-adj-btn" title="Emoji"><i class="fa-regular fa-face-smile"></i><span>Emoji</span></button>
                         </div>
-                        <button class="foro-publicar-btn" id="btnPublicar">
+                        <button class="foro-publicar-btn" id="btnPublicarFake">
                             <i class="fa-solid fa-paper-plane me-2"></i>Publicar
                         </button>
+                    </div>
+                </div>
+
+                <!-- caja publicar — estado CON sesión -->
+                <div class="foro-publicar-caja mb-4 d-none" id="cajaConSesion">
+                    <div class="foro-publicar-top">
+                        <div class="foro-avatar foro-avatar-azul foro-avatar-lg" id="avatarPub">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div style="flex:1;">
+                            <input
+                                type="text"
+                                id="inputTitulo"
+                                placeholder="Título de tu publicación..."
+                                style="width:100%;border:1px solid #e9ecef;border-radius:8px;padding:0.45em 0.8em;font-family:Poppins,sans-serif;font-size:0.9rem;margin-bottom:0.5em;outline:none;"
+                            >
+                            <div id="foroPlaceholder" class="foro-publicar-placeholder" onclick="this.style.display='none';document.getElementById('textareaPublicarReal').style.display='block';document.getElementById('textareaPublicarReal').focus();">¿Qué quieres compartir?</div>
+                            <textarea
+                                class="foro-publicar-textarea"
+                                id="textareaPublicarReal"
+                                rows="2"
+                                style="display:none;"
+                            ></textarea>
+                        </div>
+                    </div>
+                    <div class="foro-publicar-separador"></div>
+                    <div class="foro-publicar-acciones">
+                        <div class="foro-publicar-adjuntos">
+                            <label class="foro-adj-btn" style="cursor:pointer;">
+                                <i class="fa-solid fa-tag"></i>
+                                <select id="selectCategoria" style="border:none;background:transparent;font-family:Poppins,sans-serif;font-size:0.82rem;color:#1B358F;cursor:pointer;outline:none;">
+                                    <option value="informacion">Información</option>
+                                    <option value="adopcion">Adopción</option>
+                                    <option value="cuidados">Cuidados</option>
+                                    <option value="acogida">Acogida</option>
+                                    <option value="salud">Salud</option>
+                                </select>
+                            </label>
+                            <label class="foro-adj-btn" title="Añadir foto o vídeo" style="cursor:pointer;">
+                                <i class="fa-solid fa-image"></i><span>Foto/Vídeo</span>
+                                <input type="file" id="inputMedia" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm" style="display:none;">
+                            </label>
+                            <button type="button" class="foro-adj-btn" id="btnEmoji" title="Emoji" onclick="toggleEmojiPicker()">
+                                <i class="fa-regular fa-face-smile"></i><span>Emoji</span>
+                            </button>
+                            <div id="emojiPicker" style="display:none;position:absolute;z-index:999;background:#fff;border:1px solid #e9ecef;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.12);padding:0.6em;width:280px;max-height:200px;overflow-y:auto;flex-wrap:wrap;gap:2px;"></div>
+                        </div>
+                        <div id="mediaPreview" style="margin:0.5em 0 0 0;display:none;"></div>
+                        <div>
+                            <span class="text-danger me-2" id="errorPub" style="font-size:0.82rem;display:none;"></span>
+                            <button class="foro-publicar-btn" id="btnPublicar">
+                                <i class="fa-solid fa-paper-plane me-2"></i>Publicar
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -132,270 +188,15 @@
                     <button class="foro-filtro-btn" data-cat="informacion"><i class="fa-solid fa-circle-info me-1"></i>Información</button>
                 </div>
 
-                <!-- post 1: historia adopción -->
-                <article class="foro-post" data-cat="adopcion">
-                    <div class="foro-post-header">
-                        <div class="foro-avatar foro-avatar-gold">SM</div>
-                        <div class="foro-post-meta">
-                            <span class="foro-autor">Sara Méndez</span>
-                            <span class="foro-fecha"><i class="fa-regular fa-clock me-1"></i>Hace 3 horas</span>
-                        </div>
-                        <span class="foro-categoria foro-cat-adopcion ms-auto"><i class="fa-solid fa-paw me-1"></i>Adopción</span>
+                <!-- posts dinámicos -->
+                <div id="contenedorPosts">
+                    <div class="text-center py-5">
+                        <div class="spinner-border" style="color:#1B358F;" role="status"></div>
                     </div>
-                    <h3 class="foro-post-titulo">Bruno: del polígono de Silvota al sofá más querido de Oviedo</h3>
-                    <div class="foro-post-contenido">
-                        <p>Hace dos años, Bruno apareció atado a una farola en el polígono de Silvota. Desnutrido, con sarna y sin microchip. La Fundación Protectora de Asturias lo recogió esa misma tarde. Pesaba 12 kilos cuando debería pesar 28. No levantaba la cabeza. Se encogía cuando alguien levantaba la mano.</p>
-                        <p>Lo vi en Instagram un martes por la noche y el miércoles ya había llamado. Tres semanas después, Bruno dormía en mi sofá. Hoy es el ser más feliz del mundo: ladra cuando ve la correa, se sube a todos los regazos y duerme pegado a mis piernas cada noche. <strong>Si estáis dudando, hacedlo.</strong></p>
-                    </div>
-                    <div class="foro-post-reacciones">
-                        <button class="foro-reaccion-btn foro-reaccion-like"><i class="fa-regular fa-heart"></i> <span>14</span></button>
-                        <button class="foro-reaccion-btn"><i class="fa-regular fa-comment"></i> <span>5 comentarios</span></button>
-                        <button class="foro-reaccion-btn foro-reaccion-compartir"><i class="fa-solid fa-share-nodes"></i> Compartir</button>
-                    </div>
-                    <div class="foro-comentarios-seccion">
-                        <div class="foro-comentario">
-                            <div class="foro-avatar foro-avatar-azul foro-avatar-sm">AL</div>
-                            <div class="foro-comentario-burbuja">
-                                <span class="foro-com-autor">Ana López</span>
-                                <p class="foro-com-texto">Me he puesto a llorar leyendo esto. Gracias por compartirlo, estas historias son las que hacen falta.</p>
-                                <div class="foro-com-acciones"><button class="foro-com-like"><i class="fa-regular fa-heart"></i> 4</button><span class="foro-com-hora">Hace 2h</span></div>
-                            </div>
-                        </div>
-                        <div class="foro-comentario">
-                            <div class="foro-avatar foro-avatar-verde foro-avatar-sm">JM</div>
-                            <div class="foro-comentario-burbuja">
-                                <span class="foro-com-autor">Javier Martínez</span>
-                                <p class="foro-com-texto">Nosotros adoptamos a Nala el año pasado en circunstancias similares. El proceso de adaptación cuesta pero vale cada segundo.</p>
-                                <div class="foro-com-acciones"><button class="foro-com-like"><i class="fa-regular fa-heart"></i> 2</button><span class="foro-com-hora">Hace 1h</span></div>
-                            </div>
-                        </div>
-                        <div class="foro-comentario">
-                            <div class="foro-avatar foro-avatar-gold foro-avatar-sm">CP</div>
-                            <div class="foro-comentario-burbuja">
-                                <span class="foro-com-autor">Carmen Pérez</span>
-                                <p class="foro-com-texto">¿Cuánto tardó en confiar del todo? El nuestro lleva 4 meses y aún le cuesta con los hombres.</p>
-                                <div class="foro-com-acciones"><button class="foro-com-like"><i class="fa-regular fa-heart"></i> 1</button><span class="foro-com-hora">Hace 45min</span></div>
-                            </div>
-                        </div>
-                        <div class="foro-comentarios-extra d-none">
-                            <div class="foro-comentario">
-                                <div class="foro-avatar foro-avatar-azul foro-avatar-sm">SM</div>
-                                <div class="foro-comentario-burbuja">
-                                    <span class="foro-com-autor">Sara Méndez</span>
-                                    <p class="foro-com-texto">Carmen, a Bruno le costó unos 6 meses. Lo clave fue no forzar nunca el contacto y dejar que él marcara el ritmo. ¡Ánimo!</p>
-                                    <div class="foro-com-acciones"><button class="foro-com-like"><i class="fa-regular fa-heart"></i> 3</button><span class="foro-com-hora">Hace 30min</span></div>
-                                </div>
-                            </div>
-                            <div class="foro-comentario">
-                                <div class="foro-avatar foro-avatar-verde foro-avatar-sm">RP</div>
-                                <div class="foro-comentario-burbuja">
-                                    <span class="foro-com-autor">Rocío Pérez</span>
-                                    <p class="foro-com-texto">Qué historia tan bonita. Compartiendo para que llegue a más gente.</p>
-                                    <div class="foro-com-acciones"><button class="foro-com-like"><i class="fa-regular fa-heart"></i> 1</button><span class="foro-com-hora">Hace 10min</span></div>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="foro-ver-mas-com">
-                            <i class="fa-solid fa-chevron-down me-1"></i>Ver los 2 comentarios restantes
-                        </button>
-                        <div class="foro-comentario-input">
-                            <div class="foro-avatar foro-avatar-gris foro-avatar-sm"><i class="fa-solid fa-user foro-avatar-icon"></i></div>
-                            <input type="text" class="foro-input-com" placeholder="Escribe un comentario...">
-                        </div>
-                    </div>
-                </article>
-
-                <!-- post 2: pregunta cuidados -->
-                <article class="foro-post" data-cat="cuidados">
-                    <div class="foro-post-header">
-                        <div class="foro-avatar foro-avatar-azul">PS</div>
-                        <div class="foro-post-meta">
-                            <span class="foro-autor">Pablo Suárez</span>
-                            <span class="foro-fecha"><i class="fa-regular fa-clock me-1"></i>Ayer a las 20:14</span>
-                        </div>
-                        <span class="foro-categoria foro-cat-cuidados ms-auto"><i class="fa-solid fa-heart me-1"></i>Cuidados</span>
-                    </div>
-                    <h3 class="foro-post-titulo">Mi perra de 10 años con artrosis — ¿qué pienso le dais vosotros?</h3>
-                    <div class="foro-post-contenido">
-                        <p>Hola a todos. Pali tiene 10 años y la adoptamos hace 8 meses. Llegó con artrosis en las caderas y el veterinario nos ha dicho que la alimentación es clave.</p>
-                        <p>¿Pienso seco senior, húmedo, dieta raw? ¿Suplementos de omega-3? Hay mil opiniones y no sé por dónde empezar. Cualquier experiencia real es bienvenida.</p>
-                    </div>
-                    <div class="foro-post-reacciones">
-                        <button class="foro-reaccion-btn foro-reaccion-like"><i class="fa-regular fa-heart"></i> <span>8</span></button>
-                        <button class="foro-reaccion-btn"><i class="fa-regular fa-comment"></i> <span>4 comentarios</span></button>
-                        <button class="foro-reaccion-btn foro-reaccion-compartir"><i class="fa-solid fa-share-nodes"></i> Compartir</button>
-                    </div>
-                    <div class="foro-comentarios-seccion">
-                        <div class="foro-comentario">
-                            <div class="foro-avatar foro-avatar-verde foro-avatar-sm">MG</div>
-                            <div class="foro-comentario-burbuja">
-                                <span class="foro-com-autor">María García</span>
-                                <p class="foro-com-texto">Con Max (labrador, 13 años) notamos mucha mejora con pienso senior que incluya condroitina y glucosamina, más aceite de salmón encima. En 3 semanas caminaba mejor.</p>
-                                <div class="foro-com-acciones"><button class="foro-com-like"><i class="fa-regular fa-heart"></i> 5</button><span class="foro-com-hora">Hace 18h</span></div>
-                            </div>
-                        </div>
-                        <div class="foro-comentario foro-comentario-verificado">
-                            <div class="foro-avatar foro-avatar-verde foro-avatar-sm">DR</div>
-                            <div class="foro-comentario-burbuja">
-                                <span class="foro-com-autor">David Ramos <span class="foro-badge-vet"><i class="fa-solid fa-user-doctor me-1"></i>Veterinario</span></span>
-                                <p class="foro-com-texto">Lo más importante es el control de peso: cada kilo de más es presión directa sobre las articulaciones. Para artrosis funciona bien la combinación de omega-3, glucosamina y condroitina. Consulta con un especialista en nutrición animal para ajustar las dosis al caso concreto de Leia.</p>
-                                <div class="foro-com-acciones"><button class="foro-com-like"><i class="fa-regular fa-heart"></i> 7</button><span class="foro-com-hora">Hace 15h</span></div>
-                            </div>
-                        </div>
-                        <div class="foro-comentario">
-                            <div class="foro-avatar foro-avatar-gold foro-avatar-sm">LF</div>
-                            <div class="foro-comentario-burbuja">
-                                <span class="foro-com-autor">Laura Fernández</span>
-                                <p class="foro-com-texto">Investiga la dieta BARF. A mi Tana (pastor alemán, 11 años) le fue genial: menos inflamación, más ágil. Requiere organización pero la diferencia es notable.</p>
-                                <div class="foro-com-acciones"><button class="foro-com-like"><i class="fa-regular fa-heart"></i> 3</button><span class="foro-com-hora">Hace 10h</span></div>
-                            </div>
-                        </div>
-                        <div class="foro-comentarios-extra d-none">
-                            <div class="foro-comentario">
-                                <div class="foro-avatar foro-avatar-azul foro-avatar-sm">PS</div>
-                                <div class="foro-comentario-burbuja">
-                                    <span class="foro-com-autor">Pablo Suárez</span>
-                                    <p class="foro-com-texto">Muchas gracias a todos. Voy a empezar por el pienso senior con glucosamina y añadir aceite de salmón. Os cuento cómo va.</p>
-                                    <div class="foro-com-acciones"><button class="foro-com-like"><i class="fa-regular fa-heart"></i> 2</button><span class="foro-com-hora">Hace 5h</span></div>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="foro-ver-mas-com">
-                            <i class="fa-solid fa-chevron-down me-1"></i>Ver 1 comentario restante
-                        </button>
-                        <div class="foro-comentario-input">
-                            <div class="foro-avatar foro-avatar-gris foro-avatar-sm"><i class="fa-solid fa-user foro-avatar-icon"></i></div>
-                            <input type="text" class="foro-input-com" placeholder="Escribe un comentario...">
-                        </div>
-                    </div>
-                </article>
-
-                <!-- post 3: información protectora -->
-                <article class="foro-post" data-cat="informacion">
-                    <div class="foro-post-header">
-                        <div class="foro-avatar foro-avatar-verde">NM</div>
-                        <div class="foro-post-meta">
-                            <span class="foro-autor">Nortemascotas <span class="foro-badge-protectora"><i class="fa-solid fa-shield-dog me-1"></i>Protectora</span></span>
-                            <span class="foro-fecha"><i class="fa-regular fa-clock me-1"></i>Hace 2 días</span>
-                        </div>
-                        <span class="foro-categoria foro-cat-informacion ms-auto"><i class="fa-solid fa-circle-info me-1"></i>Información</span>
-                    </div>
-                    <h3 class="foro-post-titulo">Qué pasa dentro de una protectora cuando llega un animal</h3>
-                    <div class="foro-post-contenido">
-                        <p>Mucha gente no sabe lo que ocurre entre que rescatamos un animal y que aparece publicado. Os lo explicamos desde dentro:</p>
-                        <p><strong>Día 1:</strong> Revisión veterinaria completa: vacunas, desparasitación, analítica y búsqueda de microchip.<br>
-                        <strong>Primeros días:</strong> Cuarentena sanitaria y evaluación de comportamiento con personas y otros animales.<br>
-                        <strong>Publicación:</strong> Solo cuando el animal está estabilizado física y emocionalmente. Puede llevar días o semanas.</p>
-                        <p>Un animal en acogida se recupera el doble de rápido que en jaula. Si podéis acoger aunque sea una semana, escribidnos.</p>
-                    </div>
-                    <div class="foro-post-reacciones">
-                        <button class="foro-reaccion-btn foro-reaccion-like"><i class="fa-regular fa-heart"></i> <span>21</span></button>
-                        <button class="foro-reaccion-btn"><i class="fa-regular fa-comment"></i> <span>3 comentarios</span></button>
-                        <button class="foro-reaccion-btn foro-reaccion-compartir"><i class="fa-solid fa-share-nodes"></i> Compartir</button>
-                    </div>
-                    <div class="foro-comentarios-seccion">
-                        <div class="foro-comentario">
-                            <div class="foro-avatar foro-avatar-azul foro-avatar-sm">RV</div>
-                            <div class="foro-comentario-burbuja">
-                                <span class="foro-com-autor">Rocío Vega</span>
-                                <p class="foro-com-texto">Gracias por explicarlo así de claro. Mucha gente no entiende por qué tardan en publicar animales. Compartiendo.</p>
-                                <div class="foro-com-acciones"><button class="foro-com-like"><i class="fa-regular fa-heart"></i> 6</button><span class="foro-com-hora">Hace 2d</span></div>
-                            </div>
-                        </div>
-                        <div class="foro-comentario">
-                            <div class="foro-avatar foro-avatar-gold foro-avatar-sm">TG</div>
-                            <div class="foro-comentario-burbuja">
-                                <span class="foro-com-autor">Teresa González</span>
-                                <p class="foro-com-texto">Llevo dos acogidas con vosotros y confirmo todo esto. El seguimiento es increíble. Os escribo esta semana porque creo que podemos acoger de nuevo.</p>
-                                <div class="foro-com-acciones"><button class="foro-com-like"><i class="fa-regular fa-heart"></i> 4</button><span class="foro-com-hora">Hace 1d</span></div>
-                            </div>
-                        </div>
-                        <div class="foro-comentario">
-                            <div class="foro-avatar foro-avatar-azul foro-avatar-sm">IO</div>
-                            <div class="foro-comentario-burbuja">
-                                <span class="foro-com-autor">Iván Ordóñez</span>
-                                <p class="foro-com-texto">Siempre me había preguntado por qué tardan semanas en publicar. Ahora lo entiendo perfectamente. Gracias por la transparencia.</p>
-                                <div class="foro-com-acciones"><button class="foro-com-like"><i class="fa-regular fa-heart"></i> 3</button><span class="foro-com-hora">Hace 20h</span></div>
-                            </div>
-                        </div>
-                        <div class="foro-comentario-input">
-                            <div class="foro-avatar foro-avatar-gris foro-avatar-sm"><i class="fa-solid fa-user foro-avatar-icon"></i></div>
-                            <input type="text" class="foro-input-com" placeholder="Escribe un comentario...">
-                        </div>
-                    </div>
-                </article>
-
-                <!-- post 4: experiencia acogida -->
-                <article class="foro-post" data-cat="acogida">
-                    <div class="foro-post-header">
-                        <div class="foro-avatar foro-avatar-azul">CL</div>
-                        <div class="foro-post-meta">
-                            <span class="foro-autor">Claudia Llorente</span>
-                            <span class="foro-fecha"><i class="fa-regular fa-clock me-1"></i>Hace 4 días</span>
-                        </div>
-                        <span class="foro-categoria foro-cat-acogida ms-auto"><i class="fa-solid fa-house-chimney-heart me-1"></i>Acogida</span>
-                    </div>
-                    <h3 class="foro-post-titulo">Acoger me cambió a mí, no al gato. Mi experiencia con Ray</h3>
-                    <div class="foro-post-contenido">
-                        <p>Hace 6 meses acogí a Ray a través de la Asociación Felina La Esperanza. Tiene leucemia felina y necesitaba un hogar tranquilo mientras buscaba adoptante. Yo nunca había tenido un gato.</p>
-                        <p>La primera semana vivió debajo de la cama. Le dejaba la comida cerca, hablaba en voz baja y esperaba. El día 9 se sentó a mi lado en el sofá. No lo olvidaré en la vida.</p>
-                        <p>Ray ya tiene adoptante. Me alegra y duele a la vez. <strong>Si alguien duda sobre acoger un animal con enfermedad crónica, aquí estoy.</strong></p>
-                    </div>
-                    <div class="foro-post-reacciones">
-                        <button class="foro-reaccion-btn foro-reaccion-like"><i class="fa-regular fa-heart"></i> <span>19</span></button>
-                        <button class="foro-reaccion-btn"><i class="fa-regular fa-comment"></i> <span>4 comentarios</span></button>
-                        <button class="foro-reaccion-btn foro-reaccion-compartir"><i class="fa-solid fa-share-nodes"></i> Compartir</button>
-                    </div>
-                    <div class="foro-comentarios-seccion">
-                        <div class="foro-comentario">
-                            <div class="foro-avatar foro-avatar-gold foro-avatar-sm">BE</div>
-                            <div class="foro-comentario-burbuja">
-                                <span class="foro-com-autor">Beatriz Estrada</span>
-                                <p class="foro-com-texto">Llevo meses dándole vueltas a acoger y el tema de la enfermedad me echaba para atrás. ¿La asociación os dio protocolo por escrito?</p>
-                                <div class="foro-com-acciones"><button class="foro-com-like"><i class="fa-regular fa-heart"></i> 2</button><span class="foro-com-hora">Hace 3d</span></div>
-                            </div>
-                        </div>
-                        <div class="foro-comentario foro-comentario-verificado">
-                            <div class="foro-avatar foro-avatar-verde foro-avatar-sm">AF</div>
-                            <div class="foro-comentario-burbuja">
-                                <span class="foro-com-autor">Asoc. Felina La Esperanza <span class="foro-badge-protectora"><i class="fa-solid fa-shield-dog me-1"></i>Protectora</span></span>
-                                <p class="foro-com-texto">Hola Beatriz, damos todo por escrito: protocolo sanitario, señales de alerta, contacto de urgencias 24h y seguimiento quincenal. Escríbenos a asociacionfelinalaesperanza@gmail.com</p>
-                                <div class="foro-com-acciones"><button class="foro-com-like"><i class="fa-regular fa-heart"></i> 5</button><span class="foro-com-hora">Hace 2d</span></div>
-                            </div>
-                        </div>
-                        <div class="foro-comentario">
-                            <div class="foro-avatar foro-avatar-azul foro-avatar-sm">MC</div>
-                            <div class="foro-comentario-burbuja">
-                                <span class="foro-com-autor">Miguel Cano</span>
-                                <p class="foro-com-texto">Claudia, "me cambió a mí, no al gato" lo dice todo. Ánimo con la despedida de Roys.</p>
-                                <div class="foro-com-acciones"><button class="foro-com-like"><i class="fa-regular fa-heart"></i> 4</button><span class="foro-com-hora">Hace 1d</span></div>
-                            </div>
-                        </div>
-                        <div class="foro-comentarios-extra d-none">
-                            <div class="foro-comentario">
-                                <div class="foro-avatar foro-avatar-gold foro-avatar-sm">BE</div>
-                                <div class="foro-comentario-burbuja">
-                                    <span class="foro-com-autor">Beatriz Estrada</span>
-                                    <p class="foro-com-texto">Gracias por la respuesta. Me habéis convencido. Os escribo esta semana.</p>
-                                    <div class="foro-com-acciones"><button class="foro-com-like"><i class="fa-regular fa-heart"></i> 3</button><span class="foro-com-hora">Hace 18h</span></div>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="foro-ver-mas-com">
-                            <i class="fa-solid fa-chevron-down me-1"></i>Ver 1 comentario restante
-                        </button>
-                        <div class="foro-comentario-input">
-                            <div class="foro-avatar foro-avatar-gris foro-avatar-sm"><i class="fa-solid fa-user foro-avatar-icon"></i></div>
-                            <input type="text" class="foro-input-com" placeholder="Escribe un comentario...">
-                        </div>
-                    </div>
-                </article>
-
-                <!-- aviso paginación -->
-                <div class="foro-paginacion-aviso">
-                    <i class="fa-solid fa-layer-group me-2"></i>
-                    La paginación se activará a partir de <strong>15 publicaciones</strong>
                 </div>
+
+                <!-- paginación -->
+                <div id="paginacionForo" class="mt-3"></div>
 
             </div>
 
@@ -406,33 +207,30 @@
                 <div class="foro-lateral-bloque mb-4">
                     <h4 class="foro-lateral-titulo"><i class="fa-solid fa-magnifying-glass me-2"></i>Buscar en el foro</h4>
                     <div class="foro-buscador">
-                        <input type="text" placeholder="Buscar publicaciones..." class="foro-buscador-input">
-                        <button class="foro-buscador-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        <input type="text" id="inputBusqueda" placeholder="Buscar publicaciones..." class="foro-buscador-input">
+                        <button class="foro-buscador-btn" id="btnBuscar"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
                 </div>
 
                 <div class="foro-lateral-bloque mb-4">
                     <h4 class="foro-lateral-titulo"><i class="fa-solid fa-tags me-2"></i>Categorías</h4>
                     <ul class="foro-cat-lista">
-                        <li><span><i class="fa-solid fa-paw foro-cat-icon-adopcion me-2"></i>Adopción</span><span class="foro-cat-count">1</span></li>
-                        <li><span><i class="fa-solid fa-heart foro-cat-icon-cuidados me-2"></i>Cuidados</span><span class="foro-cat-count">1</span></li>
-                        <li><span><i class="fa-solid fa-house-chimney-heart foro-cat-icon-acogida me-2"></i>Acogida</span><span class="foro-cat-count">1</span></li>
-                        <li><span><i class="fa-solid fa-stethoscope foro-cat-icon-salud me-2"></i>Salud</span><span class="foro-cat-count">0</span></li>
-                        <li><span><i class="fa-solid fa-circle-info foro-cat-icon-info me-2"></i>Información</span><span class="foro-cat-count">1</span></li>
+                        <li data-cat="adopcion" style="cursor:pointer;"><span><i class="fa-solid fa-paw foro-cat-icon-adopcion me-2"></i>Adopción</span><span class="foro-cat-count" id="count-adopcion">—</span></li>
+                        <li data-cat="cuidados" style="cursor:pointer;"><span><i class="fa-solid fa-heart foro-cat-icon-cuidados me-2"></i>Cuidados</span><span class="foro-cat-count" id="count-cuidados">—</span></li>
+                        <li data-cat="acogida" style="cursor:pointer;"><span><i class="fa-solid fa-house-chimney-heart foro-cat-icon-acogida me-2"></i>Acogida</span><span class="foro-cat-count" id="count-acogida">—</span></li>
+                        <li data-cat="salud" style="cursor:pointer;"><span><i class="fa-solid fa-stethoscope foro-cat-icon-salud me-2"></i>Salud</span><span class="foro-cat-count" id="count-salud">—</span></li>
+                        <li data-cat="informacion" style="cursor:pointer;"><span><i class="fa-solid fa-circle-info foro-cat-icon-info me-2"></i>Información</span><span class="foro-cat-count" id="count-informacion">—</span></li>
                     </ul>
                 </div>
 
                 <div class="foro-lateral-bloque mb-4">
                     <h4 class="foro-lateral-titulo"><i class="fa-solid fa-fire me-2"></i>Más activas</h4>
-                    <ul class="foro-populares-lista">
-                        <li><a href="#">Acoger me cambió a mí, no al gato</a><span class="foro-populares-count"><i class="fa-regular fa-comment"></i> 4</span></li>
-                        <li><a href="#">Bruno: del polígono de Silvota al sofá de Oviedo</a><span class="foro-populares-count"><i class="fa-regular fa-comment"></i> 5</span></li>
-                        <li><a href="#">Qué pasa dentro de una protectora</a><span class="foro-populares-count"><i class="fa-regular fa-comment"></i> 3</span></li>
-                        <li><a href="#">Mi perra de 14 años con artrosis</a><span class="foro-populares-count"><i class="fa-regular fa-comment"></i> 4</span></li>
+                    <ul class="foro-populares-lista" id="listaPopulares">
+                        <li style="color:#aaa;font-size:0.85rem;">Cargando...</li>
                     </ul>
                 </div>
 
-                <div class="foro-lateral-unete">
+                <div class="foro-lateral-unete" id="bloqueUnete">
                     <i class="fa-solid fa-paw foro-unete-icono"></i>
                     <h4 class="foro-unete-titulo">¿Aún no tienes cuenta?</h4>
                     <p class="foro-unete-texto">Regístrate gratis y empieza a participar. Comparte tu historia, haz preguntas y ayuda a otros.</p>
@@ -446,7 +244,7 @@
     </div>
 
     <div class="text-center mt-5">
-            <a href="#"><img src="../img/sectionIndex/up-arrow.png" alt="Volver arriba" id="arrow" width="40px"></a>
+        <a href="#"><img src="../img/sectionIndex/up-arrow.png" alt="Volver arriba" id="arrow" width="40px"></a>
     </div>
 </main>
 
@@ -457,132 +255,715 @@
 </footer>
 
 
-<script src="../javascript/script.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../javascript/script.js"></script>
 <script src="https://code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
 
 <script>
-// filtros de categoría
-document.querySelectorAll('.foro-filtro-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-        document.querySelectorAll('.foro-filtro-btn').forEach(function(b) {
-            b.classList.remove('activo');
+/*--------------------------------------------------------------------------------------------
+estado */
+var sesionForo      = null;
+var categoriaActual = 'todas';
+var busquedaActual  = '';
+var paginaActual    = 1;
+var totalPagForo    = 1;
+var todosLosPosts   = [];
+
+var COLORES = ['#1B358F','#2e7d32','#c0392b','#8e24aa','#c87a00','#0277bd'];
+
+/*--------------------------------------------------------------------------------------------
+init */
+document.addEventListener('DOMContentLoaded', function() {
+    cargarSesionForo();
+    cargarConteos();
+
+    document.getElementById('btnCerrarAviso').addEventListener('click', function() {
+        document.getElementById('avisoLogin').classList.add('d-none');
+    });
+
+    document.getElementById('btnPublicarFake').addEventListener('click', function() {
+        var texto = document.getElementById('textareaPublicar').value.trim();
+        if (texto) sessionStorage.setItem('foroTextoPendiente', texto);
+        document.getElementById('avisoLogin').classList.remove('d-none');
+        document.getElementById('avisoLogin').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+
+    document.getElementById('btnPublicar').addEventListener('click', enviarPublicacion);
+
+    /* auto-crecer textarea y restaurar placeholder */
+    var textareaReal = document.getElementById('textareaPublicarReal');
+    if (textareaReal) {
+        textareaReal.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
         });
-        btn.classList.add('activo');
-        var cat = btn.dataset.cat;
-        document.querySelectorAll('.foro-post').forEach(function(post) {
-            post.style.display = (cat === 'todas' || post.dataset.cat === cat) ? '' : 'none';
-        });
-    });
-});
-
-// botón publicar — aviso login
-document.getElementById('btnPublicar').addEventListener('click', function() {
-    var texto = document.getElementById('textareaPublicar').value.trim();
-    if (!texto) return;
-    var aviso = document.getElementById('avisoLogin');
-    aviso.classList.remove('d-none');
-    aviso.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-});
-
-document.getElementById('btnCerrarAviso').addEventListener('click', function() {
-    document.getElementById('avisoLogin').classList.add('d-none');
-});
-
-// ver más comentarios
-document.querySelectorAll('.foro-ver-mas-com').forEach(function(btn) {
-    btn.dataset.textoOriginal = btn.innerText.trim();
-    btn.addEventListener('click', function() {
-        var extra = btn.previousElementSibling;
-        if (!extra || !extra.classList.contains('foro-comentarios-extra')) return;
-        extra.classList.toggle('d-none');
-        if (extra.classList.contains('d-none')) {
-            btn.innerHTML = '<i class="fa-solid fa-chevron-down me-1"></i>' + btn.dataset.textoOriginal;
-        } else {
-            btn.innerHTML = '<i class="fa-solid fa-chevron-up me-1"></i>Ocultar comentarios';
-        }
-    });
-});
-
-// like en posts
-document.querySelectorAll('.foro-reaccion-like').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-        var span  = btn.querySelector('span');
-        var icono = btn.querySelector('i');
-        if (btn.classList.contains('liked')) {
-            btn.classList.remove('liked');
-            icono.className = 'fa-regular fa-heart';
-            span.textContent = parseInt(span.textContent) - 1;
-        } else {
-            btn.classList.add('liked');
-            icono.className = 'fa-solid fa-heart';
-            span.textContent = parseInt(span.textContent) + 1;
-        }
-    });
-});
-
-// like en comentarios
-document.querySelectorAll('.foro-com-like').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-        var num = parseInt(btn.textContent.replace(/[^0-9]/g, '')) || 0;
-        if (btn.classList.contains('liked')) {
-            btn.classList.remove('liked');
-            btn.innerHTML = '<i class="fa-regular fa-heart"></i> ' + (num - 1);
-        } else {
-            btn.classList.add('liked');
-            btn.innerHTML = '<i class="fa-solid fa-heart"></i> ' + (num + 1);
-        }
-    });
-});
-
-// enviar comentario con Enter
-document.querySelectorAll('.foro-input-com').forEach(function(input) {
-    input.addEventListener('keydown', function(e) {
-        if (e.key !== 'Enter') return;
-        var texto = input.value.trim();
-        if (!texto) return;
-        e.preventDefault();
-        var seccion = input.closest('.foro-comentarios-seccion');
-        var nuevo   = document.createElement('div');
-        nuevo.className = 'foro-comentario';
-        nuevo.innerHTML =
-            '<div class="foro-avatar foro-avatar-gris foro-avatar-sm"><i class="fa-solid fa-user foro-avatar-icon"></i></div>' +
-            '<div class="foro-comentario-burbuja">' +
-            '<span class="foro-com-autor">Tú</span>' +
-            '<p class="foro-com-texto">' + texto + '</p>' +
-            '<div class="foro-com-acciones"><button class="foro-com-like"><i class="fa-regular fa-heart"></i> 0</button><span class="foro-com-hora">Ahora</span></div>' +
-            '</div>';
-        seccion.insertBefore(nuevo, input.closest('.foro-comentario-input'));
-        input.value = '';
-        // activar like en nuevo comentario
-        nuevo.querySelector('.foro-com-like').addEventListener('click', function() {
-            var btn2 = this;
-            var num2 = parseInt(btn2.textContent.replace(/[^0-9]/g, '')) || 0;
-            if (btn2.classList.contains('liked')) {
-                btn2.classList.remove('liked');
-                btn2.innerHTML = '<i class="fa-regular fa-heart"></i> ' + (num2 - 1);
-            } else {
-                btn2.classList.add('liked');
-                btn2.innerHTML = '<i class="fa-solid fa-heart"></i> ' + (num2 + 1);
+        textareaReal.addEventListener('blur', function() {
+            if (!this.value.trim()) {
+                this.style.display = 'none';
+                var ph = document.getElementById('foroPlaceholder');
+                if (ph) ph.style.display = '';
             }
         });
+    }
+    var textareaFake = document.getElementById('textareaPublicar');
+    if (textareaFake) {
+        textareaFake.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+    }
+
+    /* Preview multimedia */
+    var inputMedia = document.getElementById('inputMedia');
+    if (inputMedia) {
+        inputMedia.addEventListener('change', function() {
+            var prev = document.getElementById('mediaPreview');
+            prev.innerHTML = '';
+            prev.style.display = 'none';
+            var file = this.files[0];
+            if (!file) return;
+            if (file.size > 50 * 1024 * 1024) {
+                document.getElementById('errorPub').textContent = 'El archivo supera 50 MB.';
+                document.getElementById('errorPub').style.display = 'inline';
+                this.value = '';
+                return;
+            }
+            var url = URL.createObjectURL(file);
+            if (file.type.startsWith('image/')) {
+                prev.innerHTML = '<div style="position:relative;display:inline-block;">'
+                    + '<img src="' + url + '" style="max-width:100%;max-height:200px;border-radius:8px;object-fit:cover;">'
+                    + '<button onclick="quitarMedia()" type="button" title="Quitar" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.55);border:none;border-radius:50%;width:24px;height:24px;color:white;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-xmark"></i></button>'
+                    + '</div>';
+            } else {
+                prev.innerHTML = '<div style="position:relative;display:inline-block;">'
+                    + '<video src="' + url + '" controls style="max-width:100%;max-height:180px;border-radius:8px;"></video>'
+                    + '<button onclick="quitarMedia()" type="button" title="Quitar" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.55);border:none;border-radius:50%;width:24px;height:24px;color:white;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-xmark"></i></button>'
+                    + '</div>';
+            }
+            prev.style.display = 'block';
+        });
+    }
+
+    /* filtros */
+    document.querySelectorAll('.foro-filtro-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.foro-filtro-btn').forEach(function(b) { b.classList.remove('activo'); });
+            btn.classList.add('activo');
+            categoriaActual = btn.dataset.cat;
+            busquedaActual  = '';
+            document.getElementById('inputBusqueda').value = '';
+            cargarPosts(1);
+        });
+    });
+
+    /* categorías lateral */
+    document.querySelectorAll('.foro-cat-lista li[data-cat]').forEach(function(li) {
+        li.addEventListener('click', function() {
+            categoriaActual = li.dataset.cat;
+            busquedaActual  = '';
+            document.getElementById('inputBusqueda').value = '';
+            document.querySelectorAll('.foro-filtro-btn').forEach(function(b) {
+                b.classList.toggle('activo', b.dataset.cat === categoriaActual);
+            });
+            cargarPosts(1);
+        });
+    });
+
+    /* búsqueda */
+    document.getElementById('btnBuscar').addEventListener('click', hacerBusqueda);
+    document.getElementById('inputBusqueda').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') hacerBusqueda();
     });
 });
 
-// buscador lateral
-document.querySelector('.foro-buscador-btn').addEventListener('click', function() {
-    var query = document.querySelector('.foro-buscador-input').value.trim().toLowerCase();
-    document.querySelectorAll('.foro-post').forEach(function(post) {
-        if (!query) { post.style.display = ''; return; }
-        var titulo    = (post.querySelector('.foro-post-titulo')    || {}).textContent || '';
-        var contenido = (post.querySelector('.foro-post-contenido') || {}).textContent || '';
-        post.style.display = (titulo.toLowerCase().includes(query) || contenido.toLowerCase().includes(query)) ? '' : 'none';
+/*--------------------------------------------------------------------------------------------
+sesión */
+function cargarSesionForo() {
+    /* Usar sessionStorage si ya está disponible para evitar llamada duplicada */
+    var sesGuardada = sessionStorage.getItem('pf_session');
+    if (sesGuardada) {
+        try {
+            var u = JSON.parse(sesGuardada);
+            sesionForo = u;
+            activarFormPub(u);
+        } catch(e) {}
+        cargarPosts(1);
+        return;
+    }
+    /* Si no hay sessionStorage, consultar sesion.php directamente */
+    fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.ok && data.logueado) {
+                sesionForo = data.usuario;
+                activarFormPub(data.usuario);
+            }
+            cargarPosts(1);
+        })
+        .catch(function() { cargarPosts(1); });
+}
+
+function activarFormPub(usuario) {
+    document.getElementById('cajaSinSesion').classList.add('d-none');
+    document.getElementById('cajaConSesion').classList.remove('d-none');
+    document.getElementById('bloqueUnete').style.display = 'none';
+
+    var avatar = document.getElementById('avatarPub');
+    if (usuario.foto_perfil) {
+        var fotoSrc = (usuario.foto_perfil.startsWith('http') ? '' : '../backend/api/auth/') + usuario.foto_perfil;
+        avatar.innerHTML = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer"'
+            + ' style="width:48px;height:48px;border-radius:50%;object-fit:cover;"'
+            + ' onerror="this.parentElement.textContent=\'' + usuario.nombre.charAt(0).toUpperCase() + '\'">';
+    } else {
+        avatar.textContent  = usuario.nombre.charAt(0).toUpperCase();
+        avatar.style.background = COLORES[usuario.idUsuario % COLORES.length];
+    }
+
+    var pendiente = sessionStorage.getItem('foroTextoPendiente');
+    if (pendiente) {
+        document.getElementById('textareaPublicarReal').value = pendiente;
+        sessionStorage.removeItem('foroTextoPendiente');
+    }
+}
+
+/*--------------------------------------------------------------------------------------------
+cargar posts */
+function cargarPosts(pagina) {
+    paginaActual = pagina || 1;
+    var contenedor = document.getElementById('contenedorPosts');
+    contenedor.innerHTML = '<div class="text-center py-5"><div class="spinner-border" style="color:#1B358F;" role="status"></div></div>';
+
+    var url = '../backend/foro/publicaciones.php?pagina=' + paginaActual + '&categoria=' + categoriaActual;
+    if (busquedaActual) url += '&q=' + encodeURIComponent(busquedaActual);
+
+    fetch(url, { credentials: 'include' })
+        .then(function(r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+        })
+        .then(function(data) {
+            if (!data.ok) {
+                contenedor.innerHTML = '<p class="text-center text-muted py-4">Error al cargar publicaciones.</p>';
+                return;
+            }
+            todosLosPosts = data.publicaciones || [];
+            totalPagForo  = data.totalPaginas  || 1;
+            renderPosts(todosLosPosts);
+            renderPaginacion();
+            actualizarPopulares(todosLosPosts);
+        })
+        .catch(function(err) {
+            console.error('cargarPosts error:', err);
+            contenedor.innerHTML = '<p class="text-center text-muted py-4">Error de conexión con el servidor. (' + err.message + ')</p>';
+        });
+}
+
+/*--------------------------------------------------------------------------------------------
+render posts */
+function renderPosts(posts) {
+    var contenedor = document.getElementById('contenedorPosts');
+    if (!posts || !posts.length) {
+        contenedor.innerHTML =
+            '<div class="foro-post text-center py-5">'
+            + '<i class="fa-solid fa-comments" style="font-size:2.5rem;color:#dee2e6;display:block;margin-bottom:0.8em;"></i>'
+            + '<p style="color:#6c757d;">No hay publicaciones todavía. ¡Sé el primero!</p>'
+            + '</div>';
+        return;
+    }
+    contenedor.innerHTML = posts.map(renderPost).join('');
+    activarListenersPost();
+}
+
+function renderPost(p) {
+    var color   = COLORES[p.autor_nombre.charCodeAt(0) % COLORES.length];
+    var inicial = p.autor_nombre.charAt(0).toUpperCase() + (p.autor_nombre.split(' ')[1] ? p.autor_nombre.split(' ')[1].charAt(0).toUpperCase() : '');
+
+    var avatarHtml;
+    if (p.autor_foto) {
+        var fotoSrc = (p.autor_foto.startsWith('http') ? '' : '../backend/api/auth/') + p.autor_foto;
+        avatarHtml = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer"'
+            + ' style="width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;"'
+            + ' onerror="this.outerHTML=\'<div style=&quot;width:42px;height:42px;border-radius:50%;background:' + color + ';display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.88rem;flex-shrink:0;&quot;>' + inicial + '</div>\'">';
+    } else {
+        avatarHtml = '<div class="foro-avatar" style="background:' + color + ';width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.88rem;flex-shrink:0;">' + inicial + '</div>';
+    }
+
+    var badgeRol = p.autor_rol === 'admin'
+        ? '<span class="foro-badge-protectora"><i class="fa-solid fa-shield-dog me-1"></i>Admin</span>'
+        : '';
+
+    var catClases = { adopcion:'foro-cat-adopcion', cuidados:'foro-cat-cuidados', acogida:'foro-cat-acogida', salud:'foro-cat-salud', informacion:'foro-cat-informacion' };
+    var catIconos = { adopcion:'fa-paw', cuidados:'fa-heart', acogida:'fa-house-chimney-heart', salud:'fa-stethoscope', informacion:'fa-circle-info' };
+    var catNombre = { adopcion:'Adopción', cuidados:'Cuidados', acogida:'Acogida', salud:'Salud', informacion:'Información' };
+
+    var catHtml = p.categoria
+        ? '<span class="foro-categoria ' + (catClases[p.categoria]||'') + ' ms-auto"><i class="fa-solid ' + (catIconos[p.categoria]||'fa-tag') + ' me-1"></i>' + (catNombre[p.categoria]||p.categoria) + '</span>'
+        : '';
+
+    var fijadoBadge = p.fijada
+        ? '<span style="font-size:0.75rem;color:#c87a00;font-weight:600;margin-left:0.5em;"><i class="fa-solid fa-thumbtack me-1"></i>Fijada</span>'
+        : '';
+
+    var fecha = p.fecha
+        ? new Date(p.fecha).toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'numeric' })
+        : '';
+
+    return '<article class="foro-post" id="post-' + p.idPublicacion + '" data-cat="' + p.categoria + '">'
+
+        + '<div class="foro-post-header">'
+        + avatarHtml
+        + '<div class="foro-post-meta">'
+        + '<span class="foro-autor">' + p.autor_nombre + badgeRol + '</span>'
+        + '<span class="foro-fecha"><i class="fa-regular fa-clock me-1"></i>' + fecha + '</span>'
+        + '</div>'
+        + catHtml + fijadoBadge
+        + '</div>'
+
+        + '<h3 class="foro-post-titulo">' + p.titulo + '</h3>'
+        + '<div class="foro-post-contenido"><p>' + p.contenido + '</p></div>'
+        + (p.tipo_media === 'imagen' && p.imagen
+            ? '<div class="foro-post-media"><img src="../' + p.imagen + '" alt="Imagen" loading="lazy" onerror="this.parentElement.remove()"></div>'
+            : p.tipo_media === 'video' && p.video
+                ? '<div class="foro-post-media"><video src="../' + p.video + '" controls preload="metadata"></video></div>'
+                : '')
+
+        + '<div class="foro-post-reacciones">'
+        + (sesionForo && (String(sesionForo.idUsuario) === String(p.idUsuario) || sesionForo.rol === 'admin')
+            ? '<button class="foro-reaccion-btn foro-btn-eliminar" data-id="' + p.idPublicacion + '" style="margin-left:auto;color:#c0392b;"><i class="fa-solid fa-trash-can"></i></button>'
+            : '')
+        + '<button class="foro-reaccion-btn foro-reaccion-like' + (parseInt(p.yo_like) ? ' liked' : '') + '" data-id="' + p.idPublicacion + '">'
+        + '<i class="' + (parseInt(p.yo_like) ? 'fa-solid' : 'fa-regular') + ' fa-heart"></i> <span class="like-count">' + (p.num_likes||0) + '</span>'
+        + '</button>'
+        + '<button class="foro-reaccion-btn foro-btn-coms" data-id="' + p.idPublicacion + '">'
+        + '<i class="fa-regular fa-comment"></i> <span class="com-count">' + (p.num_comentarios||0) + '</span> comentarios'
+        + '</button>'
+        + '</div>'
+
+        + '<div class="foro-comentarios-seccion" id="coms-' + p.idPublicacion + '">'
+        + '<button class="foro-ver-mas-com" data-id="' + p.idPublicacion + '">'
+        + '<i class="fa-solid fa-chevron-down me-1"></i>Ver comentarios'
+        + '</button>'
+        + '</div>'
+
+        + '</article>';
+}
+
+function activarListenersPost() {
+    document.querySelectorAll('.foro-reaccion-like').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var id = btn.dataset.id;
+            if (!sesionForo) {
+                document.getElementById('avisoLogin').classList.remove('d-none');
+                return;
+            }
+            fetch('../backend/foro/publicaciones.php', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ idPublicacion: parseInt(id) }),
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (!data.ok) return;
+                if (data.accion === 'like') {
+                    btn.classList.add('liked');
+                    btn.querySelector('i').className = 'fa-solid fa-heart';
+                } else {
+                    btn.classList.remove('liked');
+                    btn.querySelector('i').className = 'fa-regular fa-heart';
+                }
+                btn.querySelector('.like-count').textContent = data.num_likes;
+            });
+        });
     });
+
+    document.querySelectorAll('.foro-ver-mas-com').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            toggleComentarios(parseInt(btn.dataset.id), btn);
+        });
+    });
+
+    document.querySelectorAll('.foro-btn-coms').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var verBtn = document.querySelector('.foro-ver-mas-com[data-id="' + btn.dataset.id + '"]');
+            if (verBtn) verBtn.click();
+        });
+    });
+
+    document.querySelectorAll('.foro-btn-eliminar').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            if (!confirm('\u00bfEliminar esta publicaci\u00f3n?')) return;
+            var id = btn.dataset.id;
+            fetch('../backend/foro/publicaciones.php', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ idPublicacion: parseInt(id) }),
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.ok) { var post = document.getElementById('post-' + id); if (post) post.remove(); }
+            });
+        });
+    });
+}
+
+/*--------------------------------------------------------------------------------------------
+comentarios */
+function toggleComentarios(idPublicacion, btn) {
+    var seccion   = document.getElementById('coms-' + idPublicacion);
+    var yaAbierto = seccion.getAttribute('data-abierto') === '1';
+
+    if (yaAbierto) {
+        seccion.querySelector('.bloque-coms')    && seccion.querySelector('.bloque-coms').remove();
+        seccion.querySelector('.input-com-wrap') && seccion.querySelector('.input-com-wrap').remove();
+        seccion.setAttribute('data-abierto', '0');
+        btn.innerHTML = '<i class="fa-solid fa-chevron-down me-1"></i>Ver comentarios';
+        return;
+    }
+
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i>Cargando...';
+    btn.disabled  = true;
+
+    fetch('../backend/foro/comentarios.php?idPublicacion=' + idPublicacion)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            btn.disabled = false;
+            seccion.setAttribute('data-abierto', '1');
+            btn.innerHTML = '<i class="fa-solid fa-chevron-up me-1"></i>Ocultar comentarios';
+
+            var bloqueComs = document.createElement('div');
+            bloqueComs.className = 'bloque-coms mt-2';
+
+            if (data.comentarios && data.comentarios.length) {
+                bloqueComs.innerHTML = data.comentarios.map(renderComentario).join('');
+            } else {
+                bloqueComs.innerHTML = '<p style="font-size:0.82rem;color:#6c757d;padding:0.4em 0;">Sin comentarios aún. ¡Sé el primero!</p>';
+            }
+
+            seccion.appendChild(bloqueComs);
+            bloqueComs.querySelectorAll('.foro-com-like').forEach(activarLikeCom);
+
+            var inputWrap = document.createElement('div');
+            inputWrap.className = 'foro-comentario-input input-com-wrap mt-1';
+
+            if (sesionForo) {
+                var color   = COLORES[sesionForo.idUsuario % COLORES.length];
+                var inicial = sesionForo.nombre.charAt(0).toUpperCase();
+                inputWrap.innerHTML =
+                    '<div class="foro-avatar foro-avatar-sm" style="background:' + color + ';flex-shrink:0;">' + inicial + '</div>'
+                    + '<input type="text" class="foro-input-com" id="com-input-' + idPublicacion + '" placeholder="Escribe un comentario...">'
+                    + '<button class="foro-publicar-btn" style="padding:0.4em 0.8em;font-size:0.82rem;" onclick="enviarComentario(' + idPublicacion + ')">'
+                    + '<i class="fa-solid fa-paper-plane"></i></button>';
+            } else {
+                inputWrap.innerHTML =
+                    '<div class="foro-avatar foro-avatar-gris foro-avatar-sm"><i class="fa-solid fa-user foro-avatar-icon"></i></div>'
+                    + '<input type="text" class="foro-input-com" placeholder="Inicia sesión para comentar..." readonly onclick="document.getElementById(\'avisoLogin\').classList.remove(\'d-none\')">';
+            }
+            seccion.appendChild(inputWrap);
+
+            var inputEl = document.getElementById('com-input-' + idPublicacion);
+            if (inputEl) {
+                inputEl.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') enviarComentario(idPublicacion);
+                });
+            }
+        })
+        .catch(function() {
+            btn.disabled  = false;
+            btn.innerHTML = '<i class="fa-solid fa-chevron-down me-1"></i>Ver comentarios';
+        });
+}
+
+function renderComentario(c) {
+    var color   = COLORES[c.autor_nombre.charCodeAt(0) % COLORES.length];
+    var inicial = c.autor_nombre.charAt(0).toUpperCase() + (c.autor_nombre.split(' ')[1] ? c.autor_nombre.split(' ')[1].charAt(0).toUpperCase() : '');
+
+    var avatarHtml;
+    if (c.autor_foto) {
+        var fotoSrc = (c.autor_foto.startsWith('http') ? '' : '../backend/api/auth/') + c.autor_foto;
+        avatarHtml = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer"'
+            + ' style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;"'
+            + ' onerror="this.outerHTML=\'<div class=&quot;foro-avatar foro-avatar-sm&quot; style=&quot;background:' + color + ';flex-shrink:0;&quot;>' + inicial + '</div>\'">';
+    } else {
+        avatarHtml = '<div class="foro-avatar foro-avatar-sm" style="background:' + color + ';flex-shrink:0;">' + inicial + '</div>';
+    }
+
+    var badgeRol = c.autor_rol === 'admin'
+        ? '<span class="foro-badge-protectora" style="font-size:0.65rem;">Admin</span>'
+        : '';
+
+    var fecha = c.fecha
+        ? new Date(c.fecha).toLocaleDateString('es-ES', { day:'2-digit', month:'short' })
+        : '';
+
+    var esVerificado = c.autor_rol === 'admin' ? ' foro-comentario-verificado' : '';
+
+    return '<div class="foro-comentario' + esVerificado + '">'
+        + avatarHtml
+        + '<div class="foro-comentario-burbuja">'
+        + '<span class="foro-com-autor">' + c.autor_nombre + badgeRol + '</span>'
+        + '<p class="foro-com-texto">' + c.contenido + '</p>'
+        + '<div class="foro-com-acciones">'
+        + '<button class="foro-com-like" data-id="' + c.idComentario + '">'
+        + '<i class="fa-regular fa-heart"></i> <span class="like-count">' + (c.num_likes||0) + '</span>'
+        + '</button>'
+        + '<span class="foro-com-hora">' + fecha + '</span>'
+        + '</div>'
+        + '</div>'
+        + '</div>';
+}
+
+function activarLikeCom(btn) {
+    btn.addEventListener('click', function() {
+        if (!sesionForo) {
+            document.getElementById('avisoLogin').classList.remove('d-none');
+            return;
+        }
+        var id = parseInt(btn.dataset.id);
+        fetch('../backend/foro/comentarios.php', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ idComentario: id }),
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (!data.ok) return;
+            var count = btn.querySelector('.like-count');
+            if (data.accion === 'like') {
+                btn.classList.add('liked');
+                btn.querySelector('i').className = 'fa-solid fa-heart';
+            } else {
+                btn.classList.remove('liked');
+                btn.querySelector('i').className = 'fa-regular fa-heart';
+            }
+            if (count) count.textContent = data.num_likes;
+        });
+    });
+}
+
+/*--------------------------------------------------------------------------------------------
+enviar publicación */
+function enviarPublicacion() {
+    var titulo    = document.getElementById('inputTitulo').value.trim();
+    var contenido = document.getElementById('textareaPublicarReal').value.trim();
+    var categoria = document.getElementById('selectCategoria').value;
+    var errorEl   = document.getElementById('errorPub');
+    var btn       = document.getElementById('btnPublicar');
+    var mediaFile = document.getElementById('inputMedia') ? document.getElementById('inputMedia').files[0] : null;
+
+    errorEl.style.display = 'none';
+    if (!contenido) { errorEl.textContent = 'Escribe algo antes de publicar.'; errorEl.style.display = 'inline'; return; }
+    if (!titulo) { titulo = contenido.substring(0, 80).replace(/\s+$/, '') + (contenido.length > 80 ? '…' : ''); }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Publicando...';
+
+    var fd = new FormData();
+    fd.append('titulo',    titulo);
+    fd.append('contenido', contenido);
+    fd.append('categoria', categoria);
+    if (mediaFile) fd.append('media', mediaFile);
+
+    fetch('../backend/foro/publicaciones.php', {
+        method: 'POST',
+        credentials: 'include',
+        body: fd,
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Publicar';
+        if (data.ok) {
+            document.getElementById('inputTitulo').value = '';
+            document.getElementById('textareaPublicarReal').value = '';
+            document.getElementById('textareaPublicarReal').style.display = 'none';
+            var ph = document.getElementById('foroPlaceholder');
+            if (ph) ph.style.display = '';
+            var prev = document.getElementById('mediaPreview');
+            if (prev) { prev.innerHTML = ''; prev.style.display = 'none'; }
+            if (document.getElementById('inputMedia')) document.getElementById('inputMedia').value = '';
+            cargarPosts(1);
+        } else {
+            errorEl.textContent = data.error || 'Error al publicar.';
+            errorEl.style.display = 'inline';
+        }
+    })
+    .catch(function() {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Publicar';
+        errorEl.textContent = 'Error de conexión.';
+        errorEl.style.display = 'inline';
+    });
+}
+
+/*--------------------------------------------------------------------------------------------
+enviar comentario */
+function enviarComentario(idPublicacion) {
+    var input     = document.getElementById('com-input-' + idPublicacion);
+    var contenido = input ? input.value.trim() : '';
+    if (!contenido) return;
+
+    input.disabled = true;
+
+    fetch('../backend/foro/comentarios.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ idPublicacion: idPublicacion, contenido: contenido }),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        input.disabled = false;
+        if (!data.ok) return;
+        input.value = '';
+
+        var nuevoCom = renderComentario({
+            idComentario:   data.idComentario,
+            contenido:      contenido,
+            autor_nombre:   sesionForo.nombre,
+            autor_username: sesionForo.username,
+            autor_rol:      sesionForo.rol,
+            autor_foto:     sesionForo.foto_perfil,
+            num_likes:      0,
+            fecha:          new Date().toISOString(),
+        });
+
+        var bloqueComs = document.querySelector('#coms-' + idPublicacion + ' .bloque-coms');
+        if (bloqueComs) {
+            bloqueComs.insertAdjacentHTML('beforeend', nuevoCom);
+            var nuevoBtn = bloqueComs.lastElementChild.querySelector('.foro-com-like');
+            if (nuevoBtn) activarLikeCom(nuevoBtn);
+        }
+
+        var countEl = document.querySelector('#post-' + idPublicacion + ' .com-count');
+        if (countEl) countEl.textContent = parseInt(countEl.textContent||0) + 1;
+    })
+    .catch(function() { input.disabled = false; });
+}
+
+function quitarMedia() {
+    var inp = document.getElementById('inputMedia');
+    if (inp) inp.value = '';
+    var prev = document.getElementById('mediaPreview');
+    if (prev) { prev.innerHTML = ''; prev.style.display = 'none'; }
+}
+
+/*--------------------------------------------------------------------------------------------
+emojis */
+var EMOJIS = ['😀','😂','😍','🥰','😎','😊','🤔','😢','😅','🤣',
+              '👍','👎','❤️','🔥','⭐','🎉','🙏','💪','👏','✅',
+              '🐾','🐶','🐱','🐕','🐈','🧸','😺','💗','💙','💛'];
+
+function toggleEmojiPicker() {
+    var picker = document.getElementById('emojiPicker');
+    if (!picker) return;
+    if (picker.style.display === 'none' || !picker.style.display) {
+        if (!picker.innerHTML) {
+            picker.innerHTML = EMOJIS.map(function(e) {
+                return '<button type="button" onclick="insertarEmoji(\'' + e + '\')" style="background:none;border:none;cursor:pointer;font-size:1.4rem;padding:0.15em;border-radius:6px;" onmouseover="this.style.background=\'#f0f4ff\'" onmouseout="this.style.background=\'none\'">' + e + '</button>';
+            }).join('');
+        }
+        picker.style.display = 'flex';
+    } else {
+        picker.style.display = 'none';
+    }
+}
+
+function insertarEmoji(emoji) {
+    var ta = document.getElementById('textareaPublicarReal');
+    if (!ta) return;
+    if (ta.style.display === 'none') {
+        ta.style.display = 'block';
+        var ph = document.getElementById('foroPlaceholder');
+        if (ph) ph.style.display = 'none';
+    }
+    var start = ta.selectionStart !== undefined ? ta.selectionStart : ta.value.length;
+    ta.value = ta.value.slice(0, start) + emoji + ta.value.slice(start);
+    ta.focus();
+    ta.selectionStart = ta.selectionEnd = start + emoji.length;
+    document.getElementById('emojiPicker').style.display = 'none';
+}
+
+document.addEventListener('click', function(e) {
+    var picker = document.getElementById('emojiPicker');
+    var btn    = document.getElementById('btnEmoji');
+    if (picker && btn && !picker.contains(e.target) && !btn.contains(e.target)) {
+        picker.style.display = 'none';
+    }
 });
 
-document.querySelector('.foro-buscador-input').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') document.querySelector('.foro-buscador-btn').click();
-});
+/*--------------------------------------------------------------------------------------------
+búsqueda */
+function hacerBusqueda() {
+    busquedaActual  = document.getElementById('inputBusqueda').value.trim();
+    categoriaActual = 'todas';
+    document.querySelectorAll('.foro-filtro-btn').forEach(function(b) {
+        b.classList.toggle('activo', b.dataset.cat === 'todas');
+    });
+    cargarPosts(1);
+}
+
+/*--------------------------------------------------------------------------------------------
+conteos categorías lateral */
+function cargarConteos() {
+    var cats = ['adopcion', 'cuidados', 'acogida', 'salud', 'informacion'];
+    cats.forEach(function(cat) {
+        fetch('../backend/foro/publicaciones.php?pagina=1&categoria=' + cat)
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                var el = document.getElementById('count-' + cat);
+                if (el && data.ok) el.textContent = data.total || 0;
+            });
+    });
+}
+
+/*--------------------------------------------------------------------------------------------
+más activas (sidebar) */
+function actualizarPopulares(posts) {
+    var lista = document.getElementById('listaPopulares');
+    if (!lista || !posts || !posts.length) return;
+    var ordenados = posts.slice().sort(function(a, b) { return (b.num_comentarios||0) - (a.num_comentarios||0); });
+    var top4 = ordenados.slice(0, 4);
+    lista.innerHTML = top4.map(function(p) {
+        return '<li>'
+            + '<a href="#post-' + p.idPublicacion + '" onclick="irAPost(' + p.idPublicacion + ')">'
+            + p.titulo.substring(0,55) + (p.titulo.length>55?'…':'')
+            + '</a>'
+            + '<span class="foro-populares-count"><i class="fa-regular fa-comment"></i> ' + (p.num_comentarios||0) + '</span>'
+            + '</li>';
+    }).join('');
+}
+
+function irAPost(id) {
+    var el = document.getElementById('post-' + id);
+    if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+}
+
+/*--------------------------------------------------------------------------------------------
+paginación */
+function renderPaginacion() {
+    var contenedor = document.getElementById('paginacionForo');
+    if (totalPagForo <= 1) { contenedor.innerHTML = ''; return; }
+
+    var html = '<div class="d-flex justify-content-center gap-2 flex-wrap mt-2">';
+    if (paginaActual > 1) {
+        html += '<button class="btn-azul" style="padding:0.4em 1em;border-radius:8px;font-size:0.85rem;" onclick="cargarPosts(' + (paginaActual-1) + ')">'
+              + '<i class="fa-solid fa-chevron-left"></i></button>';
+    }
+    for (var i = 1; i <= totalPagForo; i++) {
+        var esActiva = i === paginaActual;
+        html += '<button onclick="cargarPosts(' + i + ')" style="border:none;border-radius:8px;padding:0.4em 0.9em;font-size:0.85rem;cursor:pointer;'
+              + (esActiva ? 'background:#1B358F;color:white;' : 'background:#f1f3f5;color:#333;') + '">' + i + '</button>';
+    }
+    if (paginaActual < totalPagForo) {
+        html += '<button class="btn-azul" style="padding:0.4em 1em;border-radius:8px;font-size:0.85rem;" onclick="cargarPosts(' + (paginaActual+1) + ')">'
+              + '<i class="fa-solid fa-chevron-right"></i></button>';
+    }
+    html += '</div>';
+    contenedor.innerHTML = html;
+}
 </script>
 
 </body>

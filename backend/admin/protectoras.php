@@ -1,54 +1,61 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-CRUD de protectoras para el administrador
-GET    — lista protectoras
+GET    — lista protectoras con búsqueda
 POST   — crea protectora
 PUT    — actualiza protectora
-DELETE — desactiva protectora */
+DELETE — elimina protectora (soft delete, solo si no tiene animales activos) */
 
 require_once __DIR__ . '/../includes/funciones.php';
 
-requerirAdmin();
-
 header('Content-Type: application/json; charset=utf-8');
+
+requerirAdmin();
 
 $pdo    = conectar();
 $metodo = $_SERVER['REQUEST_METHOD'];
 
+session_write_close();
+
 /*--------------------------------------------------------------------------------------------
 GET */
 if ($metodo === 'GET') {
-    $stmt = $pdo->query(
-        'SELECT p.idProtectora, p.nombre, p.localidad, p.telefono, p.email,
-                p.web, p.foto_logo, p.verificada, p.activa, p.fecha_registro,
-                COUNT(m.idMascota) AS num_animales
-         FROM protectoras p
-         LEFT JOIN mascotas m ON m.idProtectora = p.idProtectora AND m.activa = 1
-         GROUP BY p.idProtectora
-         ORDER BY p.nombre'
-    );
+    $q = limpiar($_GET['q'] ?? '');
+
+    $where  = [];
+    $params = [];
+
+    if ($q) {
+        $where[]  = '(p.nombre LIKE ? OR p.localidad LIKE ?)';
+        $params[] = "%$q%";
+        $params[] = "%$q%";
+    }
+
+    $cond = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+
+    $sql = "SELECT p.idProtectora, p.nombre, p.localidad, p.telefono, p.email,
+                   p.web, p.foto_logo, p.descripcion, p.direccion,
+                   p.latitud, p.longitud, p.verificada, p.activa, p.fecha_registro,
+                   COUNT(m.idMascota) AS num_animales
+            FROM protectoras p
+            LEFT JOIN mascotas m ON m.idProtectora = p.idProtectora AND m.activa = 1
+            $cond
+            GROUP BY p.idProtectora
+            ORDER BY p.nombre";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+
     respuestaOk(['protectoras' => $stmt->fetchAll()]);
 }
 
 /*--------------------------------------------------------------------------------------------
-POST - crear */
+POST */
 if ($metodo === 'POST') {
-    $datos = !empty($_POST) ? $_POST : (json_decode(file_get_contents('php://input'), true) ?? []);
-
+    $datos  = json_decode(file_get_contents('php://input'), true) ?? [];
     $nombre = limpiar($datos['nombre'] ?? '');
-    if (!$nombre) {
-        respuestaError('El nombre de la protectora es obligatorio.');
-    }
 
-    if (!empty($datos['email']) && !validarEmail($datos['email'])) {
-        respuestaError('Email no valido.');
-    }
-
-    // Foto logo opcional
-    $rutaLogo = null;
-    if (!empty($_FILES['foto_logo']) && $_FILES['foto_logo']['error'] === UPLOAD_ERR_OK) {
-        $rutaLogo = subirLogoProtectora($_FILES['foto_logo']);
-    }
+    if (!$nombre) respuestaError('El nombre es obligatorio.');
+    if (!empty($datos['email']) && !validarEmail($datos['email'])) respuestaError('Email no válido.');
 
     $stmt = $pdo->prepare(
         'INSERT INTO protectoras
@@ -63,49 +70,37 @@ if ($metodo === 'POST') {
         limpiar($datos['telefono']    ?? ''),
         $datos['email']    ?? null,
         $datos['web']      ?? null,
-        $rutaLogo,
+        $datos['foto_logo']?? null,
         !empty($datos['latitud'])  ? (float)$datos['latitud']  : null,
         !empty($datos['longitud']) ? (float)$datos['longitud'] : null,
     ]);
 
-    respuestaOk(['mensaje' => 'Protectora creada.', 'idProtectora' => $pdo->lastInsertId()]);
+    respuestaOk(['mensaje' => 'Protectora creada.', 'idProtectora' => (int)$pdo->lastInsertId()]);
 }
 
 /*--------------------------------------------------------------------------------------------
-PUT - actualizar */
+PUT */
 if ($metodo === 'PUT') {
     $datos = json_decode(file_get_contents('php://input'), true) ?? [];
     $id    = (int)($datos['idProtectora'] ?? 0);
+    if (!$id) respuestaError('idProtectora requerido.');
+    if (!empty($datos['email']) && !validarEmail($datos['email'])) respuestaError('Email no válido.');
 
-    if (!$id) {
-        respuestaError('ID de protectora requerido.');
-    }
-
-    $stmt = $pdo->prepare('SELECT idProtectora FROM protectoras WHERE idProtectora = ? LIMIT 1');
-    $stmt->execute([$id]);
-    if (!$stmt->fetch()) {
-        respuestaError('Protectora no encontrada.', 404);
-    }
-
-    if (!empty($datos['email']) && !validarEmail($datos['email'])) {
-        respuestaError('Email no valido.');
-    }
-
-    $stmt = $pdo->prepare(
+    $pdo->prepare(
         'UPDATE protectoras SET
-            nombre = ?, descripcion = ?, direccion = ?, localidad = ?,
-            telefono = ?, email = ?, web = ?, latitud = ?, longitud = ?,
-            verificada = ?, activa = ?
-         WHERE idProtectora = ?'
-    );
-    $stmt->execute([
+            nombre=?, descripcion=?, direccion=?, localidad=?,
+            telefono=?, email=?, web=?, foto_logo=?,
+            latitud=?, longitud=?, verificada=?, activa=?
+         WHERE idProtectora=?'
+    )->execute([
         limpiar($datos['nombre']      ?? ''),
         limpiar($datos['descripcion'] ?? ''),
         limpiar($datos['direccion']   ?? ''),
         limpiar($datos['localidad']   ?? ''),
         limpiar($datos['telefono']    ?? ''),
-        $datos['email']     ?? null,
-        $datos['web']       ?? null,
+        $datos['email']    ?? null,
+        $datos['web']      ?? null,
+        $datos['foto_logo']?? null,
         !empty($datos['latitud'])  ? (float)$datos['latitud']  : null,
         !empty($datos['longitud']) ? (float)$datos['longitud'] : null,
         (int)($datos['verificada'] ?? 0),
@@ -117,19 +112,13 @@ if ($metodo === 'PUT') {
 }
 
 /*--------------------------------------------------------------------------------------------
-DELETE - borrado logico */
+DELETE */
 if ($metodo === 'DELETE') {
     $datos = json_decode(file_get_contents('php://input'), true) ?? [];
-    $id    = (int)($datos['idProtectora'] ?? $_GET['id'] ?? 0);
+    $id    = (int)($datos['idProtectora'] ?? 0);
+    if (!$id) respuestaError('idProtectora requerido.');
 
-    if (!$id) {
-        respuestaError('ID de protectora requerido.');
-    }
-
-    // No se puede eliminar si tiene mascotas activas
-    $stmt = $pdo->prepare(
-        'SELECT COUNT(*) FROM mascotas WHERE idProtectora = ? AND activa = 1'
-    );
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM mascotas WHERE idProtectora = ? AND activa = 1');
     $stmt->execute([$id]);
     if ((int)$stmt->fetchColumn() > 0) {
         respuestaError('No se puede eliminar: la protectora tiene animales activos.');
@@ -139,24 +128,4 @@ if ($metodo === 'DELETE') {
     respuestaOk(['mensaje' => 'Protectora eliminada.']);
 }
 
-respuestaError('Metodo no permitido.', 405);
-
-/*--------------------------------------------------------------------------------------------
-funcion auxiliar subida de logo */
-function subirLogoProtectora(array $archivo): ?string {
-    $permitidos = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-    $extension  = strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION));
-
-    if (!in_array($extension, $permitidos) || $archivo['size'] > 2 * 1024 * 1024) {
-        return null;
-    }
-
-    $directorio = __DIR__ . '/../uploads/protectoras/';
-    if (!is_dir($directorio)) {
-        mkdir($directorio, 0755, true);
-    }
-
-    $nombre = uniqid('prot_', true) . '.' . $extension;
-    move_uploaded_file($archivo['tmp_name'], $directorio . $nombre);
-    return 'uploads/protectoras/' . $nombre;
-}
+respuestaError('Método no permitido.', 405);

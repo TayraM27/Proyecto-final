@@ -962,13 +962,17 @@ card-colabora imagen */
     width: 100%;
     height: 300px;
     object-fit: cover;
-    object-position: center 35%;
+    object-position: center 30%;
     display: block;
 }
 
 .card-colabora-img-fallback {
     width: 100%;
     height: 300px;
+}
+
+.voluntariado-img {
+    object-position: 50% 60%;
 }
 
 /*--------------------------------------------------------------------------------------------
@@ -1145,6 +1149,57 @@ acoge hero imagen */
 .btn-apadrinar:hover {
     background-color: #FFC66A;
     transform: translateY(-2px);
+}
+
+/*--------------------------------------------------------------------------------------------
+compartir — usado en fichas, cards adopta, apadrina y acoge */
+
+.btn-compartir {
+    display: block;
+    width: 100%;
+    margin-top: 0.5em;
+    padding: 0.65em;
+    background: transparent;
+    color: #1B358F;
+    border: 2px solid #1B358F;
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-compartir:hover {
+    background: #F8BA56;
+    color: #1B358F;
+    border-color: #F8BA56;
+}
+
+.toast-compartir {
+    position: fixed;
+    bottom: 1.5em;
+    left: 50%;
+    transform: translateX(-50%) translateY(60px);
+    background: #1B358F;
+    color: #fff;
+    padding: 0.7em 1.4em;
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 9999;
+    max-width: 90vw;
+    text-align: center;
+    pointer-events: none;
+}
+
+.toast-compartir.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
 
 /* ficha animal */
@@ -1531,7 +1586,6 @@ acoge hero imagen */
     flex-direction: column;
     transition: transform 0.25s, box-shadow 0.25s;
     border: 2px solid transparent;
-    min-width: 330px;
 }
 
 .prot-franja {
@@ -2073,6 +2127,20 @@ prot-acciones botones */
         justify-content: center;
         flex-direction: column;
         text-align: center;
+    }
+}
+
+/*--------------------------------------------------------------------------------------------
+protectoras — 2 columnas entre 992px y 1198px */
+@media (min-width: 992px) and (max-width: 1198px) {
+    #gridProtectoras .col-lg-4 {
+        width: 50%;
+    }
+    .prot-nombre {
+        font-size: 0.88rem;
+    }
+    .prot-desc p {
+        font-size: 0.8rem;
     }
 }
     .prot-acciones {
@@ -3351,6 +3419,16 @@ prot-acciones botones */
     justify-content: center;
 }
 
+.compat-card-foto {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center top;
+    flex-shrink: 0;
+    border: 2px solid #e9ecef;
+}
+
 .ranking-oro .compat-card-icono    { background: #fff8e8; color: #e65100; }
 .ranking-plata .compat-card-icono  { background: #f5f5f5; color: #546e7a; }
 .ranking-bronce .compat-card-icono { background: #fdf3e7; color: #795548; }
@@ -3440,13 +3518,13 @@ prot-acciones botones */
 
 .login-rol-btn {
     flex: 1;
-    background: none;
+    background: #edf0f7;
     border: none;
     border-radius: 9px;
     padding: 0.65em 0.5em;
     font-size: 0.82rem;
     font-weight: 600;
-    color: #888;
+    color: #9aa0b4;
     cursor: pointer;
     font-family: 'Poppins', sans-serif;
     display: flex;
@@ -3461,8 +3539,9 @@ prot-acciones botones */
     box-shadow: 0 2px 8px rgba(27, 53, 143, 0.12);
 }
 
-.login-rol-btn:not(.activo):hover      { color: #1B358F; }
-.login-rol-btn[data-rol="admin"].activo{ color: #e65100; }
+.login-rol-btn:not(.activo):hover {
+    color: #6b728e;
+}
 
 .login-formulario {
     background: #fff;
@@ -3561,6 +3640,8 @@ prot-acciones botones */
     padding: 0;
     line-height: 1;
     transition: color 0.18s;
+    z-index: 2;
+    pointer-events: auto;
 }
 
 .login-toggle-pwd:hover { color: #1B358F; }
@@ -3971,8 +4052,9 @@ prot-acciones botones */
         text-align: left;
     }
 
-    .compat-card { flex-wrap: wrap; }
-    .compat-card-btn{ width: 100%; text-align: center; }
+    .compat-card { flex-wrap: nowrap; align-items: center; }
+    .compat-card-info { min-width: 0; }
+    .compat-card-btn { width: 100%; text-align: center; }
     .prot-acciones{ flex-direction: column; }
 
     .btn-ver-animales,
@@ -4036,4 +4118,165 @@ prot-acciones botones */
     .beneficio-texto span   { font-size: 0.78rem; }
     .animal-img             { height: 180px; }
     .animal-nombre          { font-size: 1rem; }
+}
+/*--------------------------------------------------------------------------------------------
+perfil — tabs */
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 0.5em 1.2em;
+    border-radius: 8px 8px 0 0;
+    font-family: Poppins, sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover {
+    color: #1B358F;
+    background: #f8f9fa;
+}
+
+.tab-btn.activo {
+    color: #1B358F;
+    border-bottom: 3px solid #1B358F;
+    background: #f0f4ff;
+}
+
+/*--------------------------------------------------------------------------------------------
+perfil — cards favoritos */
+
+.card-fav {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+.card-fav:hover {
+    transform: translateY(-3px);
+}
+
+.card-fav img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    object-position: center center;
+}
+
+@media (min-width: 430px) {
+    .card-fav img {
+        height: 260px;
+    }
+}
+
+@media (min-width: 500px) and (max-width: 555px) {
+    /* 2 columnas estrechas — cards más altas y ligeramente más angostas */
+    #tab-favoritos .col-12 {
+        width: 44%;
+    }
+    .card-fav img {
+        height: 310px;
+    }
+}
+
+@media (min-width: 556px) {
+    .card-fav img {
+        height: 280px;
+    }
+}
+
+.card-fav-body {
+    padding: 0.9em;
+}
+
+.card-fav-nombre {
+    font-weight: 700;
+    color: #1B358F;
+    margin-bottom: 0.2em;
+}
+
+.card-fav-meta {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+/*--------------------------------------------------------------------------------------------
+perfil — cards apadrinamientos */
+
+.card-apad {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    padding: 1.2em;
+    border-left: 4px solid #F8BA56;
+}
+
+.card-apad-nombre {
+    font-weight: 700;
+    color: #1B358F;
+    font-size: 1rem;
+}
+
+.card-apad-cuota {
+    font-size: 0.88rem;
+    color: #2e7d32;
+    font-weight: 600;
+}
+
+.card-apad-estado {
+    font-size: 0.78rem;
+    padding: 0.2em 0.7em;
+    border-radius: 50px;
+}
+
+/*--------------------------------------------------------------------------------------------
+perfil — notificaciones */
+
+.notif-item {
+    background: #fff;
+    border-radius: 10px;
+    padding: 1em 1.2em;
+    margin-bottom: 0.7em;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    display: flex;
+    gap: 0.8em;
+    align-items: flex-start;
+}
+
+.notif-icono {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    margin-top: 0.1em;
+}
+
+.notif-texto {
+    font-size: 0.88rem;
+    color: #444;
+    line-height: 1.5;
+}
+
+.notif-fecha {
+    font-size: 0.75rem;
+    color: #aaa;
+    margin-top: 0.2em;
+}
+
+/*--------------------------------------------------------------------------------------------
+protectoras — 2 columnas entre 992px y 1198px */
+
+@media (min-width: 992px) and (max-width: 1198px) {
+    #gridProtectoras .col-lg-4 {
+        width: 50%;
+    }
+    .prot-nombre {
+        font-size: 0.88rem;
+    }
+    .prot-desc p {
+        font-size: 0.8rem;
+    }
 }

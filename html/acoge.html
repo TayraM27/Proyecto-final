@@ -76,6 +76,8 @@
         </p>
         <div class="linea-amarilla"></div>
 
+        <!-- IMAGEN HERO: reemplaza la URL con una foto de un animal en acogida (perro/gato en hogar cálido) -->
+        <!-- Tamaño recomendado: 1200x400px, formato panorámico / banner -->
         <div class="acoge-hero-img-wrap">
             <img src="../img/imagenes-animales/upscalemedia-transformed.jpeg"
                  alt="Animal en acogida"
@@ -250,6 +252,18 @@
 
         </div>
 
+        <!-- animales que necesitan acogida -->
+        <h2 class="acoge-titulo-seccion mb-1">
+            <i class="fa-solid fa-paw me-2"></i>Animales que necesitan acogida ahora
+        </h2>
+        <p class="acoge-texto mb-4">Estos animales están buscando una familia de acogida temporal. Contacta con su protectora para ofrecerte.</p>
+
+        <div class="row g-4 mb-5" id="gridAcoge">
+            <div class="col-12 text-center py-4">
+                <div class="spinner-border" style="color:#1B358F;" role="status"></div>
+            </div>
+        </div>
+
         <!-- protectoras colaboradoras — 5 cards centradas -->
         <h2 class="acoge-titulo-seccion mb-1">¿Con qué protectora quieres colaborar?</h2>
         <p class="acoge-texto mb-4">Contacta directamente con la protectora que más te encaje y cuéntales que quieres ser familia de acogida.</p>
@@ -361,6 +375,9 @@
                 </div>
             </div>
 
+            <!-- protectoras dinámicas desde BD -->
+            <div id="containerProtDinamicasAcoge" class="row g-3 mb-5 justify-content-center"></div>
+
         </div>
 
     </div>
@@ -380,6 +397,130 @@
 
 
 <script src="../javascript/script.js"></script>
+<script>
+var PROT_HARDCODED_ACOGE = [1,2,3,4,5];
+
+document.addEventListener('DOMContentLoaded', function() {
+    cargarAnimalesAcoge();
+    cargarProtDinamicasAcoge();
+});
+
+function cargarProtDinamicasAcoge() {
+    fetch('../backend/api/protectoras/listar.php')
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) return;
+
+            var nuevas = data.protectoras.filter(function(p){
+                return PROT_HARDCODED_ACOGE.indexOf(parseInt(p.idProtectora)) === -1;
+            });
+
+            if (!nuevas.length) return;
+
+            var cont = document.getElementById('containerProtDinamicasAcoge');
+
+            cont.innerHTML = nuevas.map(function(p){
+
+                var logo = p.foto_logo
+                    ? '<img src="../' + p.foto_logo + '" class="acoge-prot-logo" onerror=\'this.style.display="none";this.nextElementSibling.style.display="flex";\' alt="Logo ' + p.nombre + '">'
+                    : '';
+
+                return '<div class="col-md-6 col-lg-4">'
+                    + '<div class="acoge-prot-card">'
+                    + '<div class="acoge-prot-header">'
+                    + logo
+                    + '<div class="acoge-prot-emoji" style="' + (p.foto_logo ? 'display:none;' : '') + '">🐾</div>'
+                    + '<div>'
+                    + '<p class="acoge-prot-nombre">' + p.nombre + '</p>'
+                    + (p.localidad ? '<p class="acoge-prot-lugar"><i class="fa-solid fa-location-dot"></i> ' + p.localidad + '</p>' : '')
+                    + '</div></div>'
+                    + (p.descripcion ? '<p class="acoge-prot-foco">' + p.descripcion + '</p>' : '')
+                    + '<div class="acoge-prot-contacto">'
+                    + (p.email ? '<a href="mailto:' + p.email + '"><i class="fa-solid fa-envelope"></i> Email</a>' : '')
+                    + (p.telefono ? '<a href="tel:' + p.telefono + '"><i class="fa-solid fa-phone"></i> ' + p.telefono + '</a>' : '')
+                    + (p.web ? '<a href="' + p.web + '" target="_blank" rel="noopener"><i class="fa-solid fa-globe"></i> Web</a>' : '')
+                    + '</div></div></div>';
+            }).join('');
+        })
+        .catch(function(){});
+}
+
+var _shareData = {};
+
+function compartirCard(id) {
+    var d = _shareData[id] || {};
+    var url = window.location.href.replace(/html\/acoge\.html.*/, '') + 'html/fichaAnimal.html?id=' + id;
+    var msg = '🐾 ' + (d.nombre || 'Animal') + ' busca un hogar. Mira su ficha en PetFamily: ' + url;
+    /* Copiar siempre al portapapeles */
+    var input = document.createElement('input');
+    input.value = url;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
+    /* Mostrar URL al usuario */
+    alert('\u2705 Enlace copiado:\n' + url);
+}
+
+function cargarAnimalesAcoge() {
+    var grid = document.getElementById('gridAcoge');
+    fetch('../backend/mascotas/listar.php?pagina=1&acogida=1')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (!data.mascotas || !data.mascotas.length) {
+                grid.innerHTML = '<div class="col-12 text-center py-4 text-muted">No hay animales disponibles en este momento.</div>';
+                return;
+            }
+            grid.innerHTML = data.mascotas.map(function(m) {
+                var foto = m.foto_principal
+                    ? '../' + m.foto_principal
+                    : '../img/mascotas/placeholder.jpg';
+
+                var badges = [];
+                    if (m.urgencia === 'urgente') badges.push('<span class="badge bg-danger">Urgente</span>');
+                    if (m.estado_salud && m.estado_salud.toLowerCase() !== 'bueno') badges.push('<span class="badge bg-dark">' + m.estado_salud + '</span>');
+                    if (m.badge_extra) badges.push('<span class="badge bg-secondary">' + m.badge_extra + '</span>');
+                    if (!badges.length) badges.push(m.urgencia === 'nuevo' ? '<span class="badge bg-info text-dark">Nuevo</span>' : '<span class="badge bg-secondary">Disponible</span>');
+                    var badge = '<div style="display:flex;gap:0.3em;flex-wrap:wrap;">' + badges.join('') + '</div>';
+
+                var desc = m.descripcion
+                    ? (m.descripcion.length > 100 ? m.descripcion.substring(0, 100) + '…' : m.descripcion)
+                    : (m.raza || m.especie) + (m.edad_texto ? ', ' + m.edad_texto : '') + '.';
+
+                _shareData[m.idMascota] = { nombre: m.nombre };
+                return '<div class="col-md-6 col-lg-4">'
+                    + '<div class="card-animal-apadrina">'
+                    + '<div class="animal-img-wrap">'
+                    + '<img src="' + foto + '" onerror="this.src=\'../img/mascotas/placeholder.jpg\'" alt="' + m.nombre + '" class="animal-img">'
+                    + '</div>'
+                    + '<div class="animal-info">'
+                    + '<div class="d-flex justify-content-between align-items-start mb-1">'
+                    + '<h3 class="animal-nombre">' + m.nombre + '</h3>'
+                    + badge
+                    + '</div>'
+                    + '<p class="animal-protectora"><i class="fa-solid fa-building-shield"></i> ' + m.protectora_nombre + '</p>'
+                    + '<p class="animal-desc">' + desc + '</p>'
+                    + '<a href="fichaAnimal.html?id=' + m.idMascota + '" class="btn-apadrinar" style="text-decoration:none;text-align:center;">'
+                    + '<i class="fa-solid fa-house-chimney-heart me-2"></i>Quiero acoger a ' + m.nombre
+                    + '</a>'
+                    + '<button class="btn-compartir" id="share-acoge-' + m.idMascota + '">'
+                    + '<i class="fa-solid fa-share-nodes me-1"></i> Compartir'
+                    + '</button>'
+                    + '</div></div></div>';
+            }).join('');
+            Object.keys(_shareData).forEach(function(id) {
+                var btn = document.getElementById('share-acoge-' + id);
+                if (btn) {
+                    var d = _shareData[id] || {};
+                    btn.addEventListener('click', (function(i, n){ return function(){ compartirAnimal(i, n); }; })(id, d.nombre));
+                }
+            });
+        })
+        .catch(function() {
+            grid.innerHTML = '<div class="col-12 text-center py-4 text-muted">Error al cargar los animales.</div>';
+        });
+}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
 

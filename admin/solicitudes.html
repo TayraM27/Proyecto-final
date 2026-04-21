@@ -28,7 +28,7 @@
             <p class="sidebar-seccion">Comunidad</p>
             <a href="foro.html" class="sidebar-link"><i class="fa-solid fa-comments"></i> Foro</a>
             <p class="sidebar-seccion">Web pública</p>
-            <a href="../index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
+            <a href="../html/index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
         </nav>
         <div class="sidebar-pie">
             <div class="sidebar-usuario">
@@ -101,7 +101,7 @@ function verificarAdmin(cb) {
     fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
-            if (!data.logueado || data.usuario.rol !== 'admin') { window.location.href = '../login.html'; return; }
+            if (!data.logueado || data.usuario.rol !== 'admin') { window.location.href = '../html/login.html'; return; }
             document.getElementById('adminNombre').textContent = data.usuario.nombre;
             document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
             if (cb) cb();
@@ -204,7 +204,7 @@ function formatFecha(f) {
 }
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('abierto'); }
-function cerrarSesion() { fetch('../backend/api/auth/logout.php', { credentials: 'include' }).then(function(){ window.location.href = '../login.html'; }); }
+function cerrarSesion() { fetch('../backend/api/auth/logout.php', { credentials: 'include' }).then(function(){ window.location.href = '../html/login.html'; }); }
 function mostrarToast(msg, tipo) {
     var t = document.getElementById('toast');
     t.textContent = msg;

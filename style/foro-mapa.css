@@ -19,6 +19,7 @@
 
 .foro-publicar-textarea {
     flex: 1;
+    width: 100%;
     border: none;
     outline: none;
     resize: none;
@@ -27,6 +28,42 @@
     color: #333;
     background: transparent;
     line-height: 1.5;
+    min-height: 2.5em;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.foro-publicar-textarea:focus {
+    min-height: 4em;
+}
+
+.foro-publicar-textarea::placeholder {
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+/* input en cajaSinSesion — siempre una sola línea */
+input.foro-publicar-textarea {
+    height: auto;
+    padding: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* placeholder div en cajaConSesion */
+.foro-publicar-placeholder {
+    flex: 1;
+    width: 100%;
+    font-size: 0.95rem;
+    font-family: 'Poppins', sans-serif;
+    color: #aaa;
+    line-height: 2.5em;
+    cursor: text;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0;
 }
 
 .foro-publicar-textarea.textarea-pendiente {
@@ -1059,4 +1096,30 @@ body.mapa-fullscreen .mapa-layout {
     .mapa-hero{
         margin-top: 15em;
     }
+}
+/*--------------------------------------------------------------------------------------------
+foro — multimedia en posts */
+
+.foro-post-media {
+    margin: 0.7em 0 0.5em;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.foro-post-media img {
+    width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+    display: block;
+    border-radius: 10px;
+    background: #f8f9fa;
+}
+
+.foro-post-media video {
+    width: 100%;
+    max-height: 360px;
+    display: block;
+    border-radius: 10px;
+    background: #000;
 }

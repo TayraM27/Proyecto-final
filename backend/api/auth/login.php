@@ -5,6 +5,7 @@ Recibe: POST { email, password, rol }
 Devuelve: JSON con datos del usuario o error */
 
 require_once __DIR__ . '/../../includes/funciones.php';
+
 header('Content-Type: application/json; charset=utf-8');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -17,9 +18,9 @@ if (!$datos) {
     respuestaError('Datos inválidos.');
 }
 
-$email    = limpiar($datos['email'] ?? '');
-$password = trim($datos['password'] ?? '');
-$rol      = limpiar($datos['rol'] ?? 'usuario');
+$email    = limpiar($datos['email']    ?? '');
+$password = trim($datos['password']   ?? '');
+$rol      = limpiar($datos['rol']     ?? 'usuario');
 
 if (!$email || !$password) {
     respuestaError('Email y contraseña son obligatorios.');
@@ -47,16 +48,13 @@ if (!$usuario['activo']) {
     respuestaError('Tu cuenta está desactivada. Contacta con el administrador.');
 }
 
-/* Si pide rol admin pero no lo es */
 if ($rol === 'admin' && $usuario['rol'] !== 'admin') {
     respuestaError('No tienes permisos de administrador.');
 }
 
-/* Actualizar último_login */
 $pdo->prepare('UPDATE usuarios SET ultimo_login = NOW() WHERE idUsuario = ?')
     ->execute([$usuario['idUsuario']]);
 
-/* Guardar sesión */
 iniciarSesionSegura();
 session_regenerate_id(true);
 $_SESSION['idUsuario']   = $usuario['idUsuario'];
@@ -73,5 +71,5 @@ respuestaOk([
         'rol'         => $usuario['rol'],
         'foto_perfil' => $usuario['foto_perfil'],
     ],
-    'redirigir' => $usuario['rol'] === 'admin' ? 'dashboard.php' : 'index.html',
+    'redirigir' => $usuario['rol'] === 'admin' ? '../admin/dashboard.html' : '../html/index.html',
 ]);

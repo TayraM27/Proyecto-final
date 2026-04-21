@@ -97,11 +97,6 @@
                 </div>
                 <input type="hidden" name="rol" id="inputRol" value="usuario">
 
-                <!-- BACKEND: action="login_process.php" method="POST" -->
-                <!-- PHP: session_start(), verificar email+password con hash_verify() -->
-                <!-- Si rol=usuario y credenciales ok: $_SESSION['rol']='usuario', redirigir index.html -->
-                <!-- Si rol=admin y credenciales ok: $_SESSION['rol']='admin', redirigir admin/dashboard.html -->
-                <!-- Si credenciales incorrectas: mostrar mensaje de error -->
                 <form class="login-form" id="formLogin" novalidate>
 
                     <div class="login-campo">
@@ -165,8 +160,8 @@
                         <span>o continúa con</span>
                     </div>
 
-                    <!-- Google-->
-            
+                    <!-- Google Sign-In -->
+
                     <div id="g_id_onload"
                          data-client_id="615608967925-59tc6p3spe5urj90hn8lu9aen1249852.apps.googleusercontent.com"
                          data-callback="handleGoogleLogin"
@@ -301,7 +296,7 @@ function handleGoogleLogin(response) {
     .then(function(r) { return r.json(); })
     .then(function(data) {
         if (data.ok) {
-            window.location.href = data.redirigir || 'index.html';
+            window.location.href = data.redirigir || '../html/index.html';
         } else {
             var alerta = document.getElementById('alertaLogin');
             document.getElementById('alertaLoginMsg').textContent = data.error || 'Error con Google. Inténtalo de nuevo.';
