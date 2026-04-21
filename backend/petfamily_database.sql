@@ -371,20 +371,14 @@ VALUES
  'Gijón',   '665971933', 'info@nortemascotas.com',          43.5322, -5.6611, 1);
 
 
--- ────────────────────────────────────────────────────────────
--- DATOS DE EJEMPLO — USUARIO ADMIN
--- Contraseña: Admin1234!
--- Ejecuta generar_hash.php para obtener el hash real y actualizar este registro
--- ────────────────────────────────────────────────────────────
+
 INSERT INTO usuarios (nombre, apellidos, username, email, password_hash, rol)
 VALUES ('Admin', 'PetFamily', 'admin', 'admin@petfamily.es',
         '$2y$10$placeholder00000000000000000000000000000000000000000000000',
         'admin');
 
 
--- ────────────────────────────────────────────────────────────
--- DATOS DE EJEMPLO — MASCOTAS
--- ────────────────────────────────────────────────────────────
+
 INSERT INTO mascotas
     (idProtectora, nombre, especie, raza, sexo, tamanyo, color, descripcion,
      estado_salud, urgencia, estado_adopcion, disponible_apadrinamiento,
@@ -433,10 +427,7 @@ INSERT INTO mascotas_fotos (idMascota, ruta, es_principal, orden) VALUES
 (6, 'img/mascotas/bosque3-protectora-de-asturias.jpg',         0, 2);
 
 
--- ============================================================
--- ALTER TABLE — ejecuta esto si la BD ya existe
--- Abre phpMyAdmin → pestaña SQL → pega y ejecuta
--- ============================================================
+
 
 -- ALTER TABLE usuarios ADD COLUMN username  VARCHAR(80)  UNIQUE AFTER apellidos;
 -- ALTER TABLE usuarios ADD COLUMN localidad VARCHAR(80)  AFTER telefono;

@@ -1,7 +1,4 @@
 <?php
-/*--------------------------------------------------------------------------------------------
-GET — lista protectoras activas
-Ruta: backend/api/protectoras/listar.php */
 
 require_once __DIR__ . '/../../includes/funciones.php';
 
@@ -11,7 +8,8 @@ session_write_close();
 
 $pdo  = conectar();
 $stmt = $pdo->query(
-    'SELECT idProtectora, nombre, localidad, telefono, email, web,
+    'SELECT idProtectora, nombre, localidad, telefono, email,
+            web, tipo_pagina, iban, bizum, teaming,
             foto_logo, descripcion, verificada
      FROM protectoras
      WHERE activa = 1

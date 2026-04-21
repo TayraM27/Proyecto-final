@@ -1100,8 +1100,9 @@ function cargarProtectorasDinamicasEnDona() {
                     telefono: p.telefono || null,
                     email:    p.email    || null,
                     web:      p.web      || null,
-                    teaming:  null,
-                    iban:     null
+                    teaming:  p.teaming  || null,
+                    iban:     p.iban     || null,
+                    bizum:    p.bizum    || null
                 };
             });
 
@@ -1129,20 +1130,24 @@ function cargarProtectorasDinamicasEnDona() {
                 }).join('');
             }
 
-            /* Inyectar en protectoras.html */
-            var gridProt = document.getElementById('gridProtectorasDinamicas');
+            /* Inyectar en protectoras.html — las 5 estáticas son posiciones 1-5 (azul,gold,azul,gold,azul)
+               las dinámicas siguen la alternancia: posición 6 = gold (i%2===0), 7 = azul, etc. */
+            var gridProt = document.getElementById('gridProtectoras');
             if (gridProt) {
-                gridProt.innerHTML = nuevas.map(function(p) {
+                gridProt.insertAdjacentHTML('beforeend', nuevas.map(function(p, i) {
+                    var franja = i % 2 === 0 ? 'prot-franja prot-franja-gold' : 'prot-franja';
 
                     var logo = p.foto_logo
                         ? '<img src="../' + p.foto_logo + '" alt="Logo ' + p.nombre.replace(/"/g, '&quot;') + '" ' +
                           'onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<span class=\\\'prot-logo-emoji\\\'>🐾</span>\';">'
                         : '<span class="prot-logo-emoji">🐾</span>';
 
+                    var teaming = p.teaming || null;
+
                     return '<div class="col-md-6 col-lg-4 prot-item" data-especie="perros gatos" data-nombre="' +
-                           p.nombre + ' ' + (p.localidad || '') + '" data-teaming="no">' +
+                           p.nombre + ' ' + (p.localidad || '') + '" data-teaming="' + (teaming ? 'si' : 'no') + '">' +
                            '<div class="card-protectora-pag">' +
-                           '<div class="prot-franja"></div>' +
+                           '<div class="' + franja + '"></div>' +
                            '<div class="prot-header">' +
                            '<div class="prot-logo-container">' + logo + '</div>' +
                            '<div style="flex:1;min-width:0;">' +
@@ -1156,6 +1161,7 @@ function cargarProtectorasDinamicasEnDona() {
                            (p.email    ? '<div class="prot-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + p.email + '">' + p.email + '</a></div>' : '') +
                            (p.telefono ? '<div class="prot-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + p.telefono + '">' + p.telefono + '</a></div>' : '') +
                            (p.web      ? '<div class="prot-dato"><i class="fa-solid fa-globe"></i><a href="' + p.web + '" target="_blank" rel="noopener">' + p.web + '</a></div>' : '') +
+                           (teaming    ? '<div class="prot-dato"><i class="fa-solid fa-mug-hot"></i><a href="' + teaming + '" target="_blank" rel="noopener">Teaming · 1 €/mes</a></div>' : '') +
                            '</div>' +
                            '<div class="prot-acciones">' +
                            '<button class="btn-prot-donar" onclick="abrirModalDonarProtDinamica(' + p.idProtectora + ')">' +
@@ -1164,7 +1170,7 @@ function cargarProtectorasDinamicasEnDona() {
                            '<i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Web</a>' : '') +
                            '</div>' +
                            '</div></div>';
-                }).join('');
+                }).join(''));
 
                 if (typeof filtrarProtectoras === 'function') filtrarProtectoras();
             }
@@ -1208,24 +1214,7 @@ function copiarTexto(btn, texto) {
 
 function copiarIban(btn, iban) {
     var texto = iban.replace(/\s*\([^)]*\)/, '').trim();
-    var icono = btn.querySelector('i');
-    function feedback() {
-        icono.className = 'fa-solid fa-check';
-        setTimeout(function() { icono.className = 'fa-regular fa-copy'; }, 2000);
-    }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(texto).then(feedback);
-    } else {
-        var el = document.createElement('textarea');
-        el.value = texto;
-        el.style.position = 'fixed';
-        el.style.opacity = '0';
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);
-        feedback();
-    }
+    copiarTexto(btn, texto);
 }
 
 function buildDatosProt(p) {

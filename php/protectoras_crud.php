@@ -10,7 +10,8 @@ obtener todas las protectoras activas */
 function getProtectoras($pdo) {
     $stmt = $pdo->query(
         'SELECT idProtectora, nombre, descripcion, localidad, telefono,
-                email, web, foto_logo, verificada, activa
+                email, web, tipo_pagina, iban, bizum, teaming,
+                foto_logo, verificada, activa
          FROM protectoras
          WHERE activa = 1
          ORDER BY nombre ASC'
@@ -34,8 +35,9 @@ crear protectora */
 
 function createProtectora($pdo, $data) {
     $sql = 'INSERT INTO protectoras
-                (nombre, descripcion, direccion, localidad, telefono, email, web, foto_logo, activa)
-            VALUES (?,?,?,?,?,?,?,?,1)';
+                (nombre, descripcion, direccion, localidad, telefono, email,
+                 web, tipo_pagina, iban, bizum, teaming, foto_logo, activa)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,1)';
     $stmt = $pdo->prepare($sql);
     return $stmt->execute([
         $data['nombre'],
@@ -45,6 +47,10 @@ function createProtectora($pdo, $data) {
         $data['telefono']    ?? null,
         $data['email']       ?? null,
         $data['web']         ?? null,
+        $data['tipo_pagina'] ?? 'sin_pagina',
+        $data['iban']        ?? null,
+        $data['bizum']       ?? null,
+        $data['teaming']     ?? null,
         $data['foto_logo']   ?? null,
     ]);
 }
@@ -55,7 +61,8 @@ actualizar protectora */
 function updateProtectora($pdo, $id, $data) {
     $sql = 'UPDATE protectoras
             SET nombre=?, descripcion=?, direccion=?, localidad=?,
-                telefono=?, email=?, web=?, foto_logo=?, activa=?
+                telefono=?, email=?, web=?, tipo_pagina=?,
+                iban=?, bizum=?, teaming=?, foto_logo=?, activa=?
             WHERE idProtectora=?';
     $stmt = $pdo->prepare($sql);
     return $stmt->execute([
@@ -66,6 +73,10 @@ function updateProtectora($pdo, $id, $data) {
         $data['telefono']    ?? null,
         $data['email']       ?? null,
         $data['web']         ?? null,
+        $data['tipo_pagina'] ?? 'sin_pagina',
+        $data['iban']        ?? null,
+        $data['bizum']       ?? null,
+        $data['teaming']     ?? null,
         $data['foto_logo']   ?? null,
         (int)($data['activa'] ?? 1),
         $id,

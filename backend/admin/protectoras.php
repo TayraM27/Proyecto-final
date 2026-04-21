@@ -33,7 +33,8 @@ if ($metodo === 'GET') {
     $cond = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
     $sql = "SELECT p.idProtectora, p.nombre, p.localidad, p.telefono, p.email,
-                   p.web, p.foto_logo, p.descripcion, p.direccion,
+                   p.web, p.tipo_pagina, p.iban, p.bizum, p.teaming,
+                   p.foto_logo, p.descripcion, p.direccion,
                    p.latitud, p.longitud, p.verificada, p.activa, p.fecha_registro,
                    COUNT(m.idMascota) AS num_animales
             FROM protectoras p
@@ -57,10 +58,14 @@ if ($metodo === 'POST') {
     if (!$nombre) respuestaError('El nombre es obligatorio.');
     if (!empty($datos['email']) && !validarEmail($datos['email'])) respuestaError('Email no válido.');
 
+    $tiposPagina = ['web', 'red_social', 'otra', 'sin_pagina'];
+    $tipoPagina  = in_array($datos['tipo_pagina'] ?? '', $tiposPagina) ? $datos['tipo_pagina'] : 'sin_pagina';
+
     $stmt = $pdo->prepare(
         'INSERT INTO protectoras
-            (nombre, descripcion, direccion, localidad, telefono, email, web, foto_logo, latitud, longitud)
-         VALUES (?,?,?,?,?,?,?,?,?,?)'
+            (nombre, descripcion, direccion, localidad, telefono, email,
+             web, tipo_pagina, iban, bizum, teaming, foto_logo, latitud, longitud)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
     );
     $stmt->execute([
         $nombre,
@@ -68,9 +73,13 @@ if ($metodo === 'POST') {
         limpiar($datos['direccion']   ?? ''),
         limpiar($datos['localidad']   ?? ''),
         limpiar($datos['telefono']    ?? ''),
-        $datos['email']    ?? null,
-        $datos['web']      ?? null,
-        $datos['foto_logo']?? null,
+        $datos['email']      ?? null,
+        $datos['web']        ?? null,
+        $tipoPagina,
+        limpiar($datos['iban']    ?? ''),
+        limpiar($datos['bizum']   ?? ''),
+        $datos['teaming']    ?? null,
+        $datos['foto_logo']  ?? null,
         !empty($datos['latitud'])  ? (float)$datos['latitud']  : null,
         !empty($datos['longitud']) ? (float)$datos['longitud'] : null,
     ]);
@@ -86,11 +95,15 @@ if ($metodo === 'PUT') {
     if (!$id) respuestaError('idProtectora requerido.');
     if (!empty($datos['email']) && !validarEmail($datos['email'])) respuestaError('Email no válido.');
 
+    $tiposPagina = ['web', 'red_social', 'otra', 'sin_pagina'];
+    $tipoPagina  = in_array($datos['tipo_pagina'] ?? '', $tiposPagina) ? $datos['tipo_pagina'] : 'sin_pagina';
+
     $pdo->prepare(
         'UPDATE protectoras SET
             nombre=?, descripcion=?, direccion=?, localidad=?,
-            telefono=?, email=?, web=?, foto_logo=?,
-            latitud=?, longitud=?, verificada=?, activa=?
+            telefono=?, email=?, web=?, tipo_pagina=?,
+            iban=?, bizum=?, teaming=?,
+            foto_logo=?, latitud=?, longitud=?, verificada=?, activa=?
          WHERE idProtectora=?'
     )->execute([
         limpiar($datos['nombre']      ?? ''),
@@ -98,9 +111,13 @@ if ($metodo === 'PUT') {
         limpiar($datos['direccion']   ?? ''),
         limpiar($datos['localidad']   ?? ''),
         limpiar($datos['telefono']    ?? ''),
-        $datos['email']    ?? null,
-        $datos['web']      ?? null,
-        $datos['foto_logo']?? null,
+        $datos['email']      ?? null,
+        $datos['web']        ?? null,
+        $tipoPagina,
+        limpiar($datos['iban']    ?? ''),
+        limpiar($datos['bizum']   ?? ''),
+        $datos['teaming']    ?? null,
+        $datos['foto_logo']  ?? null,
         !empty($datos['latitud'])  ? (float)$datos['latitud']  : null,
         !empty($datos['longitud']) ? (float)$datos['longitud'] : null,
         (int)($datos['verificada'] ?? 0),

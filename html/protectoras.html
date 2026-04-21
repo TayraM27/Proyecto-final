@@ -277,7 +277,7 @@
             <!-- 5. Asociación Felina La Esperanza -->
             <div class="col-md-6 col-lg-4 prot-item" data-especie="gatos" data-nombre="Asociación Felina La Esperanza Asturias" data-teaming="si">
                 <div class="card-protectora-pag">
-                    <div class="prot-franja prot-franja-gold"></div>
+                    <div class="prot-franja"></div>
                     <div class="prot-header">
                         <div class="prot-logo-container">
                             <img src="../img/protectora/asociacion-felina-la-esperanza.jpg"
@@ -314,9 +314,6 @@
                     </div>
                 </div>
             </div>
-
-        <!-- protectoras dinámicas desde BD (excluye las 5 ya mostradas) -->
-        <div class="row g-4 mb-2" id="gridProtectorasDinamicas"></div>
 
         </div><!-- /row -->
 
@@ -422,69 +419,69 @@
 <script src="https://code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
 
 <script>
-    var filtroActivo = 'todas';
+var filtroActivo = 'todas';
 
-    function setFiltro(btn, filtro) {
-        filtroActivo = filtro;
-        document.querySelectorAll('.filtro-prot-btn').forEach(function(b) {
-            b.classList.remove('activo');
-        });
-        btn.classList.add('activo');
-        filtrarProtectoras();
-    }
+function setFiltro(btn, filtro) {
+    filtroActivo = filtro;
+    document.querySelectorAll('.filtro-prot-btn').forEach(function(b) {
+        b.classList.remove('activo');
+    });
+    btn.classList.add('activo');
+    filtrarProtectoras();
+}
 
-    function filtrarProtectoras() {
-        var texto = document.getElementById('buscadorProt').value.toLowerCase().trim();
-        var items = document.querySelectorAll('.prot-item');
-        var visibles = 0;
-        items.forEach(function(item) {
-            var nombre  = (item.dataset.nombre  || '').toLowerCase();
-            var especie = (item.dataset.especie || '').toLowerCase();
-            var teaming = (item.dataset.teaming || '').toLowerCase();
-            var pasaTexto  = !texto || nombre.includes(texto) || especie.includes(texto);
-            var pasaFiltro = true;
-            if (filtroActivo === 'perros')  pasaFiltro = especie.includes('perros');
-            if (filtroActivo === 'gatos')   pasaFiltro = especie.includes('gatos');
-            if (filtroActivo === 'teaming') pasaFiltro = teaming === 'si';
-            var visible = pasaTexto && pasaFiltro;
-            item.style.display = visible ? '' : 'none';
-            if (visible) visibles++;
-        });
-        document.getElementById('noResultados').style.display = visibles === 0 ? 'block' : 'none';
-    }
+function filtrarProtectoras() {
+    var texto = document.getElementById('buscadorProt').value.toLowerCase().trim();
+    var items = document.querySelectorAll('.prot-item');
+    var visibles = 0;
+    items.forEach(function(item) {
+        var nombre  = (item.dataset.nombre  || '').toLowerCase();
+        var especie = (item.dataset.especie || '').toLowerCase();
+        var teaming = (item.dataset.teaming || '').toLowerCase();
+        var pasaTexto  = !texto || nombre.includes(texto) || especie.includes(texto);
+        var pasaFiltro = true;
+        if (filtroActivo === 'perros')  pasaFiltro = especie.includes('perros');
+        if (filtroActivo === 'gatos')   pasaFiltro = especie.includes('gatos');
+        if (filtroActivo === 'teaming') pasaFiltro = teaming === 'si';
+        var visible = pasaTexto && pasaFiltro;
+        item.style.display = visible ? '' : 'none';
+        if (visible) visibles++;
+    });
+    document.getElementById('noResultados').style.display = visibles === 0 ? 'block' : 'none';
+}
 
-    function resetFiltros() {
-        document.getElementById('buscadorProt').value = '';
-        setFiltro(document.querySelector('.filtro-prot-btn[data-filtro="todas"]'), 'todas');
-    }
+function resetFiltros() {
+    document.getElementById('buscadorProt').value = '';
+    setFiltro(document.querySelector('.filtro-prot-btn[data-filtro="todas"]'), 'todas');
+}
 
-    function abrirModalDonarProt(id) {
-        var p = protectoras[id];
-        if (!p) return;
-        document.getElementById('modal-datos-prot-pag').innerHTML = buildDatosProt(p);
-        new bootstrap.Modal(document.getElementById('modalDonarProt')).show();
-    }
+function abrirModalDonarProt(id) {
+    var p = protectoras[id];
+    if (!p) return;
+    document.getElementById('modal-datos-prot-pag').innerHTML = buildDatosProt(p);
+    new bootstrap.Modal(document.getElementById('modalDonarProt')).show();
+}
 
-    function abrirModalDonarPetFamily() {
-        new bootstrap.Modal(document.getElementById('modalDonarPetFamily')).show();
-    }
+function abrirModalDonarPetFamily() {
+    new bootstrap.Modal(document.getElementById('modalDonarPetFamily')).show();
+}
 
-    function copiarTexto(btn, texto) {
-        var icono = btn.querySelector('i');
-        function feedback() {
-            icono.className = 'fa-solid fa-check';
-            setTimeout(function() { icono.className = 'fa-regular fa-copy'; }, 2000);
-        }
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(texto).then(feedback);
-        } else {
-            var el = document.createElement('textarea');
-            el.value = texto; el.style.position = 'fixed'; el.style.opacity = '0';
-            document.body.appendChild(el); el.select();
-            document.execCommand('copy'); document.body.removeChild(el);
-            feedback();
-        }
+function copiarTexto(btn, texto) {
+    var icono = btn.querySelector('i');
+    function feedback() {
+        icono.className = 'fa-solid fa-check';
+        setTimeout(function() { icono.className = 'fa-regular fa-copy'; }, 2000);
     }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(feedback);
+    } else {
+        var el = document.createElement('textarea');
+        el.value = texto; el.style.position = 'fixed'; el.style.opacity = '0';
+        document.body.appendChild(el); el.select();
+        document.execCommand('copy'); document.body.removeChild(el);
+        feedback();
+    }
+}
 </script>
 
 </body>
