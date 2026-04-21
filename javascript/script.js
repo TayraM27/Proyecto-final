@@ -1086,10 +1086,13 @@ function cargarProtectorasDinamicasEnDona() {
         .then(function(r){ return r.json(); })
         .then(function(data){
             if (!data.ok || !data.protectoras) return;
-            var nuevas = data.protectoras.filter(function(p){ return parseInt(p.idProtectora) > 5; });
+
+            var nuevas = data.protectoras.filter(function(p){
+                return parseInt(p.idProtectora) > 5;
+            });
             if (!nuevas.length) return;
 
-            /* Registrar en objeto protectoras para que buildDatosProt funcione */
+            /* Registrar en objeto protectoras */
             nuevas.forEach(function(p) {
                 var key = 'prot-' + p.idProtectora;
                 protectoras[key] = {
@@ -1102,56 +1105,67 @@ function cargarProtectorasDinamicasEnDona() {
                 };
             });
 
-            /* Inyectar cards en dona.html si existe el contenedor */
+            /* Inyectar cards en dona.html */
             var cont = document.getElementById('containerProtDinamicasDona');
             if (cont) {
                 cont.innerHTML = nuevas.map(function(p) {
-                    var id  = 'prot-' + p.idProtectora;
+                    var id = 'prot-' + p.idProtectora;
+
                     var logo = p.foto_logo
-                        ? '<img class="logo-protectora" src="../' + p.foto_logo + '" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="Logo ' + p.nombre + '">'
+                        ? '<img class="logo-protectora" src="../' + p.foto_logo + '" ' +
+                          'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" ' +
+                          'alt="Logo ' + p.nombre.replace(/"/g, '&quot;') + '">'
                         : '';
-                    return '<label class="card-protectora" id="' + id + '" onclick="toggleProtectora('' + id + '')">'
-                        + '<input type="checkbox" name="protectora" value="' + id + '">'
-                        + logo
-                        + '<div class="icono-prot-fb">🐾</div>'
-                        + '<div style="flex:1;">'
-                        + '<p class="protectora-nombre">' + p.nombre + '</p>'
-                        + (p.localidad ? '<p class="protectora-lugar"><i class="fa-solid fa-location-dot"></i> ' + p.localidad + '</p>' : '')
-                        + (p.descripcion ? '<p class="descripcion-protectora">' + p.descripcion + '</p>' : '')
-                        + '</div></label>';
+
+                    return '<label class="card-protectora" id="' + id + '" onclick="toggleProtectora(\'' + id + '\')">' +
+                           '<input type="checkbox" name="protectora" value="' + id + '">' +
+                           logo +
+                           '<div class="icono-prot-fb">🐾</div>' +
+                           '<div style="flex:1;">' +
+                           '<p class="protectora-nombre">' + p.nombre + '</p>' +
+                           (p.localidad ? '<p class="protectora-lugar"><i class="fa-solid fa-location-dot"></i> ' + p.localidad + '</p>' : '') +
+                           (p.descripcion ? '<p class="descripcion-protectora">' + p.descripcion + '</p>' : '') +
+                           '</div></label>';
                 }).join('');
             }
 
-            /* Inyectar en protectoras.html si existe el grid */
+            /* Inyectar en protectoras.html */
             var gridProt = document.getElementById('gridProtectorasDinamicas');
             if (gridProt) {
                 gridProt.innerHTML = nuevas.map(function(p) {
+
                     var logo = p.foto_logo
-                        ? '<img src="../' + p.foto_logo + '" alt="Logo ' + p.nombre + '" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'prot-logo-emoji\'>🐾</span>'">'
+                        ? '<img src="../' + p.foto_logo + '" alt="Logo ' + p.nombre.replace(/"/g, '&quot;') + '" ' +
+                          'onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<span class=\\\'prot-logo-emoji\\\'>🐾</span>\';">'
                         : '<span class="prot-logo-emoji">🐾</span>';
-                    return '<div class="col-md-6 col-lg-4 prot-item" data-especie="perros gatos" data-nombre="' + p.nombre + ' ' + (p.localidad||'') + '" data-teaming="no">'
-                        + '<div class="card-protectora-pag">'
-                        + '<div class="prot-franja"></div>'
-                        + '<div class="prot-header">'
-                        + '<div class="prot-logo-container">' + logo + '</div>'
-                        + '<div style="flex:1;min-width:0;">'
-                        + '<p class="prot-nombre">' + p.nombre + '</p>'
-                        + (p.localidad ? '<p class="prot-lugar"><i class="fa-solid fa-location-dot"></i> ' + p.localidad + '</p>' : '')
-                        + '</div>'
-                        + (p.verificada ? '<span class="prot-badge-anos">✓ Verificada</span>' : '')
-                        + '</div>'
-                        + (p.descripcion ? '<div class="prot-desc"><p>' + p.descripcion + '</p></div>' : '')
-                        + '<div class="prot-contacto">'
-                        + (p.email    ? '<div class="prot-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + p.email + '">' + p.email + '</a></div>' : '')
-                        + (p.telefono ? '<div class="prot-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + p.telefono + '">' + p.telefono + '</a></div>' : '')
-                        + (p.web      ? '<div class="prot-dato"><i class="fa-solid fa-globe"></i><a href="' + p.web + '" target="_blank" rel="noopener">' + p.web + '</a></div>' : '')
-                        + '</div>'
-                        + '<div class="prot-acciones">'
-                        + '<button class="btn-prot-donar" onclick="abrirModalDonarProtDinamica(' + p.idProtectora + ')"><i class="fa-solid fa-hand-holding-heart me-1"></i> Donar</button>'
-                        + (p.web ? '<a href="' + p.web + '" target="_blank" rel="noopener" class="btn-prot-ext"><i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Web</a>' : '')
-                        + '</div>'
-                        + '</div></div>';
+
+                    return '<div class="col-md-6 col-lg-4 prot-item" data-especie="perros gatos" data-nombre="' +
+                           p.nombre + ' ' + (p.localidad || '') + '" data-teaming="no">' +
+                           '<div class="card-protectora-pag">' +
+                           '<div class="prot-franja"></div>' +
+                           '<div class="prot-header">' +
+                           '<div class="prot-logo-container">' + logo + '</div>' +
+                           '<div style="flex:1;min-width:0;">' +
+                           '<p class="prot-nombre">' + p.nombre + '</p>' +
+                           (p.localidad ? '<p class="prot-lugar"><i class="fa-solid fa-location-dot"></i> ' + p.localidad + '</p>' : '') +
+                           '</div>' +
+                           (p.verificada ? '<span class="prot-badge-anos">✓ Verificada</span>' : '') +
+                           '</div>' +
+                           (p.descripcion ? '<div class="prot-desc"><p>' + p.descripcion + '</p></div>' : '') +
+                           '<div class="prot-contacto">' +
+                           (p.email    ? '<div class="prot-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + p.email + '">' + p.email + '</a></div>' : '') +
+                           (p.telefono ? '<div class="prot-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + p.telefono + '">' + p.telefono + '</a></div>' : '') +
+                           (p.web      ? '<div class="prot-dato"><i class="fa-solid fa-globe"></i><a href="' + p.web + '" target="_blank" rel="noopener">' + p.web + '</a></div>' : '') +
+                           '</div>' +
+                           '<div class="prot-acciones">' +
+                           '<button class="btn-prot-donar" onclick="abrirModalDonarProtDinamica(' + p.idProtectora + ')">' +
+                           '<i class="fa-solid fa-hand-holding-heart me-1"></i> Donar</button>' +
+                           (p.web ? '<a href="' + p.web + '" target="_blank" rel="noopener" class="btn-prot-ext">' +
+                           '<i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Web</a>' : '') +
+                           '</div>' +
+                           '</div></div>';
                 }).join('');
+
                 if (typeof filtrarProtectoras === 'function') filtrarProtectoras();
             }
         })

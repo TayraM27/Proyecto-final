@@ -376,7 +376,7 @@
             </div>
 
             <!-- protectoras dinámicas desde BD -->
-            <div id="containerProtDinamicasAcoge" class="row g-3 mb-5 justify-content-center"></div>
+            <div id="gridProtectorasDinamicas" class="row g-3 mb-5 justify-content-center"></div>
 
         </div>
 
@@ -398,52 +398,11 @@
 
 <script src="../javascript/script.js"></script>
 <script>
-var PROT_HARDCODED_ACOGE = [1,2,3,4,5];
-
 document.addEventListener('DOMContentLoaded', function() {
     cargarAnimalesAcoge();
-    cargarProtDinamicasAcoge();
 });
 
-function cargarProtDinamicasAcoge() {
-    fetch('../backend/api/protectoras/listar.php')
-        .then(function(r){ return r.json(); })
-        .then(function(data){
-            if (!data.ok) return;
 
-            var nuevas = data.protectoras.filter(function(p){
-                return PROT_HARDCODED_ACOGE.indexOf(parseInt(p.idProtectora)) === -1;
-            });
-
-            if (!nuevas.length) return;
-
-            var cont = document.getElementById('containerProtDinamicasAcoge');
-
-            cont.innerHTML = nuevas.map(function(p){
-
-                var logo = p.foto_logo
-                    ? '<img src="../' + p.foto_logo + '" class="acoge-prot-logo" onerror=\'this.style.display="none";this.nextElementSibling.style.display="flex";\' alt="Logo ' + p.nombre + '">'
-                    : '';
-
-                return '<div class="col-md-6 col-lg-4">'
-                    + '<div class="acoge-prot-card">'
-                    + '<div class="acoge-prot-header">'
-                    + logo
-                    + '<div class="acoge-prot-emoji" style="' + (p.foto_logo ? 'display:none;' : '') + '">🐾</div>'
-                    + '<div>'
-                    + '<p class="acoge-prot-nombre">' + p.nombre + '</p>'
-                    + (p.localidad ? '<p class="acoge-prot-lugar"><i class="fa-solid fa-location-dot"></i> ' + p.localidad + '</p>' : '')
-                    + '</div></div>'
-                    + (p.descripcion ? '<p class="acoge-prot-foco">' + p.descripcion + '</p>' : '')
-                    + '<div class="acoge-prot-contacto">'
-                    + (p.email ? '<a href="mailto:' + p.email + '"><i class="fa-solid fa-envelope"></i> Email</a>' : '')
-                    + (p.telefono ? '<a href="tel:' + p.telefono + '"><i class="fa-solid fa-phone"></i> ' + p.telefono + '</a>' : '')
-                    + (p.web ? '<a href="' + p.web + '" target="_blank" rel="noopener"><i class="fa-solid fa-globe"></i> Web</a>' : '')
-                    + '</div></div></div>';
-            }).join('');
-        })
-        .catch(function(){});
-}
 
 var _shareData = {};
 
@@ -465,7 +424,10 @@ function compartirCard(id) {
 function cargarAnimalesAcoge() {
     var grid = document.getElementById('gridAcoge');
     fetch('../backend/mascotas/listar.php?pagina=1&acogida=1')
-        .then(function(r) { return r.json(); })
+        .then(function(r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+        })
         .then(function(data) {
             if (!data.mascotas || !data.mascotas.length) {
                 grid.innerHTML = '<div class="col-12 text-center py-4 text-muted">No hay animales disponibles en este momento.</div>';

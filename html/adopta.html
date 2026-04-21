@@ -3,37 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetFamily – Acoge</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>PetFamily – Adopta</title>
     <link rel="stylesheet" href="../style/header.css">
-    <link rel="stylesheet" href="../style/footer.css">
     <link rel="stylesheet" href="../style/style.css">
+    <link rel="stylesheet" href="../style/footer.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
 
 <header>
+
+    <!-- Logo (XL) -->
     <div id="contenedor_logo" class="d-none d-lg-block">
         <a id="logoXL" href="index.html">
             <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderXL">
-            <h2 id="title-logo">Pet<span style="color:#F8BA56;">Family</span></h2>
+            <h2 id="title-logo">Pet<span style="color: #F8BA56;">Family</span></h2>
         </a>
     </div>
+
+    <!-- Header(xs,sm, md) -->
     <div id="menu_burger" class="container-fluid justify-content-between align-content-center d-lg-none">
         <i id="btn_burger" class="fa-solid fa-bars text-center col-2 ms-n5"></i>
         <a id="logoMD" href="index.html" class="mb-2">
             <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily Logo" id="logoHeaderMD" class="mb-2">
-            <h2 id="burger_logo">Pet<span style="color:#F8BA56;">Family</span></h2>
+            <h2 id="burger_logo">Pet<span style="color: #F8BA56;">Family</span></h2>
         </a>
         <div id="user_burger" class="align-content-center d-lg-none">
             <a href="login.html"><img src="../img/iconosHeader/iconUser.png" width="15px" alt="Usuario"></a>
             <a href="register.html" class="btn-register">Registrarse</a>
         </div>
     </div>
+
     <nav id="menu" class="d-none d-lg-block">
         <ul id="lista_menu">
             <li><a href="adopta.html">Adopta</a></li>
@@ -50,442 +55,519 @@
             <li><a href="test.html">Tests</a></li>
         </ul>
     </nav>
+
+    <!-- Usuario xl -->
     <div id="user_container" class="d-none d-lg-block">
         <a href="login.html"><img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px"></a>
         <a href="register.html" class="btn-register">Registrarse</a>
     </div>
 </header>
+<!-- Fin html del header -->
 
 
 <main>
-    <div class="container">
-
+    <div class="container mt-5 mb-5">
         <p class="migas">
-            <a href="index.html">Inicio</a>
-            <span>›</span>
-            <a href="colabora.html">Colabora</a>
-            <span>›</span>
-            Acoge
+            <a href="index.html">Inicio</a><span>›</span>Adopta
         </p>
 
-        <h1 class="pagina-titulo">
-            <i class="fa-solid fa-house-chimney-heart"></i> Acoge a un animal
-        </h1>
-        <p class="pagina-subtitulo">
-            Acoger es abrir tu casa temporalmente a un animal que lo necesita. Sin adoptar, sin compromisos permanentes. Solo con ganas de ayudar.
-        </p>
-        <div class="linea-amarilla"></div>
+        <!-- Filtros -->
+        <div class="adopta-filtros mb-4">
+            <div class="filtro-barra">
 
-        <!-- IMAGEN HERO: reemplaza la URL con una foto de un animal en acogida (perro/gato en hogar cálido) -->
-        <!-- Tamaño recomendado: 1200x400px, formato panorámico / banner -->
-        <div class="acoge-hero-img-wrap">
-            <img src="../img/imagenes-animales/upscalemedia-transformed.jpeg"
-                 alt="Animal en acogida"
-                 class="acoge-hero-img"
-                 onerror="this.style.display='none';">
-        </div>
+                <!-- Imágenes especie clickeables -->
+                <div class="filtro-especies">
+                    <img src="../img/filtro/pet_filtro.png"  class="filtro-especie-img activo" data-especie="todos" title="Todos"  alt="Todos">
+                    <img src="../img/filtro/dog_filtro.png"  class="filtro-especie-img"        data-especie="perro" title="Perros" alt="Perros">
+                    <img src="../img/filtro/cat_filtro.png"  class="filtro-especie-img"        data-especie="gato"  title="Gatos"  alt="Gatos">
+                </div>
 
-        <!-- qué es acoger + requisitos -->
-        <div class="row g-4 mb-5">
+                <div class="filtro-separador"></div>
 
-            <div class="col-lg-7">
-                <div class="acoge-bloque">
-                    <h2 class="acoge-titulo-seccion">¿En qué consiste acoger?</h2>
-                    <p class="acoge-texto">
-                        Una acogida temporal es un acuerdo entre tú y la protectora: el animal vive en tu casa durante un tiempo determinado, mientras la protectora sigue haciéndose cargo de los gastos veterinarios y busca un hogar definitivo.
-                    </p>
-                    <p class="acoge-texto">
-                        Es una de las formas de ayuda más valiosas que existen. Sin casas de acogida, muchos animales no tendrían otro sitio que el albergue. Tu casa puede ser el puente entre su pasado y su futuro.
-                    </p>
-                    <div class="acoge-aviso">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <span>La protectora cubre los gastos veterinarios. Tú pones el espacio, el tiempo y el cariño.</span>
-                    </div>
+                <div class="filtro-select-wrap">
+                    <i class="fa-solid fa-triangle-exclamation filtro-ico"></i>
+                    <select class="filtro-select" id="filtro-urgencia">
+                        <option value="todos" disabled selected hidden>Urgencia</option>
+                        <option value="todos">Todas</option>
+                        <option value="urgente">Urgente</option>
+                        <option value="nuevo">Nuevo</option>
+                        <option value="espera">Larga espera</option>
+                    </select>
+                </div>
+
+                <div class="filtro-select-wrap">
+                    <i class="fa-solid fa-location-dot filtro-ico"></i>
+                    <select class="filtro-select" id="filtro-ubicacion">
+                        <option value="todos" disabled selected hidden>Ubicación</option>
+                        <option value="todos">Todas</option>
+                        <option value="gijon">Gijón</option>
+                        <option value="oviedo">Oviedo</option>
+                        <option value="aviles">Avilés</option>
+                    </select>
+                </div>
+
+                <div class="filtro-select-wrap">
+                    <i class="fa-solid fa-dog filtro-ico"></i>
+                    <select class="filtro-select" id="filtro-tamano">
+                        <option value="todos" disabled selected hidden>Tamaño</option>
+                        <option value="todos">Todos</option>
+                        <option value="pequeno">Pequeño</option>
+                        <option value="mediano">Mediano</option>
+                        <option value="grande">Grande</option>
+                    </select>
+                </div>
+
+                <!-- Más filtros -->
+                <button class="filtro-btn-mas" id="btn-mas-filtros">
+                    <i class="fa-solid fa-plus me-1"></i>Más filtros
+                </button>
+
+                <!-- Limpiar filtros -->
+                <button class="filtro-btn-limpiar" id="btn-limpiar" style="display:none">
+                    <i class="fa-solid fa-xmark me-1"></i>Limpiar
+                </button>
+
+            </div>
+
+            <!-- Panel más filtros (oculto por defecto) -->
+            <div class="filtro-extra" id="filtro-extra" style="display:none">
+                <div class="filtro-select-wrap">
+                    <i class="fa-solid fa-calendar filtro-ico"></i>
+                    <select class="filtro-select" id="filtro-edad">
+                        <option value="todos" disabled selected hidden>Edad</option>
+                        <option value="todos">Todas</option>
+                        <option value="cachorro">Cachorro (0-1 año)</option>
+                        <option value="joven">Joven (1-3 años)</option>
+                        <option value="adulto">Adulto (3-8 años)</option>
+                        <option value="senior">Senior (8+ años)</option>
+                    </select>
+                </div>
+                <div class="filtro-select-wrap">
+                    <i class="fa-solid fa-palette filtro-ico"></i>
+                    <select class="filtro-select" id="filtro-color">
+                        <option value="todos" disabled selected hidden>Color</option>
+                        <option value="todos">Todos</option>
+                        <option value="negro">Negro</option>
+                        <option value="blanco">Blanco</option>
+                        <option value="marron">Marrón</option>
+                        <option value="naranja">Naranja / Rojizo</option>
+                        <option value="gris">Gris / Azul</option>
+                        <option value="dorado">Dorado / Arena</option>
+                        <option value="atigrado">Atigrado</option>
+                        <option value="bicolor">Bicolor</option>
+                        <option value="tricolor">Tricolor</option>
+                    </select>
+                </div>
+                <div class="filtro-select-wrap">
+                    <i class="fa-solid fa-heart-pulse filtro-ico"></i>
+                    <select class="filtro-select" id="filtro-salud">
+                        <option value="todos" disabled selected hidden>Estado de salud</option>
+                        <option value="todos">Todos</option>
+                        <option value="bueno">Sano</option>
+                        <option value="especial">Cuidados especiales</option>
+                    </select>
+                </div>
+                <div class="filtro-select-wrap">
+                    <i class="fa-solid fa-venus-mars filtro-ico"></i>
+                    <select class="filtro-select" id="filtro-sexo">
+                        <option value="todos" disabled selected hidden>Sexo</option>
+                        <option value="todos">Todos</option>
+                        <option value="macho">Macho</option>
+                        <option value="hembra">Hembra</option>
+                    </select>
                 </div>
             </div>
 
-            <div class="col-lg-5">
-                <div class="acoge-bloque acoge-bloque-amarillo">
-                    <h3 class="acoge-titulo-card">
-                        <i class="fa-solid fa-list-check me-2"></i>¿Qué necesitas para acoger?
-                    </h3>
-                    <ul class="acoge-lista-check">
-                        <li><i class="fa-solid fa-check"></i> Tener un espacio en casa, aunque sea pequeño</li>
-                        <li><i class="fa-solid fa-check"></i> Tiempo para dedicarle atención y paseos básicos</li>
-                        <li><i class="fa-solid fa-check"></i> Ganas de ayudar, sin importar la experiencia previa</li>
-                        <li><i class="fa-solid fa-check"></i> Compromiso con el bienestar del animal durante la acogida</li>
-                        <li><i class="fa-solid fa-check"></i> Comunicación fluida con la protectora</li>
-                    </ul>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- tipos de acogida -->
-        <h2 class="acoge-titulo-seccion mb-4">Tipos de acogida</h2>
-        <div class="row g-3 mb-5">
-
-            <div class="col-md-6 col-lg-3">
-                <div class="acoge-tipo-card">
-                    <div class="acoge-tipo-icono acoge-icono-urgencia">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                    </div>
-                    <h4 class="acoge-tipo-titulo">Urgencia</h4>
-                    <p class="acoge-tipo-desc">Cuando un animal entra en la protectora y necesita salir del albergue de forma inmediata. Puede ser horas o días.</p>
-                    <span class="acoge-tipo-duracion"><i class="fa-regular fa-clock me-1"></i>Horas – días</span>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="acoge-tipo-card">
-                    <div class="acoge-tipo-icono acoge-icono-temporal">
-                        <i class="fa-solid fa-house-chimney"></i>
-                    </div>
-                    <h4 class="acoge-tipo-titulo">Temporal</h4>
-                    <p class="acoge-tipo-desc">La más común. El animal vive contigo mientras la protectora busca adoptante definitivo. Sin fecha fija de fin.</p>
-                    <span class="acoge-tipo-duracion"><i class="fa-regular fa-clock me-1"></i>Semanas – meses</span>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="acoge-tipo-card">
-                    <div class="acoge-tipo-icono acoge-icono-recuperacion">
-                        <i class="fa-solid fa-kit-medical"></i>
-                    </div>
-                    <h4 class="acoge-tipo-titulo">Recuperación</h4>
-                    <p class="acoge-tipo-desc">Para animales que han pasado por cirugía o enfermedad y necesitan descanso en un entorno tranquilo y familiar.</p>
-                    <span class="acoge-tipo-duracion"><i class="fa-regular fa-clock me-1"></i>2 – 8 semanas</span>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="acoge-tipo-card">
-                    <div class="acoge-tipo-icono acoge-icono-socializacion">
-                        <i class="fa-solid fa-people-arrows"></i>
-                    </div>
-                    <h4 class="acoge-tipo-titulo">Socialización</h4>
-                    <p class="acoge-tipo-desc">Para animales miedosos o con poca interacción humana. El objetivo es que ganen confianza en un hogar real.</p>
-                    <span class="acoge-tipo-duracion"><i class="fa-regular fa-clock me-1"></i>1 – 3 meses</span>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- responsabilidades -->
-        <div class="row g-4 mb-5">
-
-            <div class="col-lg-6">
-                <div class="acoge-bloque">
-                    <h2 class="acoge-titulo-seccion">
-                        <i class="fa-solid fa-building-shield me-2"></i>La protectora se encarga de…
-                    </h2>
-                    <ul class="acoge-lista-prot">
-                        <li>
-                            <i class="fa-solid fa-syringe acoge-icono-azul"></i>
-                            <div>
-                                <strong>Gastos veterinarios</strong>
-                                <span>Vacunas, esterilización, medicación y revisiones corren a cargo de la protectora.</span>
-                            </div>
-                        </li>
-                        <li>
-                            <i class="fa-solid fa-bowl-food acoge-icono-azul"></i>
-                            <div>
-                                <strong>Pienso y material básico</strong>
-                                <span>Muchas protectoras proporcionan pienso, cama o transportín según disponibilidad.</span>
-                            </div>
-                        </li>
-                        <li>
-                            <i class="fa-solid fa-magnifying-glass acoge-icono-azul"></i>
-                            <div>
-                                <strong>Búsqueda del adoptante</strong>
-                                <span>Ellos gestionan las solicitudes, entrevistas y el proceso de adopción definitiva.</span>
-                            </div>
-                        </li>
-                        <li>
-                            <i class="fa-solid fa-headset acoge-icono-azul"></i>
-                            <div>
-                                <strong>Apoyo y seguimiento</strong>
-                                <span>Estarán disponibles para cualquier duda o incidencia durante la acogida.</span>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="col-lg-6">
-                <div class="acoge-bloque">
-                    <h2 class="acoge-titulo-seccion">
-                        <i class="fa-solid fa-person me-2 acoge-icono-gold" style="font-size: 1.5rem"></i><span style="margin-left: 4px;">Tú te encargas de…</span>
-                    </h2>
-                    <ul class="acoge-lista-prot">
-                        <li>
-                            <i class="fa-solid fa-house acoge-icono-gold"></i>
-                            <div>
-                                <strong>El espacio y la convivencia</strong>
-                                <span>Integrar al animal en tu rutina diaria y darle un sitio donde sentirse seguro.</span>
-                            </div>
-                        </li>
-                        <li>
-                            <i class="fa-solid fa-utensils acoge-icono-gold"></i>
-                            <div>
-                                <strong>Alimentación y cuidado diario</strong>
-                                <span>Darle de comer, limpiarle, pasearle si es perro y prestarle la atención que necesita.</span>
-                            </div>
-                        </li>
-                        <li>
-                            <i class="fa-solid fa-comment-dots acoge-icono-gold"></i>
-                            <div>
-                                <strong>Comunicación con la protectora</strong>
-                                <span>Reportar cómo evoluciona el animal y avisar ante cualquier cambio de comportamiento.</span>
-                            </div>
-                        </li>
-                        <li>
-                            <i class="fa-solid fa-heart acoge-icono-gold"></i>
-                            <div>
-                                <strong>Cariño y paciencia</strong>
-                                <span>Algunos animales llegan asustados o con traumas. Tu calma es su mejor medicina.</span>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+            <!-- Tags de filtros activos -->
+            <div class="filtro-tags" id="filtro-tags"></div>
 
         </div>
 
-        <!-- animales que necesitan acogida -->
-        <h2 class="acoge-titulo-seccion mb-1">
-            <i class="fa-solid fa-paw me-2"></i>Animales que necesitan acogida ahora
-        </h2>
-        <p class="acoge-texto mb-4">Estos animales están buscando una familia de acogida temporal. Contacta con su protectora para ofrecerte.</p>
-
-        <div class="row g-4 mb-5" id="gridAcoge">
-            <div class="col-12 text-center py-4">
+        <div id="gridAnimales" class="row g-4">
+            <div class="col-12 text-center py-5">
                 <div class="spinner-border" style="color:#1B358F;" role="status"></div>
             </div>
         </div>
 
-        <!-- protectoras colaboradoras — 5 cards centradas -->
-        <h2 class="acoge-titulo-seccion mb-1">¿Con qué protectora quieres colaborar?</h2>
-        <p class="acoge-texto mb-4">Contacta directamente con la protectora que más te encaje y cuéntales que quieres ser familia de acogida.</p>
-
-        <div class="row g-3 mb-5 justify-content-center">
-
-            <div class="col-md-6 col-lg-4">
-                <div class="acoge-prot-card">
-                    <div class="acoge-prot-header">
-                        <img src="../img/protectora/centro-proteccion-animales-gijon.jpg"
-                             class="acoge-prot-logo"
-                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
-                             alt="Logo CPA Gijón">
-                        <div class="acoge-prot-emoji" style="display:none;">🐕</div>
-                        <div>
-                            <p class="acoge-prot-nombre">Centro de Protección Animal de Gijón</p>
-                            <p class="acoge-prot-lugar"><i class="fa-solid fa-location-dot"></i> Gijón</p>
-                        </div>
-                    </div>
-                    <p class="acoge-prot-foco">Especialidad en acogidas de urgencia y animales con necesidades especiales o razas PPP.</p>
-                    <div class="acoge-prot-contacto">
-                        <a href="tel:615411417"><i class="fa-solid fa-phone"></i> 615 411 417</a>
-                        <a href="/cdn-cgi/l/email-protection#187b686a776c7d7b7b7177767976717579747f71727776587f75797174367b7775"><i class="fa-solid fa-envelope"></i> Email</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="acoge-prot-card">
-                    <div class="acoge-prot-header">
-                        <img src="../img/protectora/protectora-de-asturias.jpg"
-                             class="acoge-prot-logo"
-                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
-                             alt="Logo Fundación Protectora de Asturias">
-                        <div class="acoge-prot-emoji" style="display:none;">💙</div>
-                        <div>
-                            <p class="acoge-prot-nombre">Fundación Protectora de Asturias</p>
-                            <p class="acoge-prot-lugar"><i class="fa-solid fa-location-dot"></i> Siero</p>
-                        </div>
-                    </div>
-                    <p class="acoge-prot-foco">Su modelo se basa principalmente en casas de acogida. Tienen mucha experiencia en acompañar a nuevos acogedores.</p>
-                    <div class="acoge-prot-contacto">
-                        <a href="/cdn-cgi/l/email-protection#dbb2b5bdb49baba9b4afbeb8afb4a9babfbebaa8afaea9b2baa8f5b4a9bc"><i class="fa-solid fa-envelope"></i> Email</a>
-                        <a href="http://www.protectoradeasturias.org" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> Web</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="acoge-prot-card">
-                    <div class="acoge-prot-header">
-                        <img src="../img/protectora/nortemascota-dex.jpg"
-                             class="acoge-prot-logo"
-                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
-                             alt="Logo Nortemascotas">
-                        <div class="acoge-prot-emoji" style="display:none;">🐾</div>
-                        <div>
-                            <p class="acoge-prot-nombre">Nortemascotas</p>
-                            <p class="acoge-prot-lugar"><i class="fa-solid fa-location-dot"></i> Gijón</p>
-                        </div>
-                    </div>
-                    <p class="acoge-prot-foco">Trabajan exclusivamente con familias de acogida. Cada animal tiene un seguimiento muy cercano y personal.</p>
-                    <div class="acoge-prot-contacto">
-                        <a href="tel:665971933"><i class="fa-solid fa-phone"></i> 665 971 933</a>
-                        <a href="/cdn-cgi/l/email-protection#6825091a01091b0704460e0d1a1a0d111a095a58595c280f05090104460b0705"><i class="fa-solid fa-envelope"></i> Email</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="acoge-prot-card">
-                    <div class="acoge-prot-header">
-                        <img src="../img/protectora/masquechuchos.jpg"
-                             class="acoge-prot-logo"
-                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
-                             alt="Logo MásQueChuchos">
-                        <div class="acoge-prot-emoji" style="display:none;">🏠</div>
-                        <div>
-                            <p class="acoge-prot-nombre">MÁS QUE CHUCHOS</p>
-                            <p class="acoge-prot-lugar"><i class="fa-solid fa-location-dot"></i> Oviedo – Llanera</p>
-                        </div>
-                    </div>
-                    <p class="acoge-prot-foco">Con más de 30 años de experiencia, tienen un programa de acogida consolidado y forman a sus voluntarios.</p>
-                    <div class="acoge-prot-contacto">
-                        <a href="/cdn-cgi/l/email-protection#cba2a5ada48ba6aab8babeaea8a3bea8a3a4b8e5a4b9ac"><i class="fa-solid fa-envelope"></i> Email</a>
-                        <a href="http://masquechuchos.org" target="_blank" rel="noopener"><i class="fa-solid fa-globe"></i> Web</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="acoge-prot-card">
-                    <div class="acoge-prot-header">
-                        <img src="../img/protectora/asociacion-felina-la-esperanza.jpg"
-                             class="acoge-prot-logo"
-                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
-                             alt="Logo Asociación Felina La Esperanza">
-                        <div class="acoge-prot-emoji" style="display:none;">🐱</div>
-                        <div>
-                            <p class="acoge-prot-nombre">Asociación Felina La Esperanza</p>
-                            <p class="acoge-prot-lugar"><i class="fa-solid fa-location-dot"></i> Asturias</p>
-                        </div>
-                    </div>
-                    <p class="acoge-prot-foco">Buscan acogedores para gatos con leucemia felina u otras enfermedades crónicas. Una acogida especializada con mucho impacto.</p>
-                    <div class="acoge-prot-contacto">
-                        <a href="/cdn-cgi/l/email-protection#eb8a988488828a888284858d8e8782858a878a8e989b8e998a85918aab8c868a8287c5888486"><i class="fa-solid fa-envelope"></i> Email</a>
-                        <a href="https://www.teaming.net/asociacionfelinalaesperanza" target="_blank" rel="noopener"><i class="fa-solid fa-mug-hot"></i> Teaming</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- protectoras dinámicas desde BD -->
-            <div id="gridProtectorasDinamicas" class="row g-3 mb-5 justify-content-center"></div>
-
+        <!-- Sin resultados -->
+        <div id="sin-resultados" style="display:none;text-align:center;padding:4em 2em;">
+            <i class="fa-solid fa-magnifying-glass" style="font-size:3rem;color:#dee2e6;display:block;margin-bottom:0.8em;"></i>
+            <p style="font-size:1rem;font-weight:600;color:#444;margin-bottom:0.4em;">No se encontraron animales con esos filtros.</p>
+            <p style="font-size:0.85rem;color:#6c757d;margin-bottom:1.2em;">Prueba con otros criterios o elimina algunos filtros.</p>
+            <button class="btn-azul" style="width:auto;display:inline-flex;align-items:center;gap:0.5em;" onclick="document.getElementById('btn-limpiar').click()">
+                <i class="fa-solid fa-rotate-left"></i> Quitar filtros
+            </button>
         </div>
 
-    </div>
-
+    <!-- flecha para subir al inicio tiene los estilos en footer.css -->
     <div class="text-center">
-        <a href="#">
-            <img src="../img/sectionIndex/up-arrow.png" alt="Volver arriba" id="arrow" width="40px">
-        </a>
+        <a href="#"><img src="../img/sectionIndex/up-arrow.png" alt="Flecha que te devuelve a la parte superior" id="arrow" width="3%"></a>
     </div>
 </main>
 
-
+<!-- footer -->
 <footer>
     <p>© 2026 PetFamily. Todos los derechos reservados.</p>
-    <p><a href="privacidad.html" style="color:white;">Política de Privacidad</a> | <a href="terminos.html" style="color:white;">Términos de Servicio</a></p>
+    <p><a href="privacidad.html" style="color: white;">Política de Privacidad</a> | <a href="terminos.html" style="color: white;">Términos de Servicio</a></p>
 </footer>
 
+<!-- modal favoritos — requiere login -->
+<div class="modal fade" id="modalLoginFav" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content" style="border-radius:14px;border:none;">
+            <div class="modal-header modal-header-pf">
+                <h5 class="modal-title text-white fw-bold">
+                    <i class="fa-solid fa-heart me-2" style="color:#F8BA56;"></i>
+                    Guardar favoritos
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5em;text-align:center;">
+                <div style="font-size:2.5rem;margin-bottom:0.5em;">🐾</div>
+                <p style="font-size:0.95rem;color:#333;margin-bottom:1.2em;">
+                    Para guardar animales en favoritos y hacerles seguimiento necesitas una cuenta.
+                </p>
+                <div style="display:flex;flex-direction:column;gap:0.6em;">
+                    <a href="register.html" class="btn-azul" style="text-align:center;">
+                        <i class="fa-solid fa-user-plus me-2"></i>Crear cuenta gratis
+                    </a>
+                    <a href="login.html" style="text-align:center;display:block;padding:0.7em;border-radius:10px;border:2px solid #1B358F;color:#1B358F;font-weight:700;text-decoration:none;font-size:0.9rem;">
+                        <i class="fa-solid fa-right-to-bracket me-2"></i>Ya tengo cuenta
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- fin modal favoritos -->
 
+
+<!-- script js -->
 <script src="../javascript/script.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    cargarAnimalesAcoge();
-});
-
-
-
-var _shareData = {};
-
-function compartirCard(id) {
-    var d = _shareData[id] || {};
-    var url = window.location.href.replace(/html\/acoge\.html.*/, '') + 'html/fichaAnimal.html?id=' + id;
-    var msg = '🐾 ' + (d.nombre || 'Animal') + ' busca un hogar. Mira su ficha en PetFamily: ' + url;
-    /* Copiar siempre al portapapeles */
-    var input = document.createElement('input');
-    input.value = url;
-    document.body.appendChild(input);
-    input.select();
-    document.execCommand('copy');
-    document.body.removeChild(input);
-    /* Mostrar URL al usuario */
-    alert('\u2705 Enlace copiado:\n' + url);
-}
-
-function cargarAnimalesAcoge() {
-    var grid = document.getElementById('gridAcoge');
-    fetch('../backend/mascotas/listar.php?pagina=1&acogida=1')
-        .then(function(r) {
-            if (!r.ok) throw new Error('HTTP ' + r.status);
-            return r.json();
-        })
-        .then(function(data) {
-            if (!data.mascotas || !data.mascotas.length) {
-                grid.innerHTML = '<div class="col-12 text-center py-4 text-muted">No hay animales disponibles en este momento.</div>';
-                return;
-            }
-            grid.innerHTML = data.mascotas.map(function(m) {
-                var foto = m.foto_principal
-                    ? '../' + m.foto_principal
-                    : '../img/mascotas/placeholder.jpg';
-
-                var badges = [];
-                    if (m.urgencia === 'urgente') badges.push('<span class="badge bg-danger">Urgente</span>');
-                    if (m.estado_salud && m.estado_salud.toLowerCase() !== 'bueno') badges.push('<span class="badge bg-dark">' + m.estado_salud + '</span>');
-                    if (m.badge_extra) badges.push('<span class="badge bg-secondary">' + m.badge_extra + '</span>');
-                    if (!badges.length) badges.push(m.urgencia === 'nuevo' ? '<span class="badge bg-info text-dark">Nuevo</span>' : '<span class="badge bg-secondary">Disponible</span>');
-                    var badge = '<div style="display:flex;gap:0.3em;flex-wrap:wrap;">' + badges.join('') + '</div>';
-
-                var desc = m.descripcion
-                    ? (m.descripcion.length > 100 ? m.descripcion.substring(0, 100) + '…' : m.descripcion)
-                    : (m.raza || m.especie) + (m.edad_texto ? ', ' + m.edad_texto : '') + '.';
-
-                _shareData[m.idMascota] = { nombre: m.nombre };
-                return '<div class="col-md-6 col-lg-4">'
-                    + '<div class="card-animal-apadrina">'
-                    + '<div class="animal-img-wrap">'
-                    + '<img src="' + foto + '" onerror="this.src=\'../img/mascotas/placeholder.jpg\'" alt="' + m.nombre + '" class="animal-img">'
-                    + '</div>'
-                    + '<div class="animal-info">'
-                    + '<div class="d-flex justify-content-between align-items-start mb-1">'
-                    + '<h3 class="animal-nombre">' + m.nombre + '</h3>'
-                    + badge
-                    + '</div>'
-                    + '<p class="animal-protectora"><i class="fa-solid fa-building-shield"></i> ' + m.protectora_nombre + '</p>'
-                    + '<p class="animal-desc">' + desc + '</p>'
-                    + '<a href="fichaAnimal.html?id=' + m.idMascota + '" class="btn-apadrinar" style="text-decoration:none;text-align:center;">'
-                    + '<i class="fa-solid fa-house-chimney-heart me-2"></i>Quiero acoger a ' + m.nombre
-                    + '</a>'
-                    + '<button class="btn-compartir" id="share-acoge-' + m.idMascota + '">'
-                    + '<i class="fa-solid fa-share-nodes me-1"></i> Compartir'
-                    + '</button>'
-                    + '</div></div></div>';
-            }).join('');
-            Object.keys(_shareData).forEach(function(id) {
-                var btn = document.getElementById('share-acoge-' + id);
-                if (btn) {
-                    var d = _shareData[id] || {};
-                    btn.addEventListener('click', (function(i, n){ return function(){ compartirAnimal(i, n); }; })(id, d.nombre));
-                }
-            });
-        })
-        .catch(function() {
-            grid.innerHTML = '<div class="col-12 text-center py-4 text-muted">Error al cargar los animales.</div>';
-        });
-}
-</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
+<!-- chat -->
+<script src="//code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
 
+<script>
+    /* SVG iconos sexo */
+    var SVG_HEMBRA = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#CC0479" title="Hembra"><path d="M440-120v-80h-80v-80h80v-84q-79-14-129.5-75.5T260-582q0-91 64.5-154.5T480-800q91 0 155.5 63.5T700-582q0 81-50.5 142.5T520-364v84h80v80h-80v80h-80Zm139-361q41-41 41-99t-41-99q-41-41-99-41t-99 41q-41 41-41 99t41 99q41 41 99 41t99-41Z"/></svg>';
+    var SVG_MACHO  = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#0419CC" title="Macho"><path d="M768-768v216h-72v-93L564-513q17.54 26.15 26.77 55.58Q600-428 600-396.41q0 85.48-59.28 144.95Q481.44-192 396.22-192T251.5-251.28Q192-310.56 192-395.78t59.35-144.72Q310.69-600 396-600q32 0 61.5 8.5T513-564l132-132h-93v-72h216Z"/></svg>';
+    var SVG_LOC    = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M536.5-503.5Q560-527 560-560t-23.5-56.5Q513-640 480-640t-56.5 23.5Q400-593 400-560t23.5 56.5Q447-480 480-480t56.5-23.5ZM480-186q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>';
+    var SVG_CAL    = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg>';
+    var SVG_TAM    = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M120-120v-200l160-160-160-160v-200h200l160 160 160-160h200v200L680-480l160 160v200H640L480-280 320-120H120Zm80-80h114l166-166 166 166h114v-114L590-480l170-170v-114H646L480-598 314-764H200v114l170 170-170 170v114Z"/></svg>';
+    var SVG_TIMER  = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16px" fill="#434343"><path d="M360-840v-80h240v80H360Zm80 440h80v-240h-80v240Zm40 320q-74 0-139.5-28.5T226-186q-49-49-77.5-114.5T120-440q0-74 28.5-139.5T226-694q49-49 114.5-77.5T480-800q62 0 119 20t107 58l56-56 56 56-56 56q38 50 58 107t20 119q0 74-28.5 139.5T734-186q-49 49-114.5 77.5T480-80Z"/></svg>';
 
+    /* Mapas para filtros */
+    var PROTECTORA_SLUG = {
+        1: 'cpa-gijon',
+        2: 'fundacion-protectora',
+        3: 'la-esperanza',
+        4: 'masquechuchos',
+        5: 'nortemascotas'
+    };
+
+    function calcEdadCategoria(anos) {
+        if (anos === null || anos === undefined || isNaN(parseInt(anos))) return 'adulto';
+        var a = parseInt(anos);
+        if (a < 1)  return 'cachorro';
+        if (a <= 3) return 'joven';
+        if (a <= 8) return 'adulto';
+        return 'senior';
+    }
+
+    function calcColorCategoria(color) {
+        if (!color) return 'todos';
+        var c = color.toLowerCase();
+        if (c.includes('negro'))   return 'negro';
+        if (c.includes('blanc'))   return 'blanco';
+        if (c.includes('marr'))    return 'marron';
+        if (c.includes('naranj') || c.includes('roj')) return 'naranja';
+        if (c.includes('gris') || c.includes('azul'))  return 'gris';
+        if (c.includes('dor') || c.includes('aren'))   return 'dorado';
+        if (c.includes('atrig'))   return 'atigrado';
+        if (c.includes(' y ') || c.includes('/'))      return 'bicolor';
+        return 'todos';
+    }
+
+    function normalizarUbicacion(loc) {
+        if (!loc) return 'todos';
+        var l = loc.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+        if (l.includes('gijon') || l.includes('gijon')) return 'gijon';
+        if (l.includes('oviedo')) return 'oviedo';
+        if (l.includes('aviles') || l.includes('aviles')) return 'aviles';
+        return 'todos';
+    }
+
+    function normalizarTamano(t) {
+        if (!t) return 'mediano';
+        return t === 'pequeño' ? 'pequeno' : t;
+    }
+
+    function renderCard(m) {
+    var foto = m.foto_principal ? '../' + m.foto_principal : '../img/mascotas/default.jpg';
+    var sexoIcon = m.sexo === 'hembra' ? SVG_HEMBRA : SVG_MACHO;
+
+    /* urgencia para filtro */
+    var urgData = m.urgencia || 'normal';
+    if (urgData === 'normal' && m.dias_en_adopcion && parseInt(m.dias_en_adopcion) > 365) {
+        urgData = 'espera';
+    }
+
+    /* data attributes */
+    var dataEspecie   = m.especie || 'perro';
+    var dataUbicacion = normalizarUbicacion(m.ubicacion);
+    var dataTamano    = normalizarTamano(m.tamanyo);
+    var dataEdad      = calcEdadCategoria(m.edad_anos);
+    var dataColor     = calcColorCategoria(m.color);
+    var dataSalud     = (m.estado_salud && m.estado_salud.toLowerCase() !== 'bueno') ? 'especial' : 'bueno';
+    var dataSexo      = m.sexo || 'macho';
+    var dataProt      = PROTECTORA_SLUG[m.idProtectora] || 'todos';
+
+    /* badges */
+    var badges = '';
+    if (m.urgencia === 'urgente') badges += '<span class="badge bg-danger">Urgente</span>';
+    if (m.urgencia === 'nuevo')   badges += '<span class="badge bg-info text-dark">Nuevo</span>';
+    if (dataSalud === 'especial') badges += '<span class="badge bg-dark">' + m.estado_salud + '</span>';
+    if (m.badge_extra)            badges += '<span class="badge bg-secondary">' + m.badge_extra + '</span>';
+
+    /* edad texto */
+    var edadTexto = m.edad_texto || (m.edad_anos !== null ? m.edad_anos + ' años' : '—');
+
+    /* tamaño capitalizado */
+    var tamTexto = m.tamanyo ? (m.tamanyo.charAt(0).toUpperCase() + m.tamanyo.slice(1)) : '';
+
+    /* tiempo en adopción */
+    var tiempoTexto = '';
+    if (m.dias_en_adopcion) {
+        var dias = parseInt(m.dias_en_adopcion);
+        if (dias > 365) {
+            var anios = Math.floor(dias / 365);
+            tiempoTexto = anios + ' año' + (anios > 1 ? 's' : '') + ' esperando';
+        } else if (dias > 30) {
+            var meses = Math.floor(dias / 30);
+            tiempoTexto = meses + ' mes' + (meses > 1 ? 'es' : '');
+        } else {
+            tiempoTexto = dias + ' días';
+        }
+    }
+
+    return '' +
+    '<div class="col-sm-12 col-md-6 col-lg-4 animalCard"' +
+        ' data-especie="' + dataEspecie + '"' +
+        ' data-urgencia="' + urgData + '"' +
+        ' data-ubicacion="' + dataUbicacion + '"' +
+        ' data-tamano="' + dataTamano + '"' +
+        ' data-protectora="' + dataProt + '"' +
+        ' data-edad="' + dataEdad + '"' +
+        ' data-sexo="' + dataSexo + '"' +
+        ' data-color="' + dataColor + '"' +
+        ' data-salud="' + dataSalud + '">' +
+
+        '<div class="card h-100 shadow-sm">' +
+
+            '<div class="contenedor-imagen">' +
+                '<img src="' + foto + '" class="card-img-top" alt="' + m.nombre.replace(/"/g, '&quot;') + '"' +
+                ' onerror="this.src=\'../img/mascotas/default.jpg\'">' +
+
+                '<button class="btn-fav" data-id="' + m.idMascota + '"' +
+                ' onclick="toggleFavorito(event, \'' + m.idMascota + '\')" title="Agregar a favoritos">' +
+                '<i class="fa-regular fa-heart"></i></button>' +
+
+                (badges ? '<div class="image-badges">' + badges + '</div>' : '') +
+            '</div>' +
+
+            '<div class="card-body">' +
+                '<h5 class="card-title">' + m.nombre + ' ' + sexoIcon + '</h5>' +
+
+                '<ul class="card-meta">' +
+                    '<li>' + SVG_LOC + ' ' + (m.ubicacion || '—') + '</li>' +
+                    '<li>' + SVG_CAL + ' ' + edadTexto + '</li>' +
+                    '<li>' + SVG_TAM + ' ' + tamTexto + (m.raza ? ' · ' + m.raza : '') + '</li>' +
+                    (tiempoTexto ? '<li>' + SVG_TIMER + ' <strong>En adopción:</strong>&nbsp;' + tiempoTexto + '</li>' : '') +
+                '</ul>' +
+
+                '<div class="contador-vistas mt-2">' +
+                    '<i class="fa-solid fa-eye"></i>' +
+                    '<span>Vista <strong id="vistas-' + m.idMascota + '">0</strong> veces</span>' +
+                '</div>' +
+
+                '<a href="fichaAnimal.html?id=' + m.idMascota + '"' +
+                ' class="btn-ver-ficha w-100 mt-3"' +
+                ' onclick="registrarVistaFicha(\'' + m.idMascota + '\')">Ver ficha</a>' +
+
+                '<button class="btn-compartir w-100 mt-2"' +
+                ' onclick="compartirAnimal(' + m.idMascota + ', \'' + m.nombre.replace(/'/g, '') + '\')">' +
+                '<i class="fa-solid fa-share-nodes me-1"></i>Compartir</button>' +
+            '</div>' +
+
+        '</div>' +
+    '</div>';
+}
+
+    function cargarAnimales(pagina) {
+        var grid = document.getElementById('gridAnimales');
+        grid.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border" style="color:#1B358F;" role="status"></div></div>';
+
+        fetch('../backend/mascotas/listar.php?pagina=' + (pagina||1) + '&especie=todos')
+            .then(function(r) { if (!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+            .then(function(data) {
+                if (!data.mascotas || !data.mascotas.length) {
+                    grid.innerHTML = '<div class="col-12 text-center py-5"><p class="text-muted">No hay animales disponibles en este momento.</p></div>';
+                    return;
+                }
+                grid.innerHTML = data.mascotas.map(renderCard).join('');
+                /* Actualizar vistas */
+                data.mascotas.forEach(function(m) {
+                    var el = document.getElementById('vistas-' + m.idMascota);
+                    if (el) el.textContent = m.num_vistas || 0;
+                });
+                /* Sincronizar favoritos */
+                var favs = JSON.parse(localStorage.getItem('petfamily_favoritos') || '[]');
+                data.mascotas.forEach(function(m) {
+                    if (favs.indexOf(String(m.idMascota)) !== -1) {
+                        var btn = document.querySelector('.btn-fav[data-id="' + m.idMascota + '"]');
+                        if (btn) { btn.classList.add('activo'); btn.querySelector('i').className = 'fa-solid fa-heart'; }
+                    }
+                });
+                /* Re-aplicar filtros activos */
+                aplicarFiltros();
+            })
+            .catch(function(e) {
+                grid.innerHTML = '<div class="col-12 text-center py-4 text-muted">Error al cargar los animales. (' + e.message + ')</div>';
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        cargarAnimales(1);
+        /* Limpiar favoritos localStorage si no hay sesion activa */
+        if (!estaLogueado()) {
+            localStorage.removeItem('petfamily_favoritos');
+        }
+        /* Aplicar filtro de protectora desde URL */
+        if (_protUrlVal !== 'todos') {
+            FILTROS.protectora = _protUrlVal;
+        }
+    });
+
+    /* Leer filtro de ubicacion desde URL si viene de protectoras.html */
+    var _urlParams   = new URLSearchParams(window.location.search);
+    var _ubicUrlVal  = _urlParams.get('ubicacion') || 'todos';
+    var _ubicValidos = ['todos', 'gijon', 'oviedo', 'aviles'];
+    if (_ubicValidos.indexOf(_ubicUrlVal) === -1) { _ubicUrlVal = 'todos'; }
+
+    var _protUrlVal  = _urlParams.get('protectora') || 'todos';
+    var _protValidos = ['todos','cpa-gijon','nortemascotas','masquechuchos','fundacion-protectora','la-esperanza'];
+    if (_protValidos.indexOf(_protUrlVal) === -1) { _protUrlVal = 'todos'; }
+
+    var FILTROS = {
+        especie:    'todos',
+        urgencia:   'todos',
+        ubicacion:  'todos',
+        protectora: _protUrlVal,
+        tamano:     'todos',
+        edad:       'todos',
+        color:      'todos',
+        salud:      'todos',
+        sexo:       'todos'
+    };
+
+    var ETIQUETAS = {
+        especie:   { todos:'Todos', perro:'Perros', gato:'Gatos' },
+        urgencia:  { todos:'Urgencia', urgente:'Urgente', nuevo:'Nuevo', espera:'Larga espera' },
+        ubicacion:  { todos:'Ubicación', gijon:'Gijón', oviedo:'Oviedo', aviles:'Avilés' },
+        protectora: { todos:'Protectora', 'cpa-gijon':'CPA Gijón', nortemascotas:'Nortemascotas', masquechuchos:'MÁS QUE CHUCHOS', 'fundacion-protectora':'Fund. Protectora', 'la-esperanza':'La Esperanza' },
+        tamano:    { todos:'Tamaño', pequeno:'Pequeño', mediano:'Mediano', grande:'Grande' },
+        edad:      { todos:'Edad', cachorro:'Cachorro', joven:'Joven', adulto:'Adulto', senior:'Senior' },
+        color:     { todos:'Color', negro:'Negro', blanco:'Blanco', marron:'Marrón', naranja:'Naranja/Rojizo', gris:'Gris/Azul', dorado:'Dorado/Arena', atigrado:'Atigrado', bicolor:'Bicolor', tricolor:'Tricolor' },
+        salud:     { todos:'Salud', bueno:'Sano', especial:'Cuidados especiales' },
+        sexo:      { todos:'Sexo', macho:'Macho', hembra:'Hembra' }
+    };
+
+    function aplicarFiltros() {
+        document.querySelectorAll('.animalCard').forEach(function(card) {
+            var ok = (FILTROS.especie   === 'todos' || (card.dataset.especie   || '') === FILTROS.especie)
+                  && (FILTROS.urgencia  === 'todos' || (card.dataset.urgencia  || '') === FILTROS.urgencia)
+                  && (FILTROS.ubicacion  === 'todos' || (card.dataset.ubicacion  || '') === FILTROS.ubicacion)
+                  && (FILTROS.protectora === 'todos' || (card.dataset.protectora || '') === FILTROS.protectora)
+                  && (FILTROS.tamano    === 'todos' || (card.dataset.tamano    || '') === FILTROS.tamano)
+                  && (FILTROS.edad      === 'todos' || (card.dataset.edad      || '') === FILTROS.edad)
+                  && (FILTROS.color     === 'todos' || (card.dataset.color     || '') === FILTROS.color)
+                  && (FILTROS.salud     === 'todos' || (card.dataset.salud     || '') === FILTROS.salud)
+                  && (FILTROS.sexo      === 'todos' || (card.dataset.sexo      || '') === FILTROS.sexo);
+            card.style.display = ok ? '' : 'none';
+        });
+        var visibles = document.querySelectorAll('.animalCard:not([style*="display: none"]):not([style*="display:none"])').length;
+        var sinResultados = document.getElementById('sin-resultados');
+        if (sinResultados) sinResultados.style.display = visibles === 0 ? 'block' : 'none';
+        actualizarTags();
+        actualizarLimpiar();
+    }
+
+    function actualizarTags() {
+        var container = document.getElementById('filtro-tags');
+        container.innerHTML = '';
+        Object.keys(FILTROS).forEach(function(clave) {
+            if (FILTROS[clave] === 'todos' || clave === 'especie') return;
+            var tag = document.createElement('span');
+            tag.className = 'filtro-tag-activo';
+            tag.innerHTML = ETIQUETAS[clave][FILTROS[clave]] +
+                '<button onclick="quitarFiltro(\'' + clave + '\')" title="Quitar"><i class="fa-solid fa-xmark"></i></button>';
+            container.appendChild(tag);
+        });
+    }
+
+    function actualizarLimpiar() {
+        var hayFiltros = Object.keys(FILTROS).some(function(k) { return FILTROS[k] !== 'todos'; });
+        document.getElementById('btn-limpiar').style.display = hayFiltros ? '' : 'none';
+    }
+
+    function quitarFiltro(clave) {
+        FILTROS[clave] = 'todos';
+        var el = document.getElementById('filtro-' + clave);
+        if (el) el.value = 'todos';
+        aplicarFiltros();
+    }
+
+    // Imágenes especie
+    document.querySelectorAll('.filtro-especie-img').forEach(function(img) {
+        img.addEventListener('click', function() {
+            document.querySelectorAll('.filtro-especie-img').forEach(function(i) { i.classList.remove('activo'); });
+            img.classList.add('activo');
+            FILTROS.especie = img.dataset.especie;
+            aplicarFiltros();
+        });
+    });
+
+    // Selects — auto apply
+    ['filtro-urgencia','filtro-ubicacion','filtro-tamano','filtro-edad','filtro-color','filtro-salud','filtro-sexo'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('change', function() {
+            var clave = id.replace('filtro-', '');
+            FILTROS[clave] = this.value;
+            aplicarFiltros();
+        });
+    });
+
+    // Más filtros toggle
+    document.getElementById('btn-mas-filtros').addEventListener('click', function() {
+        var panel = document.getElementById('filtro-extra');
+        var abierto = panel.style.display !== 'none';
+        panel.style.display = abierto ? 'none' : 'flex';
+        this.innerHTML = abierto
+            ? '<i class="fa-solid fa-plus me-1"></i>Más filtros'
+            : '<i class="fa-solid fa-minus me-1"></i>Menos filtros';
+    });
+
+    // Limpiar todos
+    document.getElementById('btn-limpiar').addEventListener('click', function() {
+        Object.keys(FILTROS).forEach(function(k) { FILTROS[k] = 'todos'; });
+        document.querySelectorAll('.filtro-select').forEach(function(s) { s.value = 'todos'; });
+        document.querySelectorAll('.filtro-especie-img').forEach(function(i) { i.classList.remove('activo'); });
+        document.querySelector('.filtro-especie-img[data-especie="todos"]').classList.add('activo');
+        aplicarFiltros();
+    });
+
+</script>
 </body>
 </html>
