@@ -2,7 +2,11 @@
 /* Tests                                                               */
 /* ------------------------------------------------------------------ */
 
-var estaLogueado = sessionStorage.getItem('pf_session') !== null;
+var _testLogueado = sessionStorage.getItem('pf_session') !== null;
+function _pfUserId() {
+    try { return JSON.parse(sessionStorage.getItem('pf_session')).idUsuario; } catch(e) { return 'guest'; }
+}
+
 
 /* elegirEspecie — llamada desde los botones de icono del HTML.
    Guarda el filtro y arranca el test saltándose la primera pregunta
@@ -850,7 +854,8 @@ function seleccionarPreguntas() {
 // ----------------------------------------------------------------
 // NAVEGACIÓN
 function iniciarTest(tipo) {
-    if (catalogoMascotas.length === 0) {
+    /* El catálogo solo es necesario para compatibilidad */
+    if (tipo === 'compatibilidad' && catalogoMascotas.length === 0) {
         cargarCatalogoMascotas(function() { iniciarTest(tipo); });
         return;
     }
@@ -866,7 +871,6 @@ function iniciarTest(tipo) {
         estadoTest.compatibilidad = { preguntaActual: 0, respuestas: {}, especieFiltro: 'indiferente' };
         document.getElementById('resultado-compatibilidad').classList.add('d-none');
         document.getElementById('aviso-login-compatibilidad').classList.add('d-none');
-        /* Mostrar selección de especie, ocultar el resto */
         document.getElementById('compat-seleccion-especie').classList.remove('d-none');
         document.getElementById('prog-wrap-compatibilidad').classList.add('d-none');
         document.getElementById('preguntas-compatibilidad').classList.add('d-none');
@@ -1021,7 +1025,7 @@ function mostrarResultadoConocimiento() {
     document.getElementById('res-detalle-conocimiento').innerHTML = detalle;
     document.getElementById('resultado-conocimiento').classList.remove('d-none');
     /* Guardar resultado en localStorage para perfil */
-    localStorage.setItem('pf_test_conocimiento', JSON.stringify({
+    localStorage.setItem('pf_test_conocimiento_' + _pfUserId(), JSON.stringify({
         fecha: new Date().toISOString(),
         puntos: puntos,
         total: total,
@@ -1032,12 +1036,12 @@ function mostrarResultadoConocimiento() {
 // ----------------------------------------------------------------
 // RESULTADO COMPATIBILIDAD
 function mostrarResultadoCompatibilidad() {
-    if (!estaLogueado) {
+    if (!_testLogueado) {
         document.getElementById('aviso-login-compatibilidad').classList.remove('d-none');
         return;
     }
     /* Guardar resultado en localStorage para perfil */
-    localStorage.setItem('pf_test_compatibilidad', JSON.stringify({
+    localStorage.setItem('pf_test_compatibilidad_' + _pfUserId(), JSON.stringify({
         fecha: new Date().toISOString(),
         especieFiltro: estadoTest.compatibilidad.especieFiltro
     }));
@@ -1157,7 +1161,7 @@ function mostrarRanking(ranking, perfilUsuario, especieFiltro) {
             compatibilidad: item.compatibilidad
         };
     });
-    var guardado = JSON.parse(localStorage.getItem('pf_test_compatibilidad') || '{}');
+    var guardado = JSON.parse(localStorage.getItem('pf_test_compatibilidad_' + _pfUserId()) || '{}');
     guardado.ranking = rankingGuardar;
-    localStorage.setItem('pf_test_compatibilidad', JSON.stringify(guardado));
+    localStorage.setItem('pf_test_compatibilidad_' + _pfUserId(), JSON.stringify(guardado));
 }

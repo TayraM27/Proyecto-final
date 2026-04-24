@@ -1,153 +1,110 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-GET — devuelve mascotas con filtros opcionales
-Parámetros: especie, urgencia, ubicacion, tamano, edad, color, salud, sexo, pagina
-Usado por adopta.html para el catálogo filtrado */
+GET — lista mascotas para páginas públicas (adopta, acoge, apadrina)
+Parámetros:
+  pagina   — número de página (default 1)
+  especie  — perro | gato | todos
+  acogida  — 1 para filtrar por disponible_acogida (acoge.html)
+  apadrina — 1 para filtrar por disponible_apadrinamiento (apadrina.html) */
 
 require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
+session_write_close();
+
 $pdo = conectar();
 
-$especie  = $_GET['especie']   ?? 'todos';
-$urgencia = $_GET['urgencia']  ?? 'todos';
-$ubicacion= $_GET['ubicacion'] ?? 'todos';
-$tamano   = $_GET['tamano']    ?? 'todos';
-$edad     = $_GET['edad']      ?? 'todos';
-$salud    = $_GET['salud']     ?? 'todos';
-$sexo     = $_GET['sexo']      ?? 'todos';
-$pagina   = (int)($_GET['pagina'] ?? 1);
-$apadrinamiento = $_GET['apadrinamiento'] ?? 'todos';
-$acogida      = $_GET['acogida']       ?? 'todos';
-
-$p = paginacion($pagina, 12);
+$pagina  = max(1, (int)($_GET['pagina']  ?? 1));
+$especie = $_GET['especie']              ?? 'todos';
+$acogida = (int)($_GET['acogida']        ?? 0);
+$apadrina= (int)($_GET['apadrina']       ?? 0);
+$limite  = 30;
+$offset  = ($pagina - 1) * $limite;
 
 $where  = ['m.activa = 1'];
 $params = [];
 
-/* Si se pide apadrinamiento, no filtrar por estado_adopcion */
-if ($apadrinamiento !== '1') {
-    $where[] = 'm.estado_adopcion = "disponible"';
-}
-
-if ($especie !== 'todos' && in_array($especie, ['perro', 'gato'])) {
+/* Filtro especie */
+if ($especie !== 'todos') {
     $where[]  = 'm.especie = ?';
     $params[] = $especie;
 }
 
-if ($apadrinamiento === '1') {
+/* Filtro según contexto de la página */
+if ($acogida) {
+    /* acoge.html: animales con acogida activa, no adoptados definitivamente */
+    $where[] = 'm.disponible_acogida = 1';
+    $where[] = 'm.estado_adopcion != "adoptado"';
+} elseif ($apadrina) {
+    /* apadrina.html: animales con apadrinamiento activo */
     $where[] = 'm.disponible_apadrinamiento = 1';
+    $where[] = 'm.estado_adopcion != "adoptado"';
+} else {
+    /* adopta.html: solo disponibles o en proceso, nunca no_disponible ni adoptado */
+    $where[] = 'm.estado_adopcion IN ("disponible", "en_proceso")';
 }
 
-if ($acogida === '1') {
-    /* Verificar si la columna existe antes de filtrar */
-    try {
-        $pdo->query('SELECT disponible_acogida FROM mascotas LIMIT 1');
-        $where[] = 'm.disponible_acogida = 1';
-    } catch (Exception $e) {
-        /* columna no existe aun, no filtrar */
-    }
-}
+$cond = implode(' AND ', $where);
 
-if ($urgencia !== 'todos' && in_array($urgencia, ['urgente', 'nuevo', 'normal'])) {
-    $where[]  = 'm.urgencia = ?';
-    $params[] = $urgencia;
-}
-
-$mapaUbicacion = [
-    'gijon'  => 'Gijón',
-    'oviedo' => 'Oviedo',
-    'aviles' => 'Avilés',
-];
-if ($ubicacion !== 'todos' && isset($mapaUbicacion[$ubicacion])) {
-    $where[]  = 'p.localidad = ?';
-    $params[] = $mapaUbicacion[$ubicacion];
-}
-
-$mapaTamano = [
-    'pequeno' => 'pequeño',
-    'mediano' => 'mediano',
-    'grande'  => 'grande',
-];
-if ($tamano !== 'todos' && isset($mapaTamano[$tamano])) {
-    $where[]  = 'm.tamanyo = ?';
-    $params[] = $mapaTamano[$tamano];
-}
-
-if ($sexo !== 'todos' && in_array($sexo, ['macho', 'hembra'])) {
-    $where[]  = 'm.sexo = ?';
-    $params[] = $sexo;
-}
-
-$mapaEdad = [
-    'cachorro' => 'TIMESTAMPDIFF(YEAR, m.fecha_nacimiento, CURDATE()) < 1',
-    'joven'    => 'TIMESTAMPDIFF(YEAR, m.fecha_nacimiento, CURDATE()) BETWEEN 1 AND 3',
-    'adulto'   => 'TIMESTAMPDIFF(YEAR, m.fecha_nacimiento, CURDATE()) BETWEEN 3 AND 8',
-    'senior'   => 'TIMESTAMPDIFF(YEAR, m.fecha_nacimiento, CURDATE()) > 8',
-];
-if ($edad !== 'todos' && isset($mapaEdad[$edad])) {
-    $where[] = '(' . $mapaEdad[$edad] . ' OR m.fecha_nacimiento IS NULL)';
-}
-
-if ($salud === 'especial') {
-    $where[] = "m.estado_salud NOT IN ('Bueno','bueno')";
-} elseif ($salud === 'bueno') {
-    $where[] = "m.estado_salud IN ('Bueno','bueno')";
-}
-
-$condicion = implode(' AND ', $where);
-
-$stmtTotal = $pdo->prepare(
-    "SELECT COUNT(*) AS total
-     FROM mascotas m
-     JOIN protectoras p ON m.idProtectora = p.idProtectora
-     WHERE $condicion"
-);
+$stmtTotal = $pdo->prepare("SELECT COUNT(*) FROM mascotas m WHERE $cond");
 $stmtTotal->execute($params);
-$total = (int)$stmtTotal->fetch()['total'];
+$total = (int)$stmtTotal->fetchColumn();
 
 $sql = "SELECT
             m.idMascota,
+            m.idProtectora,
             m.nombre,
             m.especie,
             m.raza,
             m.sexo,
             m.tamanyo,
-            m.urgencia,
-            m.estado_salud,
+            m.color,
             m.descripcion,
+            m.estado_salud,
+            m.urgencia,
+            m.estado_adopcion,
             m.edad_texto,
+            m.badge_extra,
             m.disponible_apadrinamiento,
             m.disponible_acogida,
-            m.badge_extra,
+            m.compatible_ninos,
+            m.compatible_perros,
+            m.compatible_gatos,
+            m.apto_piso,
+            m.vacunado,
+            m.esterilizado,
+            m.microchip,
+            m.desparasitado,
             m.num_vistas,
             m.fecha_nacimiento,
+            m.fecha_entrada,
             TIMESTAMPDIFF(YEAR, m.fecha_nacimiento, CURDATE()) AS edad_anos,
             DATEDIFF(CURDATE(), m.fecha_entrada)               AS dias_en_adopcion,
-            p.nombre    AS protectora_nombre,
+            p.nombre   AS protectora_nombre,
             p.localidad AS ubicacion,
-            f.ruta      AS foto_principal
+            p.telefono  AS telefono_protectora,
+            p.email     AS email_protectora,
+            p.web       AS web_protectora,
+            p.foto_logo AS logo_protectora,
+            (SELECT mf.ruta FROM mascotas_fotos mf
+             WHERE mf.idMascota = m.idMascota AND mf.es_principal = 1
+             LIMIT 1) AS foto_principal
         FROM mascotas m
         JOIN protectoras p ON m.idProtectora = p.idProtectora
-        LEFT JOIN mascotas_fotos f ON f.idMascota = m.idMascota AND f.es_principal = 1
-        WHERE $condicion
-        ORDER BY
-            FIELD(m.urgencia, 'urgente', 'nuevo', 'normal'),
-            m.fecha_publicacion DESC
+        WHERE $cond
+        ORDER BY m.urgencia = 'urgente' DESC, m.fecha_entrada ASC
         LIMIT ? OFFSET ?";
 
-$params[] = $p['limite'];
-$params[] = $p['offset'];
+$params[] = $limite;
+$params[] = $offset;
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
-$mascotas = $stmt->fetchAll();
 
 respuestaOk([
-    'mascotas'    => $mascotas,
-    'total'       => $total,
-    'pagina'      => $p['pagina'],
-    'porPagina'   => $p['limite'],
-    'totalPaginas'=> (int)ceil($total / $p['limite']),
+    'mascotas'     => $stmt->fetchAll(),
+    'total'        => $total,
+    'pagina'       => $pagina,
+    'totalPaginas' => (int)ceil($total / $limite),
 ]);

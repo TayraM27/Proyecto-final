@@ -32,6 +32,7 @@ try {
             m.urgencia,
             m.estado_adopcion,
             m.disponible_apadrinamiento,
+            m.disponible_acogida,
             m.compatible_ninos,
             m.compatible_perros,
             m.compatible_gatos,
@@ -49,6 +50,7 @@ try {
             p.telefono AS telefono_protectora,
             p.email AS email_protectora,
             p.foto_logo AS logo_protectora,
+            p.web AS web_protectora,
             COALESCE(mf.ruta, "img/mascotas/default.jpg") AS foto
         FROM mascotas m
         JOIN protectoras p ON m.idProtectora = p.idProtectora

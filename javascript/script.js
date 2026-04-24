@@ -942,11 +942,40 @@ document.addEventListener('DOMContentLoaded', function() {
             btnRegistro.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Creando cuenta...';
             alertaRegistro.classList.add('d-none');
 
-            setTimeout(function() {
+            var fd = new FormData();
+            fd.append('nombre',           inputNombre.value.trim());
+            fd.append('username',         inputUsername.value.trim());
+            fd.append('email',            inputEmailR.value.trim());
+            fd.append('localidad',        inputLocalidad.value.trim());
+            fd.append('telefono',         inputTelefono.value.trim());
+            fd.append('password',         inputPasswordR.value);
+            fd.append('password_confirm', inputPasswordConfirm.value);
+            fd.append('terminos',         inputTerminos.checked ? '1' : '');
+            if (inputFoto.files[0]) fd.append('foto_perfil', inputFoto.files[0]);
+
+            fetch('../backend/api/auth/registro.php', {
+                method: 'POST',
+                body: fd,
+                credentials: 'include'
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
                 btnRegistro.disabled = false;
                 btnRegistro.innerHTML = '<i class="fa-solid fa-user-plus me-2"></i>Crear cuenta gratis';
+                if (data.ok) {
+                    sessionStorage.setItem('pf_session', JSON.stringify(data.usuario));
+                    window.location.href = data.redirigir || 'index.html';
+                } else {
+                    document.getElementById('alertaRegistroMsg').textContent = data.error || 'Error al crear la cuenta.';
+                    alertaRegistro.classList.remove('d-none');
+                }
+            })
+            .catch(function() {
+                btnRegistro.disabled = false;
+                btnRegistro.innerHTML = '<i class="fa-solid fa-user-plus me-2"></i>Crear cuenta gratis';
+                document.getElementById('alertaRegistroMsg').textContent = 'Error de conexión. Inténtalo de nuevo.';
                 alertaRegistro.classList.remove('d-none');
-            }, 1200);
+            });
         });
     }
 
@@ -1080,20 +1109,17 @@ var protectoras = {
     }
 };
 
-/* Carga protectoras nuevas (id > 5) desde BD y las registra en el objeto protectoras */
+/* Carga TODAS las protectoras desde BD — completamente dinámico */
 function cargarProtectorasDinamicasEnDona() {
     fetch('../backend/api/protectoras/listar.php')
         .then(function(r){ return r.json(); })
         .then(function(data){
             if (!data.ok || !data.protectoras) return;
 
-            var nuevas = data.protectoras.filter(function(p){
-                return parseInt(p.idProtectora) > 5;
-            });
-            if (!nuevas.length) return;
+            var todas = data.protectoras;
 
-            /* Registrar en objeto protectoras */
-            nuevas.forEach(function(p) {
+            /* Registrar todas en objeto protectoras para modales */
+            todas.forEach(function(p) {
                 var key = 'prot-' + p.idProtectora;
                 protectoras[key] = {
                     nombre:   p.nombre,
@@ -1106,71 +1132,72 @@ function cargarProtectorasDinamicasEnDona() {
                 };
             });
 
-            /* Inyectar cards en dona.html */
+            /* Inyectar en dona.html */
             var cont = document.getElementById('containerProtDinamicasDona');
             if (cont) {
-                cont.innerHTML = nuevas.map(function(p) {
-                    var id = 'prot-' + p.idProtectora;
-
+                cont.innerHTML = todas.map(function(p) {
+                    var id  = 'prot-' + p.idProtectora;
                     var logo = p.foto_logo
-                        ? '<img class="logo-protectora" src="../' + p.foto_logo + '" ' +
-                          'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" ' +
-                          'alt="Logo ' + p.nombre.replace(/"/g, '&quot;') + '">'
+                        ? '<img class="logo-protectora" src="../' + p.foto_logo + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" alt="Logo ' + p.nombre.replace(/"/g, '&quot;') + '">'
                         : '';
-
                     return '<label class="card-protectora" id="' + id + '" onclick="toggleProtectora(\'' + id + '\')">' +
-                           '<input type="checkbox" name="protectora" value="' + id + '">' +
-                           logo +
-                           '<div class="icono-prot-fb">🐾</div>' +
-                           '<div style="flex:1;">' +
-                           '<p class="protectora-nombre">' + p.nombre + '</p>' +
-                           (p.localidad ? '<p class="protectora-lugar"><i class="fa-solid fa-location-dot"></i> ' + p.localidad + '</p>' : '') +
-                           (p.descripcion ? '<p class="descripcion-protectora">' + p.descripcion + '</p>' : '') +
-                           '</div></label>';
+                        '<input type="checkbox" name="protectora" value="' + id + '">' +
+                        logo + '<div class="icono-prot-fb">🐾</div>' +
+                        '<div style="flex:1;"><p class="protectora-nombre">' + p.nombre + '</p>' +
+                        (p.localidad ? '<p class="protectora-lugar"><i class="fa-solid fa-location-dot"></i> ' + p.localidad + '</p>' : '') +
+                        (p.descripcion ? '<p class="descripcion-protectora">' + p.descripcion + '</p>' : '') +
+                        '</div></label>';
                 }).join('');
             }
 
-            /* Inyectar en protectoras.html — las 5 estáticas son posiciones 1-5 (azul,gold,azul,gold,azul)
-               las dinámicas siguen la alternancia: posición 6 = gold (i%2===0), 7 = azul, etc. */
+            /* Inyectar TODAS en protectoras.html — alternancia azul/gold */
             var gridProt = document.getElementById('gridProtectoras');
             if (gridProt) {
-                gridProt.insertAdjacentHTML('beforeend', nuevas.map(function(p, i) {
-                    var franja = i % 2 === 0 ? 'prot-franja prot-franja-gold' : 'prot-franja';
+                var spinner = document.getElementById('spinnerProtectoras');
+                if (spinner) spinner.remove();
 
-                    var logo = p.foto_logo
-                        ? '<img src="../' + p.foto_logo + '" alt="Logo ' + p.nombre.replace(/"/g, '&quot;') + '" ' +
-                          'onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<span class=\\\'prot-logo-emoji\\\'>🐾</span>\';">'
+                if (!todas.length) {
+                    gridProt.innerHTML = '<div class="col-12 text-center py-4 text-muted">No hay protectoras disponibles.</div>';
+                    return;
+                }
+
+                gridProt.innerHTML = todas.map(function(p, i) {
+                    var franja   = i % 2 === 0 ? 'prot-franja' : 'prot-franja prot-franja-gold';
+                    var logoSrc  = p.foto_logo
+                        ? (p.foto_logo.indexOf('http') === 0 ? p.foto_logo : '../' + p.foto_logo)
+                        : null;
+                    var logo = logoSrc
+                        ? '<img src="' + logoSrc + '" alt="Logo ' + p.nombre.replace(/"/g, '&quot;') + '" onerror="this.style.display=\'none\'">'
                         : '<span class="prot-logo-emoji">🐾</span>';
+                    var labelWeb = p.tipo_pagina === 'red_social' ? 'Red social'
+                                 : p.tipo_pagina === 'otra'       ? 'Otra página'
+                                 : 'Web';
 
-                    var teaming = p.teaming || null;
-
-                    return '<div class="col-md-6 col-lg-4 prot-item" data-especie="perros gatos" data-nombre="' +
-                           p.nombre + ' ' + (p.localidad || '') + '" data-teaming="' + (teaming ? 'si' : 'no') + '">' +
-                           '<div class="card-protectora-pag">' +
-                           '<div class="' + franja + '"></div>' +
-                           '<div class="prot-header">' +
-                           '<div class="prot-logo-container">' + logo + '</div>' +
-                           '<div style="flex:1;min-width:0;">' +
-                           '<p class="prot-nombre">' + p.nombre + '</p>' +
-                           (p.localidad ? '<p class="prot-lugar"><i class="fa-solid fa-location-dot"></i> ' + p.localidad + '</p>' : '') +
-                           '</div>' +
-                           (p.verificada ? '<span class="prot-badge-anos">✓ Verificada</span>' : '') +
-                           '</div>' +
-                           (p.descripcion ? '<div class="prot-desc"><p>' + p.descripcion + '</p></div>' : '') +
-                           '<div class="prot-contacto">' +
-                           (p.email    ? '<div class="prot-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + p.email + '">' + p.email + '</a></div>' : '') +
-                           (p.telefono ? '<div class="prot-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + p.telefono + '">' + p.telefono + '</a></div>' : '') +
-                           (p.web      ? '<div class="prot-dato"><i class="fa-solid fa-globe"></i><a href="' + p.web + '" target="_blank" rel="noopener">' + p.web + '</a></div>' : '') +
-                           (teaming    ? '<div class="prot-dato"><i class="fa-solid fa-mug-hot"></i><a href="' + teaming + '" target="_blank" rel="noopener">Teaming · 1 €/mes</a></div>' : '') +
-                           '</div>' +
-                           '<div class="prot-acciones">' +
-                           '<button class="btn-prot-donar" onclick="abrirModalDonarProtDinamica(' + p.idProtectora + ')">' +
-                           '<i class="fa-solid fa-hand-holding-heart me-1"></i> Donar</button>' +
-                           (p.web ? '<a href="' + p.web + '" target="_blank" rel="noopener" class="btn-prot-ext">' +
-                           '<i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Web</a>' : '') +
-                           '</div>' +
-                           '</div></div>';
-                }).join(''));
+                    return '<div class="col-md-6 col-lg-4 prot-item" data-especie="perros gatos" data-nombre="' + p.nombre + ' ' + (p.localidad || '') + '" data-teaming="' + (p.teaming ? 'si' : 'no') + '">' +
+                        '<div class="card-protectora-pag">' +
+                        '<div class="' + franja + '"></div>' +
+                        '<div class="prot-header">' +
+                        '<div class="prot-logo-container">' + logo + '</div>' +
+                        '<div style="flex:1;min-width:0;">' +
+                        '<p class="prot-nombre">' + p.nombre + '</p>' +
+                        (p.localidad ? '<p class="prot-lugar"><i class="fa-solid fa-location-dot"></i> ' + p.localidad + '</p>' : '') +
+                        '</div>' +
+                        (p.verificada ? '<span class="prot-badge-anos">✓ Verificada</span>' : '') +
+                        '</div>' +
+                        (p.descripcion ? '<div class="prot-desc"><p>' + p.descripcion + '</p></div>' : '<div class="prot-desc"><p></p></div>') +
+                        '<div class="prot-contacto">' +
+                        (p.telefono ? '<div class="prot-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + p.telefono + '">' + p.telefono + '</a></div>' : '') +
+                        (p.email    ? '<div class="prot-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + p.email + '">' + p.email + '</a></div>' : '') +
+                        (p.web      ? '<div class="prot-dato"><i class="fa-solid fa-globe"></i><a href="' + p.web + '" target="_blank" rel="noopener">' + labelWeb + '</a></div>' : '') +
+                        (p.teaming  ? '<div class="prot-dato"><i class="fa-solid fa-mug-hot"></i><a href="' + p.teaming + '" target="_blank" rel="noopener">Teaming · 1 €/mes</a></div>' : '') +
+                        (p.iban     ? '<div class="prot-dato prot-dato-iban"><i class="fa-solid fa-building-columns"></i>' + p.iban + '</div>' : '') +
+                        '</div>' +
+                        '<div class="prot-acciones">' +
+                        '<button class="btn-prot-donar" onclick="abrirModalDonarProtDinamica(' + p.idProtectora + ')"><i class="fa-solid fa-hand-holding-heart me-1"></i> Donar</button>' +
+                        (p.web ? '<a href="' + p.web + '" target="_blank" rel="noopener" class="btn-prot-ext"><i class="fa-solid fa-arrow-up-right-from-square me-1"></i> ' + labelWeb + '</a>' : '') +
+                        '</div>' +
+                        '</div></div>';
+                }).join('');
 
                 if (typeof filtrarProtectoras === 'function') filtrarProtectoras();
             }
@@ -1214,7 +1241,24 @@ function copiarTexto(btn, texto) {
 
 function copiarIban(btn, iban) {
     var texto = iban.replace(/\s*\([^)]*\)/, '').trim();
-    copiarTexto(btn, texto);
+    var icono = btn.querySelector('i');
+    function feedback() {
+        icono.className = 'fa-solid fa-check';
+        setTimeout(function() { icono.className = 'fa-regular fa-copy'; }, 2000);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(feedback);
+    } else {
+        var el = document.createElement('textarea');
+        el.value = texto;
+        el.style.position = 'fixed';
+        el.style.opacity = '0';
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        feedback();
+    }
 }
 
 function buildDatosProt(p) {

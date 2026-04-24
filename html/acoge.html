@@ -376,7 +376,7 @@
             </div>
 
             <!-- protectoras dinámicas desde BD -->
-            <div id="gridProtectorasDinamicas" class="row g-3 mb-5 justify-content-center"></div>
+            <div id="gridProtectorasDinamicas" style="display:contents;"></div>
 
         </div>
 
@@ -389,6 +389,27 @@
     </div>
 </main>
 
+
+<!-- modal acogida -->
+<div class="modal fade" id="modalAcoge" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-pf">
+            <div class="modal-header modal-header-pf">
+                <h5 class="modal-title text-white fw-bold">
+                    <i class="fa-solid fa-house-chimney-heart me-2" style="color:#F8BA56;"></i>
+                    Acoger a <span id="modal-acoge-nombre">–</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body modal-body-pf">
+                <p class="modal-intro">
+                    La acogida se gestiona directamente con la protectora. Contacta con ellos para conocer las condiciones y el proceso.
+                </p>
+                <div id="modal-acoge-datos"></div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <footer>
     <p>© 2026 PetFamily. Todos los derechos reservados.</p>
@@ -405,6 +426,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 var _shareData = {};
+var _acogidaData = {};
 
 function compartirCard(id) {
     var d = _shareData[id] || {};
@@ -449,11 +471,22 @@ function cargarAnimalesAcoge() {
                     ? (m.descripcion.length > 100 ? m.descripcion.substring(0, 100) + '…' : m.descripcion)
                     : (m.raza || m.especie) + (m.edad_texto ? ', ' + m.edad_texto : '') + '.';
 
-                _shareData[m.idMascota] = { nombre: m.nombre };
+                _shareData[m.idMascota]  = { nombre: m.nombre };
+                _acogidaData[m.idMascota] = {
+                    nombre:     m.nombre,
+                    protectora: m.protectora_nombre,
+                    telefono:   m.telefono_protectora || null,
+                    email:      m.email_protectora    || null,
+                    web:        m.web_protectora       || null
+                };
                 return '<div class="col-md-6 col-lg-4">'
-                    + '<div class="card-animal-apadrina">'
-                    + '<div class="animal-img-wrap">'
+                    + '<div class="card-animal-apadrina card-acoge" style="cursor:pointer;" onclick="window.location.href=\'fichaAnimal.html?id=' + m.idMascota + '\'">'
+                    + '<div class="animal-img-wrap" style="position:relative;">'
                     + '<img src="' + foto + '" onerror="this.src=\'../img/mascotas/placeholder.jpg\'" alt="' + m.nombre + '" class="animal-img">'
+                    + '<div class="ficha-iconos-foto">'
+                    + '<button class="ficha-ico-btn" id="share-acoge-' + m.idMascota + '" title="Compartir" onclick="event.stopPropagation();">'
+                    + '<i class="fa-solid fa-share-nodes"></i></button>'
+                    + '</div>'
                     + '</div>'
                     + '<div class="animal-info">'
                     + '<div class="d-flex justify-content-between align-items-start mb-1">'
@@ -462,11 +495,8 @@ function cargarAnimalesAcoge() {
                     + '</div>'
                     + '<p class="animal-protectora"><i class="fa-solid fa-building-shield"></i> ' + m.protectora_nombre + '</p>'
                     + '<p class="animal-desc">' + desc + '</p>'
-                    + '<a href="fichaAnimal.html?id=' + m.idMascota + '" class="btn-apadrinar" style="text-decoration:none;text-align:center;">'
-                    + '<i class="fa-solid fa-house-chimney-heart me-2"></i>Quiero acoger a ' + m.nombre
-                    + '</a>'
-                    + '<button class="btn-compartir" id="share-acoge-' + m.idMascota + '">'
-                    + '<i class="fa-solid fa-share-nodes me-1"></i> Compartir'
+                    + '<button class="btn-acoger" id="btn-acoge-' + m.idMascota + '" onclick="event.stopPropagation();">'
+                    + '<i class="fa-solid fa-hand-holding-heart me-2"></i>Quiero acoger a ' + m.nombre
                     + '</button>'
                     + '</div></div></div>';
             }).join('');
@@ -477,11 +507,58 @@ function cargarAnimalesAcoge() {
                     btn.addEventListener('click', (function(i, n){ return function(){ compartirAnimal(i, n); }; })(id, d.nombre));
                 }
             });
+            Object.keys(_acogidaData).forEach(function(id) {
+                var btn = document.getElementById('btn-acoge-' + id);
+                if (btn) {
+                    btn.addEventListener('click', (function(i) {
+                        return function() { abrirModalAcogeId(i, _acogidaData[i]); };
+                    })(id));
+                }
+            });
         })
         .catch(function() {
             grid.innerHTML = '<div class="col-12 text-center py-4 text-muted">Error al cargar los animales.</div>';
         });
 }
+
+function abrirModalAcogeId(id, d) {
+    document.getElementById('modal-acoge-nombre').textContent = d.nombre || '';
+
+    var asunto = encodeURIComponent('Acogida – ' + (d.nombre || ''));
+    var cuerpo = encodeURIComponent(
+        'Hola, me pongo en contacto desde PetFamily para interesarme en acoger a:\n\n' +
+        '  Animal: ' + (d.nombre || '') + '\n' +
+        '  ID: ' + id + '\n\n' +
+        'Quedo a la espera de información sobre el proceso de acogida.\n\n' +
+        'Un saludo.'
+    );
+
+    var html = '<p class="protectora-nombre mb-2">' + (d.protectora || '') + '</p>';
+
+    if (d.telefono) {
+        var tel = d.telefono.replace(/\s+/g, '');
+        html += '<div class="modal-dato"><i class="fa-solid fa-phone"></i>' +
+                '<a href="tel:' + tel + '">' + d.telefono + '</a></div>';
+    }
+
+    if (d.email) {
+        html += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i>' +
+                '<a href="mailto:' + d.email + '?subject=' + asunto + '&body=' + cuerpo + '">' +
+                d.email + '</a></div>';
+    }
+    if (d.web) {
+        html += '<div class="modal-dato"><i class="fa-solid fa-globe"></i>' +
+                '<a href="' + d.web + '" target="_blank" rel="noopener">Web de la protectora</a></div>';
+    }
+
+    html += '<a href="fichaAnimal.html?id=' + id + '" class="btn-azul d-block text-center mt-3" style="text-decoration:none;">' +
+            '<i class="fa-solid fa-paw me-2"></i>Ver ficha completa</a>';
+
+    document.getElementById('modal-acoge-datos').innerHTML = html;
+
+    new bootstrap.Modal(document.getElementById('modalAcoge')).show();
+}
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>

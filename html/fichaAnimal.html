@@ -75,7 +75,17 @@
         <div class="row g-4">
 
             <div class="col-lg-6">
-                <img id="foto-principal" src="" alt="Foto del animal">
+                <div style="position:relative;">
+                    <img id="foto-principal" src="" alt="Foto del animal">
+                    <div class="ficha-iconos-foto">
+                        <button class="btn-fav" id="btn-fav-ficha" onclick="toggleFavoritoFicha()" title="Guardar en favoritos" style="position:relative;top:auto;right:auto;">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                        <button class="ficha-ico-btn" id="btn-compartir-ficha" onclick="compartirAnimalFicha()" title="Compartir">
+                            <i class="fa-solid fa-share-nodes"></i>
+                        </button>
+                    </div>
+                </div>
                 <div class="miniaturas" id="contenedor-miniaturas"></div>
             </div>
 
@@ -106,17 +116,16 @@
 
                 <div class="d-flex flex-column gap-2">
                     <button class="btn-adoptar" onclick="mostrarModalAdopcion()">
-                        <i class="fa-solid fa-house-heart me-1"></i> Quiero adoptarlo
+                        <i class="fa-solid fa-house"></i> Quiero adoptar
                     </button>
-                    <button class="btn-apadrinar" id="btn-apadrinar" hidden onclick="mostrarModalApadrina()">
-                        <i class="fa-solid fa-star me-1"></i> <span id="btn-apadrinar-texto">Apadrinar</span>
-                    </button>
-                    <button class="btn-favorito-ficha" id="btn-fav-ficha" onclick="toggleFavoritoFicha()">
-                        <i class="fa-regular fa-heart me-1"></i> Guardar en favoritos
-                    </button>
-                    <button class="btn-compartir" id="btn-compartir-ficha" onclick="compartirAnimalFicha()">
-                        <i class="fa-solid fa-share-nodes me-1"></i> Compartir
-                    </button>
+                    <div class="ficha-btns-secundarios">
+                        <button class="btn-apadrinar" id="btn-apadrinar" hidden onclick="mostrarModalApadrina()">
+                            <i class="fa-solid fa-star me-1"></i> <span id="btn-apadrinar-texto">Apadrinar</span>
+                        </button>
+                        <button class="btn-apadrinar btn-acoger-ficha" id="btn-acoger" hidden onclick="mostrarModalAcoger()">
+                            <i class="fa-solid fa-heart me-1"> </i><span id="btn-acoger-texto"> Acoger</span>
+                        </button>
+                    </div>
                 </div>
 
             </div>
@@ -294,6 +303,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (mascota.disponible_apadrinamiento) {
             btnApadrinar.removeAttribute('hidden');
             document.getElementById('btn-apadrinar-texto').textContent = 'Apadrinar a ' + mascota.nombre;
+        }
+        var btnAcoger = document.getElementById('btn-acoger');
+        if (mascota.disponible_acogida) {
+            btnAcoger.removeAttribute('hidden');
+            document.getElementById('btn-acoger-texto').textContent = 'Acoger a ' + mascota.nombre;
         }
         
         var badgesEl = document.getElementById('animal-badges');
@@ -516,6 +530,39 @@ function mostrarModalApadrina() {
     }
     if (m.email_protectora) {
         html += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + m.email_protectora + '?subject=' + asunto + '&body=' + cuerpo + '">' + m.email_protectora + '</a></div>';
+    }
+
+    html += '<a href="apadrina.html" class="btn-azul d-block text-center mt-3" style="text-decoration:none;">'
+         + '<i class="fa-solid fa-heart me-2"></i>Ver todos los animales para apadrinar</a>';
+    document.getElementById('modal-apadrina-datos').innerHTML = html;
+    new bootstrap.Modal(document.getElementById('modalApadrina')).show();
+}
+
+function mostrarModalAcoger() {
+    if (!_mascotaActual) return;
+    var m = _mascotaActual;
+    document.getElementById('modal-apadrina-nombre').textContent = 'Acoger a ' + m.nombre;
+
+    var asunto = encodeURIComponent('Acogida – ' + m.nombre);
+    var cuerpo = encodeURIComponent(
+        'Hola, me pongo en contacto desde PetFamily para interesarme en acoger a:\n\n' +
+        '  Animal: ' + m.nombre + '\n' +
+        '  ID: ' + m.idMascota + '\n' +
+        '  Raza: ' + (m.raza || 'Sin especificar') + '\n' +
+        '  Especie: ' + (m.especie || 'Sin especificar') + '\n\n' +
+        'Quedo a la espera de información sobre el proceso de acogida.\n\n' +
+        'Un saludo.'
+    );
+
+    var html = '<p class="protectora-nombre mb-2">' + (m.protectora || '') + '</p>';
+    if (m.telefono_protectora) {
+        html += '<div class="modal-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + m.telefono_protectora + '">' + m.telefono_protectora + '</a></div>';
+    }
+    if (m.email_protectora) {
+        html += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + m.email_protectora + '?subject=' + asunto + '&body=' + cuerpo + '">' + m.email_protectora + '</a></div>';
+    }
+    if (m.web_protectora) {
+        html += '<div class="modal-dato"><i class="fa-solid fa-globe"></i><a href="' + m.web_protectora + '" target="_blank" rel="noopener">Web de la protectora</a></div>';
     }
 
     document.getElementById('modal-apadrina-datos').innerHTML = html;

@@ -29,6 +29,7 @@ $stmt = $pdo->prepare(
         m.urgencia,
         m.estado_adopcion,
         m.disponible_apadrinamiento,
+        m.disponible_acogida,
         m.compatible_ninos,
         m.compatible_perros,
         m.compatible_gatos,

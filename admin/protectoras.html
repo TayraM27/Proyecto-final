@@ -120,13 +120,39 @@
 
             <div class="form-fila">
                 <div class="form-campo">
-                    <label class="form-label">Web</label>
+                    <label class="form-label">URL página</label>
                     <input type="url" class="form-input" id="fWeb" placeholder="https://...">
                 </div>
                 <div class="form-campo">
-                    <label class="form-label">URL del logo</label>
-                    <input type="url" class="form-input" id="fLogo" placeholder="https://... o ruta img/protectora/...">
+                    <label class="form-label">Tipo de página</label>
+                    <select class="form-select" id="fTipoPagina">
+                        <option value="sin_pagina">Sin página</option>
+                        <option value="web">Web</option>
+                        <option value="red_social">Red social</option>
+                        <option value="otra">Otra</option>
+                    </select>
                 </div>
+            </div>
+
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">IBAN</label>
+                    <input type="text" class="form-input" id="fIban" placeholder="ES00 0000 0000 0000 0000 0000">
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Bizum</label>
+                    <input type="text" class="form-input" id="fBizum" placeholder="6XXXXXXXX">
+                </div>
+            </div>
+
+            <div class="form-campo">
+                <label class="form-label">Teaming (URL campaña)</label>
+                <input type="url" class="form-input" id="fTeaming" placeholder="https://www.teaming.net/...">
+            </div>
+
+            <div class="form-campo">
+                <label class="form-label">URL del logo</label>
+                <input type="text" class="form-input" id="fLogo" placeholder="img/protectoras/logo.jpg o https://...">
             </div>
 
             <div class="form-campo">
@@ -166,12 +192,10 @@
     </div>
 </div>
 
+<!-- toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-var paginaActual = 1;
-var totalPaginas = 1;
-
 document.addEventListener('DOMContentLoaded', function() {
     verificarAdmin(cargarProtectoras);
 });
@@ -197,6 +221,11 @@ function cargarProtectoras() {
         });
 }
 
+function srcLogo(ruta) {
+    if (!ruta) return '';
+    return ruta.indexOf('http') === 0 ? ruta : '../' + ruta;
+}
+
 function renderTabla(protectoras) {
     var tb = document.getElementById('tablaProtectoras');
     if (!protectoras.length) {
@@ -205,12 +234,25 @@ function renderTabla(protectoras) {
     }
     tb.innerHTML = protectoras.map(function(p) {
         var logo = p.foto_logo
-            ? '<img src="../' + p.foto_logo + '" style="width:40px;height:40px;border-radius:8px;object-fit:contain;" onerror="this.style.display=\'none\'">'
+            ? '<img src="' + srcLogo(p.foto_logo) + '" style="width:40px;height:40px;border-radius:8px;object-fit:contain;" onerror="this.outerHTML=\'<div style=&quot;width:40px;height:40px;border-radius:8px;background:var(--azul-lite);display:flex;align-items:center;justify-content:center;font-size:1.1rem;&quot;>🐾</div>\'">'
             : '<div style="width:40px;height:40px;border-radius:8px;background:var(--azul-lite);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🐾</div>';
 
         var estado = p.activa
             ? '<span class="badge badge-verde">Activa</span>'
             : '<span class="badge badge-rojo">Inactiva</span>';
+
+        var contacto = '';
+        if (p.email)    contacto += '<div>' + p.email + '</div>';
+        if (p.telefono) contacto += '<div>' + p.telefono + '</div>';
+        if (p.web) {
+            var labelWeb = p.tipo_pagina === 'red_social' ? 'Red social'
+                         : p.tipo_pagina === 'otra'       ? 'Otra página'
+                         : 'Web';
+            contacto += '<div><a href="' + p.web + '" target="_blank" style="color:var(--azul);">' + labelWeb + '</a></div>';
+        }
+        if (p.iban)    contacto += '<div style="font-size:0.72rem;color:var(--texto-sub);">IBAN ✓</div>';
+        if (p.bizum)   contacto += '<div style="font-size:0.72rem;color:var(--texto-sub);">Bizum ✓</div>';
+        if (p.teaming) contacto += '<div style="font-size:0.72rem;color:var(--texto-sub);">Teaming ✓</div>';
 
         return '<tr>'
             + '<td>' + logo + '</td>'
@@ -218,11 +260,7 @@ function renderTabla(protectoras) {
             + (p.verificada ? ' <span class="badge badge-azul" style="font-size:0.65rem;">✓ Verificada</span>' : '')
             + '</td>'
             + '<td style="font-size:0.82rem;">' + (p.localidad || '—') + '</td>'
-            + '<td style="font-size:0.78rem;">'
-            + (p.email ? '<div>' + p.email + '</div>' : '')
-            + (p.telefono ? '<div>' + p.telefono + '</div>' : '')
-            + (p.web ? '<div><a href="' + p.web + '" target="_blank" style="color:var(--azul);">Web</a></div>' : '')
-            + '</td>'
+            + '<td style="font-size:0.78rem;">' + contacto + '</td>'
             + '<td style="text-align:center;">' + (p.num_animales || 0) + '</td>'
             + '<td>' + estado + '</td>'
             + '<td><div class="tabla-acciones">'
@@ -232,6 +270,8 @@ function renderTabla(protectoras) {
             + '</tr>';
     }).join('');
 }
+
+
 
 function abrirModalNueva() {
     document.getElementById('modalId').value = '';
@@ -250,6 +290,10 @@ function editarProtectora(p) {
     document.getElementById('fEmail').value        = p.email        || '';
     document.getElementById('fTelefono').value     = p.telefono     || '';
     document.getElementById('fWeb').value          = p.web          || '';
+    document.getElementById('fTipoPagina').value   = p.tipo_pagina  || 'sin_pagina';
+    document.getElementById('fIban').value         = p.iban         || '';
+    document.getElementById('fBizum').value        = p.bizum        || '';
+    document.getElementById('fTeaming').value      = p.teaming      || '';
     document.getElementById('fLogo').value         = p.foto_logo    || '';
     document.getElementById('fDescripcion').value  = p.descripcion  || '';
     document.getElementById('fDireccion').value    = p.direccion    || '';
@@ -268,6 +312,10 @@ function guardarProtectora() {
         email:       document.getElementById('fEmail').value.trim(),
         telefono:    document.getElementById('fTelefono').value.trim(),
         web:         document.getElementById('fWeb').value.trim(),
+        tipo_pagina: document.getElementById('fTipoPagina').value,
+        iban:        document.getElementById('fIban').value.trim(),
+        bizum:       document.getElementById('fBizum').value.trim(),
+        teaming:     document.getElementById('fTeaming').value.trim(),
         foto_logo:   document.getElementById('fLogo').value.trim(),
         descripcion: document.getElementById('fDescripcion').value.trim(),
         direccion:   document.getElementById('fDireccion').value.trim(),
@@ -315,9 +363,10 @@ function eliminarProtectora(id, nombre) {
 }
 
 function limpiarForm() {
-    ['fNombre','fLocalidad','fEmail','fTelefono','fWeb','fLogo','fDescripcion','fDireccion','fLatitud','fLongitud'].forEach(function(id){
+    ['fNombre','fLocalidad','fEmail','fTelefono','fWeb','fIban','fBizum','fTeaming','fLogo','fDescripcion','fDireccion','fLatitud','fLongitud'].forEach(function(id){
         document.getElementById(id).value = '';
     });
+    document.getElementById('fTipoPagina').value = 'sin_pagina';
     document.getElementById('fVerificada').checked = false;
     document.getElementById('fActiva').checked = true;
 }

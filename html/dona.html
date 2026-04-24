@@ -138,112 +138,12 @@
                         <i class="fa-solid fa-building-shield"></i> Elige una protectora
                     </p>
 
-                    <div class="d-flex flex-column gap-3">
-
-                        <!-- prot-1: sin opciones de donacion — no pre-seleccionada -->
-                        <label class="card-protectora" id="prot-1"
-                               onclick="toggleProtectora('prot-1')">
-                            <input type="checkbox" name="protectora" value="prot-1">
-                            <img class="logo-protectora"
-                                 src="../img/protectora/centro-proteccion-animales-gijon.jpg"
-                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                                 alt="Logo CPA Gijón">
-                            <div class="icono-prot-fb">🐕</div>
-                            <div style="flex:1;">
-                                <p class="protectora-nombre">Centro de Protección Animal de Gijón</p>
-                                <p class="protectora-lugar">
-                                    <i class="fa-solid fa-location-dot"></i> Gijón
-                                </p>
-                                <p class="descripcion-protectora">
-                                    Instalación municipal gestionada por la Fundación Protectora de Asturias. Recogen animales perdidos o abandonados y los preparan para la adopción.
-                                </p>
-                            </div>
-                        </label>
-
-                        <!-- prot-2: solo IBAN -->
-                        <label class="card-protectora" id="prot-2"
-                               onclick="toggleProtectora('prot-2')">
-                            <input type="checkbox" name="protectora" value="prot-2">
-                            <img class="logo-protectora"
-                                 src="../img/protectora/nortemascota-dex.jpg"
-                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                                 alt="Logo Nortemascotas">
-                            <div class="icono-prot-fb">🐾</div>
-                            <div style="flex:1;">
-                                <p class="protectora-nombre">Nortemascotas</p>
-                                <p class="protectora-lugar">
-                                    <i class="fa-solid fa-location-dot"></i> Asturias
-                                </p>
-                                <p class="descripcion-protectora">
-                                    Rescatan animales en condiciones extremas o peligro de muerte, los rehabilitan y buscan familias que les den la oportunidad que merecen.
-                                </p>
-                            </div>
-                        </label>
-
-                        <!-- prot-3: solo Teaming -->
-                        <label class="card-protectora" id="prot-3"
-                               onclick="toggleProtectora('prot-3')">
-                            <input type="checkbox" name="protectora" value="prot-3">
-                            <img class="logo-protectora"
-                                 src="../img/protectora/masquechuchos.jpg"
-                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                                 alt="Logo MÁS QUE CHUCHOS">
-                            <div class="icono-prot-fb">🏠</div>
-                            <div style="flex:1;">
-                                <p class="protectora-nombre">MÁS QUE CHUCHOS</p>
-                                <p class="protectora-lugar">
-                                    <i class="fa-solid fa-location-dot"></i> Oviedo
-                                </p>
-                                <p class="descripcion-protectora">
-                                    Cuidan a más de 250 perros y gatos en Oviedo. Aceptan donaciones de pienso, mantas y medicinas, además de apadrinamientos desde 5 €/mes.
-                                </p>
-                            </div>
-                        </label>
-
-                        <!-- prot-4: web + IBAN + Teaming -->
-                        <label class="card-protectora" id="prot-4"
-                               onclick="toggleProtectora('prot-4')">
-                            <input type="checkbox" name="protectora" value="prot-4">
-                            <img class="logo-protectora"
-                                 src="../img/protectora/protectora-de-asturias.jpg"
-                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                                 alt="Logo Fundación Protectora de Asturias">
-                            <div class="icono-prot-fb">💙</div>
-                            <div style="flex:1;">
-                                <p class="protectora-nombre">Fundación Protectora de Asturias</p>
-                                <p class="protectora-lugar">
-                                    <i class="fa-solid fa-location-dot"></i> Asturias
-                                </p>
-                                <p class="descripcion-protectora">
-                                    Responden al abandono y maltrato animal en Asturias. Trabajan con métodos en positivo y ofrecen seguimiento tras cada adopción.
-                                </p>
-                            </div>
-                        </label>
-
-                        <!-- prot-5: solo Teaming -->
-                        <label class="card-protectora" id="prot-5"
-                               onclick="toggleProtectora('prot-5')">
-                            <input type="checkbox" name="protectora" value="prot-5">
-                            <img class="logo-protectora"
-                                 src="../img/protectora/asociacion-felina-la-esperanza.jpg"
-                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                                 alt="Logo Asociación Felina La Esperanza">
-                            <div class="icono-prot-fb">🐱</div>
-                            <div style="flex:1;">
-                                <p class="protectora-nombre">Asociación Felina La Esperanza</p>
-                                <p class="protectora-lugar">
-                                    <i class="fa-solid fa-location-dot"></i> Asturias
-                                </p>
-                                <p class="descripcion-protectora">
-                                    Especializados en gatos. Rescatan, atienden veterinariamente y buscan hogar para felinos sin familia en Asturias.
-                                </p>
-                            </div>
-                        </label>
-
+                    <!-- protectoras cargadas dinámicamente desde BD -->
+                    <div class="d-flex flex-column gap-3" id="containerProtDinamicasDona">
+                        <div class="text-center py-3">
+                            <div class="spinner-border" style="color:#1B358F;" role="status"></div>
+                        </div>
                     </div>
-
-                    <!-- protectoras dinámicas desde BD -->
-                    <div id="containerProtDinamicasDona"></div>
 
                     <p class="aviso-seleccion-multiple">
                         <i class="fa-solid fa-circle-info" style="color:#1B358F;"></i>

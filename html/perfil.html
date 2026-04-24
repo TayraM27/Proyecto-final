@@ -257,6 +257,10 @@
 <script src="../javascript/script.js"></script>
 
 <script>
+
+function _pfUserId() {
+    try { return JSON.parse(sessionStorage.getItem('pf_session')).idUsuario; } catch(e) { return 'guest'; }
+}
 var usuarioPerfil = null;
 var CLAVE_SESION  = 'pf_session';
 
@@ -428,8 +432,8 @@ function cargarTests() {
     var cont = document.getElementById('listaTests');
     /* Sin guard de dataset.cargado — lee localStorage que puede actualizarse */
 
-    var resConocimiento   = JSON.parse(localStorage.getItem('pf_test_conocimiento') || 'null');
-    var resCompatibilidad = JSON.parse(localStorage.getItem('pf_test_compatibilidad') || 'null');
+    var resConocimiento   = JSON.parse(localStorage.getItem('pf_test_conocimiento_' + _pfUserId()) || 'null');
+    var resCompatibilidad = JSON.parse(localStorage.getItem('pf_test_compatibilidad_' + _pfUserId()) || 'null');
 
     if (!resConocimiento && !resCompatibilidad) {
         cont.innerHTML = vacio('fa-circle-question', 'No has hecho ningún test todavía.', 'Descubre qué mascota encaja mejor con tu estilo de vida.', 'test.html', 'Hacer el test');
@@ -475,7 +479,7 @@ function cargarTests() {
 }
 
 function eliminarResultadoTest(tipo) {
-    localStorage.removeItem('pf_test_' + tipo);
+    localStorage.removeItem('pf_test_' + tipo + '_' + _pfUserId());
     cargarTests();
 }
 
@@ -674,7 +678,7 @@ function verResultadoTest(tipo) {
     var titulo = document.getElementById('modalTestTitulo');
 
     if (tipo === 'conocimiento') {
-        var res = JSON.parse(localStorage.getItem('pf_test_conocimiento') || 'null');
+        var res = JSON.parse(localStorage.getItem('pf_test_conocimiento_' + _pfUserId()) || 'null');
         if (!res) return;
         titulo.textContent = 'Test de conocimientos — resultado';
         var colorPct = res.pct >= 70 ? '#2e7d32' : res.pct >= 40 ? '#c87a00' : '#c0392b';
@@ -685,7 +689,7 @@ function verResultadoTest(tipo) {
                 '<p style="color:#aaa;font-size:0.8rem;">' + formatFecha(res.fecha) + '</p>' +
             '</div>';
     } else {
-        var res = JSON.parse(localStorage.getItem('pf_test_compatibilidad') || 'null');
+        var res = JSON.parse(localStorage.getItem('pf_test_compatibilidad_' + _pfUserId()) || 'null');
         if (!res || !res.ranking) {
             titulo.textContent = 'Test de compatibilidad';
             cuerpo.innerHTML = vacio('fa-heart', 'Resultado no disponible.', 'Vuelve a hacer el test para ver el ranking.', 'test.html', 'Hacer el test');

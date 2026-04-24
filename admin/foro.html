@@ -48,15 +48,23 @@
             <span class="topbar-titulo"><i class="fa-solid fa-comments" style="color:var(--gold);margin-right:0.4em;"></i>Moderación del foro</span>
         </div>
         <div style="display:flex;gap:0.6em;">
-            <button class="btn btn-outline btn-sm" onclick="setVista('publicaciones')" id="btnPub">Publicaciones</button>
-            <button class="btn btn-outline btn-sm" onclick="setVista('comentarios')" id="btnCom">Comentarios</button>
+            <button class="btn btn-primario btn-sm" id="btnPub" onclick="setVista('publicaciones')">Publicaciones</button>
+            <button class="btn btn-outline btn-sm" id="btnCom" onclick="setVista('comentarios')">Comentarios</button>
         </div>
     </header>
 
     <main class="admin-contenido">
+
+        <!-- panel publicaciones -->
         <div class="panel" id="panelPublicaciones">
             <div class="panel-header">
                 <p class="panel-titulo"><i class="fa-solid fa-newspaper"></i> Publicaciones</p>
+                <div style="display:flex;align-items:center;gap:0.6em;">
+                    <label style="font-size:0.82rem;color:var(--texto-sub);display:flex;align-items:center;gap:0.4em;">
+                        <input type="checkbox" id="chkSoloActivasPub" checked onchange="cargarPublicaciones()">
+                        Solo activas
+                    </label>
+                </div>
             </div>
             <div class="tabla-wrap">
                 <table class="tabla">
@@ -80,9 +88,16 @@
             <div class="paginacion" id="paginacionPub"></div>
         </div>
 
-        <div class="panel d-none" id="panelComentarios">
+        <!-- panel comentarios -->
+        <div class="panel" id="panelComentarios">
             <div class="panel-header">
                 <p class="panel-titulo"><i class="fa-solid fa-comment"></i> Comentarios</p>
+                <div style="display:flex;align-items:center;gap:0.6em;">
+                    <label style="font-size:0.82rem;color:var(--texto-sub);display:flex;align-items:center;gap:0.4em;">
+                        <input type="checkbox" id="chkSoloActivasCom" checked onchange="cargarComentarios()">
+                        Solo activos
+                    </label>
+                </div>
             </div>
             <div class="tabla-wrap">
                 <table class="tabla">
@@ -103,6 +118,7 @@
                 </table>
             </div>
         </div>
+
     </main>
 </div>
 
@@ -115,7 +131,7 @@ var totalPaginas = 1;
 
 document.addEventListener('DOMContentLoaded', function() {
     verificarAdmin(function() {
-        cargarPublicaciones();
+        setVista('publicaciones');
     });
 });
 
@@ -123,7 +139,10 @@ function verificarAdmin(cb) {
     fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
-            if (!data.logueado || data.usuario.rol !== 'admin') { window.location.href = '../html/login.html'; return; }
+            if (!data.logueado || data.usuario.rol !== 'admin') {
+                window.location.href = '../html/login.html';
+                return;
+            }
             document.getElementById('adminNombre').textContent = data.usuario.nombre;
             document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
             if (cb) cb();
@@ -131,44 +150,48 @@ function verificarAdmin(cb) {
 }
 
 function setVista(v) {
-    vistaActual = v;
+    vistaActual  = v;
     paginaActual = 1;
-    document.getElementById('panelPublicaciones').classList.toggle('d-none', v !== 'publicaciones');
-    document.getElementById('panelComentarios').classList.toggle('d-none', v !== 'comentarios');
     document.getElementById('btnPub').className = 'btn btn-sm ' + (v === 'publicaciones' ? 'btn-primario' : 'btn-outline');
-    document.getElementById('btnCom').className = 'btn btn-sm ' + (v === 'comentarios' ? 'btn-primario' : 'btn-outline');
-    if (v === 'publicaciones') cargarPublicaciones();
-    else cargarComentarios();
+    document.getElementById('btnCom').className = 'btn btn-sm ' + (v === 'comentarios'   ? 'btn-primario' : 'btn-outline');
+    var main   = document.querySelector('.admin-contenido');
+    var panPub = document.getElementById('panelPublicaciones');
+    var panCom = document.getElementById('panelComentarios');
+    if (v === 'comentarios') {
+        main.insertBefore(panCom, panPub);
+        cargarComentarios();
+    } else {
+        main.insertBefore(panPub, panCom);
+        cargarPublicaciones();
+    }
 }
 
 function cargarPublicaciones() {
-    fetch('../backend/admin/foro.php?tipo=publicaciones&pagina=' + paginaActual, { credentials: 'include' })
+    var soloActivas = document.getElementById('chkSoloActivasPub').checked ? 1 : 0;
+    fetch('../backend/admin/foro.php?tipo=publicaciones&pagina=' + paginaActual + '&soloActivas=' + soloActivas, { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
             if (!data.ok) return;
             var tb = document.getElementById('tablaPublicaciones');
             if (!data.publicaciones.length) {
-                tb.innerHTML = '<tr><td colspan="8"><div class="estado-vacio"><i class="fa-solid fa-comments"></i><p>Sin publicaciones</p></div></td></tr>';
+                tb.innerHTML = '<tr><td colspan="8"><div class="estado-vacio"><i class="fa-solid fa-newspaper"></i><p>Sin publicaciones</p></div></td></tr>';
                 return;
             }
+            var cats = {
+                'adopcion':'Adopción','perdidos':'Perdidos','consejos':'Consejos',
+                'salud':'Salud','noticias':'Noticias','general':'General'
+            };
             tb.innerHTML = data.publicaciones.map(function(p) {
-                var badgeCat = '<span class="badge badge-azul">' + p.categoria + '</span>';
+                var badgeCat = '<span class="badge badge-gris">' + (cats[p.categoria] || p.categoria || '—') + '</span>';
                 var badgeEst = p.activa
                     ? '<span class="badge badge-verde">Activa</span>'
                     : '<span class="badge badge-rojo">Eliminada</span>';
                 var fijado = p.fijada
                     ? '<span class="badge badge-gold" style="margin-left:0.3em;"><i class="fa-solid fa-thumbtack"></i></span>'
                     : '';
-                /* icono multimedia */
-                var mediaIcono = '';
-                if (p.tipo_media === 'imagen') {
-                    mediaIcono = ' <i class="fa-solid fa-image" style="color:#0277bd;font-size:0.78rem;" title="Tiene imagen"></i>';
-                } else if (p.tipo_media === 'video') {
-                    mediaIcono = ' <i class="fa-solid fa-video" style="color:#8e24aa;font-size:0.78rem;" title="Tiene vídeo"></i>';
-                }
 
                 return '<tr>'
-                    + '<td style="max-width:200px;"><strong>' + p.titulo.substring(0,50) + (p.titulo.length>50?'…':'') + '</strong>' + fijado + mediaIcono + '</td>'
+                    + '<td style="max-width:200px;"><strong>' + p.titulo.substring(0,50) + (p.titulo.length>50?'…':'') + '</strong>' + fijado + '</td>'
                     + '<td style="font-size:0.82rem;">' + p.autor_nombre + '<br><span style="color:var(--texto-sub);">@' + p.autor_username + '</span></td>'
                     + '<td>' + badgeCat + '</td>'
                     + '<td>' + p.num_likes + '</td>'
@@ -189,7 +212,8 @@ function cargarPublicaciones() {
 }
 
 function cargarComentarios() {
-    fetch('../backend/admin/foro.php?tipo=comentarios&pagina=' + paginaActual, { credentials: 'include' })
+    var soloActivos = document.getElementById('chkSoloActivasCom').checked ? 1 : 0;
+    fetch('../backend/admin/foro.php?tipo=comentarios&pagina=' + paginaActual + '&soloActivas=' + soloActivos, { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
             if (!data.ok) return;
@@ -206,7 +230,7 @@ function cargarComentarios() {
                 return '<tr>'
                     + '<td style="max-width:220px;font-size:0.85rem;">' + c.contenido.substring(0,80) + (c.contenido.length>80?'…':'') + '</td>'
                     + '<td style="font-size:0.82rem;">' + c.autor_nombre + '</td>'
-                    + '<td style="font-size:0.82rem;max-width:160px;">' + c.publicacion_titulo.substring(0,50) + '…</td>'
+                    + '<td style="font-size:0.82rem;max-width:160px;">' + c.publicacion_titulo.substring(0,50) + (c.publicacion_titulo.length>50?'…':'') + '</td>'
                     + '<td>' + c.num_likes + '</td>'
                     + '<td style="font-size:0.78rem;">' + formatFecha(c.fecha) + '</td>'
                     + '<td>' + badgeEst + '</td>'
@@ -291,8 +315,6 @@ function mostrarToast(msg, tipo) {
     t.className = 'toast visible toast-' + (tipo || 'ok');
     setTimeout(function(){ t.className = 'toast'; }, 3000);
 }
-
-setVista('publicaciones');
 </script>
 
 </body>

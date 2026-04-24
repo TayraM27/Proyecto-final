@@ -1133,9 +1133,9 @@ acoge hero imagen */
 }
 
 .btn-apadrinar {
-    background-color: #F8BA56;
-    color: #1B358F;
-    border: none;
+    background-color: #1B358F;
+    color: #fff;
+    border: 2px solid #F8BA56;
     border-radius: 10px;
     padding: 0.75em;
     font-weight: 700;
@@ -1147,7 +1147,7 @@ acoge hero imagen */
 }
 
 .btn-apadrinar:hover {
-    background-color: #FFC66A;
+    background-color: #2742A2;
     transform: translateY(-2px);
 }
 
@@ -1296,8 +1296,8 @@ compartir — usado en fichas, cards adopta, apadrina y acoge */
 }
 
 .btn-adoptar {
-    background-color: #1B358F;
-    color: #fff;
+    background-color: #F8BA56;
+    color: #1B358F;
     border: none;
     border-radius: 8px;
     padding: 0.8em 1.8em;
@@ -1309,8 +1309,8 @@ compartir — usado en fichas, cards adopta, apadrina y acoge */
 }
 
 .btn-adoptar:hover {
-    background-color: #2742A2;
-    color: #fff;
+    background-color: #FFC66A;
+    color: #1B358F;
     transform: translateY(-2px);
 }
 
@@ -1911,14 +1911,15 @@ cta botones */
     font-weight: 700;
     font-size: 0.9rem;
     text-decoration: none;
-    transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
     font-family: 'Poppins', sans-serif;
     cursor: pointer;
     box-shadow: 0 4px 14px rgba(248,186,86,0.4);
 }
 
 .btn-cta-apoyar:hover {
-    background-color: #ffc66a;
+    background-color: #ffd47a;
+    color: #1B358F;
     transform: translateY(-2px);
     box-shadow: 0 6px 18px rgba(248,186,86,0.5);
 }
@@ -2033,12 +2034,11 @@ cta botones nuevos */
 }
 
 .btn-cta-apoyar:hover {
-    background-color: #ffc66a;
-    box-shadow: 0 6px 18px rgba(248,186,86,0.55);
+    background-color: #ffd47a;
+    color: #1B358F;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(248,186,86,0.5);
 }
-
-/*--------------------------------------------------------------------------------------------
-prot-acciones botones */
 
 .btn-prot-donar {
     display: flex;
@@ -4279,4 +4279,92 @@ protectoras — 2 columnas entre 992px y 1198px */
     .prot-desc p {
         font-size: 0.8rem;
     }
+}
+
+/*--------------------------------------------------------------------------------------------
+ficha animal — iconos flotantes sobre imagen */
+.ficha-iconos-foto {
+    position: absolute;
+    bottom: 0.7em;
+    right: 0.7em;
+    display: flex;
+    gap: 0.5em;
+    z-index: 2;
+}
+.ficha-ico-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.92);
+    color: #1B358F;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+}
+.ficha-ico-btn:hover {
+    background: #1B358F;
+    color: #fff;
+    transform: scale(1.08);
+}
+.ficha-ico-btn.activo {
+    background: #e91e63;
+    color: #fff;
+}
+.ficha-ico-btn.activo i {
+    font-weight: 900;
+}
+
+/*--------------------------------------------------------------------------------------------
+ficha animal — botones secundarios (apadrinar + acoger) */
+.ficha-btns-secundarios {
+    display: flex;
+    gap: 0.5em;
+}
+.ficha-btns-secundarios .btn-apadrinar {
+    flex: 1;
+    font-size: 0.82rem;
+    padding: 0.6em 0.5em;
+}
+.btn-acoger-ficha {
+    background-color: #1B358F;
+    color: #fff;
+}
+.btn-acoger-ficha:hover {
+    background-color: #2a4aad;
+}
+
+/*--------------------------------------------------------------------------------------------
+acoge — card altura y btn acoger */
+.card-acoge .animal-img {
+    height: 260px;
+}
+.card-acoge {
+    min-height: 480px;
+}
+.btn-acoger {
+    display: block;
+    width: 100%;
+    background-color: #fff;
+    color: #F8BA56;
+    border: 2px solid #F8BA56;
+    border-radius: 10px;
+    padding: 0.75em;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-top: auto;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color 0.2s, color 0.2s, background-color 0.2s, transform 0.2s;
+    text-align: center;
+}
+.btn-acoger:hover {
+    background-color: #F8BA56;
+    border-color: #F8BA56;
+    color: #1B358F;
+    transform: translateY(-2px);
 }
