@@ -1,61 +1,140 @@
 <?php
-/*--------------------------------------------------------------------------------------------
-GET  ?idPublicacion=1 — lista comentarios
-POST — crea comentario (requiere login)
-PUT  — like/unlike (requiere login) */
-
 require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
-$pdo    = conectar();
+$pdo = conectar();
 $metodo = $_SERVER['REQUEST_METHOD'];
 
-/*--------------------------------------------------------------------------------------------
-GET */
+function obtenerSesion() {
+    iniciarSesionSegura();
+    $r = [
+        'idUsuario' => $_SESSION['idUsuario'] ?? null,
+        'idProtectora' => $_SESSION['idProtectora'] ?? null,
+        'rol' => $_SESSION['rol'] ?? '',
+        'esAdmin' => ($_SESSION['rol'] ?? '') === 'admin'
+    ];
+    session_write_close();
+    return $r;
+}
+
 if ($metodo === 'GET') {
     $idPublicacion = (int)($_GET['idPublicacion'] ?? 0);
     if (!$idPublicacion) respuestaError('ID de publicacion no valido.');
 
-    iniciarSesionSegura();
-    $idUsuarioActual = isset($_SESSION['idUsuario']) ? (int)$_SESSION['idUsuario'] : 0;
-    session_write_close();
-
-    $sql = "SELECT
-                c.idComentario,
-                c.contenido,
-                c.num_likes,
-                c.fecha,
-                u.nombre      AS autor_nombre,
-                u.username    AS autor_username,
-                u.rol         AS autor_rol,
-                u.foto_perfil AS autor_foto"
-        . ($idUsuarioActual
-            ? ", (SELECT COUNT(*) FROM likes_comentarios lc
-                  WHERE lc.idComentario = c.idComentario AND lc.idUsuario = $idUsuarioActual) AS yo_like"
-            : ", 0 AS yo_like")
-        . " FROM comentarios c
-            JOIN usuarios u ON c.idUsuario = u.idUsuario
-            WHERE c.idPublicacion = ? AND c.activo = 1
-            ORDER BY c.fecha ASC";
-
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$idPublicacion]);
+    $ses = obtenerSesion();
+    $idUsuario = $ses['idUsuario'] ? (int)$ses['idUsuario'] : 0;
+    $idProtectora = $ses['idProtectora'] ? (int)$ses['idProtectora'] : 0;
+    $esAdmin = $ses['esAdmin'];
 
     $pdo->prepare('UPDATE publicaciones SET num_vistas = num_vistas + 1 WHERE idPublicacion = ?')
         ->execute([$idPublicacion]);
 
-    respuestaOk(['comentarios' => $stmt->fetchAll()]);
+    $sql = "SELECT 
+                c.idComentario,
+                c.idPublicacion,
+                c.idUsuario,
+                c.idProtectora,
+                c.parent_id,
+                c.contenido,
+                c.num_likes,
+                c.deleted,
+                c.deleted_at,
+                c.fecha,
+                u.nombre      AS autor_nombre,
+                u.username    AS autor_username,
+                u.rol         AS autor_rol,
+                u.foto_perfil AS autor_foto,
+                p.nombre      AS prot_nombre,
+                p.email       AS prot_email
+            FROM comentarios c
+            LEFT JOIN usuarios u ON c.idUsuario = u.idUsuario
+            LEFT JOIN protectoras p ON c.idProtectora = p.idProtectora
+            WHERE c.idPublicacion = ? AND c.parent_id IS NULL
+            ORDER BY c.fecha ASC";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$idPublicacion]);
+    $comentarios = $stmt->fetchAll();
+
+    foreach ($comentarios as &$com) {
+        if ($com['deleted'] && !$esAdmin) {
+            $com['contenido'] = 'Este comentario ha sido eliminado por el usuario.';
+            $com['autor_nombre'] = '';
+            $com['autor_username'] = '';
+            $com['autor_foto'] = '';
+        }
+
+        $com['tiene_like'] = false;
+        if ($idUsuario) {
+            $chk = $pdo->prepare('SELECT COUNT(*) FROM likes_comentarios WHERE idComentario = ? AND idUsuario = ?');
+            $chk->execute([$com['idComentario'], $idUsuario]);
+            $com['tiene_like'] = (bool)$chk->fetchColumn();
+        } elseif ($idProtectora) {
+            $chk = $pdo->prepare('SELECT COUNT(*) FROM likes_comentarios WHERE idComentario = ? AND idProtectora = ?');
+            $chk->execute([$com['idComentario'], $idProtectora]);
+            $com['tiene_like'] = (bool)$chk->fetchColumn();
+        }
+
+        $sqlResp = "SELECT 
+                        r.idComentario,
+                        r.idUsuario,
+                        r.idProtectora,
+                        r.parent_id,
+                        r.contenido,
+                        r.num_likes,
+                        r.deleted,
+                        r.deleted_at,
+                        r.fecha,
+                        u.nombre      AS autor_nombre,
+                        u.username    AS autor_username,
+                        u.rol         AS autor_rol,
+                        u.foto_perfil AS autor_foto,
+                        p.nombre      AS prot_nombre,
+                        p.email       AS prot_email
+                    FROM comentarios r
+                    LEFT JOIN usuarios u ON r.idUsuario = u.idUsuario
+                    LEFT JOIN protectoras p ON r.idProtectora = p.idProtectora
+                    WHERE r.parent_id = ?
+                    ORDER BY r.fecha ASC";
+
+        $stmtResp = $pdo->prepare($sqlResp);
+        $stmtResp->execute([$com['idComentario']]);
+        $respuestas = $stmtResp->fetchAll();
+
+        foreach ($respuestas as &$resp) {
+            if ($resp['deleted'] && !$esAdmin) {
+                $resp['contenido'] = 'Este comentario ha sido eliminado por el usuario.';
+                $resp['autor_nombre'] = '';
+                $resp['autor_username'] = '';
+                $resp['autor_foto'] = '';
+            }
+
+            $resp['tiene_like'] = false;
+            if ($idUsuario) {
+                $chk = $pdo->prepare('SELECT COUNT(*) FROM likes_comentarios WHERE idComentario = ? AND idUsuario = ?');
+                $chk->execute([$resp['idComentario'], $idUsuario]);
+                $resp['tiene_like'] = (bool)$chk->fetchColumn();
+            } elseif ($idProtectora) {
+                $chk = $pdo->prepare('SELECT COUNT(*) FROM likes_comentarios WHERE idComentario = ? AND idProtectora = ?');
+                $chk->execute([$resp['idComentario'], $idProtectora]);
+                $resp['tiene_like'] = (bool)$chk->fetchColumn();
+            }
+        }
+        $com['respuestas'] = $respuestas;
+    }
+
+    respuestaOk(['comentarios' => $comentarios]);
 }
 
-/*--------------------------------------------------------------------------------------------
-POST */
 if ($metodo === 'POST') {
-    requerirLogin();
+    $ses = obtenerSesion();
+    if (!$ses['idUsuario'] && !$ses['idProtectora']) respuestaError('Debes iniciar sesion.', 401);
 
-    $datos         = json_decode(file_get_contents('php://input'), true) ?? [];
+    $datos = jsonInput();
     $idPublicacion = (int)($datos['idPublicacion'] ?? 0);
-    $contenido     = limpiar($datos['contenido']   ?? '');
+    $parent_id = !empty($datos['parent_id']) ? (int)$datos['parent_id'] : null;
+    $contenido = limpiar($datos['contenido'] ?? '');
 
     if (!$idPublicacion || !$contenido) respuestaError('Publicacion y contenido son obligatorios.');
 
@@ -64,45 +143,151 @@ if ($metodo === 'POST') {
     $pub = $stmt->fetch();
     if (!$pub) respuestaError('Publicacion no encontrada.', 404);
 
-    $idUsuario = (int)$_SESSION['idUsuario'];
+    if ($parent_id) {
+        $chkParent = $pdo->prepare('SELECT idComentario, deleted FROM comentarios WHERE idComentario = ? AND idPublicacion = ?');
+        $chkParent->execute([$parent_id, $idPublicacion]);
+        $parent = $chkParent->fetch();
+        if (!$parent) respuestaError('Comentario padre no encontrado.', 404);
+        if ($parent['deleted']) respuestaError('No puedes responder a un comentario eliminado.', 400);
+    }
 
-    $stmt = $pdo->prepare('INSERT INTO comentarios (idPublicacion, idUsuario, contenido) VALUES (?, ?, ?)');
-    $stmt->execute([$idPublicacion, $idUsuario, $contenido]);
+    $idUsuario = $ses['idUsuario'];
+    $idProtectora = $ses['idProtectora'];
+
+    $stmt = $pdo->prepare('INSERT INTO comentarios (idPublicacion, idUsuario, idProtectora, parent_id, contenido) VALUES (?, ?, ?, ?, ?)');
+    $stmt->execute([$idPublicacion, $idUsuario, $idProtectora, $parent_id, $contenido]);
+
+    if (!$parent_id) {
+        $pdo->prepare('UPDATE publicaciones SET num_comentarios = num_comentarios + 1 WHERE idPublicacion = ?')
+            ->execute([$idPublicacion]);
+    }
+
+    if (!$parent_id) {
+        if ($pub['idUsuario'] && $pub['idUsuario'] != $idUsuario) {
+            if ($idUsuario) {
+                $stmtUser = $pdo->prepare('SELECT username FROM usuarios WHERE idUsuario = ?');
+                $stmtUser->execute([$idUsuario]);
+            } else {
+                $stmtUser = $pdo->prepare('SELECT nombre AS username FROM protectoras WHERE idProtectora = ?');
+                $stmtUser->execute([$idProtectora]);
+            }
+            $userCom = $stmtUser->fetch();
+            if ($userCom) {
+                $msg = $userCom['username'] . ' ha comentado en tu publicacion';
+                $stmtNotif = $pdo->prepare('INSERT INTO notificaciones (idUsuario, tipo, mensaje, idPublicacion) VALUES (?, ?, ?, ?)');
+                $stmtNotif->execute([$pub['idUsuario'], 'comentario', $msg, $idPublicacion]);
+            }
+        }
+        if ($pub['idProtectora'] && $pub['idProtectora'] != $idProtectora) {
+            if ($idUsuario) {
+                $stmtUser = $pdo->prepare('SELECT username FROM usuarios WHERE idUsuario = ?');
+                $stmtUser->execute([$idUsuario]);
+            } else {
+                $stmtUser = $pdo->prepare('SELECT nombre AS username FROM protectoras WHERE idProtectora = ?');
+                $stmtUser->execute([$idProtectora]);
+            }
+            $userCom = $stmtUser->fetch();
+            if ($userCom) {
+                $msg = $userCom['username'] . ' ha comentado en tu publicacion';
+                $stmtNotif = $pdo->prepare('INSERT INTO notificaciones (idProtectora, tipo, mensaje, idPublicacion) VALUES (?, ?, ?, ?)');
+                $stmtNotif->execute([$pub['idProtectora'], 'comentario', $msg, $idPublicacion]);
+            }
+        }
+    }
 
     respuestaOk(['mensaje' => 'Comentario publicado.', 'idComentario' => (int)$pdo->lastInsertId()]);
 }
 
-/*--------------------------------------------------------------------------------------------
-PUT — like/unlike comentario */
 if ($metodo === 'PUT') {
-    requerirLogin();
+    $ses = obtenerSesion();
+    if (!$ses['idUsuario'] && !$ses['idProtectora']) respuestaError('Debes iniciar sesion.', 401);
 
-    $datos        = json_decode(file_get_contents('php://input'), true) ?? [];
+    $datos = jsonInput();
     $idComentario = (int)($datos['idComentario'] ?? 0);
     if (!$idComentario) respuestaError('ID de comentario no valido.');
 
-    $idUsuario = (int)$_SESSION['idUsuario'];
+    $stmtChk = $pdo->prepare('SELECT deleted FROM comentarios WHERE idComentario = ?');
+    $stmtChk->execute([$idComentario]);
+    $com = $stmtChk->fetch();
+    if (!$com) respuestaError('Comentario no encontrado.', 404);
+    if ($com['deleted']) respuestaError('No puedes dar like a un comentario eliminado.', 400);
 
-    $stmtCheck = $pdo->prepare('SELECT COUNT(*) FROM likes_comentarios WHERE idUsuario = ? AND idComentario = ?');
-    $stmtCheck->execute([$idUsuario, $idComentario]);
-    $yaLike = (bool)$stmtCheck->fetchColumn();
+    $idUsuario = $ses['idUsuario'];
+    $idProtectora = $ses['idProtectora'];
 
-    if ($yaLike) {
-        $pdo->prepare('DELETE FROM likes_comentarios WHERE idUsuario = ? AND idComentario = ?')
-            ->execute([$idUsuario, $idComentario]);
-        $pdo->prepare('UPDATE comentarios SET num_likes = GREATEST(0, num_likes - 1) WHERE idComentario = ?')
-            ->execute([$idComentario]);
-        $accion = 'unlike';
+    if ($idUsuario) {
+        $chk = $pdo->prepare('SELECT COUNT(*) FROM likes_comentarios WHERE idComentario = ? AND idUsuario = ?');
+        $chk->execute([$idComentario, $idUsuario]);
+        $yaLike = (bool)$chk->fetchColumn();
+
+        if ($yaLike) {
+            $pdo->prepare('DELETE FROM likes_comentarios WHERE idComentario = ? AND idUsuario = ?')
+                ->execute([$idComentario, $idUsuario]);
+            $pdo->prepare('UPDATE comentarios SET num_likes = GREATEST(0, num_likes - 1) WHERE idComentario = ?')
+                ->execute([$idComentario]);
+            $accion = 'unlike';
+        } else {
+            $pdo->prepare('INSERT IGNORE INTO likes_comentarios (idUsuario, idComentario) VALUES (?, ?)')
+                ->execute([$idUsuario, $idComentario]);
+            $pdo->prepare('UPDATE comentarios SET num_likes = num_likes + 1 WHERE idComentario = ?')
+                ->execute([$idComentario]);
+            $accion = 'like';
+        }
     } else {
-        $pdo->prepare('INSERT IGNORE INTO likes_comentarios (idUsuario, idComentario) VALUES (?, ?)')
-            ->execute([$idUsuario, $idComentario]);
-        $pdo->prepare('UPDATE comentarios SET num_likes = num_likes + 1 WHERE idComentario = ?')
-            ->execute([$idComentario]);
-        $accion = 'like';
+        $chk = $pdo->prepare('SELECT COUNT(*) FROM likes_comentarios WHERE idComentario = ? AND idProtectora = ?');
+        $chk->execute([$idComentario, $idProtectora]);
+        $yaLike = (bool)$chk->fetchColumn();
+
+        if ($yaLike) {
+            $pdo->prepare('DELETE FROM likes_comentarios WHERE idComentario = ? AND idProtectora = ?')
+                ->execute([$idComentario, $idProtectora]);
+            $pdo->prepare('UPDATE comentarios SET num_likes = GREATEST(0, num_likes - 1) WHERE idComentario = ?')
+                ->execute([$idComentario]);
+            $accion = 'unlike';
+        } else {
+            $pdo->prepare('INSERT IGNORE INTO likes_comentarios (idProtectora, idComentario) VALUES (?, ?)')
+                ->execute([$idProtectora, $idComentario]);
+            $pdo->prepare('UPDATE comentarios SET num_likes = num_likes + 1 WHERE idComentario = ?')
+                ->execute([$idComentario]);
+            $accion = 'like';
+        }
     }
 
-    $nuevoTotal = (int)$pdo->query("SELECT num_likes FROM comentarios WHERE idComentario = $idComentario")->fetchColumn();
+    $stmtLikes = $pdo->prepare("SELECT num_likes FROM comentarios WHERE idComentario = ?");
+    $stmtLikes->execute([$idComentario]);
+    $nuevoTotal = (int)$stmtLikes->fetchColumn();
     respuestaOk(['accion' => $accion, 'num_likes' => $nuevoTotal]);
+}
+
+if ($metodo === 'DELETE') {
+    $ses = obtenerSesion();
+    if (!$ses['idUsuario'] && !$ses['idProtectora']) respuestaError('Debes iniciar sesion.', 401);
+
+    $datos = jsonInput();
+    $idComentario = (int)($datos['idComentario'] ?? 0);
+    if (!$idComentario) respuestaError('ID de comentario no valido.');
+
+    $stmt = $pdo->prepare('SELECT idUsuario, idProtectora, idPublicacion, parent_id, deleted FROM comentarios WHERE idComentario = ?');
+    $stmt->execute([$idComentario]);
+    $com = $stmt->fetch();
+    if (!$com) respuestaError('Comentario no encontrado.');
+    if ($com['deleted']) respuestaError('Comentario ya eliminado.');
+
+    $esAutor = ($ses['idUsuario'] && $com['idUsuario'] == $ses['idUsuario']) ||
+               ($ses['idProtectora'] && $com['idProtectora'] == $ses['idProtectora']);
+    $esAdmin = $ses['esAdmin'];
+
+    if (!$esAutor && !$esAdmin) respuestaError('No tienes permiso para eliminar este comentario.', 403);
+
+    $pdo->prepare('UPDATE comentarios SET deleted = 1, deleted_at = NOW() WHERE idComentario = ?')
+        ->execute([$idComentario]);
+
+    if (!$com['parent_id']) {
+        $pdo->prepare('UPDATE publicaciones SET num_comentarios = GREATEST(0, num_comentarios - 1) WHERE idPublicacion = ?')
+            ->execute([$com['idPublicacion']]);
+    }
+
+    respuestaOk(['mensaje' => 'Comentario eliminado.']);
 }
 
 respuestaError('Metodo no permitido.', 405);

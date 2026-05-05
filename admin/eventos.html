@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetFamily – Eventos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily">
+            <span>Pet<em>Family</em></span>
+        </div>
+        <nav class="sidebar-nav">
+            <p class="sidebar-seccion">General</p>
+            <a href="dashboard.html" class="sidebar-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+            <p class="sidebar-seccion">Gestión</p>
+            <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
+            <a href="protectoras.html" class="sidebar-link"><i class="fa-solid fa-building-shield"></i> Protectoras</a>
+            <a href="usuarios.html" class="sidebar-link"><i class="fa-solid fa-users"></i> Usuarios</a>
+            <a href="apadrinamientos.html" class="sidebar-link"><i class="fa-solid fa-star"></i> Apadrinamientos</a>
+            <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
+            <a href="solicitudes-protectora.html" class="sidebar-link"><i class="fa-solid fa-clipboard-check"></i> Sol. Protectora</a>
+            <p class="sidebar-seccion">Contenido</p>
+            <a href="eventos.html" class="sidebar-link activo"><i class="fa-solid fa-calendar-days"></i> Eventos</a>
+            <a href="entidades.html" class="sidebar-link"><i class="fa-solid fa-handshake"></i> Entidades</a>
+            <p class="sidebar-seccion">Comunidad</p>
+            <a href="foro.html" class="sidebar-link"><i class="fa-solid fa-comments"></i> Foro</a>
+            <p class="sidebar-seccion">Web pública</p>
+            <a href="../html/index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
+        </nav>
+        <div class="sidebar-pie">
+            <div class="sidebar-usuario">
+                <div class="sidebar-avatar" id="avatarInicial">A</div>
+                <div class="sidebar-usuario-info">
+                    <p class="sidebar-usuario-nombre" id="adminNombre">Admin</p>
+                    <p class="sidebar-usuario-rol">Administrador</p>
+                </div>
+                <button class="btn-logout" onclick="cerrarSesion()"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <header class="topbar">
+        <div style="display:flex;align-items:center;gap:0.8em;">
+            <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+            <span class="topbar-titulo"><i class="fa-solid fa-calendar-days" style="color:var(--gold);margin-right:0.4em;"></i>Eventos</span>
+        </div>
+        <button class="btn btn-gold" onclick="abrirModalNuevo()">
+            <i class="fa-solid fa-plus"></i> Nuevo evento
+        </button>
+    </header>
+
+    <main class="admin-contenido">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="toolbar" style="flex:1;">
+                    <div class="toolbar-buscar">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="inputBuscar" placeholder="Buscar por título, lugar o localidad..." oninput="cargarEventos()">
+                    </div>
+                    <select class="toolbar-select" id="filtroActiva" onchange="cargarEventos()">
+                        <option value="1">Solo activos</option>
+                        <option value="0">Todos (incl. eliminados)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="tabla-wrap">
+                <table class="tabla">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Título</th>
+                            <th>Lugar</th>
+                            <th>Hora</th>
+                            <th>Precio</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaEventos">
+                        <tr><td colspan="7" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
+    <div class="modal">
+        <div class="modal-header">
+            <p class="modal-titulo"><i class="fa-solid fa-calendar-days"></i> <span id="modalTitulo">Nuevo evento</span></p>
+            <button class="modal-cerrar" onclick="cerrarModalBtn()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="modalId">
+
+            <div class="form-campo">
+                <label class="form-label">Título *</label>
+                <input type="text" class="form-input" id="fTitulo">
+            </div>
+
+            <div class="form-campo">
+                <label class="form-label">Descripción</label>
+                <textarea class="form-textarea" id="fDescripcion" rows="2"></textarea>
+            </div>
+
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Fecha *</label>
+                    <input type="date" class="form-input" id="fFecha">
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Hora</label>
+                    <input type="text" class="form-input" id="fHora" placeholder="11:00 – 14:00">
+                </div>
+            </div>
+
+            <div class="form-campo">
+                <label class="form-label">Lugar</label>
+                <input type="text" class="form-input" id="fLugar" placeholder="Plaza Mayor, Gijón">
+            </div>
+
+            <div class="form-campo">
+                <label class="form-label">Precio</label>
+                <input type="text" class="form-input" id="fPrecio" placeholder="Gratis" value="Gratis">
+            </div>
+
+            <div class="form-fila">
+                <label class="form-check"><input type="checkbox" id="fActiva" checked> Activo</label>
+            </div>
+
+            <p class="form-error" id="modalError"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="cerrarModalBtn()">Cancelar</button>
+            <button class="btn btn-primario" onclick="guardarEvento()">
+                <i class="fa-solid fa-floppy-disk"></i> Guardar
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    verificarAdmin(cargarEventos);
+});
+
+function verificarAdmin(cb) {
+    fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.logueado || data.usuario.rol !== 'admin') {
+                if (data.logueado && data.usuario.rol === 'protectora') { window.location.href = 'mi-protectora.html'; return; }
+                window.location.href = '../html/login.html'; return;
+            }
+            document.getElementById('adminNombre').textContent = data.usuario.nombre;
+            document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
+            if (cb) cb();
+        });
+}
+
+function cargarEventos() {
+    var q = encodeURIComponent(document.getElementById('inputBuscar').value);
+    var activos = document.getElementById('filtroActiva').value;
+
+    fetch('../backend/admin/eventos.php?accion=listar&buscar=' + q + '&activos=' + activos, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) return;
+            renderTabla(data.eventos);
+        });
+}
+
+function renderTabla(eventos) {
+    var tb = document.getElementById('tablaEventos');
+    if (!eventos.length) {
+        tb.innerHTML = '<tr><td colspan="7"><div class="estado-vacio"><i class="fa-solid fa-calendar-days"></i><p>No se encontraron eventos</p></div></td></tr>';
+        return;
+    }
+    tb.innerHTML = eventos.map(function(e) {
+        var fecha = new Date(e.fecha_evento);
+        var dia = String(fecha.getDate()).padStart(2, '0');
+        var mes = fecha.toLocaleDateString('es-ES', { month: 'short' });
+        var activa = e.activa == 1
+            ? '<span class="badge badge-verde">Activo</span>'
+            : '<span class="badge badge-gris">Inactivo</span>';
+        return '<tr>'
+            + '<td><div class="fecha-box"><span class="fecha-dia">' + dia + '</span><span class="fecha-mes">' + mes + '</span></div></td>'
+            + '<td><strong>' + (e.titulo || '—') + '</strong></td>'
+            + '<td style="font-size:0.85rem;">' + (e.lugar || '—') + '<br><span style="color:var(--texto-sub);">' + (e.localidad || '') + '</span></td>'
+            + '<td>' + (e.hora || '—') + '</td>'
+            + '<td>' + (e.precio || 'Gratis') + '</td>'
+            + '<td>' + activa + '</td>'
+            + '<td><div class="tabla-acciones">'
+                + '<button class="btn btn-sm btn-outline btn-icon" onclick="abrirEditar(' + e.idEvento + ')" title="Editar"><i class="fa-solid fa-pen"></i></button>'
+                + (e.activa == 1
+                    ? '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminarEvento(' + e.idEvento + ')" title="Desactivar"><i class="fa-solid fa-trash"></i></button>'
+                    : '<button class="btn btn-sm btn-outline btn-icon" onclick="activarEvento(' + e.idEvento + ')" title="Activar"><i class="fa-solid fa-check"></i></button>')
+            + '</div></td>'
+            + '</tr>';
+    }).join('');
+}
+
+function abrirModalNuevo() {
+    document.getElementById('modalTitulo').textContent = 'Nuevo evento';
+    document.getElementById('modalId').value = '';
+    document.getElementById('fTitulo').value = '';
+    document.getElementById('fDescripcion').value = '';
+    document.getElementById('fFecha').value = '';
+    document.getElementById('fHora').value = '';
+    document.getElementById('fLugar').value = '';
+    document.getElementById('fLocalidad').value = '';
+    document.getElementById('fPrecio').value = 'Gratis';
+    document.getElementById('fUrlInfo').value = '';
+    document.getElementById('fActiva').checked = true;
+    document.getElementById('modalError').textContent = '';
+    document.getElementById('modalOverlay').classList.add('abierto');
+}
+
+function abrirEditar(id) {
+    var eventos = window._eventosCache || [];
+    var e = eventos.find(function(x) { return x.idEvento == id; });
+    if (!e) return;
+
+    document.getElementById('modalTitulo').textContent = 'Editar evento';
+    document.getElementById('modalId').value = e.idEvento;
+    document.getElementById('fTitulo').value = e.titulo || '';
+    document.getElementById('fDescripcion').value = e.descripcion || '';
+    document.getElementById('fFecha').value = e.fecha_evento || '';
+    document.getElementById('fHora').value = e.hora || '';
+    document.getElementById('fLugar').value = e.lugar || '';
+    document.getElementById('fLocalidad').value = e.localidad || '';
+    document.getElementById('fPrecio').value = e.precio || 'Gratis';
+    document.getElementById('fUrlInfo').value = e.url_info || '';
+    document.getElementById('fActiva').checked = e.activa == 1;
+    document.getElementById('modalError').textContent = '';
+    document.getElementById('modalOverlay').classList.add('abierto');
+}
+
+function cerrarModal(e) {
+    if (e.target.id === 'modalOverlay') {
+        document.getElementById('modalOverlay').classList.remove('abierto');
+    }
+}
+
+function cerrarModalBtn() {
+    document.getElementById('modalOverlay').classList.remove('abierto');
+}
+
+function guardarEvento() {
+    var id = document.getElementById('modalId').value;
+    var data = {
+        titulo: document.getElementById('fTitulo').value.trim(),
+        descripcion: document.getElementById('fDescripcion').value.trim(),
+        fecha_evento: document.getElementById('fFecha').value,
+        hora: document.getElementById('fHora').value.trim(),
+        lugar: document.getElementById('fLugar').value.trim(),
+        localidad: document.getElementById('fLocalidad').value.trim(),
+        precio: document.getElementById('fPrecio').value.trim() || 'Gratis',
+        url_info: document.getElementById('fUrlInfo').value.trim(),
+        activa: document.getElementById('fActiva').checked ? 1 : 0
+    };
+
+    if (!data.titulo || !data.fecha_evento) {
+        document.getElementById('modalError').textContent = 'El título y la fecha son obligatorios.';
+        return;
+    }
+
+    var accion = id ? 'actualizar' : 'crear';
+    var url = '../backend/admin/eventos.php?accion=' + accion + (id ? '&id=' + id : '');
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+        credentials: 'include'
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+        if (res.ok) {
+            cerrarModalBtn();
+            cargarEventos();
+            mostrarToast('Evento guardado correctamente', 'ok');
+        } else {
+            document.getElementById('modalError').textContent = res.error || 'Error al guardar';
+        }
+    })
+.catch(function(err){
+            document.getElementById('modalError').textContent = 'Error de conexión: ' + err.message;
+        });
+}
+
+function eliminarEvento(id) {
+    if (!confirm('¿Seguro que quieres desactivar este evento?')) return;
+    fetch('../backend/admin/eventos.php?accion=eliminar&id=' + id, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(res){
+            if (res.ok) {
+                cargarEventos();
+                mostrarToast('Evento desactivado', 'ok');
+            } else {
+                mostrarToast(res.error || 'Error al eliminar', 'error');
+            }
+        })
+        .catch(function(){
+            mostrarToast('Error de conexión', 'error');
+        });
+}
+
+function activarEvento(id) {
+    fetch('../backend/admin/eventos.php?accion=activar&id=' + id, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(res){
+            if (res.ok) {
+                cargarEventos();
+                mostrarToast('Evento activado', 'ok');
+            } else {
+                mostrarToast(res.error || 'Error al activar', 'error');
+            }
+        })
+        .catch(function(){
+            mostrarToast('Error de conexión', 'error');
+        });
+}
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('abierto');
+}
+
+function cerrarSesion() {
+    fetch('../backend/api/auth/logout.php', { credentials: 'include' })
+        .then(function(){ window.location.href = '../html/login.html'; });
+}
+
+function mostrarToast(msg, tipo) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast visible toast-' + (tipo || 'ok');
+    setTimeout(function(){ t.className = 'toast'; }, 3000);
+}
+</script>
+
+</body>
+</html>

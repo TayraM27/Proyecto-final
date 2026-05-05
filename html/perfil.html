@@ -51,7 +51,14 @@
         </ul>
     </nav>
     <div id="user_container" class="d-none d-lg-block">
-        <a href="login.html"><img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px"></a>
+        <a href="perfil.html?tab=notificaciones" id="btnNotifBell" style="position:relative;margin-right:0.5em;">
+            <i class="fa-solid fa-bell" style="font-size:1.2rem;color:#1B358F;"></i>
+            <span id="badgeNotif" class="notif-badge" style="display:none;">0</span>
+        </a>
+        <a href="perfil.html" style="position:relative;" id="btnPerfil">
+            <img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px" id="imgPerfilHeader">
+            <span id="badgePerfil" class="notif-badge" style="display:none;">●</span>
+        </a>
         <a href="register.html" class="btn-register">Registrarse</a>
     </div>
 </header>
@@ -96,6 +103,9 @@
             </button>
             <button class="tab-btn" data-tab="datos" onclick="cambiarTab(this)">
                 <i class="fa-solid fa-id-card me-2"></i>Mis datos
+            </button>
+            <button class="tab-btn" data-tab="solicitud-protectora" onclick="cambiarTab(this)">
+                <i class="fa-solid fa-clipboard-check me-2"></i>Solicitud Protectora
             </button>
         </div>
 
@@ -145,6 +155,16 @@
                 <i class="fa-solid fa-id-card me-2"></i>Mis datos
             </h3>
             <div id="listaDatos"></div>
+        </div>
+
+        <!-- tab: solicitud protectora -->
+        <div id="tab-solicitud-protectora" class="tab-contenido d-none">
+            <h3 style="font-size:1.1rem;font-weight:700;color:#1B358F;margin-bottom:1em;">
+                <i class="fa-solid fa-clipboard-check me-2"></i>Estado de mi solicitud
+            </h3>
+            <div id="zonaSolicitudProtectora">
+                <div class="text-center py-4"><div class="spinner-border" style="color:#1B358F;"></div></div>
+            </div>
         </div>
 
     </div>
@@ -229,6 +249,51 @@
     </div>
     <!-- fin modal resultados test -->
 
+    <!-- modal solicitud protectora -->
+    <div class="modal fade" id="modalSolicitudProtectora" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content" style="border-radius:14px;border:none;">
+                <div class="modal-header" style="border-bottom:1px solid #f0f0f0;">
+                    <h5 class="modal-title" style="font-weight:700;color:#1B358F;">
+                        <i class="fa-solid fa-building-shield me-2"></i>Solicitar cuenta de protectora
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p style="font-size:0.78rem;color:#aaa;margin-bottom:1em;">Completa los datos de tu protectora. Un administrador revisará la solicitud.</p>
+
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:600;font-size:0.88rem;">Nombre de la protectora <span style="color:#c0392b;">*</span></label>
+                        <input type="text" class="form-control" id="solNombreProtectora">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:600;font-size:0.88rem;">CIF/NIF <span style="color:#c0392b;">*</span></label>
+                        <input type="text" class="form-control" id="solCifNif">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:600;font-size:0.88rem;">Dirección <span style="color:#c0392b;">*</span></label>
+                        <input type="text" class="form-control" id="solDireccion">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:600;font-size:0.88rem;">Teléfono</label>
+                        <input type="tel" class="form-control" id="solTelefono">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:600;font-size:0.88rem;">Web / Redes sociales</label>
+                        <input type="text" class="form-control" id="solWebRedes" placeholder="https://...">
+                    </div>
+                    <p class="text-danger" id="errorSolicitudProtectora" style="font-size:0.82rem;display:none;"></p>
+                </div>
+                <div class="modal-footer" style="border-top:1px solid #f0f0f0;">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn-azul" id="btnEnviarSolicitud" onclick="enviarSolicitudProtectora()" style="padding:0.5em 1.4em;border-radius:8px;">
+                        <i class="fa-solid fa-paper-plane me-2"></i>Enviar solicitud
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- sin sesión -->
     <div class="container text-center py-5 d-none" id="sinSesion">
         <i class="fa-solid fa-lock" style="font-size:3rem;color:#dee2e6;margin-bottom:1em;display:block;"></i>
@@ -294,10 +359,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (tabParam === 'tests')           cargarTests();
                     if (tabParam === 'notificaciones')  cargarNotificaciones();
                     if (tabParam === 'datos')           cargarDatos();
+                    if (tabParam === 'solicitud-protectora') cargarSolicitudProtectora();
                     return;
                 }
             }
             cargarFavoritos();
+            cargarNotificaciones();
         })
         .catch(function() {
             document.getElementById('sinSesion').classList.remove('d-none');
@@ -342,7 +409,9 @@ function cambiarTab(btn) {
     if (tab === 'apadrinamientos') cargarApadrinamientos();
     if (tab === 'tests')           cargarTests();
     if (tab === 'notificaciones')  cargarNotificaciones();
-    if (tab === 'datos')           cargarDatos();}
+    if (tab === 'datos')           cargarDatos();
+    if (tab === 'solicitud-protectora') cargarSolicitudProtectora();
+}
 
 /*--------------------------------------------------------------------------------------------
 favoritos */
@@ -487,35 +556,148 @@ function eliminarResultadoTest(tipo) {
 notificaciones */
 function cargarNotificaciones() {
     var cont = document.getElementById('listaNotificaciones');
-    if (cont.dataset.cargado) return;
-    cont.dataset.cargado = '1';
+    if (cont.dataset.cargando) return;
+    cont.dataset.cargando = '1';
+    cont.innerHTML = '<div class="text-center py-4"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:#1B358F;"></i></div>';
 
-    fetch('../backend/foro/publicaciones.php?pagina=1&categoria=todas', { credentials: 'include' })
+    fetch('../backend/foro/notificaciones.php', { credentials: 'include' })
         .then(function(r) { return r.json(); })
         .then(function(data) {
-            if (!data.ok || !data.publicaciones || !data.publicaciones.length) {
-                cont.innerHTML = vacio('fa-bell', 'Sin notificaciones por ahora.', 'Cuando alguien reaccione a tus publicaciones o te responda aparecerá aquí.', null, null);
+            cont.dataset.cargando = '';
+            if (!data.ok) {
+                cont.innerHTML = '<p class="text-muted text-center py-4">Error: ' + (data.error || 'Unknown') + '</p>';
                 return;
             }
-            var mias = data.publicaciones.filter(function(p) {
-                return usuarioPerfil && p.autor_username === usuarioPerfil.username;
+            if (!data.notificaciones || !data.notificaciones.length) {
+                cont.innerHTML = '<div class="text-center py-4 text-muted"><i class="fa-regular fa-bell-slash fa-2x mb-2"></i><p>Sin notificaciones.</p><small>Te avisaremos cuando alguien interactúe contigo.</small></div>';
+                return;
+            }
+
+            var html = '';
+            var iconos = { like:'fa-heart', like_comentario:'fa-heart', comentario:'fa-comment', solicitud_protectora:'fa-building-shield', protectora_aprobada:'fa-circle-check', protectora_rechazada:'fa-circle-xmark', protectora_info_adicional:'fa-circle-info', solicitud_protectora_respuesta:'fa-reply' };
+            var colores = { like:'#e74c3c', like_comentario:'#e74c3c', comentario:'#1B358F', solicitud_protectora:'#1B358F', protectora_aprobada:'#28a745', protectora_rechazada:'#dc3545', protectora_info_adicional:'#0dcaf0', solicitud_protectora_respuesta:'#6f42c1' };
+            var tieneNoLeidas = false;
+
+            data.notificaciones.forEach(function(n) {
+                if (n.leida) return;
+                tieneNoLeidas = true;
+                
+                var icono = iconos[n.tipo] || 'fa-bell';
+                var color = colores[n.tipo] || '#1B358F';
+
+                var mensaje = n.mensaje || '';
+                var link = 'href="perfil.html?tab=notificaciones"';
+                if (n.ruta_destino) {
+                    link = 'href="../' + n.ruta_destino + '"';
+                } else if (n.idPublicacion) {
+                    link = 'href="foro.html?post=' + n.idPublicacion + '"';
+                }
+
+                html += '<a class="notif-item" ' + link + ' data-id="' + n.idNotificacion + '" onclick="marcarLeida(' + n.idNotificacion + ', this)">'
+                    + '<div class="notif-icono"><i class="fa-solid ' + icono + '" style="color:' + color + ';"></i></div>'
+                    + '<div class="notif-texto">' + mensaje + '<p class="notif-fecha">' + formatFecha(n.fecha) + '</p></div>'
+                    + '</a>';
             });
-            if (!mias.length) {
-                cont.innerHTML = vacio('fa-bell', 'Sin notificaciones por ahora.', 'Cuando alguien reaccione a tus publicaciones o te responda aparecerá aquí.', null, null);
-                return;
+
+            if (!tieneNoLeidas) {
+                html = '<div class="text-center py-4 text-muted"><i class="fa-regular fa-bell-slash fa-2x mb-2"></i><p>Sin notificaciones.</p><small>Te avisaremos cuando alguien interactúe contigo.</small></div>';
             }
-            cont.innerHTML = mias.map(function(p) {
-                return '<div class="notif-item">'
-                    + '<div class="notif-icono"><i class="fa-solid fa-newspaper" style="color:#1B358F;"></i></div>'
-                    + '<div><p class="notif-texto"><strong>' + p.titulo + '</strong><br>'
-                    + '<span style="color:#6c757d;">' + (p.num_comentarios || 0) + ' comentarios · ' + (p.num_likes || 0) + ' likes</span></p>'
-                    + '<p class="notif-fecha">' + formatFecha(p.fecha) + '</p></div>'
-                    + '</div>';
-            }).join('');
+
+            html += '<button class="btn btn-outline-secondary w-100 mt-2" onclick="marcarTodasLeidas()"><i class="fa-solid fa-check-double me-2"></i>Marcar todas como leídas</button>';
+            cont.innerHTML = html;
+
+            actualizarBadgeNotif(data.noLeidas || 0);
         })
-        .catch(function() {
-            cont.innerHTML = '<p class="text-muted">Error al cargar notificaciones.</p>';
+        .catch(function(err) {
+            cont.dataset.cargando = '';
+            cont.innerHTML = '<p class="text-muted text-center py-4">Error al cargar.</p>';
         });
+}
+
+function actualizarBadgeNotif(cuantas) {
+    var badge = document.getElementById('badgeNotif');
+    var badgePerfil = document.getElementById('badgePerfil');
+    if (cuantas > 0) {
+        if (badge) {
+            badge.textContent = cuantas > 9 ? '9+' : cuantas;
+            badge.style.display = 'block';
+        }
+        if (badgePerfil) badgePerfil.style.display = 'block';
+    } else {
+        if (badge) badge.style.display = 'none';
+        if (badgePerfil) badgePerfil.style.display = 'none';
+    }
+
+    /* Actualizar badge en el título de la sección */
+    var tituloTab = document.querySelector('[data-tab="notificaciones"]');
+    if (tituloTab && cuantas > 0) {
+        var badgeTab = tituloTab.querySelector('.badge-notif-num');
+        if (!badgeTab) {
+            badgeTab = document.createElement('span');
+            badgeTab.className = 'badge-notif-num';
+            badgeTab.style.cssText = 'background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:5px;box-shadow:0 2px 4px rgba(231,76,60,0.4);vertical-align:middle;';
+            tituloTab.appendChild(badgeTab);
+        }
+        badgeTab.textContent = cuantas > 9 ? '9+' : String(cuantas);
+    } else if (tituloTab) {
+        var badgeTab = tituloTab.querySelector('.badge-notif-num');
+        if (badgeTab) badgeTab.remove();
+    }
+}
+
+function marcarLeida(id, el) {
+    var idPub = el.dataset.post;
+    fetch('../backend/foro/notificaciones.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ leer: true, id: id })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.ok) {
+            /* Eliminar visualmente la notificación */
+            el.style.transition = 'opacity 0.3s';
+            el.style.opacity = '0';
+            setTimeout(function() { el.remove(); }, 300);
+
+            /* Actualizar badge */
+            cargarNotificaciones();
+
+            /* Si no quedan notificaciones, mostrar mensaje */
+            if (document.querySelectorAll('#listaNotificaciones .notif-item').length === 0) {
+                document.getElementById('listaNotificaciones').innerHTML =
+                    '<div class="text-center py-4 text-muted"><i class="fa-regular fa-bell-slash fa-2x mb-2"></i><p>Sin notificaciones.</p></div>';
+            }
+
+            if (idPub) window.location.href = 'foro.html?post=' + idPub;
+        }
+    });
+}
+
+function marcarTodasLeidas() {
+    fetch('../backend/foro/notificaciones.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ leerTodos: true })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.ok) {
+            /* Eliminar todas las notificaciones del DOM */
+            document.querySelectorAll('#listaNotificaciones .notif-item').forEach(function(el) {
+                el.style.transition = 'opacity 0.3s';
+                el.style.opacity = '0';
+                setTimeout(function() { el.remove(); }, 300);
+            });
+            setTimeout(function() {
+                document.getElementById('listaNotificaciones').innerHTML =
+                    '<div class="text-center py-4 text-muted"><i class="fa-regular fa-bell-slash fa-2x mb-2"></i><p>Sin notificaciones.</p></div>';
+            }, 400);
+            cargarNotificaciones();
+        }
+    });
 }
 
 /*--------------------------------------------------------------------------------------------
@@ -535,7 +717,7 @@ function abrirEditarPerfil() {
     document.getElementById('editFoto').addEventListener('change', function() {
         var archivo = this.files[0];
         if (!archivo) return;
-        if (archivo.size > 2 * 1024 * 1024) { alert('La foto no puede superar 2 MB.'); this.value = ''; return; }
+        if (archivo.size > 2 * 1024 * 1024) { mostrarToast('La foto no puede superar 2 MB.', 'error'); this.value = ''; return; }
         var reader = new FileReader();
         reader.onload = function(e) {
             prev.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;">';
@@ -576,8 +758,8 @@ function guardarPerfil() {
         errorEl.style.display = 'block';
         return;
     }
-    if (telefono && !/^[6-9]\d{8}$/.test(telefono.replace(/\s/g, ''))) {
-        errorEl.textContent   = 'Teléfono no válido. Ej: 612 345 678';
+    if (telefono && !/^\d{9}$/.test(telefono.replace(/[\s\-\(\)\+]/g, ''))) {
+        errorEl.textContent   = 'Teléfono no válido. Debe contener exactamente 9 dígitos.';
         errorEl.style.display = 'block';
         return;
     }
@@ -613,17 +795,21 @@ function guardarPerfil() {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-floppy-disk me-2"></i>Guardar';
         if (data.ok) {
-            usuarioPerfil.nombre    = nombre;
-            usuarioPerfil.username  = username;
-            usuarioPerfil.localidad = localidad;
-            usuarioPerfil.telefono  = telefono;
+            var u = data.usuario || {};
+            usuarioPerfil.nombre    = u.nombre || nombre;
+            usuarioPerfil.username  = u.username || username;
+            usuarioPerfil.localidad = u.localidad !== undefined ? u.localidad : localidad;
+            usuarioPerfil.telefono  = u.telefono !== undefined ? u.telefono : telefono;
+            if (u.foto_perfil) usuarioPerfil.foto_perfil = u.foto_perfil;
             var sesion = JSON.parse(sessionStorage.getItem(CLAVE_SESION) || '{}');
-            sesion.nombre    = nombre;
-            sesion.username  = username;
-            sesion.localidad = localidad;
-            sesion.telefono  = telefono;
+            sesion.nombre    = usuarioPerfil.nombre;
+            sesion.username  = usuarioPerfil.username;
+            sesion.localidad = usuarioPerfil.localidad;
+            sesion.telefono  = usuarioPerfil.telefono;
+            if (usuarioPerfil.foto_perfil) sesion.foto_perfil = usuarioPerfil.foto_perfil;
             sessionStorage.setItem(CLAVE_SESION, JSON.stringify(sesion));
             mostrarDatosUsuario(usuarioPerfil);
+            cargarDatos();
             bootstrap.Modal.getInstance(document.getElementById('modalEditarPerfil')).hide();
         } else {
             errorEl.textContent   = data.error || 'Error al guardar.';
@@ -652,7 +838,7 @@ function cargarDatos() {
                 campo('fa-envelope', 'Email', u.email) +
                 campo('fa-location-dot', 'Localidad', u.localidad || '—') +
                 campo('fa-phone', 'Teléfono', u.telefono || '—') +
-                campo('fa-shield-halved', 'Rol', u.rol === 'admin' ? 'Administrador' : 'Usuario') +
+                campo('fa-shield-halved', 'Rol', u.rol === 'admin' ? 'Administrador' : u.rol === 'protectora' ? 'Protectora' : 'Usuario') +
             '</div>' +
             '<div style="margin-top:1.2em;padding-top:1em;border-top:1px solid #f0f0f0;">' +
                 '<button class="btn-azul" onclick="abrirEditarPerfil()" style="padding:0.5em 1.3em;border-radius:8px;font-size:0.88rem;">' +
@@ -669,6 +855,184 @@ function campo(icono, label, valor) {
         '</p>' +
         '<p style="font-size:0.92rem;color:#222;font-weight:500;margin:0;">' + (valor || '—') + '</p>' +
     '</div>';
+}
+
+/*--------------------------------------------------------------------------------------------
+solicitud protectora */
+function cargarSolicitudProtectora() {
+    var cont = document.getElementById('zonaSolicitudProtectora');
+    if (cont.dataset.cargado) return;
+
+    fetch('../backend/adopcion/solicitud_protectora.php', { credentials: 'include' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            cont.dataset.cargado = '1';
+            if (!data.ok || !data.solicitud) {
+                cont.innerHTML = '<div class="text-center py-4 text-muted">'
+                    + '<i class="fa-solid fa-clipboard-check fa-2x mb-3"></i>'
+                    + '<p>No has solicitado una cuenta de protectora.</p>'
+                    + '<button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#modalSolicitudProtectora">Solicitar cuenta de protectora</button>'
+                    + '</div>';
+                return;
+            }
+            var s = data.solicitud;
+            var badges = {
+                'pendiente': '<span class="badge bg-warning text-dark"><i class="fa-solid fa-clock me-1"></i>Pendiente</span>',
+                'aprobada': '<span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i>Aprobada</span>',
+                'rechazada': '<span class="badge bg-danger"><i class="fa-solid fa-circle-xmark me-1"></i>Rechazada</span>',
+                'info_adicional': '<span class="badge bg-info text-dark"><i class="fa-solid fa-circle-info me-1"></i>Info adicional requerida</span>'
+            };
+            var html = '<div style="background:#f8f9fa;border-radius:12px;padding:1.5em;">'
+                + '<div class="d-flex justify-content-between align-items-center mb-3">'
+                + '<h5 style="margin:0;font-weight:700;color:#1B358F;">' + s.nombre_protectora + '</h5>'
+                + badges[s.estado]
+                + '</div>'
+                + '<div style="font-size:0.88rem;">'
+                + '<p class="mb-1"><strong>CIF/NIF:</strong> ' + s.cif_nif + '</p>'
+                + '<p class="mb-1"><strong>Direccion:</strong> ' + s.direccion + '</p>'
+                + (s.telefono ? '<p class="mb-1"><strong>Telefono:</strong> ' + s.telefono + '</p>' : '')
+                + (s.web_redes ? '<p class="mb-3"><strong>Web/Redes:</strong> ' + s.web_redes + '</p>' : '')
+                + '<p class="mb-1 text-muted" style="font-size:0.8rem;">Enviada: ' + new Date(s.fecha_solicitud).toLocaleDateString('es-ES') + '</p>'
+                + '</div>';
+
+            if (s.estado === 'aprobada') {
+                html = '<div style="background:#d4edda;border-radius:14px;padding:1.5em;text-align:center;">'
+                    + '<i class="fa-solid fa-circle-check" style="font-size:2.5rem;color:#28a745;margin-bottom:0.5em;display:block;"></i>'
+                    + '<p style="font-weight:700;color:#155724;font-size:1.1rem;margin:0;">Tu cuenta ya es de protectora.</p>'
+                    + '<p style="color:#155724;font-size:0.9rem;margin-top:0.3em;">Accede a tu panel de gestion.</p>'
+                    + '<a href="../admin/mi-protectora.html" class="btn-azul" style="margin-top:1em;display:inline-block;padding:0.5em 1.3em;border-radius:8px;text-decoration:none;font-size:0.88rem;"><i class="fa-solid fa-arrow-right me-2"></i>Ir a mi protectora</a>'
+                    + '</div>';
+            }
+
+            if (s.estado === 'rechazada') {
+                html += '<div style="margin-top:1em;padding:1em;background:#f8d7da;border-radius:8px;border-left:4px solid #dc3545;">'
+                    + '<p style="margin:0;font-weight:600;color:#721c24;"><i class="fa-solid fa-circle-xmark me-1"></i> Solicitud rechazada</p>';
+                if (s.respuesta_admin) {
+                    html += '<p style="margin:0.5em 0 0;font-size:0.88rem;color:#721c24;"><strong>Motivo:</strong> ' + s.respuesta_admin + '</p>';
+                }
+                html += '<p style="margin:0.5em 0 0;font-size:0.85rem;color:#721c24;">Si crees que es un error, contacta con nosotros para revisarlo.</p>'
+                    + '</div>';
+            }
+
+            if (s.estado === 'info_adicional') {
+                html += '<div style="margin-top:1em;padding:1em;background:#e2f3f9;border-radius:8px;border-left:4px solid #0dcaf0;">'
+                    + '<p style="margin:0;font-weight:600;color:#0c5460;"><i class="fa-solid fa-circle-info me-1"></i> El administrador necesita informacion adicional</p>';
+                if (s.respuesta_admin) {
+                    html += '<p style="margin:0.5em 0 0.8em;font-size:0.88rem;color:#0c5460;"><strong>Nota del admin:</strong> ' + s.respuesta_admin + '</p>';
+                }
+                html += '<div class="mt-3">'
+                    + '<textarea class="form-control" id="txtRespuestaSolicitud" rows="4" placeholder="Escribe aqui la informacion adicional que te piden..."></textarea>'
+                    + '<button class="btn btn-sm btn-primary mt-2" onclick="enviarRespuestaSolicitud(' + s.idSolicitud + ')">'
+                    + '<i class="fa-solid fa-paper-plane me-1"></i>Enviar respuesta</button>'
+                    + '<p id="errorRespuestaSol" style="color:#dc3545;font-size:0.82rem;margin-top:0.5em;display:none;"></p>'
+                    + '<p id="okRespuestaSol" style="color:#28a745;font-size:0.82rem;margin-top:0.5em;display:none;"></p>'
+                    + '</div></div>';
+            }
+
+            html += '</div>';
+            cont.innerHTML = html;
+        })
+        .catch(function() {
+            document.getElementById('zonaSolicitudProtectora').innerHTML = '<p class="text-muted text-center py-4">Error al cargar.</p>';
+        });
+}
+
+function enviarRespuestaSolicitud(idSolicitud) {
+    var txt = document.getElementById('txtRespuestaSolicitud');
+    var err = document.getElementById('errorRespuestaSol');
+    var ok = document.getElementById('okRespuestaSol');
+    var respuesta = txt.value.trim();
+
+    err.style.display = 'none';
+    ok.style.display = 'none';
+
+    if (!respuesta) {
+        err.textContent = 'Escribe la informacion que te piden.';
+        err.style.display = 'block';
+        return;
+    }
+
+    fetch('../backend/adopcion/solicitud_protectora.php', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ idSolicitud: idSolicitud, respuesta: respuesta })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (!data.ok) {
+            err.textContent = data.error || 'Error al enviar.';
+            err.style.display = 'block';
+            return;
+        }
+        ok.textContent = data.mensaje || 'Respuesta enviada correctamente.';
+        ok.style.display = 'block';
+        txt.disabled = true;
+        document.getElementById('zonaSolicitudProtectora').dataset.cargado = '';
+        setTimeout(function() { cargarSolicitudProtectora(); }, 2000);
+    })
+    .catch(function() {
+        err.textContent = 'Error de conexion.';
+        err.style.display = 'block';
+    });
+}
+
+function abrirModalSolicitud() {
+    document.getElementById('solNombreProtectora').value = '';
+    document.getElementById('solCifNif').value = '';
+    document.getElementById('solDireccion').value = '';
+    document.getElementById('solTelefono').value = '';
+    document.getElementById('solWebRedes').value = '';
+    document.getElementById('errorSolicitudProtectora').style.display = 'none';
+    new bootstrap.Modal(document.getElementById('modalSolicitudProtectora')).show();
+}
+
+function enviarSolicitudProtectora() {
+    var nombre = document.getElementById('solNombreProtectora').value.trim();
+    var cif    = document.getElementById('solCifNif').value.trim();
+    var dir    = document.getElementById('solDireccion').value.trim();
+    var tel    = document.getElementById('solTelefono').value.trim();
+    var web    = document.getElementById('solWebRedes').value.trim();
+    var errorEl = document.getElementById('errorSolicitudProtectora');
+    var btn     = document.getElementById('btnEnviarSolicitud');
+
+    errorEl.style.display = 'none';
+
+    if (!nombre || !cif || !dir) {
+        errorEl.textContent = 'Nombre de la protectora, CIF/NIF y dirección son obligatorios.';
+        errorEl.style.display = 'block';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Enviando...';
+
+    fetch('../backend/adopcion/solicitud_protectora.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ nombre_protectora: nombre, cif_nif: cif, direccion: dir, telefono: tel, web_redes: web }),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Enviar solicitud';
+        if (data.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('modalSolicitudProtectora')).hide();
+            var cont = document.getElementById('zonaSolicitudProtectora');
+            delete cont.dataset.cargado;
+            cargarSolicitudProtectora();
+        } else {
+            errorEl.textContent = data.error || 'Error al enviar la solicitud.';
+            errorEl.style.display = 'block';
+        }
+    })
+    .catch(function() {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Enviar solicitud';
+        errorEl.textContent = 'Error de conexión.';
+        errorEl.style.display = 'block';
+    });
 }
 
 /*--------------------------------------------------------------------------------------------

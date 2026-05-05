@@ -48,7 +48,8 @@ $stmt = $pdo->prepare(
         p.localidad  AS protectora_localidad,
         p.telefono   AS protectora_telefono,
         p.email      AS protectora_email,
-        p.web        AS protectora_web
+        p.web                    AS protectora_web,
+        p.url_formulario_acogida AS protectora_form_acogida
      FROM mascotas m
      JOIN protectoras p ON m.idProtectora = p.idProtectora
      WHERE m.idMascota = ? AND m.activa = 1

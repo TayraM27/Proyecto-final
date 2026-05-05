@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../backend/config/db.php';
 require_once __DIR__ . '/usuarios_crud.php';
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
 try {
     $usuarios = getUsuarios($pdo);

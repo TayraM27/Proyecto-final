@@ -84,19 +84,6 @@
                 <h1 class="login-titulo">Bienvenido de nuevo</h1>
                 <p class="login-subtitulo">Inicia sesión para acceder a tu cuenta.</p>
 
-                <!-- SELECTOR DE ROL -->
-                <!-- BACKEND: el rol se envía con el form y PHP redirige según $_SESSION['rol'] -->
-                <!-- usuario → index.html | admin/protectora → admin/dashboard.html -->
-                <div class="login-roles">
-                    <button type="button" class="login-rol-btn activo" id="rolUsuario" data-rol="usuario">
-                        <i class="fa-solid fa-user me-2"></i>Soy usuario
-                    </button>
-                    <button type="button" class="login-rol-btn" id="rolAdmin" data-rol="admin">
-                        <i class="fa-solid fa-shield-dog me-2"></i>Protectora / Admin
-                    </button>
-                </div>
-                <input type="hidden" name="rol" id="inputRol" value="usuario">
-
                 <form class="login-form" id="formLogin" novalidate>
 
                     <div class="login-campo">
@@ -137,16 +124,11 @@
                     </div>
 
                     <div class="login-opciones">
-                        <label class="login-recuerda">
-                            <input type="checkbox" name="recordar" id="recordar">
-                            <span>Recuérdame</span>
-                        </label>
-                        <!-- BACKEND: página de recuperación de contraseña vía email -->
-                        <a href="recuperar.html" class="login-olvide">¿Olvidaste tu contraseña?</a>
+                       
+                        <a href="recuperarPassword.html" class="login-olvide">¿Olvidaste tu contraseña?</a>
                     </div>
 
                     <!-- Mensaje de error general (credenciales incorrectas) -->
-                    <!-- BACKEND: PHP muestra este bloque si las credenciales no son válidas -->
                     <div class="login-alerta d-none" id="alertaLogin">
                         <i class="fa-solid fa-circle-exclamation me-2"></i>
                         <span id="alertaLoginMsg">Email o contraseña incorrectos. Inténtalo de nuevo.</span>
@@ -188,68 +170,32 @@
                 </form>
             </div>
 
-            <!-- PANEL DERECHO — cambia según el rol seleccionado -->
+            <!-- PANEL DERECHO — mensaje de marca -->
             <div class="login-panel-derecho">
-                <div class="login-panel-contenido" id="panelUsuario">
+                <div class="login-panel-contenido">
                     <div class="login-panel-icono">
                         <i class="fa-solid fa-paw"></i>
                     </div>
-                    <h2 class="login-panel-titulo">Tu cuenta, tu comunidad</h2>
+                    <h2 class="login-panel-titulo">Conectando hogares con quienes más lo necesitan</h2>
                     <p class="login-panel-desc">
-                        Accede a todo lo que PetFamily tiene para ti:
+                        PetFamily une a adoptantes, voluntarios y protectoras en una misma comunidad dedicada al bienestar animal.
                     </p>
                     <ul class="login-beneficios">
                         <li>
                             <i class="fa-solid fa-heart"></i>
-                            <span>Guarda tus mascotas favoritas y síguelas</span>
+                            <span>Adopta o apadrina animales que buscan una oportunidad</span>
                         </li>
                         <li>
-                            <i class="fa-solid fa-star"></i>
-                            <span>Apadrina animales y recibe su seguimiento</span>
-                        </li>
-                        <li>
-                            <i class="fa-solid fa-comments"></i>
-                            <span>Participa en el foro de la comunidad</span>
-                        </li>
-                        <li>
-                            <i class="fa-solid fa-circle-question"></i>
-                            <span>Realiza el test de compatibilidad completo</span>
-                        </li>
-                        <li>
-                            <i class="fa-solid fa-user"></i>
-                            <span>Gestiona tu perfil personal</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="login-panel-contenido d-none" id="panelAdmin">
-                    <div class="login-panel-icono">
-                        <i class="fa-solid fa-shield-dog"></i>
-                    </div>
-                    <h2 class="login-panel-titulo">Panel de gestión</h2>
-                    <p class="login-panel-desc">
-                        Acceso restringido a protectoras y administradores:
-                    </p>
-                    <ul class="login-beneficios">
-                        <li>
-                            <i class="fa-solid fa-dog"></i>
-                            <span>Gestionar fichas de animales en adopción</span>
+                            <i class="fa-solid fa-hand-holding-heart"></i>
+                            <span>Colabora como hogar de acogida o voluntario</span>
                         </li>
                         <li>
                             <i class="fa-solid fa-shield-dog"></i>
-                            <span>Actualizar información de la protectora</span>
-                        </li>
-                        <li>
-                            <i class="fa-solid fa-flag"></i>
-                            <span>Moderar el foro y gestionar publicaciones</span>
+                            <span>Accede a herramientas para gestionar tu protectora (si estás verificada)</span>
                         </li>
                         <li>
                             <i class="fa-solid fa-users"></i>
-                            <span>Administrar usuarios y roles</span>
-                        </li>
-                        <li>
-                            <i class="fa-solid fa-chart-simple"></i>
-                            <span>Ver estadísticas de la plataforma</span>
+                            <span>Forma parte de una comunidad comprometida con mejorar la vida de los animales</span>
                         </li>
                     </ul>
                 </div>
@@ -304,9 +250,8 @@ function handleGoogleLogin(response) {
         }
     })
     .catch(function() {
-        /* Sin backend activo: mostrar datos en consola para desarrollo */
         console.log('Google login — usuario:', payload.name, '|', payload.email);
-        alert('Google conectado (sin backend): ' + payload.name + ' · ' + payload.email);
+        mostrarToast('Conectado: ' + payload.name, 'ok');
     });
 }
 </script>

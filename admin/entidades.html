@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetFamily – Entidades Colaboradoras</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily">
+            <span>Pet<em>Family</em></span>
+        </div>
+        <nav class="sidebar-nav">
+            <p class="sidebar-seccion">General</p>
+            <a href="dashboard.html" class="sidebar-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+            <p class="sidebar-seccion">Gestión</p>
+            <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
+            <a href="protectoras.html" class="sidebar-link"><i class="fa-solid fa-building-shield"></i> Protectoras</a>
+            <a href="usuarios.html" class="sidebar-link"><i class="fa-solid fa-users"></i> Usuarios</a>
+            <a href="apadrinamientos.html" class="sidebar-link"><i class="fa-solid fa-star"></i> Apadrinamientos</a>
+            <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
+            <a href="solicitudes-protectora.html" class="sidebar-link"><i class="fa-solid fa-clipboard-check"></i> Sol. Protectora</a>
+            <p class="sidebar-seccion">Contenido</p>
+            <a href="eventos.html" class="sidebar-link"><i class="fa-solid fa-calendar-days"></i> Eventos</a>
+            <a href="entidades.html" class="sidebar-link activo"><i class="fa-solid fa-handshake"></i> Entidades</a>
+            <p class="sidebar-seccion">Comunidad</p>
+            <a href="foro.html" class="sidebar-link"><i class="fa-solid fa-comments"></i> Foro</a>
+            <p class="sidebar-seccion">Web pública</p>
+            <a href="../html/index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
+        </nav>
+        <div class="sidebar-pie">
+            <div class="sidebar-usuario">
+                <div class="sidebar-avatar" id="avatarInicial">A</div>
+                <div class="sidebar-usuario-info">
+                    <p class="sidebar-usuario-nombre" id="adminNombre">Admin</p>
+                    <p class="sidebar-usuario-rol">Administrador</p>
+                </div>
+                <button class="btn-logout" onclick="cerrarSesion()"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <header class="topbar">
+        <div style="display:flex;align-items:center;gap:0.8em;">
+            <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+            <span class="topbar-titulo"><i class="fa-solid fa-handshake" style="color:var(--gold);margin-right:0.4em;"></i>Entidades Colaboradoras</span>
+        </div>
+        <button class="btn btn-gold" onclick="abrirModalNuevo()">
+            <i class="fa-solid fa-plus"></i> Nueva entidad
+        </button>
+    </header>
+
+    <main class="admin-contenido">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="toolbar" style="flex:1;">
+                    <div class="toolbar-buscar">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="inputBuscar" placeholder="Buscar por nombre o descripción..." oninput="cargarEntidades()">
+                    </div>
+                    <select class="toolbar-select" id="filtroTipo" onchange="cargarEntidades()">
+                        <option value="">Todos los tipos</option>
+                        <option value="tienda">Tienda</option>
+                        <option value="veterinaria">Veterinaria</option>
+                        <option value="clinica">Clínica</option>
+                        <option value="ong">ONG</option>
+                        <option value="institucion">Institución</option>
+                        <option value="media">Medios</option>
+                    </select>
+                    <select class="toolbar-select" id="filtroActiva" onchange="cargarEntidades()">
+                        <option value="1">Solo activas</option>
+                        <option value="0">Todos (incl. eliminados)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="tabla-wrap">
+                <table class="tabla">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Tipo</th>
+                            <th>Descripción</th>
+                            <th>Web</th>
+                            <th>Descuento</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaEntidades">
+                        <tr><td colspan="7" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
+    <div class="modal">
+        <div class="modal-header">
+            <p class="modal-titulo"><i class="fa-solid fa-handshake"></i> <span id="modalTitulo">Nueva entidad</span></p>
+            <button class="modal-cerrar" onclick="cerrarModalBtn()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="modalId">
+
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Nombre *</label>
+                    <input type="text" class="form-input" id="fNombre">
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Tipo *</label>
+                    <select class="form-select" id="fTipo">
+                        <option value="tienda">Tienda</option>
+                        <option value="veterinaria">Veterinaria</option>
+                        <option value="clinica">Clínica</option>
+                        <option value="ong">ONG</option>
+                        <option value="institucion">Institución</option>
+                        <option value="media">Medios</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-campo">
+                <label class="form-label">Descripción</label>
+                <textarea class="form-textarea" id="fDescripcion" rows="2"></textarea>
+            </div>
+
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Web</label>
+                    <input type="url" class="form-input" id="fWeb" placeholder="https://...">
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Descuento/Oferta</label>
+                    <input type="text" class="form-input" id="fDescuento" placeholder="10% descuento">
+                </div>
+            </div>
+
+            <div class="form-fila">
+                <label class="form-check"><input type="checkbox" id="fActiva" checked> Activa</label>
+            </div>
+
+            <p class="form-error" id="modalError"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="cerrarModalBtn()">Cancelar</button>
+            <button class="btn btn-primario" onclick="guardarEntidad()">
+                <i class="fa-solid fa-floppy-disk"></i> Guardar
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var ICONOS_TIPO = {
+    tienda: 'fa-store',
+    veterinaria: 'fa-stethoscope',
+    clinica: 'fa-hospital',
+    ong: 'fa-hand-holding-heart',
+    institucion: 'fa-building-columns',
+    media: 'fa-newspaper'
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    verificarAdmin(cargarEntidades);
+});
+
+function verificarAdmin(cb) {
+    fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.logueado || data.usuario.rol !== 'admin') {
+                if (data.logueado && data.usuario.rol === 'protectora') { window.location.href = 'mi-protectora.html'; return; }
+                window.location.href = '../html/login.html'; return;
+            }
+            document.getElementById('adminNombre').textContent = data.usuario.nombre;
+            document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
+            if (cb) cb();
+        });
+}
+
+function cargarEntidades() {
+    var q = encodeURIComponent(document.getElementById('inputBuscar').value);
+    var tipo = document.getElementById('filtroTipo').value;
+    var activos = document.getElementById('filtroActiva').value;
+
+    var url = '../backend/admin/entidades.php?accion=listar&buscar=' + q + '&tipo=' + tipo + '&activos=' + activos;
+    fetch(url, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) return;
+            window._entidadesCache = data.entidades;
+            renderTabla(data.entidades);
+        });
+}
+
+function renderTabla(entidades) {
+    var tb = document.getElementById('tablaEntidades');
+    if (!entidades.length) {
+        tb.innerHTML = '<tr><td colspan="7"><div class="estado-vacio"><i class="fa-solid fa-handshake"></i><p>No se encontraron entidades</p></div></td></tr>';
+        return;
+    }
+    tb.innerHTML = entidades.map(function(e) {
+        var tipoIcon = ICONOS_TIPO[e.tipo] || ICONOS_TIPO['Otro'];
+        var activa = e.activa == 1
+            ? '<span class="badge badge-verde">Activa</span>'
+            : '<span class="badge badge-gris">Inactiva</span>';
+        var web = e.web ? '<a href="' + e.web + '" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>' : '—';
+        return '<tr>'
+            + '<td><strong>' + (e.nombre || '—') + '</strong></td>'
+            + '<td><i class="fa-solid ' + tipoIcon + '" style="margin-right:0.3em;color:var(--gold);"></i>' + (e.tipo || 'Otro') + '</td>'
+            + '<td class="descripcion-col">' + (e.descripcion || '—') + '</td>'
+            + '<td>' + web + '</td>'
+            + '<td>' + (e.descuento || '—') + '</td>'
+            + '<td>' + activa + '</td>'
+            + '<td><div class="tabla-acciones">'
+                + '<button class="btn btn-sm btn-outline btn-icon" onclick="abrirEditar(' + e.idEntidad + ')" title="Editar"><i class="fa-solid fa-pen"></i></button>'
+                + (e.activa == 1
+                    ? '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminarEntidad(' + e.idEntidad + ')" title="Desactivar"><i class="fa-solid fa-trash"></i></button>'
+                    : '<button class="btn btn-sm btn-outline btn-icon" onclick="activarEntidad(' + e.idEntidad + ')" title="Activar"><i class="fa-solid fa-check"></i></button>')
+            + '</div></td>'
+            + '</tr>';
+    }).join('');
+}
+
+function abrirModalNuevo() {
+    document.getElementById('modalTitulo').textContent = 'Nueva entidad';
+    document.getElementById('modalId').value = '';
+    document.getElementById('fNombre').value = '';
+    document.getElementById('fTipo').value = 'tienda';
+    document.getElementById('fDescripcion').value = '';
+    document.getElementById('fWeb').value = '';
+    document.getElementById('fDescuento').value = '';
+    document.getElementById('fActiva').checked = true;
+    document.getElementById('modalError').textContent = '';
+    document.getElementById('modalOverlay').classList.add('abierto');
+}
+
+function abrirEditar(id) {
+    var entidades = window._entidadesCache || [];
+    var e = entidades.find(function(x) { return x.idEntidad == id; });
+    if (!e) return;
+
+    document.getElementById('modalTitulo').textContent = 'Editar entidad';
+    document.getElementById('modalId').value = e.idEntidad;
+    document.getElementById('fNombre').value = e.nombre || '';
+    document.getElementById('fTipo').value = e.tipo || 'tienda';
+    document.getElementById('fDescripcion').value = e.descripcion || '';
+    document.getElementById('fWeb').value = e.web || '';
+    document.getElementById('fDescuento').value = e.descuento || '';
+    document.getElementById('fActiva').checked = e.activa == 1;
+    document.getElementById('modalError').textContent = '';
+    document.getElementById('modalOverlay').classList.add('abierto');
+}
+
+function cerrarModal(e) {
+    if (e.target.id === 'modalOverlay') {
+        document.getElementById('modalOverlay').classList.remove('abierto');
+    }
+}
+
+function cerrarModalBtn() {
+    document.getElementById('modalOverlay').classList.remove('abierto');
+}
+
+function guardarEntidad() {
+    var id = document.getElementById('modalId').value;
+    var data = {
+        nombre: document.getElementById('fNombre').value.trim(),
+        tipo: document.getElementById('fTipo').value,
+        descripcion: document.getElementById('fDescripcion').value.trim(),
+        web: document.getElementById('fWeb').value.trim(),
+        descuento: document.getElementById('fDescuento').value.trim(),
+        activa: document.getElementById('fActiva').checked ? 1 : 0
+    };
+
+    if (!data.nombre || !data.tipo) {
+        document.getElementById('modalError').textContent = 'El nombre y el tipo son obligatorios.';
+        return;
+    }
+
+    var accion = id ? 'actualizar' : 'crear';
+    var url = '../backend/admin/entidades.php?accion=' + accion + (id ? '&id=' + id : '');
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+        credentials: 'include'
+    })
+    .then(function(r) {
+        if (!r.ok) throw new Error('Error HTTP: ' + r.status);
+        return r.text();
+    })
+    .then(function(text) {
+        try {
+            var res = JSON.parse(text);
+            if (res.ok) {
+                cerrarModalBtn();
+                cargarEntidades();
+                mostrarToast('Entidad guardada correctamente', 'ok');
+            } else {
+                document.getElementById('modalError').textContent = res.error || 'Error al guardar';
+            }
+        } catch(e) {
+            document.getElementById('modalError').textContent = 'Error de respuesta: ' + text.substring(0, 100);
+        }
+    })
+    .catch(function(err) {
+        document.getElementById('modalError').textContent = 'Error de conexión: ' + err.message;
+    });
+}
+
+function eliminarEntidad(id) {
+    if (!confirm('¿Seguro que quieres desactivar esta entidad?')) return;
+    fetch('../backend/admin/entidades.php?accion=eliminar&id=' + id, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(res){
+            if (res.ok) {
+                cargarEntidades();
+                mostrarToast('Entidad desactivada', 'ok');
+            } else {
+                mostrarToast(res.error || 'Error al eliminar', 'error');
+            }
+        })
+        .catch(function(err){
+            mostrarToast('Error de conexión', 'error');
+        });
+}
+
+function activarEntidad(id) {
+    fetch('../backend/admin/entidades.php?accion=activar&id=' + id, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(res){
+            if (res.ok) {
+                cargarEntidades();
+                mostrarToast('Entidad activada', 'ok');
+            } else {
+                mostrarToast(res.error || 'Error al activar', 'error');
+            }
+        })
+        .catch(function(err){
+            mostrarToast('Error de conexión', 'error');
+        });
+}
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('abierto');
+}
+
+function cerrarSesion() {
+    fetch('../backend/api/auth/logout.php', { credentials: 'include' })
+        .then(function(){ window.location.href = '../html/login.html'; });
+}
+
+function mostrarToast(msg, tipo) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast visible toast-' + (tipo || 'ok');
+    setTimeout(function(){ t.className = 'toast'; }, 3000);
+}
+</script>
+
+</body>
+</html>

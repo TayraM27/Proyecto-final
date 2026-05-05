@@ -211,46 +211,61 @@ function compartirCard(id) {
     document.execCommand('copy');
     document.body.removeChild(input);
     /* Mostrar URL al usuario */
-    alert('\u2705 Enlace copiado:\n' + url);
+    mostrarToast('Enlace copiado', 'ok');
 }
 
-function cargarAnimalesApadrina() {
+var paginaActualApadrina = 1;
+var totalPaginasApadrina = 1;
+
+function cargarAnimalesApadrina(pagina) {
+    paginaActualApadrina = pagina || 1;
     var grid = document.getElementById('gridApadrina');
-    fetch('../backend/mascotas/listar.php?apadrina=1&pagina=1')
-        .then(function(r) { return r.json(); })
+    grid.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border" style="color:#1B358F;" role="status"></div></div>';
+
+    fetch('../backend/mascotas/listar.php?apadrina=1&pagina=' + paginaActualApadrina + '&limite=12')
+        .then(function(r) { if (!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
         .then(function(data) {
             if (!data.mascotas || !data.mascotas.length) {
                 grid.innerHTML = '<div class="col-12 text-center py-4 text-muted">No hay animales disponibles para apadrinar en este momento.</div>';
+                generarPaginacionApadrina(1, 1);
                 return;
             }
             grid.innerHTML = data.mascotas.map(function(m) {
-                var foto = m.foto_principal
-                    ? '../' + m.foto_principal
-                    : '../img/mascotas/placeholder.jpg';
-
+                var foto = m.foto_principal ? '../' + m.foto_principal : '../img/mascotas/placeholder.jpg';
                 var badges = [];
-                    if (m.urgencia === 'urgente') badges.push('<span class="badge bg-danger">Urgente</span>');
-                    if (m.estado_salud && m.estado_salud.toLowerCase() !== 'bueno') badges.push('<span class="badge bg-dark">' + m.estado_salud + '</span>');
-                    if (m.badge_extra) badges.push('<span class="badge bg-secondary">' + m.badge_extra + '</span>');
-                    if (!badges.length) badges.push(m.urgencia === 'nuevo' ? '<span class="badge bg-info text-dark">Nuevo</span>' : '<span class="badge bg-secondary">Disponible</span>');
-                    var razon = '<div style="display:flex;gap:0.3em;flex-wrap:wrap;">' + badges.join('') + '</div>';
-
-                var desc = m.descripcion || (m.raza + (m.edad_texto ? ', ' + m.edad_texto : '') + '.');
-
+                if (m.urgencia === 'urgente') badges.push('<span class="badge bg-danger">Urgente</span>');
+                if (m.estado_salud && m.estado_salud.toLowerCase() !== 'bueno') badges.push('<span class="badge bg-dark">' + m.estado_salud + '</span>');
+                if (m.badge_extra) badges.push('<span class="badge bg-secondary">' + m.badge_extra + '</span>');
+                if (!badges.length) badges.push(m.urgencia === 'nuevo' ? '<span class="badge bg-info text-dark">Nuevo</span>' : '<span class="badge bg-secondary">Disponible</span>');
+                var razon = '<div style="display:flex;gap:0.3em;flex-wrap:wrap;">' + badges.join('') + '</div>';
+                var desc = m.descripcion
+                    ? (m.descripcion.length > 120 ? m.descripcion.substring(0, 120) + '...' : m.descripcion)
+                    : (m.raza || m.especie) + (m.edad_texto ? ', ' + m.edad_texto : '') + '.';
                 var tags = '';
-                if (m.edad_texto) tags += '<span class="animal-tag">🐾 ' + m.edad_texto + '</span>';
-                if (m.estado_salud && m.estado_salud.toLowerCase() !== 'bueno')
-                    tags += '<span class="animal-tag">💊 Cuidados especiales</span>';
-                if (m.especie === 'perro') tags += '<span class="animal-tag">🐕 Perro</span>';
-                if (m.especie === 'gato')  tags += '<span class="animal-tag">🐱 Gato</span>';
+                if (m.edad_texto) tags += '<span class="animal-tag">Edad: ' + m.edad_texto + '</span>';
+                if (m.estado_salud && m.estado_salud.toLowerCase() !== 'bueno') tags += '<span class="animal-tag">Cuidados especiales</span>';
+                if (m.especie === 'perro') tags += '<span class="animal-tag">Perro</span>';
+                if (m.especie === 'gato')  tags += '<span class="animal-tag">Gato</span>';
 
-                var idStr = 'apad_' + m.idMascota;
-                _shareData[m.idMascota]   = { nombre: m.nombre };
-                _apadrinaData[m.idMascota] = { nombre: m.nombre, protectora: m.protectora_nombre, telefono: m.telefono_protectora || null, email: m.email_protectora || null, web: m.web_protectora || null };
+                var nombre   = m.nombre.replace(/'/g, '').replace(/"/g, '&quot;');
+                var prot     = (m.protectora_nombre  || '').replace(/'/g, '');
+                var tel      = (m.telefono_protectora|| '').replace(/'/g, '');
+                var em       = (m.email_protectora   || '').replace(/'/g, '');
+                var web      = (m.web_protectora     || '').replace(/'/g, '');
+                var iban     = (m.iban_protectora    || '').replace(/'/g, '');
+
+                var dAttr = 'id=' + m.idMascota
+                    + '&nombre=' + encodeURIComponent(m.nombre)
+                    + '&protectora=' + encodeURIComponent(m.protectora_nombre || '')
+                    + '&telefono=' + encodeURIComponent(m.telefono_protectora || '')
+                    + '&email=' + encodeURIComponent(m.email_protectora || '')
+                    + '&web=' + encodeURIComponent(m.web_protectora || '')
+                    + '&iban=' + encodeURIComponent(m.iban_protectora || '');
+
                 return '<div class="col-md-6 col-lg-4">'
                     + '<div class="card-animal-apadrina">'
                     + '<div class="animal-img-wrap">'
-                    + '<img src="' + foto + '" onerror="this.src=\'../img/mascotas/placeholder.jpg\'" alt="' + m.nombre + '" class="animal-img">'
+                    + '<img src="' + foto + '" onerror="this.src=\'../img/mascotas/placeholder.jpg\'" alt="' + nombre + '" class="animal-img">'
                     + '</div>'
                     + '<div class="animal-info">'
                     + '<div class="d-flex justify-content-between align-items-start mb-1">'
@@ -260,59 +275,88 @@ function cargarAnimalesApadrina() {
                     + '<p class="animal-protectora"><i class="fa-solid fa-building-shield"></i> ' + m.protectora_nombre + '</p>'
                     + '<p class="animal-desc">' + desc + '</p>'
                     + '<div class="animal-tags">' + tags + '</div>'
-                    + '<button class="btn-apadrinar" id="btn-apad-' + m.idMascota + '">' 
-                    + '<i class="fa-solid fa-heart me-2"></i> Apadrinar a ' + m.nombre
+                    + '<div class="apad-btns-wrap">'
+                    + '<button class="btn-apadrinar" onclick="abrirModalApadrina(\'' + dAttr + '\')">'
+                    + '<i class="fa-solid fa-heart me-2"></i>Apadrinar a ' + m.nombre
                     + '</button>'
-                    + '<button class="btn-compartir" id="share-apad-' + m.idMascota + '">'
-                    + '<i class="fa-solid fa-share-nodes me-1"></i> Compartir'
+                    + '<a href="fichaAnimal.html?id=' + m.idMascota + '" class="btn-ver-ficha">'
+                    + '<i class="fa-solid fa-paw me-1"></i>Ver ficha'
+                    + '</a>'
+                    + '<button class="btn-compartir-sm" onclick="compartirAnimal(' + m.idMascota + ',\'' + nombre + '\')">'
+                    + '<i class="fa-solid fa-share-nodes"></i>'
                     + '</button>'
+                    + '</div>'
                     + '</div></div></div>';
             }).join('');
-            Object.keys(_shareData).forEach(function(id) {
-                var btn = document.getElementById('share-apad-' + id);
-                if (btn) {
-                    var d = _shareData[id] || {};
-                    btn.addEventListener('click', (function(i, n){ return function(){ compartirAnimal(i, n); }; })(id, d.nombre));
-                }
-            });
-            /* Asignar listeners a los botones generados */
-            Object.keys(_apadrinaData).forEach(function(id) {
-                var btn = document.getElementById('btn-apad-' + id);
-                if (btn) {
-                    btn.addEventListener('click', (function(i) {
-                        return function() {
-                            abrirModalApadrinaId(i, _apadrinaData[i].nombre, _apadrinaData[i]);
-                        };
-                    })(id));
-                }
-            });
+            totalPaginasApadrina = data.totalPaginas || 1;
+            generarPaginacionApadrina(totalPaginasApadrina, paginaActualApadrina);
         })
         .catch(function() {
             grid.innerHTML = '<div class="col-12 text-center py-4 text-muted">Error al cargar los animales. Inténtalo de nuevo.</div>';
         });
 }
 
-function abrirModalApadrinaId(id, nombre, d) {
+function generarPaginacionApadrina(totalPag, pagAct) {
+    var cont = document.getElementById('paginacionApadrina');
+    if (!cont) {
+        cont = document.createElement('div');
+        cont.id = 'paginacionApadrina';
+        cont.className = 'paginacion-container mt-4 mb-4 text-center';
+        grid.parentNode.appendChild(cont);
+    }
+    if (totalPag <= 1) { cont.innerHTML = ''; return; }
+    var html = '';
+    if (pagAct > 1) {
+        html += '<button class="btn-pag" onclick="cargarAnimalesApadrina(' + (pagAct-1) + ')"><i class="fa-solid fa-chevron-left"></i></button>';
+    }
+    for (var i = 1; i <= totalPag; i++) {
+        html += '<button class="btn-pag ' + (i === pagAct ? 'activo' : '') + '" onclick="cargarAnimalesApadrina(' + i + ')">' + i + '</button>';
+    }
+    if (pagAct < totalPag) {
+        html += '<button class="btn-pag" onclick="cargarAnimalesApadrina(' + (pagAct+1) + ')"><i class="fa-solid fa-chevron-right"></i></button>';
+    }
+    cont.innerHTML = html;
+}
+
+function abrirModalApadrina(qRaw) {
+    var p = new URLSearchParams(qRaw);
+    var id      = p.get('id');
+    var nombre  = p.get('nombre')    || '';
+    var prot    = p.get('protectora')|| '';
+    var tel     = p.get('telefono')  || '';
+    var em      = p.get('email')     || '';
+    var web     = p.get('web')       || '';
+    var iban    = p.get('iban')      || '';
+
     document.getElementById('modal-animal-nombre').textContent = nombre;
 
-    var asunto = encodeURIComponent('Apadrinamiento \u2013 ' + nombre);
+    var asunto = encodeURIComponent('Apadrinamiento - ' + nombre);
     var cuerpo = encodeURIComponent(
-        'Hola, me pongo en contacto desde PetFamily para interesarme por apadrinar a:\n\n' +
-        '  Animal: ' + nombre + '\n' +
-        '  ID: ' + id + '\n\n' +
-        'Quedo a la espera de informaci\u00f3n sobre las condiciones del apadrinamiento.\n\nUn saludo.'
+        'Hola, me pongo en contacto desde PetFamily para interesarme por apadrinar a:\n\n'
+        + '  Animal: ' + nombre + '\n'
+        + '  ID: ' + id + '\n\n'
+        + 'Quedo a la espera de informacion sobre las condiciones del apadrinamiento.\n\nUn saludo.'
     );
 
-    var html = '<p class="protectora-nombre mb-2">' + (d.protectora || '') + '</p>';
-    if (d.telefono) html += '<div class="modal-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + d.telefono.replace(/\s/g, '') + '">' + d.telefono + '</a></div>';
-    if (d.email)    html += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + d.email + '?subject=' + asunto + '&body=' + cuerpo + '">' + d.email + '</a></div>';
-    if (d.web)      html += '<div class="modal-dato"><i class="fa-solid fa-globe"></i><a href="' + d.web + '" target="_blank" rel="noopener">Web de la protectora</a></div>';
+    var html = '<p class="protectora-nombre mb-2">' + prot + '</p>';
+    if (tel) html += '<div class="modal-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + tel.replace(/\s/g, '') + '">' + tel + '</a></div>';
+    if (em)  html += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + em + '?subject=' + asunto + '&body=' + cuerpo + '">' + em + '</a></div>';
+    if (web) html += '<div class="modal-dato"><i class="fa-solid fa-globe"></i><a href="' + web + '" target="_blank" rel="noopener">Web de la protectora</a></div>';
+    if (iban) {
+        var ibanL = iban.replace(/\s*\([^)]*\)/g, '').trim();
+        html += '<div class="prot-dato-iban" style="margin-top:0.7em;">'
+              + '<i class="fa-solid fa-building-columns"></i>'
+              + '<span class="prot-iban-num">' + ibanL + '</span>'
+              + '<button onclick="copiarIban(this,\'' + ibanL + '\')" title="Copiar IBAN" style="background:none;border:none;cursor:pointer;color:#1B358F;padding:0;font-size:0.9rem;margin-left:auto;"><i class="fa-regular fa-copy"></i></button>'
+              + '</div>';
+    }
     html += '<a href="fichaAnimal.html?id=' + id + '" class="btn-azul d-block text-center mt-3" style="text-decoration:none;">'
-         + '<i class="fa-solid fa-paw me-2"></i>Ver ficha completa</a>';
+          + '<i class="fa-solid fa-paw me-2"></i>Ver ficha completa</a>';
 
     document.getElementById('modal-datos-apadrina').innerHTML = html;
     new bootstrap.Modal(document.getElementById('modalApadrina')).show();
 }
+
 </script>
 </body>
 </html>

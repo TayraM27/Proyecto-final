@@ -1,0 +1,1788 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetFamily – Mi Protectora</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily">
+            <span>Pet<em>Family</em></span>
+        </div>
+        <nav class="sidebar-nav">
+            <p class="sidebar-seccion">Mi Protectora</p>
+            <a href="#" class="sidebar-link activo" onclick="cambiarTab('datos', this); return false;"><i class="fa-solid fa-id-card"></i> Datos</a>
+            <a href="#" class="sidebar-link" onclick="cambiarTab('mascotas', this); return false;"><i class="fa-solid fa-paw"></i> Mis Mascotas</a>
+            <a href="#" class="sidebar-link" onclick="cambiarTab('solicitudes', this); return false;"><i class="fa-solid fa-file-signature"></i> Sol. Adopción</a>
+            <a href="#" class="sidebar-link" onclick="cambiarTab('acogidas', this); return false;"><i class="fa-solid fa-hand-holding-heart"></i> Sol. Acogida</a>
+            <a href="#" class="sidebar-link" onclick="cambiarTab('apadrinamientos', this); return false;"><i class="fa-solid fa-star"></i> Apadrinamientos</a>
+            <a href="#" class="sidebar-link" onclick="cambiarTab('eventos', this); return false;"><i class="fa-solid fa-calendar-days"></i> Eventos</a>
+            <p class="sidebar-seccion">Web pública</p>
+            <a href="../html/index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
+        </nav>
+        <div class="sidebar-pie">
+            <div class="sidebar-usuario">
+                <div class="sidebar-avatar" id="avatarInicial">P</div>
+                <div class="sidebar-usuario-info">
+                    <p class="sidebar-usuario-nombre" id="adminNombre">Protectora</p>
+                    <p class="sidebar-usuario-rol" id="adminProtectoraNombre">Cargando...</p>
+                </div>
+                <button class="btn-logout" onclick="cerrarSesion()" title="Cerrar sesión">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <header class="topbar">
+        <div style="display:flex;align-items:center;gap:0.8em;">
+            <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+            <span class="topbar-titulo" id="topbarTitulo"><i class="fa-solid fa-paw" style="color:var(--gold);margin-right:0.4em;"></i>Mis Mascotas</span>
+        </div>
+        <button class="btn btn-gold" id="btnNuevaMascota" onclick="abrirModalNueva()" style="display:none;">
+            <i class="fa-solid fa-plus"></i> Nueva mascota
+        </button>
+    </header>
+
+    <main class="admin-contenido">
+
+        <!-- TAB DATOS -->
+        <div id="tab-datos">
+            <div class="panel">
+                <div class="panel-header">
+                    <p class="panel-titulo"><i class="fa-solid fa-id-card"></i> Datos de mi protectora</p>
+                    <button class="btn btn-gold btn-sm" id="btnEditDatos" onclick="toggleEditDatos()"><i class="fa-solid fa-pen"></i> Editar</button>
+                </div>
+                <div class="modal-body" style="padding:1.5em;" id="datosProtectoraContenido">
+                    <div class="text-center py-4"><div class="spinner-border" style="color:var(--azul);"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB MASCOTAS -->
+        <div id="tab-mascotas" style="display:none;">
+            <div class="stats-grid" id="statsProtectora">
+                <div class="stat-card">
+                    <div class="stat-icono"><i class="fa-solid fa-paw"></i></div>
+                    <div>
+                        <p class="stat-numero" id="st-total">—</p>
+                        <p class="stat-label">Total mascotas</p>
+                    </div>
+                </div>
+                <div class="stat-card verde">
+                    <div class="stat-icono"><i class="fa-solid fa-heart"></i></div>
+                    <div>
+                        <p class="stat-numero" id="st-disponibles">—</p>
+                        <p class="stat-label">Disponibles</p>
+                    </div>
+                </div>
+                <div class="stat-card gold">
+                    <div class="stat-icono"><i class="fa-solid fa-hourglass-half"></i></div>
+                    <div>
+                        <p class="stat-numero" id="st-proceso">—</p>
+                        <p class="stat-label">En proceso</p>
+                    </div>
+                </div>
+                <div class="stat-card azul">
+                    <div class="stat-icono"><i class="fa-solid fa-house-chimney-heart"></i></div>
+                    <div>
+                        <p class="stat-numero" id="st-adoptados">—</p>
+                        <p class="stat-label">Adoptados</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="toolbar" style="flex:1;">
+                        <div class="toolbar-buscar">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="inputBuscar" placeholder="Buscar por nombre o raza..." oninput="cargarMascotas()">
+                        </div>
+                        <select class="toolbar-select" id="filtroEspecie" onchange="cargarMascotas()">
+                            <option value="todos">Todas las especies</option>
+                            <option value="perro">Perros</option>
+                            <option value="gato">Gatos</option>
+                        </select>
+                        <select class="toolbar-select" id="filtroEstado" onchange="cargarMascotas()">
+                            <option value="todos">Todos los estados</option>
+                            <option value="disponible">Disponible</option>
+                            <option value="en_proceso">En proceso</option>
+                            <option value="adoptado">Adoptado</option>
+                            <option value="no_disponible">No disponible</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="tabla-wrap">
+                    <table class="tabla">
+                        <thead>
+                            <tr>
+                                <th>Foto</th>
+                                <th>Nombre</th>
+                                <th>Especie</th>
+                                <th>Edad</th>
+                                <th>Tiempo en adopción</th>
+                                <th>Tiempo en protectora</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaMascotas">
+                            <tr><td colspan="8" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="paginacion" id="paginacion"></div>
+            </div>
+        </div>
+
+        <!-- TAB SOLICITUDES -->
+        <div id="tab-solicitudes" style="display:none;">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="toolbar" style="flex:1;">
+                        <select class="toolbar-select" id="filtroEstadoSol" onchange="cargarSolicitudes()">
+                            <option value="todos">Todos los estados</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="en_proceso">En proceso</option>
+                            <option value="aprobada">Aprobada</option>
+                            <option value="rechazada">Rechazada</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="tabla-wrap">
+                    <table class="tabla">
+                        <thead>
+                            <tr>
+                                <th>Solicitante</th>
+                                <th>Mascota</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaSolicitudes">
+                            <tr><td colspan="5" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="paginacion" id="paginacionSol"></div>
+            </div>
+        </div>
+
+        <!-- TAB ACOGIDAS -->
+        <div id="tab-acogidas" style="display:none;">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="toolbar" style="flex:1;">
+                        <select class="toolbar-select" id="filtroEstadoAcogida" onchange="cargarAcogidas()">
+                            <option value="todos">Todos los estados</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="en_revision">En revisión</option>
+                            <option value="aprobada">Aprobada</option>
+                            <option value="rechazada">Rechazada</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="tabla-wrap">
+                    <table class="tabla">
+                        <thead>
+                            <tr>
+                                <th>Solicitante</th>
+                                <th>Mascota</th>
+                                <th>Vivienda</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaAcogidas">
+                            <tr><td colspan="6" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="paginacion" id="paginacionAcogida"></div>
+            </div>
+        </div>
+
+        <!-- TAB APADRINAMIENTOS -->
+        <div id="tab-apadrinamientos" style="display:none;">
+            <div class="panel">
+                <div class="panel-header">
+                    <p class="panel-titulo"><i class="fa-solid fa-star"></i> Apadrinamientos activos</p>
+                </div>
+                <div class="tabla-wrap">
+                    <table class="tabla">
+                        <thead>
+                            <tr>
+                                <th>Mascota</th>
+                                <th>Padrino</th>
+                                <th>Cuota</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaApadrinamientos">
+                            <tr><td colspan="5" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB EVENTOS -->
+        <div id="tab-eventos" style="display:none;">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="toolbar" style="flex:1;">
+                        <div class="toolbar-buscar">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="evInputBuscar" placeholder="Buscar por título o lugar..." oninput="cargarEventos()">
+                        </div>
+                        <select class="toolbar-select" id="evFiltroActiva" onchange="cargarEventos()">
+                            <option value="1">Solo activos</option>
+                            <option value="0">Todos</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-gold" onclick="abrirModalNuevoEvento()" style="margin-left:0.5em;">
+                        <i class="fa-solid fa-plus"></i> Nuevo evento
+                    </button>
+                </div>
+                <div class="tabla-wrap">
+                    <table class="tabla">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Título</th>
+                                <th>Lugar</th>
+                                <th>Hora</th>
+                                <th>Precio</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaEventos">
+                            <tr><td colspan="7" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB PRIORITARIAS (ADMIN) -->
+        <div id="tab-prioritarias" style="display:none;">
+            <div class="panel">
+                <div class="panel-header">
+                    <p class="panel-titulo"><i class="fa-solid fa-star"></i> Mascotas Prioritarias (Admin)</p>
+                </div>
+                <div class="tabla-wrap">
+                    <table class="tabla">
+                        <thead>
+                            <tr>
+                                <th>Foto</th>
+                                <th>Nombre</th>
+                                <th>Protectora</th>
+                                <th>Fecha Prioritaria</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaPrioritarias">
+                            <tr><td colspan="5" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- MODAL MASCOTA -->
+<div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
+    <div class="modal">
+        <div class="modal-header">
+            <p class="modal-titulo"><i class="fa-solid fa-paw"></i> <span id="modalTitulo">Nueva mascota</span></p>
+            <button class="modal-cerrar" onclick="cerrarModalBtn()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="modalId">
+            <input type="hidden" id="fProtectora" value="">
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Nombre *</label>
+                    <input type="text" class="form-input" id="fNombre">
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Especie *</label>
+                    <select class="form-select" id="fEspecie">
+                        <option value="perro">Perro</option>
+                        <option value="gato">Gato</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Sexo *</label>
+                    <select class="form-select" id="fSexo">
+                        <option value="macho">Macho</option>
+                        <option value="hembra">Hembra</option>
+                    </select>
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Raza</label>
+                    <input type="text" class="form-input" id="fRaza">
+                </div>
+            </div>
+
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Edad (texto)</label>
+                    <input type="text" class="form-input" id="fEdad" placeholder="Ej: 3 años, 8 meses">
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Tamaño *</label>
+                    <select class="form-select" id="fTamanyo">
+                        <option value="pequeño">Pequeño</option>
+                        <option value="mediano">Mediano</option>
+                        <option value="grande">Grande</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Fecha de nacimiento</label>
+                    <input type="date" class="form-input" id="fFechaNacimiento">
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Edad calculada</label>
+                    <span id="edadCalculada" style="font-size:0.88rem;color:var(--texto-sub);">—</span>
+                </div>
+            </div>
+
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Fecha de entrada en protectora *</label>
+                    <input type="date" class="form-input" id="fFechaEntrada">
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Tiempo en protectora</label>
+                    <span id="tiempoProtectora" style="font-size:0.88rem;color:var(--texto-sub);">—</span>
+                </div>
+            </div>
+
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Color</label>
+                    <select class="form-select" id="fColor" onchange="toggleSubColores()">
+                        <option value="">Sin especificar</option>
+                        <option value="negro">Negro</option>
+                        <option value="blanco">Blanco</option>
+                        <option value="marron">Marrón</option>
+                        <option value="naranja">Naranja / Rojizo</option>
+                        <option value="gris">Gris / Azul</option>
+                        <option value="dorado">Dorado / Arena</option>
+                        <option value="atigrado">Atigrado</option>
+                        <option value="bicolor">Bicolor</option>
+                        <option value="tricolor">Tricolor</option>
+                    </select>
+                     <div id="subColoresWrap" style="display:none;margin-top:0.5em;">
+                         <select class="form-select form-select-sm mb-1" id="fColorSub1" onchange="componerColor();actualizarExclusiones();"></select>
+                         <select class="form-select form-select-sm mb-1" id="fColorSub2" onchange="componerColor();actualizarExclusiones();" style="display:none;"></select>
+                         <select class="form-select form-select-sm mb-1" id="fColorSub3" onchange="componerColor();actualizarExclusiones();" style="display:none;"></select>
+                     </div>
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Urgencia</label>
+                    <select class="form-select" id="fUrgencia">
+                        <option value="normal">Normal</option>
+                        <option value="urgente">Urgente</option>
+                        <option value="nuevo">Nuevo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Estado adopción</label>
+                    <select class="form-select" id="fEstado">
+                        <option value="disponible">Disponible</option>
+                        <option value="en_proceso">En proceso</option>
+                        <option value="adoptado">Adoptado</option>
+                        <option value="no_disponible">No disponible</option>
+                    </select>
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Estado de salud</label>
+                    <input type="text" class="form-input" id="fSalud" placeholder="Ej: Bueno, Leucemia felina+">
+                </div>
+            </div>
+
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Badge extra</label>
+                    <input type="text" class="form-input" id="fBadge" placeholder="Ej: Licencia PPP">
+                </div>
+            </div>
+
+            <div class="form-campo">
+                <label class="form-label">Descripción</label>
+                <textarea class="form-textarea" id="fDescripcion" rows="3"></textarea>
+            </div>
+
+        <div class="form-campo">
+                    <label class="form-label">Compatibilidad y características</label>
+                    <div class="form-checks-grid">
+                        <label class="form-check"><input type="checkbox" id="fNinos"> Compatible con niños</label>
+                        <label class="form-check"><input type="checkbox" id="fPerros"> Compatible con perros</label>
+                        <label class="form-check"><input type="checkbox" id="fGatos"> Compatible con gatos</label>
+                        <label class="form-check"><input type="checkbox" id="fPiso"> Apto para piso</label>
+                        <label class="form-check"><input type="checkbox" id="fVacunado"> Vacunado</label>
+                        <label class="form-check"><input type="checkbox" id="fEsterilizado"> Esterilizado</label>
+                        <label class="form-check"><input type="checkbox" id="fMicrochip"> Microchip</label>
+                        <label class="form-check"><input type="checkbox" id="fDesparasitado"> Desparasitado</label>
+                        <label class="form-check"><input type="checkbox" id="fApadrinamiento" checked> Disponible para apadrinamiento</label>
+                        <label class="form-check"><input type="checkbox" id="fAcogida"> Disponible para acogida</label>
+                    </div>
+                </div>
+
+            <div class="form-campo" id="campoFotos">
+                <label class="form-label">Fotos</label>
+                <div class="fotos-grid" id="fotosGrid"></div>
+                <input type="file" class="form-input" id="fFotos" multiple accept="image/*" onchange="previewNuevasFotos(this)">
+                <span style="font-size:0.78rem;color:var(--texto-sub);">Máx. 5 MB por foto. Haz clic en ☆ para elegir la principal.</span>
+            </div>
+
+                <div class="form-fila" id="prioritariaWrap" style="display:none;">
+                <div class="form-campo">
+                    <label class="form-label">Urgentes actuales: <span id="contadorPrioritarias">0</span> / 2</label>
+                </div>
+                <div class="form-campo">
+                    <label class="form-check">
+                        <input type="checkbox" id="fPrioritaria" onchange="document.getElementById('sliderDescWrap').style.display = this.checked ? '' : 'none';">
+                        Marcar como prioritaria (máx. 2)
+                    </label>
+                </div>
+                <div class="form-campo" id="sliderDescWrap" style="display:none;">
+                    <label class="form-label">Descripción para el slider</label>
+                    <textarea class="form-textarea" id="fSliderDesc" rows="2" placeholder="Texto que aparecerá en el slider de la página principal"></textarea>
+                </div>
+            </div>
+            <p class="form-error" id="modalError"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="cerrarModalBtn()">Cancelar</button>
+            <button class="btn btn-primario" id="btnGuardar" onclick="guardarMascota()"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DATOS PROTECTORA -->
+<div class="modal-overlay" id="modalOverlayDatos" onclick="if(event&&event.target===event.currentTarget)cerrarModalDatos()">
+    <div class="modal" style="max-width:700px;">
+        <div class="modal-header">
+            <p class="modal-titulo"><i class="fa-solid fa-building-shield"></i> Editar datos de mi protectora</p>
+            <button class="modal-cerrar" onclick="cerrarModalDatos()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Nombre *</label>
+                    <input type="text" class="form-input" id="dNombre">
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Localidad</label>
+                    <input type="text" class="form-input" id="dLocalidad">
+                </div>
+            </div>
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="dEmail">
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Teléfono</label>
+                    <input type="text" class="form-input" id="dTelefono">
+                </div>
+            </div>
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Web</label>
+                    <input type="url" class="form-input" id="dWeb" placeholder="https://...">
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Tipo de página</label>
+                    <select class="form-select" id="dTipoPagina">
+                        <option value="sin_pagina">Sin página</option>
+                        <option value="web">Web oficial</option>
+                        <option value="red_social">Red social</option>
+                        <option value="portal">Portal de adopción</option>
+                        <option value="otra">Otra</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-campo">
+                <label class="form-label">Red social (URL)</label>
+                <input type="url" class="form-input" id="dRedSocial" placeholder="https://www.facebook.com/...">
+            </div>
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">IBAN</label>
+                    <input type="text" class="form-input" id="dIban" placeholder="ES00 0000 0000 0000 0000 0000">
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Bizum</label>
+                    <input type="text" class="form-input" id="dBizum" placeholder="6XX XXX XXX">
+                </div>
+            </div>
+            <div class="form-campo">
+                <label class="form-label">URL Teaming</label>
+                <input type="url" class="form-input" id="dTeaming" placeholder="https://www.teaming.net/...">
+            </div>
+            <div class="form-campo">
+                <label class="form-label">URL del logo</label>
+                <input type="text" class="form-input" id="dLogo" placeholder="img/protectora/nombre.jpg">
+            </div>
+
+            <div class="form-campo">
+                <label class="form-label">Especie que atiende</label>
+                <select class="form-select" id="dEspecie">
+                    <option value="ambos">Perros y gatos</option>
+                    <option value="perros">Sólo perros</option>
+                        <option value="gatos">Sólo gatos</option>
+                </select>
+            </div>
+            <div class="form-campo">
+                <label class="form-label">Dirección</label>
+                <input type="text" class="form-input" id="dDireccion">
+            </div>
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Latitud</label>
+                    <input type="number" step="any" class="form-input" id="dLatitud" placeholder="43.xxx">
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Longitud</label>
+                    <input type="number" step="any" class="form-input" id="dLongitud" placeholder="-5.xxx">
+                </div>
+            </div>
+            <div class="form-campo">
+                <label class="form-label">Descripción completa</label>
+                <textarea class="form-textarea" id="dDescripcion" rows="3"></textarea>
+            </div>
+            <div class="form-campo">
+                <label class="form-label">Descripción para "Dona" <span style="color:var(--texto-sub);font-weight:400;">(máx. 300)</span></label>
+                <textarea class="form-textarea" id="dDescripcionDona" rows="2" maxlength="300"></textarea>
+            </div>
+            <div class="form-campo">
+                <label class="form-label">Características <span style="color:var(--texto-sub);font-weight:400;">(badges)</span></label>
+                <div class="form-checks-grid" id="dBadgesGrid"></div>
+            </div>
+            <p class="form-error" id="dModalError" style="display:none;color:var(--rojo);font-size:0.85rem;"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="cerrarModalDatos()">Cancelar</button>
+            <button class="btn btn-primario" onclick="guardarDatosProtectora()"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EVENTO -->
+<div class="modal-overlay" id="modalOverlayEvento" onclick="cerrarModalEventoF(event)">
+    <div class="modal">
+        <div class="modal-header">
+            <p class="modal-titulo"><i class="fa-solid fa-calendar-days"></i> <span id="evModalTitulo">Nuevo evento</span></p>
+            <button class="modal-cerrar" onclick="cerrarModalEvento()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="evModalId">
+            <div class="form-campo">
+                <label class="form-label">Título *</label>
+                <input type="text" class="form-input" id="evTitulo">
+            </div>
+            <div class="form-campo">
+                <label class="form-label">Descripción</label>
+                <textarea class="form-textarea" id="evDescripcion" rows="2"></textarea>
+            </div>
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Fecha *</label>
+                    <input type="date" class="form-input" id="evFecha">
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Hora</label>
+                    <input type="text" class="form-input" id="evHora" placeholder="11:00 – 14:00">
+                </div>
+            </div>
+            <div class="form-campo">
+                <label class="form-label">Lugar</label>
+                <input type="text" class="form-input" id="evLugar" placeholder="Plaza Mayor, Gijón">
+            </div>
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Precio</label>
+                    <input type="text" class="form-input" id="evPrecio" value="Gratis">
+                </div>
+                <div class="form-campo">
+                    <label class="form-check"><input type="checkbox" id="evActiva" checked> Activo</label>
+                </div>
+            </div>
+            <p class="form-error" id="evModalError" style="display:none;color:var(--error);font-size:0.85rem;margin-top:0.5em;"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="cerrarModalEvento()">Cancelar</button>
+            <button class="btn btn-primary" onclick="guardarEvento()"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+var paginaActual = 1;
+var totalPag = 1;
+var usuarioSesion = null;
+
+function cambiarTab(tab, link) {
+    document.querySelectorAll('#tab-datos, #tab-mascotas, #tab-solicitudes, #tab-acogidas, #tab-apadrinamientos, #tab-eventos').forEach(function(t){ t.style.display = 'none'; });
+    document.getElementById('tab-' + tab).style.display = 'block';
+    document.querySelectorAll('.sidebar-nav .sidebar-link').forEach(function(l){ l.classList.remove('activo'); });
+    if (link) link.classList.add('activo');
+
+    var btnNM = document.getElementById('btnNuevaMascota');
+    var titulos = {
+        'datos': '<i class="fa-solid fa-id-card" style="color:var(--gold);margin-right:0.4em;"></i>Datos',
+        'mascotas': '<i class="fa-solid fa-paw" style="color:var(--gold);margin-right:0.4em;"></i>Mis Mascotas',
+        'solicitudes': '<i class="fa-solid fa-file-signature" style="color:var(--gold);margin-right:0.4em;"></i>Solicitudes',
+        'acogidas': '<i class="fa-solid fa-hand-holding-heart" style="color:var(--gold);margin-right:0.4em;"></i>Solicitudes de Acogida',
+        'apadrinamientos': '<i class="fa-solid fa-star" style="color:var(--gold);margin-right:0.4em;"></i>Apadrinamientos',
+        'eventos': '<i class="fa-solid fa-calendar-days" style="color:var(--gold);margin-right:0.4em;"></i>Eventos',
+        'prioritarias': '<i class="fa-solid fa-star" style="color:var(--gold);margin-right:0.4em;"></i>Prioritarias (Admin)',
+    };
+    document.getElementById('topbarTitulo').innerHTML = titulos[tab] || '';
+    btnNM.style.display = tab === 'mascotas' || tab === 'eventos' ? '' : 'none';
+    if (tab === 'eventos') {
+        btnNM.innerHTML = '<i class="fa-solid fa-plus"></i> Nuevo evento';
+        btnNM.onclick = function(){ abrirModalNuevoEvento(); };
+    } else {
+        btnNM.innerHTML = '<i class="fa-solid fa-plus"></i> Nueva mascota';
+        btnNM.onclick = function(){ abrirModalNueva(); };
+    }
+
+    if (tab === 'datos') cargarDatosProtectora();
+    if (tab === 'mascotas') cargarMascotas(1);
+    if (tab === 'solicitudes') cargarSolicitudes();
+    if (tab === 'acogidas') cargarAcogidas();
+    if (tab === 'apadrinamientos') cargarApadrinamientos();
+    if (tab === 'eventos') cargarEventos();
+    if (tab === 'prioritarias') cargarPrioritariasAdmin();
+}
+
+function cargarPrioritariasAdmin() {
+    var tbody = document.getElementById('tablaPrioritarias');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:3em;color:var(--texto-sub);"><div class="spinner"></div></td></tr>';
+    fetch('../backend/admin/get_prioritarias.php')
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2em;color:var(--error);">Error</td></tr>'; return; }
+            if (!data.mascotas || !data.mascotas.length) {
+                tbody.innerHTML = '<tr><td colspan="5"><div class="estado-vacio"><i class="fa-solid fa-star"></i><p>No hay mascotas prioritarias.</p></div></td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.mascotas.map(function(m){
+                var foto = m.foto_principal
+                    ? '<img src="../' + m.foto_principal + '" class="tabla-foto" alt="' + m.nombre + '">'
+                    : '<div style="width:42px;height:42px;border-radius:8px;background:var(--azul-lite);display:flex;align-items:center;justify-content:center;font-size:1.3rem;">' + (m.especie === 'perro' ? '🐕' : '🐱') + '</div>';
+                return '<tr>'
+                    + '<td>' + foto + '</td>'
+                    + '<td><strong>' + m.nombre + '</strong></td>'
+                    + '<td>' + (m.protectora_nombre || '—') + '</td>'
+                    + '<td>' + (m.fecha_prioritaria ? new Date(m.fecha_prioritaria).toLocaleDateString('es-ES') : '—') + '</td>'
+                    + '<td><button class="btn btn-sm btn-icon btn-warning" onclick="desmarcarPrioritariaAdmin(' + m.idMascota + ')" title="Desmarcar"><i class="fa-solid fa-star"></i></button></td>'
+                    + '</tr>';
+            }).join('');
+        })
+        .catch(function(){ tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2em;color:var(--error);">Error de conexión.</td></tr>'; });
+}
+
+function desmarcarPrioritariaAdmin(id) {
+    if (!confirm('¿Desmarcar esta mascota como prioritaria?')) return;
+    fetch('../backend/admin/mascotas.php', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ accion: 'desmarcar_prioritaria_admin', idMascota: id })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        if (data.ok) { cargarPrioritariasAdmin(); } else { alert(data.error || 'Error al desmarcar.'); }
+    });
+}
+
+function verificarSesion(cb) {
+    fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.logueado || data.usuario.rol !== 'protectora') {
+                window.location.href = '../html/login.html'; return;
+            }
+            usuarioSesion = data.usuario;
+            document.getElementById('avatarInicial').textContent = usuarioSesion.nombre.charAt(0).toUpperCase();
+            document.getElementById('adminNombre').textContent = usuarioSesion.nombre;
+            document.getElementById('adminProtectoraNombre').textContent = 'Protectora';
+
+            fetch('../backend/api/protectoras/listar.php', { credentials: 'include' })
+                .then(function(r){ return r.json(); })
+                .then(function(pd){
+                    if (pd.ok && pd.protectoras) {
+                        var propia = pd.protectoras.find(function(p){ return p.idProtectora == usuarioSesion.idProtectora; });
+                        if (propia) {
+                            document.getElementById('adminProtectoraNombre').textContent = propia.nombre;
+                            document.getElementById('topbarTitulo').innerHTML = '<i class="fa-solid fa-paw" style="color:var(--gold);margin-right:0.4em;"></i>Mis Mascotas';
+                        }
+                    }
+                    if (cb) cb();
+                })
+                .catch(function(){ if (cb) cb(); });
+        })
+        .catch(function(){ window.location.href = '../html/login.html'; });
+}
+
+function cargarMascotas(pagina) {
+    paginaActual = pagina || 1;
+    var tbody = document.getElementById('tablaMascotas');
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:3em;color:var(--texto-sub);"><div class="spinner"></div></td></tr>';
+    var url = '../backend/admin/mascotas.php?pagina=' + paginaActual + '&q=' + encodeURIComponent(document.getElementById('inputBuscar').value) + '&especie=' + document.getElementById('filtroEspecie').value + '&estado=' + document.getElementById('filtroEstado').value;
+    fetch(url, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2em;color:var(--error);">Error</td></tr>'; return; }
+            totalPag = data.totalPaginas || 1;
+            renderTabla(data.mascotas);
+            renderPaginacion();
+            actualizarStats(data.mascotas);
+        })
+        .catch(function(){ tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2em;color:var(--error);">Error de conexión.</td></tr>'; });
+}
+
+function renderTabla(mascotas) {
+    var tbody = document.getElementById('tablaMascotas');
+    if (!mascotas || !mascotas.length) {
+        tbody.innerHTML = '<tr><td colspan="8"><div class="estado-vacio"><i class="fa-solid fa-paw"></i><p>No se encontraron mascotas</p></div></td></tr>'; return;
+    }
+    tbody.innerHTML = mascotas.map(function(m){
+        var foto = m.foto_principal
+            ? '<img src="../' + m.foto_principal + '" class="tabla-foto" alt="' + m.nombre + '">'
+            : '<div style="width:42px;height:42px;border-radius:8px;background:var(--azul-lite);display:flex;align-items:center;justify-content:center;font-size:1.3rem;">' + (m.especie === 'perro' ? '🐕' : '🐱') + '</div>';
+
+        var badgePri = m.prioritaria == 1
+            ? '<span class="badge badge-oro" title="Prioritaria"><i class="fa-solid fa-star"></i> Prioritaria</span> '
+            : '';
+
+        var badgeExtra = m.badge_extra
+            ? '<span class="badge badge-azul-lite">' + m.badge_extra + '</span> '
+            : '';
+
+        var badgeEst = m.estado_adopcion === 'disponible'
+            ? '<span class="badge badge-verde">Disponible</span>'
+            : m.estado_adopcion === 'en_proceso'
+            ? '<span class="badge badge-gold">En proceso</span>'
+            : m.estado_adopcion === 'no_disponible'
+            ? '<span class="badge badge-morado">No disponible</span>'
+            : '<span class="badge badge-gris">Adoptado</span>';
+
+        var tiempoProtectora = calcTiempoAdopcion(m.fecha_entrada, m.fecha_nacimiento);
+
+        return '<tr>'
+            + '<td>' + foto + '</td>'
+            + '<td><strong>' + m.nombre + '</strong><br>' + badgePri + badgeExtra + '</td>'
+            + '<td>' + (m.especie === 'perro' ? '🐕 Perro' : '🐱 Gato') + '</td>'
+            + '<td>' + (m.edad_texto || '—') + '</td>'
+            + '<td>' + tiempoProtectora + '</td>'
+            + '<td>' + tiempoProtectora + '</td>'
+            + '<td>' + badgeEst + '</td>'
+            + '<td><div class="tabla-acciones"><a href="../html/fichaAnimal.html?id=' + m.idMascota + '" class="btn btn-sm btn-icon btn-ver" title="Ver ficha"><i class="fa-solid fa-eye"></i></a><button class="btn btn-sm btn-icon btn-azul-lite" onclick="editar(' + m.idMascota + ')" title="Editar"><i class="fa-solid fa-pen"></i></button><button class="btn btn-sm btn-icon btn-danger" onclick="eliminar(' + m.idMascota + ')" title="Eliminar"><i class="fa-solid fa-trash"></i></button></div></td>'
+            + '</tr>';
+    }).join('');
+}
+
+function renderPaginacion() {
+    var cont = document.getElementById('paginacion');
+    if (totalPag <= 1) { cont.innerHTML = ''; return; }
+    var html = '<div class="pag-botones">';
+    if (paginaActual > 1) html += '<button onclick="cargarMascotas(' + (paginaActual-1) + ')"><i class="fa-solid fa-chevron-left"></i></button>';
+    for (var i = 1; i <= totalPag; i++) html += '<button class="' + (i===paginaActual?'activo':'') + '" onclick="cargarMascotas(' + i + ')">' + i + '</button>';
+    if (paginaActual < totalPag) html += '<button onclick="cargarMascotas(' + (paginaActual+1) + ')"><i class="fa-solid fa-chevron-right"></i></button>';
+    cont.innerHTML = html + '</div>';
+}
+
+function actualizarStats(mascotas) {
+    document.getElementById('st-total').textContent = mascotas.length;
+    document.getElementById('st-disponibles').textContent = mascotas.filter(function(m){ return m.estado_adopcion === 'disponible'; }).length;
+    document.getElementById('st-proceso').textContent = mascotas.filter(function(m){ return m.estado_adopcion === 'en_proceso'; }).length;
+    document.getElementById('st-adoptados').textContent = mascotas.filter(function(m){ return m.estado_adopcion === 'adoptado'; }).length;
+}
+
+function abrirModalNueva() {
+    var hoy = new Date().toISOString().split('T')[0];
+    document.getElementById('modalTitulo').textContent = 'Nueva mascota';
+    document.getElementById('modalId').value = '';
+    document.getElementById('fProtectora').value = usuarioSesion.idProtectora || '';
+    document.getElementById('fNombre').value = '';
+    document.getElementById('fEspecie').value = 'perro';
+    document.getElementById('fSexo').value = 'macho';
+    document.getElementById('fRaza').value = '';
+    document.getElementById('fEdad').value = '';
+    document.getElementById('fFechaNacimiento').value = '';
+    document.getElementById('edadCalculada').textContent = '—';
+    document.getElementById('fFechaEntrada').value = hoy;
+    document.getElementById('tiempoProtectora').textContent = '—';
+    document.getElementById('fTamanyo').value = 'mediano';
+    document.getElementById('fColor').value = '';
+    document.getElementById('fUrgencia').value = 'normal';
+    document.getElementById('fEstado').value = 'disponible';
+    document.getElementById('fSalud').value = '';
+    document.getElementById('fBadge').value = '';
+    document.getElementById('fDescripcion').value = '';
+    document.getElementById('fFotos').value = '';
+    document.getElementById('fotosGrid').innerHTML = '';
+    document.getElementById('modalError').textContent = '';
+    document.getElementById('fNinos').checked = false;
+    document.getElementById('fPerros').checked = false;
+    document.getElementById('fGatos').checked = false;
+    document.getElementById('fPiso').checked = false;
+    document.getElementById('fVacunado').checked = true;
+    document.getElementById('fEsterilizado').checked = false;
+    document.getElementById('fMicrochip').checked = false;
+    document.getElementById('fDesparasitado').checked = false;
+    document.getElementById('fApadrinamiento').checked = true;
+    document.getElementById('fAcogida').checked = true;
+    document.getElementById('fColor').value = '';
+    document.getElementById('subColoresWrap').style.display = 'none';
+    document.getElementById('prioritariaWrap').style.display = 'none';
+    document.getElementById('sliderDescWrap').style.display = 'none';
+    document.getElementById('fColorSub1').style.display = 'none';
+    document.getElementById('fColorSub2').style.display = 'none';
+    document.getElementById('fColorSub3').style.display = 'none';
+    document.getElementById('modalOverlay').classList.add('activo');
+}
+
+function editar(id) {
+    fetch('../backend/admin/mascotas.php?id=' + id, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok || !data.mascota) {
+                alert(data.error || 'Error al cargar la mascota.');
+                return;
+            }
+            var m = data.mascota;
+            document.getElementById('modalTitulo').textContent = 'Editar mascota';
+            document.getElementById('modalId').value = m.idMascota;
+            document.getElementById('fProtectora').value = m.idProtectora;
+            document.getElementById('fNombre').value = m.nombre;
+            document.getElementById('fEspecie').value = m.especie || 'perro';
+            document.getElementById('fSexo').value = m.sexo || 'macho';
+            document.getElementById('fRaza').value = m.raza || '';
+            document.getElementById('fEdad').value = m.edad_texto || '';
+            document.getElementById('fFechaNacimiento').value = m.fecha_nacimiento || '';
+            document.getElementById('edadCalculada').textContent = calcEdadDesdeNacimiento(m.fecha_nacimiento);
+            document.getElementById('fFechaEntrada').value = m.fecha_entrada || '';
+            document.getElementById('tiempoProtectora').textContent = calcTiempoAdopcion(m.fecha_entrada, m.fecha_nacimiento);
+            document.getElementById('fTamanyo').value = m.tamanyo || 'mediano';
+            aplicarColorEnFormulario(m.color || '');
+            document.getElementById('fUrgencia').value = m.urgencia || 'normal';
+            document.getElementById('fEstado').value = m.estado_adopcion || 'disponible';
+            document.getElementById('fSalud').value = m.estado_salud || '';
+            document.getElementById('fBadge').value = m.badge_extra || '';
+            document.getElementById('fDescripcion').value = m.descripcion || '';
+            document.getElementById('fSliderDesc').value = m.descripcion_slider || '';
+            document.getElementById('fFotos').value = '';
+            document.getElementById('modalError').textContent = '';
+            document.getElementById('fNinos').checked = !!parseInt(m.compatible_ninos);
+            document.getElementById('fPerros').checked = !!parseInt(m.compatible_perros);
+            document.getElementById('fGatos').checked = !!parseInt(m.compatible_gatos);
+            document.getElementById('fPiso').checked = !!parseInt(m.apto_piso);
+            document.getElementById('fVacunado').checked = !!parseInt(m.vacunado);
+            document.getElementById('fEsterilizado').checked = !!parseInt(m.esterilizado);
+            document.getElementById('fMicrochip').checked = !!parseInt(m.microchip);
+            document.getElementById('fDesparasitado').checked = !!parseInt(m.desparasitado);
+            document.getElementById('fApadrinamiento').checked = m.disponible_apadrinamiento != 0;
+            document.getElementById('fAcogida').checked = m.disponible_acogida != 0;
+            var wrapPri = document.getElementById('prioritariaWrap');
+            if (wrapPri) wrapPri.style.display = '';
+            var chkPri = document.getElementById('fPrioritaria');
+            if (chkPri) {
+                chkPri.checked = m.prioritaria == 1;
+                document.getElementById('sliderDescWrap').style.display = chkPri.checked ? '' : 'none';
+            }
+            cargarContadorPrioritarias();
+            renderFotos(m.fotos || []);
+            document.getElementById('modalOverlay').classList.add('activo');
+        })
+        .catch(function(e){ 
+            console.error('Error editar:', e);
+            alert('Error de conexión al cargar la mascota.'); 
+        });
+}
+
+function cargarContadorPrioritarias() {
+    fetch('../backend/admin/mascotas.php?q=&especie=todos&estado=todos&todos=1', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) return;
+            var cnt = (data.mascotas || []).filter(function(m){ return m.prioritaria == 1; }).length;
+            document.getElementById('contadorPrioritarias').textContent = cnt;
+        });
+}
+
+var OPCIONES_COLOR = [
+    { val: 'negro', label: 'Negro' },
+    { val: 'blanco', label: 'Blanco' },
+    { val: 'marron', label: 'Marrón' },
+    { val: 'naranja', label: 'Naranja / Rojizo' },
+    { val: 'gris', label: 'Gris / Azul' },
+    { val: 'dorado', label: 'Dorado / Arena' },
+    { val: 'atigrado', label: 'Atigrado' },
+    { val: 'bicolor', label: 'Bicolor' },
+    { val: 'tricolor', label: 'Tricolor' }
+];
+
+function toggleSubColores() {
+    var val = document.getElementById('fColor').value;
+    var wrap = document.getElementById('subColoresWrap');
+    var s1 = document.getElementById('fColorSub1');
+    var s2 = document.getElementById('fColorSub2');
+    var s3 = document.getElementById('fColorSub3');
+    s1.style.display = 'none';
+    s2.style.display = 'none';
+    s3.style.display = 'none';
+    wrap.style.display = 'none';
+    if (val === 'atigrado') {
+        wrap.style.display = 'block';
+        s1.style.display = '';
+        llenarSubSelect(s1, ['atigrado', 'bicolor', 'tricolor']);
+    } else if (val === 'bicolor') {
+        wrap.style.display = 'block';
+        s1.style.display = '';
+        s2.style.display = '';
+        llenarSubSelect(s1, ['atigrado', 'bicolor', 'tricolor']);
+        llenarSubSelect(s2, ['atigrado', 'bicolor', 'tricolor']);
+    } else if (val === 'tricolor') {
+        wrap.style.display = 'block';
+        s1.style.display = '';
+        s2.style.display = '';
+        s3.style.display = '';
+        llenarSubSelect(s1, ['atigrado', 'bicolor', 'tricolor']);
+        llenarSubSelect(s2, ['atigrado', 'bicolor', 'tricolor']);
+        llenarSubSelect(s3, ['atigrado', 'bicolor', 'tricolor']);
+    }
+}
+
+function llenarSubSelect(sel, excluidos, valorActual) {
+    var prev = sel.value;
+    sel.innerHTML = '<option value="">Seleccionar...</option>';
+    OPCIONES_COLOR.forEach(function(op) {
+        if (excluidos.indexOf(op.val) !== -1) return;
+        var opt = document.createElement('option');
+        opt.value = op.val;
+        opt.textContent = op.label;
+        sel.appendChild(opt);
+    });
+    if (valorActual && sel.querySelector('option[value="' + valorActual + '"]')) {
+        sel.value = valorActual;
+    } else if (prev && sel.querySelector('option[value="' + prev + '"]')) {
+        sel.value = prev;
+    }
+}
+
+function actualizarExclusiones() {
+    var v1 = document.getElementById('fColorSub1').value;
+    var v2 = document.getElementById('fColorSub2').value;
+    var v3 = document.getElementById('fColorSub3').value;
+    var excl1 = ['atigrado', 'bicolor', 'tricolor'];
+    var excl2 = ['atigrado', 'bicolor', 'tricolor'];
+    var excl3 = ['atigrado', 'bicolor', 'tricolor'];
+    if (v2) excl1.push(v2);
+    if (v3) excl1.push(v3);
+    if (v1) excl2.push(v1);
+    if (v3) excl2.push(v3);
+    if (v1) excl3.push(v1);
+    if (v2) excl3.push(v2);
+    llenarSubSelect(document.getElementById('fColorSub1'), excl1, v1);
+    llenarSubSelect(document.getElementById('fColorSub2'), excl2, v2);
+    llenarSubSelect(document.getElementById('fColorSub3'), excl3, v3);
+}
+
+function componerColor() {
+    var base = document.getElementById('fColor').value;
+    if (base === 'atigrado') {
+        var s1 = document.getElementById('fColorSub1').value;
+        if (s1) document.getElementById('fColor').title = 'Atigrado sobre ' + getLabelColor(s1);
+    } else if (base === 'bicolor') {
+        var s1 = document.getElementById('fColorSub1').value;
+        var s2 = document.getElementById('fColorSub2').value;
+        if (s1 && s2) document.getElementById('fColor').title = getLabelColor(s1) + ' y ' + getLabelColor(s2);
+    } else if (base === 'tricolor') {
+        var s1 = document.getElementById('fColorSub1').value;
+        var s2 = document.getElementById('fColorSub2').value;
+        var s3 = document.getElementById('fColorSub3').value;
+        if (s1 && s2 && s3) document.getElementById('fColor').title = getLabelColor(s1) + ', ' + getLabelColor(s2) + ' y ' + getLabelColor(s3);
+    }
+}
+
+function obtenerColorFinal() {
+    var base = document.getElementById('fColor').value;
+    if (base === 'atigrado') {
+        var s1 = document.getElementById('fColorSub1').value;
+        return s1 ? 'atigrado_' + s1 : 'atigrado';
+    } else if (base === 'bicolor') {
+        var s1 = document.getElementById('fColorSub1').value;
+        var s2 = document.getElementById('fColorSub2').value;
+        if (s1 && s2) return 'bicolor_' + s1 + '_' + s2;
+        return 'bicolor';
+    } else if (base === 'tricolor') {
+        var s1 = document.getElementById('fColorSub1').value;
+        var s2 = document.getElementById('fColorSub2').value;
+        var s3 = document.getElementById('fColorSub3').value;
+        if (s1 && s2 && s3) return 'tricolor_' + s1 + '_' + s2 + '_' + s3;
+        return 'tricolor';
+    }
+    return base;
+}
+
+function getLabelColor(val) {
+    var op = OPCIONES_COLOR.find(function(o) { return o.val === val; });
+    return op ? op.label : val;
+}
+
+function aplicarColorEnFormulario(color) {
+    document.getElementById('fColorSub1').style.display = 'none';
+    document.getElementById('fColorSub2').style.display = 'none';
+    document.getElementById('fColorSub3').style.display = 'none';
+    document.getElementById('subColoresWrap').style.display = 'none';
+    if (!color) { document.getElementById('fColor').value = ''; return; }
+    var partes = color.split('_');
+    var base = partes[0];
+    document.getElementById('fColor').value = base;
+    if (base === 'atigrado' && partes[1]) {
+        toggleSubColores();
+        document.getElementById('fColorSub1').value = partes[1];
+    } else if (base === 'bicolor' && partes[1] && partes[2]) {
+        toggleSubColores();
+        document.getElementById('fColorSub1').value = partes[1];
+        document.getElementById('fColorSub2').value = partes[2];
+        llenarSubSelect(document.getElementById('fColorSub1'), ['bicolor', 'tricolor', 'atigrado', partes[2]]);
+        llenarSubSelect(document.getElementById('fColorSub2'), ['bicolor', 'tricolor', 'atigrado', partes[1]]);
+    } else if (base === 'tricolor' && partes[1] && partes[2] && partes[3]) {
+        toggleSubColores();
+        document.getElementById('fColorSub1').value = partes[1];
+        document.getElementById('fColorSub2').value = partes[2];
+        document.getElementById('fColorSub3').value = partes[3];
+        var excl = ['bicolor', 'tricolor', 'atigrado', partes[2], partes[3]];
+        llenarSubSelect(document.getElementById('fColorSub1'), excl);
+        excl = ['bicolor', 'tricolor', 'atigrado', partes[1], partes[3]];
+        llenarSubSelect(document.getElementById('fColorSub2'), excl);
+        excl = ['bicolor', 'tricolor', 'atigrado', partes[1], partes[2]];
+        llenarSubSelect(document.getElementById('fColorSub3'), excl);
+    }
+}
+
+function renderFotos(fotos) {
+    var grid = document.getElementById('fotosGrid');
+    grid.querySelectorAll('.prev-nueva').forEach(function(el) { el.remove(); });
+    if (!fotos.length) { grid.innerHTML = '<span style="font-size:0.78rem;color:var(--texto-sub);">Sin fotos. Sube imágenes abajo.</span>'; return; }
+    grid.innerHTML = fotos.map(function(f) {
+        var src = '../' + f.ruta;
+        var activo = f.es_principal == 1;
+        return '<div class="foto-card' + (activo ? ' principal' : '') + '">'
+            + '<div class="foto-card-img">'
+            + '<img src="' + src + '" alt="foto">'
+            + (activo ? '<span class="badge-principal">Principal</span>' : '')
+            + '<button class="btn-eliminar" onclick="eliminarFoto(' + f.idFoto + ')"><i class="fa-solid fa-xmark"></i></button>'
+            + '</div>'
+            + '<div class="foto-card-acciones">'
+            + '<button onclick="setPrincipal(' + f.idFoto + ')" class="' + (activo ? 'es-principal' : '') + '" title="Marcar como principal"><i class="fa-solid fa-star"></i></button>'
+            + '</div></div>';
+    }).join('');
+}
+
+function previewNuevasFotos(input) {
+    var grid = document.getElementById('fotosGrid');
+    grid.querySelectorAll('.prev-nueva').forEach(function(el) { el.remove(); });
+    if (!input.files.length) return;
+    var files = Array.from(input.files).slice(0, 5);
+    files.forEach(function(f, i) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var div = document.createElement('div');
+            div.className = 'prev-nueva';
+            var idx = Array.from(input.files).indexOf(f);
+            div.innerHTML = '<div class="foto-card">'
+                + '<div class="foto-card-img"><img src="' + e.target.result + '" alt="nueva">'
+                + '<button class="btn-eliminar" onclick="this.closest(\'.prev-nueva\').remove()" title="Quitar"><i class="fa-solid fa-xmark"></i></button></div>'
+                + '<div class="foto-card-acciones"><button disabled style="opacity:0.4;"><i class="fa-solid fa-star"></i></button></div></div>';
+            grid.appendChild(div);
+        };
+        reader.readAsDataURL(f);
+    });
+}
+
+function setPrincipal(idFoto) {
+    fetch('../backend/admin/mascotas.php?accion=foto', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ idFoto: idFoto, es_principal: true })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        if (data.ok) {
+            var id = document.getElementById('modalId').value;
+            editar(parseInt(id));
+        }
+    });
+}
+
+function eliminarFoto(idFoto) {
+    if (!confirm('¿Eliminar esta foto?')) return;
+    fetch('../backend/admin/mascotas.php?accion=foto', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ idFoto: idFoto, eliminar: true })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        if (data.ok) {
+            var id = document.getElementById('modalId').value;
+            editar(parseInt(id));
+        }
+    });
+}
+
+function guardarMascota() {
+    var id = document.getElementById('modalId').value;
+    var nombre = document.getElementById('fNombre').value.trim();
+    if (!nombre) { alert('El nombre es obligatorio.'); return; }
+    var fechaEntrada = document.getElementById('fFechaEntrada').value;
+    if (!fechaEntrada) { alert('La fecha de entrada es obligatoria.'); return; }
+    var fechaNac = document.getElementById('fFechaNacimiento').value;
+    if (fechaNac && new Date(fechaNac + 'T00:00:00Z') > new Date(fechaEntrada + 'T00:00:00Z')) { alert('La fecha de nacimiento no puede ser posterior a la fecha de entrada.'); return; }
+
+    var fd = new FormData();
+    fd.append('idProtectora', document.getElementById('fProtectora').value);
+    fd.append('nombre', nombre);
+    fd.append('especie', document.getElementById('fEspecie').value);
+    fd.append('sexo', document.getElementById('fSexo').value);
+    fd.append('raza', document.getElementById('fRaza').value.trim());
+    fd.append('edad_texto', document.getElementById('fEdad').value.trim());
+    fd.append('fecha_nacimiento', document.getElementById('fFechaNacimiento').value);
+    fd.append('tamanyo', document.getElementById('fTamanyo').value);
+    fd.append('color', obtenerColorFinal());
+    fd.append('urgencia', document.getElementById('fUrgencia').value);
+    fd.append('estado_adopcion', document.getElementById('fEstado').value);
+    fd.append('estado_salud', document.getElementById('fSalud').value.trim());
+    fd.append('badge_extra', document.getElementById('fBadge').value.trim());
+    fd.append('descripcion_slider', document.getElementById('fSliderDesc').value.trim());
+    fd.append('descripcion', document.getElementById('fDescripcion').value.trim());
+    fd.append('fecha_entrada', fechaEntrada);
+    fd.append('compatible_ninos', document.getElementById('fNinos').checked ? 1 : 0);
+    fd.append('compatible_perros', document.getElementById('fPerros').checked ? 1 : 0);
+    fd.append('compatible_gatos', document.getElementById('fGatos').checked ? 1 : 0);
+    fd.append('apto_piso', document.getElementById('fPiso').checked ? 1 : 0);
+    fd.append('vacunado', document.getElementById('fVacunado').checked ? 1 : 0);
+    fd.append('esterilizado', document.getElementById('fEsterilizado').checked ? 1 : 0);
+    fd.append('microchip', document.getElementById('fMicrochip').checked ? 1 : 0);
+    fd.append('desparasitado', document.getElementById('fDesparasitado').checked ? 1 : 0);
+    fd.append('disponible_apadrinamiento', document.getElementById('fApadrinamiento').checked ? 1 : 0);
+    fd.append('disponible_acogida', document.getElementById('fAcogida').checked ? 1 : 0);
+    fd.append('prioritaria', document.getElementById('fPrioritaria').checked ? 1 : 0);
+
+    var fotos = document.getElementById('fFotos').files;
+    for (var i = 0; i < fotos.length; i++) fd.append('fotos', fotos[i]);
+
+    var btn = document.getElementById('btnGuardar');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+
+    if (id) {
+        var idNum = parseInt(id);
+        var datos = {};
+        fd.forEach(function(val, key) { datos[key] = val; });
+        delete datos.fotos;
+        datos.idMascota = idNum;
+        fetch('../backend/admin/mascotas.php', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(datos)
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (data.ok && fotos.length > 0) {
+                var fdFotos = new FormData();
+                fdFotos.append('idMascota', idNum);
+                for (var j = 0; j < fotos.length; j++) fdFotos.append('fotos', fotos[j]);
+                return fetch('../backend/admin/mascotas.php?accion=fotos', {
+                    method: 'POST', credentials: 'include', body: fdFotos
+                }).then(function(r){ return r.json(); });
+            }
+            return data;
+        })
+        .then(function(data){
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
+            if (data.ok) { cerrarModalBtn(); cargarMascotas(paginaActual); }
+            else { document.getElementById('modalError').textContent = data.error || 'Error al guardar.'; }
+        })
+        .catch(function(){ btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar'; document.getElementById('modalError').textContent = 'Error de conexión.'; });
+    } else {
+        fetch('../backend/admin/mascotas.php', { method: 'POST', credentials: 'include', body: fd })
+            .then(function(r){ return r.json(); })
+            .then(function(data){
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
+                if (data.ok) { cerrarModalBtn(); cargarMascotas(paginaActual); }
+                else { document.getElementById('modalError').textContent = data.error || 'Error al guardar.'; }
+            })
+            .catch(function(){ btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar'; document.getElementById('modalError').textContent = 'Error de conexión.'; });
+    }
+}
+
+function eliminar(id) {
+    if (!confirm('¿Eliminar esta mascota?')) return;
+    fetch('../backend/admin/mascotas.php', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ idMascota: id }) })
+        .then(function(r){ return r.json(); })
+        .then(function(data){ if (data.ok) cargarMascotas(paginaActual); });
+}
+
+function cargarSolicitudes() {
+    var estado = document.getElementById('filtroEstadoSol').value;
+    var url = '../backend/admin/solicitudes.php?estado=' + estado;
+    fetch(url, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) return;
+            renderSolicitudes(data.solicitudes);
+        });
+}
+
+function renderSolicitudes(sols) {
+    var tbody = document.getElementById('tablaSolicitudes');
+    if (!sols || !sols.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:3em;color:var(--texto-sub);">No hay solicitudes.</td></tr>'; return;
+    }
+    tbody.innerHTML = sols.map(function(s){
+        return '<tr>'
+            + '<td><strong>' + s.nombre + '</strong><br><small>' + s.email + '</small></td>'
+            + '<td>' + s.mascota + '</td>'
+            + '<td>' + s.fecha_envio.substring(0, 10) + '</td>'
+            + '<td><span class="badge-estado ' + s.estado + '">' + s.estado + '</span></td>'
+            + '<td><div class="tabla-acciones"><button class="btn btn-sm btn-icon btn-verde" onclick="cambiarEstadoSol(' + s.idSolicitud + ', \'aprobada\')" title="Aprobar"><i class="fa-solid fa-check"></i></button><button class="btn btn-sm btn-icon btn-danger" onclick="cambiarEstadoSol(' + s.idSolicitud + ', \'rechazada\')" title="Rechazar"><i class="fa-solid fa-xmark"></i></button></div></td>'
+            + '</tr>';
+    }).join('');
+}
+
+function cambiarEstadoSol(id, estado) {
+    if (!confirm('¿Cambiar estado a ' + estado + '?')) return;
+    fetch('../backend/admin/solicitudes.php', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ idSolicitud: id, estado: estado }) })
+        .then(function(r){ return r.json(); })
+        .then(function(data){ if (data.ok) cargarSolicitudes(); });
+}
+
+function cargarApadrinamientos() {
+    fetch('../backend/admin/apadrinamientos.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) return;
+            renderApadrinamientos(data.apadrinamientos);
+        });
+}
+
+function renderApadrinamientos(apads) {
+    var tbody = document.getElementById('tablaApadrinamientos');
+    if (!apads || !apads.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:3em;color:var(--texto-sub);">No hay apadrinamientos.</td></tr>'; return;
+    }
+    tbody.innerHTML = apads.map(function(a){
+        return '<tr>'
+            + '<td><strong>' + a.mascota + '</strong><br><small>' + a.especie + '</small></td>'
+            + '<td>' + (a.padrino || a.nombre_pagador || '—') + '</td>'
+            + '<td>' + a.cuota + ' €/mes</td>'
+            + '<td><span class="badge-estado ' + a.estado + '">' + a.estado + '</span></td>'
+            + '<td><div class="tabla-acciones"><button class="btn btn-sm btn-icon btn-danger" onclick="cambiarEstadoApad(' + a.idApadrinamiento + ', \'finalizado\')" title="Finalizar"><i class="fa-solid fa-flag-checkered"></i></button><button class="btn btn-sm btn-icon btn-danger" onclick="eliminarApad(' + a.idApadrinamiento + ')" title="Eliminar"><i class="fa-solid fa-trash"></i></button></div></td>'
+            + '</tr>';
+    }).join('');
+}
+
+function cambiarEstadoApad(id, estado) {
+    if (!confirm('¿Finalizar este apadrinamiento?')) return;
+    fetch('../backend/admin/apadrinamientos.php', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ idApadrinamiento: id, estado: estado, fecha_fin: new Date().toISOString().substring(0,10) }) })
+        .then(function(r){ return r.json(); })
+        .then(function(data){ if (data.ok) cargarApadrinamientos(); });
+}
+
+function eliminarApad(id) {
+    if (!confirm('¿Eliminar este apadrinamiento?')) return;
+    fetch('../backend/admin/apadrinamientos.php', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ idApadrinamiento: id }) })
+        .then(function(r){ return r.json(); })
+        .then(function(data){ if (data.ok) cargarApadrinamientos(); });
+}
+
+function cargarAcogidas() {
+    var estado = document.getElementById('filtroEstadoAcogida').value;
+    var url = '../backend/admin/solicitudes_acogida.php?estado=' + estado;
+    fetch(url, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) return;
+            renderAcogidas(data.solicitudes);
+        });
+}
+
+function renderAcogidas(sols) {
+    var tbody = document.getElementById('tablaAcogidas');
+    if (!sols || !sols.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:3em;color:var(--texto-sub);">No hay solicitudes de acogida.</td></tr>'; return;
+    }
+    tbody.innerHTML = sols.map(function(s){
+        var vivienda = s.vivienda.replace('_', ' ').replace('casa con jardin', 'casa con jardín').replace('casa sin jardin', 'casa sin jardín');
+        return '<tr>'
+            + '<td><strong>' + s.nombre + '</strong><br><small>' + s.email + '</small></td>'
+            + '<td>' + s.mascota + '</td>'
+            + '<td>' + vivienda + '</td>'
+            + '<td>' + s.fecha_envio.substring(0, 10) + '</td>'
+            + '<td><span class="badge-estado ' + s.estado + '">' + s.estado + '</span></td>'
+            + '<td><div class="tabla-acciones"><button class="btn btn-sm btn-icon btn-verde" onclick="cambiarEstadoAcogida(' + s.idSolicitud + ', \'aprobada\')" title="Aprobar"><i class="fa-solid fa-check"></i></button><button class="btn btn-sm btn-icon btn-danger" onclick="cambiarEstadoAcogida(' + s.idSolicitud + ', \'rechazada\')" title="Rechazar"><i class="fa-solid fa-xmark"></i></button></div></td>'
+            + '</tr>';
+    }).join('');
+}
+
+function cambiarEstadoAcogida(id, estado) {
+    if (!confirm('¿Cambiar estado a ' + estado + '?')) return;
+    fetch('../backend/admin/solicitudes_acogida.php', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ idSolicitud: id, estado: estado }) })
+        .then(function(r){ return r.json(); })
+        .then(function(data){ if (data.ok) cargarAcogidas(); });
+}
+
+function cargarEventos() {
+    var q = encodeURIComponent(document.getElementById('evInputBuscar').value);
+    var activos = document.getElementById('evFiltroActiva').value;
+    fetch('../backend/admin/eventos.php?accion=listar&buscar=' + q + '&activos=' + activos, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) return;
+            window._eventosCache = data.eventos;
+            renderEventos(data.eventos);
+        });
+}
+
+function renderEventos(eventos) {
+    var tb = document.getElementById('tablaEventos');
+    if (!eventos || !eventos.length) {
+        tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:3em;color:var(--texto-sub);">No hay eventos.</td></tr>';
+        return;
+    }
+    tb.innerHTML = eventos.map(function(e){
+        var fecha = new Date(e.fecha_evento + 'T00:00:00');
+        var dia = String(fecha.getDate()).padStart(2, '0');
+        var mes = fecha.toLocaleDateString('es-ES', { month: 'short' });
+        var activa = e.activa == 1
+            ? '<span class="badge badge-verde">Activo</span>'
+            : '<span class="badge badge-gris">Inactivo</span>';
+        var acciones = '<button class="btn btn-sm btn-icon btn-azul-lite" onclick="editarEvento(' + e.idEvento + ')" title="Editar"><i class="fa-solid fa-pen"></i></button>';
+        if (e.activa == 1) {
+            acciones += '<button class="btn btn-sm btn-icon btn-danger" onclick="eliminarEvento(' + e.idEvento + ')" title="Desactivar"><i class="fa-solid fa-trash"></i></button>';
+        } else {
+            acciones += '<button class="btn btn-sm btn-icon btn-verde" onclick="activarEvento(' + e.idEvento + ')" title="Activar"><i class="fa-solid fa-check"></i></button>';
+        }
+        return '<tr>'
+            + '<td><div class="fecha-box"><span class="fecha-dia">' + dia + '</span><span class="fecha-mes">' + mes + '</span></div></td>'
+            + '<td><strong>' + (e.titulo || '—') + '</strong></td>'
+            + '<td style="font-size:0.85rem;">' + (e.lugar || '—') + '<br><span style="color:var(--texto-sub);">' + (e.localidad || '') + '</span></td>'
+            + '<td>' + (e.hora || '—') + '</td>'
+            + '<td>' + (e.precio || 'Gratis') + '</td>'
+            + '<td>' + activa + '</td>'
+            + '<td><div class="tabla-acciones">' + acciones + '</div></td>'
+            + '</tr>';
+    }).join('');
+}
+
+function abrirModalNuevoEvento() {
+    document.getElementById('evModalTitulo').textContent = 'Nuevo evento';
+    document.getElementById('evModalId').value = '';
+    document.getElementById('evTitulo').value = '';
+    document.getElementById('evDescripcion').value = '';
+    document.getElementById('evFecha').value = '';
+    document.getElementById('evHora').value = '';
+    document.getElementById('evLugar').value = '';
+    document.getElementById('evPrecio').value = 'Gratis';
+    document.getElementById('evActiva').checked = true;
+    document.getElementById('evModalError').style.display = 'none';
+    document.getElementById('modalOverlayEvento').classList.add('activo');
+}
+
+function editarEvento(id) {
+    var e = (window._eventosCache||[]).find(function(x){ return x.idEvento == id; });
+    if (!e) return;
+    document.getElementById('evModalTitulo').textContent = 'Editar evento';
+    document.getElementById('evModalId').value = e.idEvento;
+    document.getElementById('evTitulo').value = e.titulo || '';
+    document.getElementById('evDescripcion').value = e.descripcion || '';
+    document.getElementById('evFecha').value = e.fecha_evento || '';
+    document.getElementById('evHora').value = e.hora || '';
+    document.getElementById('evLugar').value = e.lugar || '';
+    document.getElementById('evPrecio').value = e.precio || 'Gratis';
+    document.getElementById('evActiva').checked = e.activa == 1;
+    document.getElementById('evModalError').style.display = 'none';
+    document.getElementById('modalOverlayEvento').classList.add('activo');
+}
+
+function cerrarModalEventoF(e) { if (e && e.target === e.currentTarget) cerrarModalEvento(); }
+function cerrarModalEvento() { document.getElementById('modalOverlayEvento').classList.remove('activo'); }
+
+function guardarEvento() {
+    var id = document.getElementById('evModalId').value;
+    var data = {
+        titulo: document.getElementById('evTitulo').value.trim(),
+        descripcion: document.getElementById('evDescripcion').value.trim(),
+        fecha_evento: document.getElementById('evFecha').value,
+        hora: document.getElementById('evHora').value.trim(),
+        lugar: document.getElementById('evLugar').value.trim(),
+        precio: document.getElementById('evPrecio').value.trim() || 'Gratis',
+        activa: document.getElementById('evActiva').checked ? 1 : 0
+    };
+    if (!data.titulo || !data.fecha_evento) {
+        document.getElementById('evModalError').textContent = 'Título y fecha son obligatorios.';
+        document.getElementById('evModalError').style.display = 'block';
+        return;
+    }
+    var accion = id ? 'actualizar' : 'crear';
+    var url = '../backend/admin/eventos.php?accion=' + accion + (id ? '&id=' + id : '');
+    fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(data) })
+        .then(function(r){ return r.json(); })
+        .then(function(res){
+            if (res.ok) { cerrarModalEvento(); cargarEventos(); }
+            else { document.getElementById('evModalError').textContent = res.error; document.getElementById('evModalError').style.display = 'block'; }
+        });
+}
+
+function eliminarEvento(id) {
+    if (!confirm('¿Desactivar este evento?')) return;
+    fetch('../backend/admin/eventos.php?accion=eliminar&id=' + id, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(res){ if (res.ok) cargarEventos(); });
+}
+
+function activarEvento(id) {
+    fetch('../backend/admin/eventos.php?accion=activar&id=' + id, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(res){ if (res.ok) cargarEventos(); });
+}
+
+function cerrarModal(e) { if (e && e.target === e.currentTarget) cerrarModalBtn(); }
+function cerrarModalBtn() { document.getElementById('modalOverlay').classList.remove('activo'); }
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('abierto'); }
+function cerrarSesion() { fetch('../backend/api/auth/logout.php', { credentials: 'include' }).then(function(){ window.location.href = '../html/index.html'; }); }
+
+var datosProtectora = null;
+var modoEditDatos = false;
+var BADGES_PROT = [
+    { key: 'gestion_municipal',     icon: 'fa-shield-halved',            label: 'Gestión municipal' },
+    { key: 'casas_acogida',         icon: 'fa-house-chimney-heart',      label: 'Casas de acogida' },
+    { key: 'fundacion_oficial',     icon: 'fa-star',                     label: 'Fundación oficial' },
+    { key: 'teaming',               icon: 'fa-mug-hot',                  label: 'Teaming' },
+    { key: 'voluntarios',           icon: 'fa-people-group',             label: '100% voluntarios' },
+    { key: 'trato_familiar',        icon: 'fa-handshake',                label: 'Trato familiar' },
+    { key: 'animales_mayores',      icon: 'fa-heart',                    label: 'Animales mayores' },
+    { key: 'licencia_ppp',          icon: 'fa-id-card',                  label: 'Licencia PPP' },
+    { key: 'principalmente_perros', icon: 'fa-dog',                      label: 'Principalmente perros' },
+    { key: 'principalmente_gatos',  icon: 'fa-cat',                      label: 'Principalmente gatos' },
+    { key: 'sin_instalaciones',     icon: 'fa-house-circle-exclamation', label: 'Sin instalaciones' },
+];
+
+(function(){
+    var grid = document.getElementById('dBadgesGrid');
+    if (grid) {
+        grid.innerHTML = BADGES_PROT.map(function(b) {
+            return '<label class="form-check" style="margin-bottom:0.4em;">'
+                 + '<input type="checkbox" class="badge-check-d" value="' + b.key + '"> '
+                 + '<i class="fa-solid ' + b.icon + '" style="margin-right:0.5em;color:#F8BA56;"></i>'
+                 + b.label
+                 + '</label>'
+                 + '<p style="font-size:0.72rem;color:var(--texto-sub);margin:-0.2em 0 0.5em 1.5em;line-height:1.3;">' + badgeDescripcion(b.key) + '</p>';
+        }).join('');
+    }
+})();
+
+function cargarDatosProtectora() {
+    if (!usuarioSesion || !usuarioSesion.idProtectora) return;
+    var cont = document.getElementById('datosProtectoraContenido');
+    cont.innerHTML = '<div class="text-center py-4"><div class="spinner-border" style="color:var(--azul);"></div></div>';
+    modoEditDatos = false;
+    document.getElementById('btnEditDatos').innerHTML = '<i class="fa-solid fa-pen"></i> Editar';
+
+    fetch('../backend/admin/protectoras.php?id=' + usuarioSesion.idProtectora, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok || !data.protectora) { cont.innerHTML = '<p class="text-center text-muted">No se encontraron datos.</p>'; return; }
+            datosProtectora = data.protectora;
+            renderDatosProtectora();
+        })
+        .catch(function(){ cont.innerHTML = '<p class="text-center text-danger">Error de conexión.</p>'; });
+}
+
+function renderDatosProtectora() {
+    var p = datosProtectora;
+    var cont = document.getElementById('datosProtectoraContenido');
+    var logoHtml = '';
+    if (p.foto_logo) {
+        logoHtml = '<div class="text-center mb-3"><img src="../' + p.foto_logo + '" style="width:80px;height:80px;border-radius:50%;object-fit:contain;border:3px solid var(--azul);" onerror="this.parentElement.innerHTML=\'<div style=\\\'width:80px;height:80px;border-radius:50%;background:var(--azul-lite);display:inline-flex;align-items:center;justify-content:center;font-size:2rem;\\\'>🐾</div>\'"></div>';
+    }
+
+    var badgesHtml = '';
+    if (p.badges) {
+        var badgesArr = p.badges.split(',').map(function(k){ return k.trim(); }).filter(Boolean);
+        badgesHtml = '<div style="margin-top:1.2em;padding-top:1em;border-top:1px solid var(--gris-borde);">'
+            + '<p style="font-size:0.8rem;color:var(--texto-sub);font-weight:600;margin-bottom:0.6em;text-transform:uppercase;letter-spacing:0.04em;"><i class="fa-solid fa-medal me-1" style="margin-right:0.5em;"></i>Badges / Características</p>'
+            + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5em;">';
+        badgesArr.forEach(function(key){
+            var info = BADGES_PROT.find(function(b){ return b.key === key; });
+            if (info) {
+                badgesHtml += '<div style="display:flex;align-items:flex-start;gap:0.6em;padding:0.5em 0.7em;background:var(--gris-borde);border-radius:6px;">'
+                    + '<i class="fa-solid ' + info.icon + '" style="color:#F8BA56;margin-top:0.15em;flex-shrink:0;"></i>'
+                    + '<div><strong style="font-size:0.85rem;">' + info.label + '</strong>'
+                    + '<p style="font-size:0.75rem;color:var(--texto-sub);margin:0.15em 0 0 0;line-height:1.3;">' + badgeDescripcion(key) + '</p></div></div>';
+            }
+        });
+        badgesHtml += '</div></div>';
+    }
+
+    cont.innerHTML = logoHtml
+        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1em 2em;">'
+        + campoD('fa-shield-halved', 'Nombre', p.nombre)
+        + campoD('fa-location-dot', 'Localidad', p.localidad)
+        + campoD('fa-envelope', 'Email', p.email)
+        + campoD('fa-phone', 'Teléfono', p.telefono)
+        + campoD('fa-globe', 'Web', p.web ? '<a href="' + p.web + '" target="_blank" style="color:var(--azul);">' + p.web + '</a>' : null)
+        + campoD('fa-laptop', 'Tipo página', tipoPaginaLabel(p.tipo_pagina))
+        + campoD('fa-share-nodes', 'Red social', p.red_social_url ? '<a href="' + p.red_social_url + '" target="_blank" style="color:var(--azul);">Enlace</a>' : null)
+        + campoD('fa-building-columns', 'IBAN', p.iban)
+        + campoD('fa-mobile-screen', 'Bizum', p.bizum)
+        + campoD('fa-mug-hot', 'Teaming', p.teaming ? '<a href="' + p.teaming + '" target="_blank" style="color:var(--azul);">Enlace</a>' : null)
+        + campoD('fa-paw', 'Especie', especieLabel(p.especie_atencion))
+        + campoD('fa-map-pin', 'Dirección', p.direccion)
+
+        + campoD('fa-map-marker-alt', 'Coordenadas', (p.latitud && p.longitud) ? p.latitud + ', ' + p.longitud : null)
+        + '</div>'
+        + (p.descripcion ? '<div style="margin-top:1.2em;padding-top:1em;border-top:1px solid var(--gris-borde);"><p style="font-size:0.8rem;color:var(--texto-sub);font-weight:600;margin-bottom:0.3em;text-transform:uppercase;letter-spacing:0.04em;"><i class="fa-solid fa-align-left me-1" style="margin-right:0.5em;"></i>Descripción</p><p style="font-size:0.9rem;line-height:1.5;">' + p.descripcion + '</p></div>' : '')
+        + (p.descripcion_dona ? '<div style="margin-top:1em;padding-top:1em;border-top:1px solid var(--gris-borde);"><p style="font-size:0.8rem;color:var(--texto-sub);font-weight:600;margin-bottom:0.3em;text-transform:uppercase;letter-spacing:0.04em;"><i class="fa-solid fa-heart me-1" style="margin-right:0.5em;"></i>Descripción Dona</p><p style="font-size:0.9rem;line-height:1.5;">' + p.descripcion_dona + '</p></div>' : '')
+        + badgesHtml;
+}
+
+function campoD(icono, label, valor) {
+    return '<div><p style="font-size:0.75rem;color:var(--texto-sub);font-weight:600;margin-bottom:0.2em;text-transform:uppercase;letter-spacing:0.04em;"><i class="fa-solid ' + icono + '" style="margin-right:0.5em;"></i>' + label + '</p><p style="font-size:0.92rem;color:var(--texto);font-weight:500;margin:0;">' + (valor || '<span style="color:var(--texto-sub);font-style:italic;">Sin especificar</span>') + '</p></div>';
+}
+
+function badgeDescripcion(key) {
+    var desc = {
+        gestion_municipal: 'Centro gestionado o subvencionado por el ayuntamiento/municipio local.',
+        casas_acogida: 'Dispone de una red de hogares temporales para animales en espera de adopción.',
+        fundacion_oficial: 'Registrada como fundación legal con personalidad jurídica propia.',
+        teaming: 'Participa en Teaming: microdonaciones de 1 euro al mes entre la comunidad.',
+        voluntarios: 'Operativa gracias al trabajo de voluntarios sin personal asalariado.',
+        trato_familiar: 'Los animales reciben atención individualizada y cariño como en familia.',
+        animales_mayores: 'Programa especializado en el cuidado y adopción de animales senior.',
+        licencia_ppp: 'Orientada y especializada en la gestión de Perros Potencialmente Peligrosos.',
+        principalmente_perros: 'Centro que atiende mayoritariamente perros.',
+        principalmente_gatos: 'Centro que atiende mayoritariamente gatos.',
+        sin_instalaciones: 'No cuenta con refugio físico; trabaja exclusivamente con casas de acogida.'
+    };
+    return desc[key] || '';
+}
+
+function tipoPaginaLabel(t) {
+    var labels = { sin_pagina: 'Sin página', web: 'Web oficial', red_social: 'Red social', portal: 'Portal de adopción', otra: 'Otra' };
+    return labels[t] || '—';
+}
+
+function especieLabel(e) {
+    var labels = { ambos: 'Perros y gatos', perros: 'Sólo perros', gatos: 'Sólo gatos' };
+    return labels[e] || '—';
+}
+
+function toggleEditDatos() {
+    if (!datosProtectora) return;
+    if (!modoEditDatos) {
+        modoEditDatos = true;
+        document.getElementById('btnEditDatos').innerHTML = '<i class="fa-solid fa-xmark"></i> Cancelar';
+        abrirModalDatos();
+    } else {
+        modoEditDatos = false;
+        document.getElementById('btnEditDatos').innerHTML = '<i class="fa-solid fa-pen"></i> Editar';
+        cerrarModalDatos();
+    }
+}
+
+function abrirModalDatos() {
+    var p = datosProtectora;
+    document.getElementById('dNombre').value = p.nombre || '';
+    document.getElementById('dLocalidad').value = p.localidad || '';
+    document.getElementById('dEmail').value = p.email || '';
+    document.getElementById('dTelefono').value = p.telefono || '';
+    document.getElementById('dWeb').value = p.web || '';
+    document.getElementById('dTipoPagina').value = p.tipo_pagina || 'sin_pagina';
+    document.getElementById('dRedSocial').value = p.red_social_url || '';
+    document.getElementById('dIban').value = p.iban || '';
+    document.getElementById('dBizum').value = p.bizum || '';
+    document.getElementById('dTeaming').value = p.teaming || '';
+    document.getElementById('dLogo').value = p.foto_logo || '';
+
+    document.getElementById('dEspecie').value = p.especie_atencion || 'ambos';
+    document.getElementById('dDireccion').value = p.direccion || '';
+    document.getElementById('dLatitud').value = p.latitud || '';
+    document.getElementById('dLongitud').value = p.longitud || '';
+    document.getElementById('dDescripcion').value = p.descripcion || '';
+    document.getElementById('dDescripcionDona').value = p.descripcion_dona || '';
+
+    var activos = (p.badges || '').split(',').map(function(k){ return k.trim(); }).filter(Boolean);
+    document.querySelectorAll('.badge-check-d').forEach(function(cb) {
+        cb.checked = activos.indexOf(cb.value) !== -1;
+    });
+
+    document.getElementById('dModalError').style.display = 'none';
+    document.getElementById('modalOverlayDatos').classList.add('activo');
+}
+
+function cerrarModalDatos() {
+    document.getElementById('modalOverlayDatos').classList.remove('activo');
+    modoEditDatos = false;
+    document.getElementById('btnEditDatos').innerHTML = '<i class="fa-solid fa-pen"></i> Editar';
+}
+
+function guardarDatosProtectora() {
+    var badgesArr = [];
+    document.querySelectorAll('.badge-check-d:checked').forEach(function(cb) { badgesArr.push(cb.value); });
+
+    var datos = {
+        idProtectora: datosProtectora.idProtectora,
+        nombre: document.getElementById('dNombre').value.trim(),
+        localidad: document.getElementById('dLocalidad').value.trim(),
+        email: document.getElementById('dEmail').value.trim(),
+        telefono: document.getElementById('dTelefono').value.trim(),
+        web: document.getElementById('dWeb').value.trim(),
+        tipo_pagina: document.getElementById('dTipoPagina').value,
+        red_social_url: document.getElementById('dRedSocial').value.trim() || null,
+        iban: document.getElementById('dIban').value.trim() || null,
+        bizum: document.getElementById('dBizum').value.trim() || null,
+        teaming: document.getElementById('dTeaming').value.trim() || null,
+        foto_logo: document.getElementById('dLogo').value.trim(),
+        especie_atencion: document.getElementById('dEspecie').value,
+        badges: badgesArr.join(','),
+        direccion: document.getElementById('dDireccion').value.trim(),
+        latitud: document.getElementById('dLatitud').value || null,
+        longitud: document.getElementById('dLongitud').value || null,
+        descripcion: document.getElementById('dDescripcion').value.trim(),
+        descripcion_dona: document.getElementById('dDescripcionDona').value.trim(),
+    };
+    if (!datos.nombre) {
+        document.getElementById('dModalError').textContent = 'El nombre es obligatorio.';
+        document.getElementById('dModalError').style.display = 'block';
+        return;
+    }
+    if (datos.telefono && !/^\d{9}$/.test(datos.telefono)) {
+        document.getElementById('dModalError').textContent = 'El teléfono debe tener exactamente 9 dígitos.';
+        document.getElementById('dModalError').style.display = 'block';
+        return;
+    }
+    fetch('../backend/admin/protectoras.php', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(datos),
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        if (!data.ok) {
+            document.getElementById('dModalError').textContent = data.error || 'Error al guardar.';
+            document.getElementById('dModalError').style.display = 'block';
+            return;
+        }
+        cerrarModalDatos();
+        cargarDatosProtectora();
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function(){ verificarSesion(function(){ cargarDatosProtectora(); cargarMascotas(1); }); });
+
+function parseFechaUTC(f) {
+    return new Date(f + 'T00:00:00Z');
+}
+
+function calcTiempoAdopcion(fechaEntrada, fechaNacimiento) {
+    if (!fechaEntrada) return '—';
+    var entrada = parseFechaUTC(fechaEntrada);
+    var hoy = new Date();
+    var nac = fechaNacimiento ? parseFechaUTC(fechaNacimiento) : null;
+    var diffMs = hoy - entrada;
+    if (diffMs <= 0) return 'Hoy';
+    if (nac && entrada < nac) return '—';
+    var dias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (dias < 7) return dias + ' días';
+    if (dias < 30) return Math.floor(dias / 7) + ' sem.';
+    var meses = Math.floor(dias / 30);
+    var restoDias = dias % 30;
+    if (meses < 12) return meses + ' mes' + (meses > 1 ? 'es' : '') + (restoDias ? ' y ' + restoDias + ' días' : '');
+    var anios = Math.floor(meses / 12);
+    var mesesResto = meses % 12;
+    return anios + ' año' + (anios > 1 ? 's' : '') + (mesesResto ? ' y ' + mesesResto + ' mes' + (mesesResto > 1 ? 'es' : '') : '');
+}
+
+function calcEdadDesdeNacimiento(fechaNac) {
+    if (!fechaNac) return '—';
+    var nac = new Date(fechaNac);
+    var hoy = new Date();
+    var diffMs = hoy - nac;
+    if (diffMs <= 0) return 'Recién nacido';
+    var dias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (dias < 30) return dias + ' días';
+    var cumple = new Date(hoy.getFullYear(), nac.getMonth(), nac.getDate());
+    var anios = hoy.getFullYear() - nac.getFullYear();
+    if (hoy < cumple) anios--;
+    if (anios > 0) return anios + ' año' + (anios > 1 ? 's' : '');
+    var meses = hoy.getMonth() - nac.getMonth();
+    if (hoy.getDate() < nac.getDate()) meses--;
+    if (meses < 0) meses += 12;
+    return meses + ' mes' + (meses > 1 ? 'es' : '');
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+    verificarSesion(function(){ cargarMascotas(1); });
+    var inpNac = document.getElementById('fFechaNacimiento');
+    if (inpNac) {
+        inpNac.addEventListener('change', function() {
+            document.getElementById('edadCalculada').textContent = calcEdadDesdeNacimiento(this.value);
+        });
+    }
+    var inpEntrada = document.getElementById('fFechaEntrada');
+    if (inpEntrada) {
+        inpEntrada.addEventListener('change', function() {
+            var nac = document.getElementById('fFechaNacimiento').value;
+            document.getElementById('tiempoProtectora').textContent = calcTiempoAdopcion(this.value, nac);
+        });
+    }
+});
+</script>
+
+</body>
+</html>

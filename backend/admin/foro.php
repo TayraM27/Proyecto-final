@@ -18,15 +18,19 @@ $metodo = $_SERVER['REQUEST_METHOD'];
 session_write_close();
 
 /*--------------------------------------------------------------------------------------------
-GET */
+/* GET */
 if ($metodo === 'GET') {
     $tipo        = $_GET['tipo']        ?? 'publicaciones';
     $pagina      = max(1, (int)($_GET['pagina'] ?? 1));
     $soloActivas = isset($_GET['soloActivas']) ? (int)$_GET['soloActivas'] : 1;
     $p           = paginacion($pagina, 20);
 
+    /* ============================
+       GET COMENTARIOS
+    ============================ */
     if ($tipo === 'comentarios') {
         $where = $soloActivas ? 'WHERE c.activo = 1' : '';
+
         $stmt = $pdo->prepare(
             "SELECT c.idComentario, c.contenido, c.num_likes, c.activo, c.fecha,
                     u.nombre AS autor_nombre, u.username AS autor_username,
@@ -38,24 +42,33 @@ if ($metodo === 'GET') {
              ORDER BY c.fecha DESC
              LIMIT ? OFFSET ?"
         );
+
         $stmt->execute([$p['limite'], $p['offset']]);
         respuestaOk(['comentarios' => $stmt->fetchAll()]);
+        return; // 🔥 IMPORTANTE: evita ejecutar también publicaciones
     }
 
-    /* publicaciones */
+    /* 
+       GET PUBLICACIONES
+     */
     $where = $soloActivas ? 'WHERE pub.activa = 1' : '';
+
     $stmt = $pdo->prepare(
         "SELECT pub.idPublicacion, pub.titulo, pub.categoria, pub.num_likes,
                 pub.num_vistas, pub.fijada, pub.activa, pub.fecha,
                 u.nombre AS autor_nombre, u.username AS autor_username,
                 u.rol    AS autor_rol,
-                (SELECT COUNT(*) FROM comentarios c WHERE c.idPublicacion = pub.idPublicacion AND c.activo = 1) AS num_comentarios
+                (SELECT COUNT(*) 
+                 FROM comentarios c 
+                 WHERE c.idPublicacion = pub.idPublicacion 
+                   AND c.activo = 1) AS num_comentarios
          FROM publicaciones pub
          JOIN usuarios u ON pub.idUsuario = u.idUsuario
          $where
          ORDER BY pub.fijada DESC, pub.fecha DESC
          LIMIT ? OFFSET ?"
     );
+
     $stmt->execute([$p['limite'], $p['offset']]);
     respuestaOk(['publicaciones' => $stmt->fetchAll()]);
 }

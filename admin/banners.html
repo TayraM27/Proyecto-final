@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetFamily – Banners</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily">
+            <span>Pet<em>Family</em></span>
+        </div>
+        <nav class="sidebar-nav">
+            <p class="sidebar-seccion">General</p>
+            <a href="dashboard.html" class="sidebar-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+            <p class="sidebar-seccion">Gestión</p>
+            <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
+            <a href="protectoras.html" class="sidebar-link"><i class="fa-solid fa-building-shield"></i> Protectoras</a>
+            <a href="usuarios.html" class="sidebar-link"><i class="fa-solid fa-users"></i> Usuarios</a>
+            <a href="apadrinamientos.html" class="sidebar-link"><i class="fa-solid fa-star"></i> Apadrinamientos</a>
+            <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
+            <a href="solicitudes-protectora.html" class="sidebar-link"><i class="fa-solid fa-clipboard-check"></i> Sol. Protectora</a>
+            <p class="sidebar-seccion">Contenido</p>
+            <a href="eventos.html" class="sidebar-link"><i class="fa-solid fa-calendar-days"></i> Eventos</a>
+            <a href="entidades.html" class="sidebar-link"><i class="fa-solid fa-handshake"></i> Entidades</a>
+            <a href="banners.html" class="sidebar-link activo"><i class="fa-solid fa-image"></i> Banners</a>
+            <p class="sidebar-seccion">Comunidad</p>
+            <a href="foro.html" class="sidebar-link"><i class="fa-solid fa-comments"></i> Foro</a>
+            <p class="sidebar-seccion">Web pública</p>
+            <a href="../html/index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
+        </nav>
+        <div class="sidebar-pie">
+            <div class="sidebar-usuario">
+                <div class="sidebar-avatar" id="avatarInicial">A</div>
+                <div class="sidebar-usuario-info">
+                    <p class="sidebar-usuario-nombre" id="adminNombre">Admin</p>
+                    <p class="sidebar-usuario-rol">Administrador</p>
+                </div>
+                <button class="btn-logout" onclick="cerrarSesion()"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <header class="topbar">
+        <div style="display:flex;align-items:center;gap:0.8em;">
+            <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+            <span class="topbar-titulo"><i class="fa-solid fa-image" style="color:var(--gold);margin-right:0.4em;"></i>Banners</span>
+        </div>
+        <button class="btn btn-gold" onclick="abrirModalNuevo()">
+            <i class="fa-solid fa-plus"></i> Nuevo banner
+        </button>
+    </header>
+
+    <main class="admin-contenido">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="toolbar" style="flex:1;">
+                    <select class="toolbar-select" id="filtroTipo" onchange="cargarBanners()">
+                        <option value="">Todos los tipos</option>
+                        <option value="evento">Evento</option>
+                        <option value="tienda">Tienda</option>
+                        <option value="apoyo">Apoyo</option>
+                        <option value="general">General</option>
+                    </select>
+                    <select class="toolbar-select" id="filtroActiva" onchange="cargarBanners()">
+                        <option value="1">Solo activos</option>
+                        <option value="0">Todos (incl. eliminados)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="tabla-wrap">
+                <table class="tabla">
+                    <thead>
+                        <tr>
+                            <th>Orden</th>
+                            <th>Tipo</th>
+                            <th>Título</th>
+                            <th>Subtítulo</th>
+                            <th>Imagen</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaBanners">
+                        <tr><td colspan="7" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
+    <div class="modal">
+        <div class="modal-header">
+            <p class="modal-titulo"><i class="fa-solid fa-image"></i> <span id="modalTitulo">Nuevo banner</span></p>
+            <button class="modal-cerrar" onclick="cerrarModalBtn()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="modalId">
+
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Tipo *</label>
+                    <select class="form-select" id="fTipo">
+                        <option value="general">General</option>
+                        <option value="evento">Evento</option>
+                        <option value="tienda">Tienda</option>
+                        <option value="apoyo">Apoyo</option>
+                    </select>
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Orden</label>
+                    <input type="number" class="form-input" id="fOrden" value="0">
+                </div>
+            </div>
+
+            <div class="form-campo">
+                <label class="form-label">Título</label>
+                <input type="text" class="form-input" id="fTitulo">
+            </div>
+
+            <div class="form-campo">
+                <label class="form-label">Imagen *</label>
+                <input type="text" class="form-input" id="fImagen" placeholder="img/banners/nombre.jpg">
+            </div>
+
+            <div class="form-campo">
+                <label class="form-label">Enlace</label>
+                <input type="url" class="form-input" id="fEnlace" placeholder="https://...">
+            </div>
+
+            <div class="form-fila">
+                <label class="form-check"><input type="checkbox" id="fActiva" checked> Activo</label>
+            </div>
+
+            <p class="form-error" id="modalError"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="cerrarModalBtn()">Cancelar</button>
+            <button class="btn btn-primario" onclick="guardarBanner()">
+                <i class="fa-solid fa-floppy-disk"></i> Guardar
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var ICONOS_TIPO = {
+    general: 'fa-image',
+    evento: 'fa-calendar-days',
+    tienda: 'fa-store',
+    apoyo: 'fa-handshake'
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    verificarAdmin(cargarBanners);
+});
+
+function verificarAdmin(cb) {
+    fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.logueado || data.usuario.rol !== 'admin') {
+                if (data.logueado && data.usuario.rol === 'protectora') { window.location.href = 'mi-protectora.html'; return; }
+                window.location.href = '../html/login.html'; return;
+            }
+            document.getElementById('adminNombre').textContent = data.usuario.nombre;
+            document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
+            if (cb) cb();
+        });
+}
+
+function cargarBanners() {
+    var tipo = document.getElementById('filtroTipo').value;
+    var activos = document.getElementById('filtroActiva').value;
+
+    var url = '../backend/admin/banners.php?accion=listar&tipo=' + tipo + '&activos=' + activos;
+    fetch(url, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) return;
+            window._bannersCache = data.banners;
+            renderTabla(data.banners);
+        });
+}
+
+function renderTabla(banners) {
+    var tb = document.getElementById('tablaBanners');
+    if (!banners.length) {
+        tb.innerHTML = '<tr><td colspan="7"><div class="estado-vacio"><i class="fa-solid fa-image"></i><p>No se encontraron banners</p></div></td></tr>';
+        return;
+    }
+    tb.innerHTML = banners.map(function(b) {
+        var tipoIcon = ICONOS_TIPO[b.tipo] || ICONOS_TIPO['general'];
+        var activa = b.activo == 1
+            ? '<span class="badge badge-verde">Activo</span>'
+            : '<span class="badge badge-gris">Inactivo</span>';
+        var img = b.imagen
+            ? '<img src="../' + b.imagen + '" style="width:60px;height:40px;object-fit:cover;border-radius:4px;" onerror="this.style.display=\'none\'">'
+            : '—';
+        return '<tr>'
+            + '<td>' + (b.orden || 0) + '</td>'
+            + '<td><i class="fa-solid ' + tipoIcon + '" style="margin-right:0.3em;color:var(--gold);"></i>' + (b.tipo || 'general') + '</td>'
+            + '<td><strong>' + (b.titulo || '—') + '</strong></td>'
+            + '<td style="font-size:0.85rem;">' + (b.subtitulo || '—') + '</td>'
+            + '<td>' + img + '</td>'
+            + '<td>' + activa + '</td>'
+            + '<td><div class="tabla-acciones">'
+                + '<button class="btn btn-sm btn-outline btn-icon" onclick="abrirEditar(' + b.idBanner + ')" title="Editar"><i class="fa-solid fa-pen"></i></button>'
+                + (b.activo == 1
+                    ? '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminarBanner(' + b.idBanner + ')" title="Desactivar"><i class="fa-solid fa-trash"></i></button>'
+                    : '<button class="btn btn-sm btn-outline btn-icon" onclick="activarBanner(' + b.idBanner + ')" title="Activar"><i class="fa-solid fa-check"></i></button>')
+            + '</div></td>'
+            + '</tr>';
+    }).join('');
+}
+
+function abrirModalNuevo() {
+    document.getElementById('modalTitulo').textContent = 'Nuevo banner';
+    document.getElementById('modalId').value = '';
+    document.getElementById('fTipo').value = 'general';
+    document.getElementById('fOrden').value = '0';
+    document.getElementById('fTitulo').value = '';
+    document.getElementById('fSubtitulo').value = '';
+    document.getElementById('fImagen').value = '';
+    document.getElementById('fEnlace').value = '';
+    document.getElementById('fTextoBoton').value = '';
+    document.getElementById('fActiva').checked = true;
+    document.getElementById('modalError').textContent = '';
+    document.getElementById('modalOverlay').classList.add('abierto');
+}
+
+function abrirEditar(id) {
+    var banners = window._bannersCache || [];
+    var b = banners.find(function(x) { return x.idBanner == id; });
+    if (!b) return;
+
+    document.getElementById('modalTitulo').textContent = 'Editar banner';
+    document.getElementById('modalId').value = b.idBanner;
+    document.getElementById('fTipo').value = b.tipo || 'general';
+    document.getElementById('fOrden').value = b.orden || 0;
+    document.getElementById('fTitulo').value = b.titulo || '';
+    document.getElementById('fSubtitulo').value = b.subtitulo || '';
+    document.getElementById('fImagen').value = b.imagen || '';
+    document.getElementById('fEnlace').value = b.enlace || '';
+    document.getElementById('fTextoBoton').value = b.texto_boton || '';
+    document.getElementById('fActiva').checked = b.activo == 1;
+    document.getElementById('modalError').textContent = '';
+    document.getElementById('modalOverlay').classList.add('abierto');
+}
+
+function cerrarModal(e) {
+    if (e.target.id === 'modalOverlay') {
+        document.getElementById('modalOverlay').classList.remove('abierto');
+    }
+}
+
+function cerrarModalBtn() {
+    document.getElementById('modalOverlay').classList.remove('abierto');
+}
+
+function guardarBanner() {
+    var id = document.getElementById('modalId').value;
+    var data = {
+        tipo: document.getElementById('fTipo').value,
+        titulo: document.getElementById('fTitulo').value.trim(),
+        subtitulo: document.getElementById('fSubtitulo').value.trim(),
+        imagen: document.getElementById('fImagen').value.trim(),
+        enlace: document.getElementById('fEnlace').value.trim(),
+        texto_boton: document.getElementById('fTextoBoton').value.trim(),
+        orden: parseInt(document.getElementById('fOrden').value) || 0,
+        activo: document.getElementById('fActiva').checked ? 1 : 0
+    };
+
+    if (!data.imagen) {
+        document.getElementById('modalError').textContent = 'La imagen es obligatoria.';
+        return;
+    }
+
+    var accion = id ? 'actualizar' : 'crear';
+    var url = '../backend/admin/banners.php?accion=' + accion + (id ? '&id=' + id : '');
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+        credentials: 'include'
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+        if (res.ok) {
+            cerrarModalBtn();
+            cargarBanners();
+            mostrarToast('Banner guardado correctamente', 'ok');
+        } else {
+            document.getElementById('modalError').textContent = res.error || 'Error al guardar';
+        }
+    })
+.catch(function(err){
+            document.getElementById('modalError').textContent = 'Error de conexión: ' + err.message;
+        });
+}
+
+function eliminarBanner(id) {
+    if (!confirm('¿Seguro que quieres desactivar este banner?')) return;
+    fetch('../backend/admin/banners.php?accion=eliminar&id=' + id, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(res){
+            if (res.ok) {
+                cargarBanners();
+                mostrarToast('Banner desactivado', 'ok');
+            } else {
+                mostrarToast(res.error || 'Error al eliminar', 'error');
+            }
+        })
+        .catch(function(){
+            mostrarToast('Error de conexión', 'error');
+        });
+}
+
+function activarBanner(id) {
+    fetch('../backend/admin/banners.php?accion=activar&id=' + id, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(res){
+            if (res.ok) {
+                cargarBanners();
+                mostrarToast('Banner activado', 'ok');
+            } else {
+                mostrarToast(res.error || 'Error al activar', 'error');
+            }
+        })
+        .catch(function(){
+            mostrarToast('Error de conexión', 'error');
+        });
+}
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('abierto');
+}
+
+function cerrarSesion() {
+    fetch('../backend/api/auth/logout.php', { credentials: 'include' })
+        .then(function(){ window.location.href = '../html/login.html'; });
+}
+
+function mostrarToast(msg, tipo) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast visible toast-' + (tipo || 'ok');
+    setTimeout(function(){ t.className = 'toast'; }, 3000);
+}
+</script>
+
+</body>
+</html>

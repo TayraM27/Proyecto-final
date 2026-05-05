@@ -31,6 +31,7 @@ $campos = [
     'telefono'    => $data['telefono']    ?? null,
     'email'       => $data['email']       ?? null,
     'web'         => $data['web']         ?? null,
+    'url_formulario_acogida' => $data['url_formulario_acogida'] ?? null,
     'foto_logo'   => $data['foto_logo']   ?? null,
     'activa'      => $data['activa']      ?? 1,
 ];

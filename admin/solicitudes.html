@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetFamily – Solicitudes</title>
+    <title>PetFamily – Registro de contactos</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="admin.css">
@@ -24,7 +24,12 @@
             <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
             <a href="protectoras.html" class="sidebar-link"><i class="fa-solid fa-building-shield"></i> Protectoras</a>
             <a href="usuarios.html" class="sidebar-link"><i class="fa-solid fa-users"></i> Usuarios</a>
+            <a href="apadrinamientos.html" class="sidebar-link"><i class="fa-solid fa-star"></i> Apadrinamientos</a>
             <a href="solicitudes.html" class="sidebar-link activo"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
+            <p class="sidebar-seccion">Contenido</p>
+            <a href="eventos.html" class="sidebar-link"><i class="fa-solid fa-calendar-days"></i> Eventos</a>
+            <a href="entidades.html" class="sidebar-link"><i class="fa-solid fa-handshake"></i> Entidades</a>
+            <a href="banners.html" class="sidebar-link"><i class="fa-solid fa-image"></i> Banners</a>
             <p class="sidebar-seccion">Comunidad</p>
             <a href="foro.html" class="sidebar-link"><i class="fa-solid fa-comments"></i> Foro</a>
             <p class="sidebar-seccion">Web pública</p>
@@ -45,7 +50,7 @@
     <header class="topbar">
         <div style="display:flex;align-items:center;gap:0.8em;">
             <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
-            <span class="topbar-titulo"><i class="fa-solid fa-file-signature" style="color:var(--gold);margin-right:0.4em;"></i>Solicitudes de adopción</span>
+            <span class="topbar-titulo"><i class="fa-solid fa-file-signature" style="color:var(--gold);margin-right:0.4em;"></i>Registro de contactos</span>
         </div>
     </header>
 
@@ -54,10 +59,10 @@
             <div class="panel-header">
                 <div class="toolbar" style="flex:1;">
                     <select class="toolbar-select" id="filtroEstado" onchange="paginaActual=1;cargarSolicitudes()">
-                        <option value="pendiente">Pendientes</option>
+                        <option value="pendiente">Sin gestionar</option>
                         <option value="en_revision">En revisión</option>
-                        <option value="aprobada">Aprobadas</option>
-                        <option value="rechazada">Rechazadas</option>
+                        <option value="aprobada">Gestionados</option>
+                        <option value="rechazada">Descartados</option>
                         <option value="todos">Todas</option>
                     </select>
                 </div>
@@ -73,7 +78,7 @@
                             <th>Mensaje</th>
                             <th>Fecha</th>
                             <th>Estado</th>
-                            <th>Cambiar estado</th>
+                            <th>Gestión</th>
                         </tr>
                     </thead>
                     <tbody id="tablaSolicitudes">
@@ -101,7 +106,7 @@ function verificarAdmin(cb) {
     fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
-            if (!data.logueado || data.usuario.rol !== 'admin') { window.location.href = '../html/login.html'; return; }
+            if (!data.logueado || data.usuario.rol !== 'admin') { if (data.logueado && data.usuario.rol === 'protectora') { window.location.href = 'mi-protectora.html'; return; } window.location.href = '../html/login.html'; return; }
             document.getElementById('adminNombre').textContent = data.usuario.nombre;
             document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
             if (cb) cb();
@@ -137,10 +142,10 @@ function renderTabla(solicitudes) {
     };
 
     var etiquetas = {
-        pendiente:   'Pendiente',
+        pendiente:   'Sin gestionar',
         en_revision: 'En revisión',
-        aprobada:    'Aprobada',
-        rechazada:   'Rechazada',
+        aprobada:    'Gestionado',
+        rechazada:   'Descartado',
     };
 
     tb.innerHTML = solicitudes.map(function(s) {
@@ -148,7 +153,7 @@ function renderTabla(solicitudes) {
 
         var selectEstado = '<select class="toolbar-select" style="font-size:0.78rem;padding:0.35em 0.6em;" onchange="cambiarEstado(' + s.idSolicitud + ', this.value)">'
             + ['pendiente','en_revision','aprobada','rechazada'].map(function(e){
-                return '<option value="' + e + '"' + (e === s.estado ? ' selected' : '') + '>' + (etiquetas[e]) + '</option>';
+                return '<option value="' + e + '"' + (e === s.estado ? ' selected' : '') + '>' + ((etiquetas[e] || e)) + '</option>';
             }).join('')
             + '</select>';
 
@@ -157,8 +162,8 @@ function renderTabla(solicitudes) {
             + '<a href="mailto:' + s.email + '" style="font-size:0.78rem;color:var(--azul);">' + s.email + '</a>'
             + (s.telefono ? '<br><span style="font-size:0.78rem;color:var(--texto-sub);">' + s.telefono + '</span>' : '')
             + '</td>'
-            + '<td><strong>' + s.mascota_nombre + '</strong><br><span style="font-size:0.78rem;color:var(--texto-sub);">' + (s.especie === 'perro' ? '🐕' : '🐱') + '</span></td>'
-            + '<td style="font-size:0.82rem;">' + s.protectora_nombre + '</td>'
+            + '<td><strong>' + s.mascota + '</strong><br><span style="font-size:0.78rem;color:var(--texto-sub);">' + (s.mascota_especie === 'perro' ? '🐕' : '🐱') + '</span></td>'
+            + '<td style="font-size:0.82rem;">' + s.protectora + '</td>'
             + '<td style="font-size:0.8rem;max-width:180px;">' + (s.mensaje ? '<span title="' + s.mensaje + '">' + s.mensaje.substring(0,60) + (s.mensaje.length > 60 ? '…' : '') + '</span>' : '—') + '</td>'
             + '<td style="font-size:0.78rem;">' + formatFecha(s.fecha_envio) + '</td>'
             + '<td>' + badgeEst + '</td>'

@@ -1,41 +1,66 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-GET    — lista protectoras con búsqueda
+GET    — lista protectoras
 POST   — crea protectora
 PUT    — actualiza protectora
-DELETE — elimina protectora (soft delete, solo si no tiene animales activos) */
+DELETE — elimina protectora */
 
 require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
-requerirAdmin();
+requerirAdminOProtectora();
 
-$pdo    = conectar();
+$pdo = conectar();
 $metodo = $_SERVER['REQUEST_METHOD'];
+$esAdmin = esAdmin();
+$idProtectoraUsuario = getIdProtectoraUsuario();
 
 session_write_close();
 
 /*--------------------------------------------------------------------------------------------
 GET */
 if ($metodo === 'GET') {
-    $q = limpiar($_GET['q'] ?? '');
+    $id = (int)($_GET['id'] ?? 0);
 
-    $where  = [];
+    if ($id) {
+        $sql = "SELECT * FROM protectoras WHERE idProtectora = ?";
+        $params = [$id];
+        if (!$esAdmin && $idProtectoraUsuario) {
+            $sql .= ' AND idProtectora = ?';
+            $params[] = $idProtectoraUsuario;
+        }
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        $protectora = $stmt->fetch();
+        if (!$protectora) respuestaError('Protectora no encontrada.', 404);
+        respuestaOk(['protectora' => $protectora]);
+    }
+
+    $q      = limpiar($_GET['q']      ?? '');
+    $nombre = limpiar($_GET['nombre'] ?? '');
+    $todos  = !empty($_GET['todos'])  ? 1 : 0;
+
+    $where  = $todos ? [] : ['p.activa = 1'];
     $params = [];
 
     if ($q) {
-        $where[]  = '(p.nombre LIKE ? OR p.localidad LIKE ?)';
+        $where[]  = 'p.localidad LIKE ?';
         $params[] = "%$q%";
-        $params[] = "%$q%";
+    }
+    if ($nombre) {
+        $where[]  = 'p.nombre LIKE ?';
+        $params[] = "%$nombre%";
     }
 
     $cond = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
-    $sql = "SELECT p.idProtectora, p.nombre, p.localidad, p.telefono, p.email,
-                   p.web, p.tipo_pagina, p.iban, p.bizum, p.teaming,
-                   p.foto_logo, p.descripcion, p.direccion,
-                   p.latitud, p.longitud, p.verificada, p.activa, p.fecha_registro,
+    $sql = "SELECT p.idProtectora, p.nombre, p.descripcion, p.descripcion_dona,
+                   p.direccion, p.localidad, p.telefono, p.email,
+                   p.web, p.tipo_pagina, p.red_social_url, p.especie_atencion,
+                   p.iban, p.bizum, p.teaming, p.badges,
+                   p.foto_logo, p.latitud, p.longitud,
+                   p.verificada, p.activa, p.fecha_registro,
                    COUNT(m.idMascota) AS num_animales
             FROM protectoras p
             LEFT JOIN mascotas m ON m.idProtectora = p.idProtectora AND m.activa = 1
@@ -50,99 +75,121 @@ if ($metodo === 'GET') {
 }
 
 /*--------------------------------------------------------------------------------------------
-POST */
+POST — crea protectora (SOLO REGISTRO PUBLICO, admin NO puede crear) */
 if ($metodo === 'POST') {
-    $datos  = json_decode(file_get_contents('php://input'), true) ?? [];
-    $nombre = limpiar($datos['nombre'] ?? '');
-
-    if (!$nombre) respuestaError('El nombre es obligatorio.');
-    if (!empty($datos['email']) && !validarEmail($datos['email'])) respuestaError('Email no válido.');
-
-    $tiposPagina = ['web', 'red_social', 'otra', 'sin_pagina'];
-    $tipoPagina  = in_array($datos['tipo_pagina'] ?? '', $tiposPagina) ? $datos['tipo_pagina'] : 'sin_pagina';
-
-    $stmt = $pdo->prepare(
-        'INSERT INTO protectoras
-            (nombre, descripcion, direccion, localidad, telefono, email,
-             web, tipo_pagina, iban, bizum, teaming, foto_logo, latitud, longitud)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
-    );
-    $stmt->execute([
-        $nombre,
-        limpiar($datos['descripcion'] ?? ''),
-        limpiar($datos['direccion']   ?? ''),
-        limpiar($datos['localidad']   ?? ''),
-        limpiar($datos['telefono']    ?? ''),
-        $datos['email']      ?? null,
-        $datos['web']        ?? null,
-        $tipoPagina,
-        limpiar($datos['iban']    ?? ''),
-        limpiar($datos['bizum']   ?? ''),
-        $datos['teaming']    ?? null,
-        $datos['foto_logo']  ?? null,
-        !empty($datos['latitud'])  ? (float)$datos['latitud']  : null,
-        !empty($datos['longitud']) ? (float)$datos['longitud'] : null,
-    ]);
-
-    respuestaOk(['mensaje' => 'Protectora creada.', 'idProtectora' => (int)$pdo->lastInsertId()]);
+    respuestaError('Las protectoras se registran por su cuenta. Los administradores no pueden crear protectoras.', 403);
 }
 
 /*--------------------------------------------------------------------------------------------
-PUT */
+PUT — actualizar protectora (protectora edita sus datos, admin solo moderacion) */
 if ($metodo === 'PUT') {
     $datos = json_decode(file_get_contents('php://input'), true) ?? [];
     $id    = (int)($datos['idProtectora'] ?? 0);
     if (!$id) respuestaError('idProtectora requerido.');
-    if (!empty($datos['email']) && !validarEmail($datos['email'])) respuestaError('Email no válido.');
 
-    $tiposPagina = ['web', 'red_social', 'otra', 'sin_pagina'];
-    $tipoPagina  = in_array($datos['tipo_pagina'] ?? '', $tiposPagina) ? $datos['tipo_pagina'] : 'sin_pagina';
+    if ($esAdmin) {
+        if (!empty($datos['email']) && !validarEmail($datos['email'])) respuestaError('Email no válido.');
+        if (!empty($datos['telefono']) && !preg_match('/^\d{9}$/', limpiar($datos['telefono']))) respuestaError('El teléfono debe tener exactamente 9 dígitos.');
 
-    $pdo->prepare(
-        'UPDATE protectoras SET
-            nombre=?, descripcion=?, direccion=?, localidad=?,
-            telefono=?, email=?, web=?, tipo_pagina=?,
-            iban=?, bizum=?, teaming=?,
-            foto_logo=?, latitud=?, longitud=?, verificada=?, activa=?
-         WHERE idProtectora=?'
-    )->execute([
-        limpiar($datos['nombre']      ?? ''),
-        limpiar($datos['descripcion'] ?? ''),
-        limpiar($datos['direccion']   ?? ''),
-        limpiar($datos['localidad']   ?? ''),
-        limpiar($datos['telefono']    ?? ''),
-        $datos['email']      ?? null,
-        $datos['web']        ?? null,
-        $tipoPagina,
-        limpiar($datos['iban']    ?? ''),
-        limpiar($datos['bizum']   ?? ''),
-        $datos['teaming']    ?? null,
-        $datos['foto_logo']  ?? null,
-        !empty($datos['latitud'])  ? (float)$datos['latitud']  : null,
-        !empty($datos['longitud']) ? (float)$datos['longitud'] : null,
-        (int)($datos['verificada'] ?? 0),
-        (int)($datos['activa']     ?? 1),
-        $id,
-    ]);
+        $pdo->prepare(
+            'UPDATE protectoras SET verificada=?, activa=? WHERE idProtectora=?'
+        )->execute([
+            (int)($datos['verificada'] ?? 0),
+            (int)($datos['activa']     ?? 1),
+            $id,
+        ]);
 
-    respuestaOk(['mensaje' => 'Protectora actualizada.']);
+        $pdo->prepare(
+            'INSERT INTO audit_logs (actor_id, actor_role, action, target_type, target_id, reason)
+             VALUES (?, ?, ?, ?, ?, ?)'
+        )->execute([
+            (int)($_SESSION['idUsuario'] ?? 0),
+            'admin',
+            'moderar_protectora',
+            'protectora',
+            $id,
+            limpiar($datos['motivo'] ?? ''),
+        ]);
+
+        respuestaOk(['mensaje' => 'Moderación de protectora actualizada.']);
+    } else {
+        if (!$idProtectoraUsuario) respuestaError('No tienes una protectora asignada.');
+        if ($id !== $idProtectoraUsuario) respuestaError('No puedes editar otra protectora.', 403);
+        if (!empty($datos['email']) && !validarEmail($datos['email'])) respuestaError('Email no válido.');
+        if (!empty($datos['telefono']) && !preg_match('/^\d{9}$/', limpiar($datos['telefono']))) respuestaError('El teléfono debe tener exactamente 9 dígitos.');
+
+        $pdo->prepare(
+            'UPDATE protectoras SET
+                nombre=?, descripcion=?, descripcion_dona=?, direccion=?, localidad=?,
+                telefono=?, email=?, web=?, tipo_pagina=?,
+                red_social_url=?, especie_atencion=?,
+                iban=?, bizum=?, teaming=?, badges=?,
+                foto_logo=?, url_formulario_acogida=?, latitud=?, longitud=?
+             WHERE idProtectora=?'
+        )->execute([
+            limpiar($datos['nombre']           ?? ''),
+            limpiar($datos['descripcion']      ?? ''),
+            limpiar($datos['descripcion_dona'] ?? ''),
+            limpiar($datos['direccion']        ?? ''),
+            limpiar($datos['localidad']        ?? ''),
+            limpiar($datos['telefono']         ?? ''),
+            !empty($datos['email'])         ? $datos['email']          : null,
+            !empty($datos['web'])           ? $datos['web']            : null,
+            $datos['tipo_pagina']           ?? 'sin_pagina',
+            !empty($datos['red_social_url'])? $datos['red_social_url'] : null,
+            $datos['especie_atencion']      ?? 'ambos',
+            !empty($datos['iban'])          ? limpiar($datos['iban'])  : null,
+            !empty($datos['bizum'])         ? limpiar($datos['bizum']) : null,
+            !empty($datos['teaming'])       ? $datos['teaming']        : null,
+            $datos['badges']               ?? '',
+            !empty($datos['foto_logo'])     ? $datos['foto_logo']      : null,
+            !empty($datos['url_formulario_acogida']) ? $datos['url_formulario_acogida'] : null,
+            !empty($datos['latitud'])       ? (float)$datos['latitud'] : null,
+            !empty($datos['longitud'])      ? (float)$datos['longitud']: null,
+            $id,
+        ]);
+
+        respuestaOk(['mensaje' => 'Protectora actualizada.']);
+    }
 }
 
 /*--------------------------------------------------------------------------------------------
-DELETE */
+DELETE — soft delete (solo admin con motivo y auditoria, protectora NO puede eliminarse) */
 if ($metodo === 'DELETE') {
     $datos = json_decode(file_get_contents('php://input'), true) ?? [];
     $id    = (int)($datos['idProtectora'] ?? 0);
+    $motivo = limpiar($datos['motivo'] ?? '');
+
+    if (!$esAdmin) respuestaError('Las protectoras no pueden eliminarse. Contacta con administración.', 403);
     if (!$id) respuestaError('idProtectora requerido.');
+    if (!$motivo) respuestaError('El administrador debe indicar un motivo para desactivar esta protectora.');
+
+    $stmt = $pdo->prepare('SELECT idProtectora, nombre FROM protectoras WHERE idProtectora = ?');
+    $stmt->execute([$id]);
+    $prot = $stmt->fetch();
+    if (!$prot) respuestaError('Protectora no encontrada.', 404);
 
     $stmt = $pdo->prepare('SELECT COUNT(*) FROM mascotas WHERE idProtectora = ? AND activa = 1');
     $stmt->execute([$id]);
     if ((int)$stmt->fetchColumn() > 0) {
-        respuestaError('No se puede eliminar: la protectora tiene animales activos.');
+        respuestaError('No se puede desactivar: la protectora tiene animales activos. Primero elimina o desactiva todos los animales.');
     }
 
     $pdo->prepare('UPDATE protectoras SET activa = 0 WHERE idProtectora = ?')->execute([$id]);
-    respuestaOk(['mensaje' => 'Protectora eliminada.']);
+
+    $pdo->prepare(
+        'INSERT INTO audit_logs (actor_id, actor_role, action, target_type, target_id, reason)
+         VALUES (?, ?, ?, ?, ?, ?)'
+    )->execute([
+        (int)($_SESSION['idUsuario'] ?? 0),
+        'admin',
+        'soft_delete_protectora',
+        'protectora',
+        $id,
+        $motivo,
+    ]);
+
+    respuestaOk(['mensaje' => 'Protectora desactivada por moderación.']);
 }
 
 respuestaError('Método no permitido.', 405);

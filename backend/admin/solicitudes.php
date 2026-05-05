@@ -7,11 +7,14 @@ require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
-requerirAdmin();
-session_write_close();
+requerirAdminOProtectora();
 
 $pdo    = conectar();
 $metodo = $_SERVER['REQUEST_METHOD'];
+$esAdmin = esAdmin();
+$idProtectoraUsuario = getIdProtectoraUsuario();
+
+session_write_close();
 
 /*--------------------------------------------------------------------------------------------
 GET */
@@ -23,6 +26,11 @@ if ($metodo === 'GET') {
     $where  = [];
     $params = [];
 
+    if (!$esAdmin && $idProtectoraUsuario) {
+        $where[] = 'm.idProtectora = ?';
+        $params[] = $idProtectoraUsuario;
+    }
+
     $estadosValidos = ['pendiente','en_revision','aprobada','rechazada'];
     if ($estado !== 'todos' && in_array($estado, $estadosValidos)) {
         $where[]  = 's.estado = ?';
@@ -31,7 +39,7 @@ if ($metodo === 'GET') {
 
     $cond = $where ? implode(' AND ', $where) : '1';
 
-    $stmtC = $pdo->prepare("SELECT COUNT(*) FROM solicitudes_adopcion s WHERE $cond");
+    $stmtC = $pdo->prepare("SELECT COUNT(*) FROM solicitudes_adopcion s JOIN mascotas m ON s.idMascota = m.idMascota WHERE $cond");
     $stmtC->execute($params);
     $total = (int)$stmtC->fetchColumn();
 
@@ -67,16 +75,31 @@ if ($metodo === 'GET') {
 }
 
 /*--------------------------------------------------------------------------------------------
-PUT — cambiar estado */
+PUT — cambiar estado (SOLO PROTECTORA sobre solicitudes de sus mascotas, admin NO puede) */
 if ($metodo === 'PUT') {
+    if ($esAdmin) {
+        respuestaError('Los administradores no pueden gestionar solicitudes. Esta acción corresponde a la protectora.', 403);
+    }
+
+    if (!$idProtectoraUsuario) respuestaError('No tienes una protectora asignada.');
+
     $datos       = json_decode(file_get_contents('php://input'), true) ?? [];
     $id          = (int)($datos['idSolicitud'] ?? 0);
-    $nuevoEstado = $datos['estado'] ?? '';
+    $nuevoEstado = limpiar($datos['estado'] ?? '');
 
     if (!$id) respuestaError('idSolicitud requerido.');
 
     $estadosValidos = ['pendiente','en_revision','aprobada','rechazada'];
     if (!in_array($nuevoEstado, $estadosValidos)) respuestaError('Estado no válido.');
+
+    // Verificar que la solicitud pertenece a una mascota de esta protectora
+    $stmt = $pdo->prepare(
+        'SELECT s.idSolicitud, s.idMascota FROM solicitudes_adopcion s
+         JOIN mascotas m ON s.idMascota = m.idMascota
+         WHERE s.idSolicitud = ? AND m.idProtectora = ?'
+    );
+    $stmt->execute([$id, $idProtectoraUsuario]);
+    if (!$stmt->fetch()) respuestaError('No puedes gestionar esta solicitud.', 403);
 
     $pdo->prepare('UPDATE solicitudes_adopcion SET estado = ? WHERE idSolicitud = ?')
         ->execute([$nuevoEstado, $id]);

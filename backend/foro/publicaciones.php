@@ -182,6 +182,11 @@ if ($metodo === 'PUT') {
     $stmtCheck->execute([$idUsuario, $idPub]);
     $yaLike = (bool)$stmtCheck->fetchColumn();
 
+    /* Obtener datos del autor de la publicacion */
+    $stmtAutor = $pdo->prepare('SELECT p.idUsuario, u.username FROM publicaciones p JOIN usuarios u ON p.idUsuario = u.idUsuario WHERE p.idPublicacion = ?');
+    $stmtAutor->execute([$idPub]);
+    $autorPub = $stmtAutor->fetch();
+
     if ($yaLike) {
         $pdo->prepare('DELETE FROM likes_publicaciones WHERE idUsuario = ? AND idPublicacion = ?')
             ->execute([$idUsuario, $idPub]);
@@ -194,6 +199,19 @@ if ($metodo === 'PUT') {
         $pdo->prepare('UPDATE publicaciones SET num_likes = num_likes + 1 WHERE idPublicacion = ?')
             ->execute([$idPub]);
         $accion = 'like';
+
+        /* Notificar al autor (si no es su propio like) */
+        if ($autorPub && $autorPub['idUsuario'] != $idUsuario) {
+            $stmtUser = $pdo->prepare('SELECT username FROM usuarios WHERE idUsuario = ?');
+            $stmtUser->execute([$idUsuario]);
+            $userLike = $stmtUser->fetch();
+
+            if ($userLike) {
+                $msg = $userLike['username'] . ' ha reaccionado a tu publicación';
+                $stmtNotif = $pdo->prepare('INSERT INTO notificaciones (idUsuario, tipo, mensaje, idPublicacion) VALUES (?, ?, ?, ?)');
+                $stmtNotif->execute([$autorPub['idUsuario'], 'like', $msg, $idPub]);
+            }
+        }
     }
 
     $nuevoTotal = (int)$pdo->query("SELECT num_likes FROM publicaciones WHERE idPublicacion = $idPub")->fetchColumn();

@@ -24,7 +24,12 @@
             <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
             <a href="protectoras.html" class="sidebar-link activo"><i class="fa-solid fa-building-shield"></i> Protectoras</a>
             <a href="usuarios.html" class="sidebar-link"><i class="fa-solid fa-users"></i> Usuarios</a>
+            <a href="apadrinamientos.html" class="sidebar-link"><i class="fa-solid fa-star"></i> Apadrinamientos</a>
             <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
+            <a href="solicitudes-protectora.html" class="sidebar-link"><i class="fa-solid fa-clipboard-check"></i> Sol. Protectora</a>
+            <p class="sidebar-seccion">Contenido</p>
+            <a href="eventos.html" class="sidebar-link"><i class="fa-solid fa-calendar-days"></i> Eventos</a>
+            <a href="entidades.html" class="sidebar-link"><i class="fa-solid fa-handshake"></i> Entidades</a>
             <p class="sidebar-seccion">Comunidad</p>
             <a href="foro.html" class="sidebar-link"><i class="fa-solid fa-comments"></i> Foro</a>
             <p class="sidebar-seccion">Web pública</p>
@@ -58,8 +63,16 @@
                 <div class="toolbar" style="flex:1;">
                     <div class="toolbar-buscar">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="inputBuscar" placeholder="Buscar por nombre o localidad..." oninput="cargarProtectoras()">
+                        <input type="text" id="inputBuscar" placeholder="Localidad..." oninput="cargarProtectoras()">
                     </div>
+                    <div class="toolbar-buscar">
+                        <i class="fa-solid fa-font"></i>
+                        <input type="text" id="inputNombre" placeholder="Nombre..." oninput="cargarProtectoras()">
+                    </div>
+                    <select class="toolbar-select" id="filtroActiva" onchange="cargarProtectoras()">
+                        <option value="0">Solo activas</option>
+                        <option value="1">Todas (incl. eliminadas)</option>
+                    </select>
                 </div>
             </div>
 
@@ -81,7 +94,6 @@
                     </tbody>
                 </table>
             </div>
-            <div class="paginacion" id="paginacion"></div>
         </div>
     </main>
 </div>
@@ -120,18 +132,25 @@
 
             <div class="form-fila">
                 <div class="form-campo">
-                    <label class="form-label">URL página</label>
+                    <label class="form-label">Web / Portal</label>
                     <input type="url" class="form-input" id="fWeb" placeholder="https://...">
                 </div>
                 <div class="form-campo">
                     <label class="form-label">Tipo de página</label>
                     <select class="form-select" id="fTipoPagina">
                         <option value="sin_pagina">Sin página</option>
-                        <option value="web">Web</option>
+                        <option value="web">Web oficial</option>
                         <option value="red_social">Red social</option>
+                        <option value="portal">Portal de adopción</option>
                         <option value="otra">Otra</option>
                     </select>
                 </div>
+            </div>
+
+            <div class="form-campo">
+                <label class="form-label">Red social (URL independiente)</label>
+                <input type="url" class="form-input" id="fRedSocial" placeholder="https://www.facebook.com/... o https://www.instagram.com/...">
+                <span class="form-nota" style="color:var(--texto-sub);font-size:12px;"><i class="fa-solid fa-circle-info"></i> Si además de web tienen Facebook, Instagram u otra red, indícala aquí.</span>
             </div>
 
             <div class="form-fila">
@@ -141,23 +160,43 @@
                 </div>
                 <div class="form-campo">
                     <label class="form-label">Bizum</label>
-                    <input type="text" class="form-input" id="fBizum" placeholder="6XXXXXXXX">
+                    <input type="text" class="form-input" id="fBizum" placeholder="6XX XXX XXX">
                 </div>
             </div>
 
             <div class="form-campo">
-                <label class="form-label">Teaming (URL campaña)</label>
+                <label class="form-label">URL Teaming</label>
                 <input type="url" class="form-input" id="fTeaming" placeholder="https://www.teaming.net/...">
             </div>
 
             <div class="form-campo">
                 <label class="form-label">URL del logo</label>
-                <input type="text" class="form-input" id="fLogo" placeholder="img/protectoras/logo.jpg o https://...">
+                <input type="text" class="form-input" id="fLogo" placeholder="img/protectora/nombre.jpg">
             </div>
 
             <div class="form-campo">
-                <label class="form-label">Descripción</label>
-                <textarea class="form-textarea" id="fDescripcion" rows="2"></textarea>
+                <label class="form-label">Especie que atiende</label>
+                <select class="form-select" id="fEspecie">
+                    <option value="ambos">Perros y gatos</option>
+                    <option value="perros">Solo perros</option>
+                    <option value="gatos">Solo gatos</option>
+                </select>
+            </div>
+
+            <div class="form-campo">
+                <label class="form-label">Características <span style="color:var(--texto-sub);font-weight:400;">(badges visibles en la tarjeta)</span></label>
+                <div class="form-checks-grid" id="badgesCheckGrid"></div>
+            </div>
+
+            <div class="form-campo">
+                <label class="form-label">Descripción completa</label>
+                <textarea class="form-textarea" id="fDescripcion" rows="3"></textarea>
+            </div>
+
+            <div class="form-campo">
+                <label class="form-label">Descripción para "Dona" <span style="color:var(--texto-sub);font-weight: 400;">(resumen corto)</span></label>
+                <textarea class="form-textarea" id="fDescripcionDona" rows="2" maxlength="300" placeholder="Breve presentación para la página de donaciones. Máx. 300 caracteres."></textarea>
+                <span class="form-nota" style="color:var(--texto-sub);font-size:12px;"><i class="fa-solid fa-circle-info"></i> Aparece en la tarjeta de donación. Debe ser concisa (1 o 2 frases).</span>
             </div>
 
             <div class="form-campo">
@@ -192,10 +231,35 @@
     </div>
 </div>
 
-<!-- toast -->
 <div class="toast" id="toast"></div>
 
 <script>
+var BADGES_PROT = [
+    { key: 'gestion_municipal',     icon: 'fa-shield-halved',            label: 'Gestión municipal' },
+    { key: 'casas_acogida',         icon: 'fa-house-chimney-heart',      label: 'Casas de acogida' },
+    { key: 'fundacion_oficial',     icon: 'fa-star',                     label: 'Fundación oficial' },
+    { key: 'teaming',               icon: 'fa-mug-hot',                  label: 'Teaming' },
+    { key: 'voluntarios',           icon: 'fa-people-group',             label: '100% voluntarios' },
+    { key: 'trato_familiar',        icon: 'fa-handshake',                label: 'Trato familiar' },
+    { key: 'animales_mayores',      icon: 'fa-heart',                    label: 'Animales mayores' },
+    { key: 'licencia_ppp',          icon: 'fa-id-card',                  label: 'Licencia PPP' },
+    { key: 'principalmente_perros', icon: 'fa-dog',                      label: 'Principalmente perros' },
+    { key: 'principalmente_gatos',  icon: 'fa-cat',                      label: 'Principalmente gatos' },
+    { key: 'sin_instalaciones',     icon: 'fa-house-circle-exclamation', label: 'Sin instalaciones' },
+];
+
+/* Renderizar checkboxes de badges */
+(function() {
+    var grid = document.getElementById('badgesCheckGrid');
+    grid.innerHTML = BADGES_PROT.map(function(b) {
+        return '<label class="form-check">'
+             + '<input type="checkbox" class="badge-check" value="' + b.key + '"> '
+             + '<i class="fa-solid ' + b.icon + '" style="margin-right:0.3em;color:#F8BA56;"></i>'
+             + b.label
+             + '</label>';
+    }).join('');
+})();
+
 document.addEventListener('DOMContentLoaded', function() {
     verificarAdmin(cargarProtectoras);
 });
@@ -204,7 +268,10 @@ function verificarAdmin(cb) {
     fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
-            if (!data.logueado || data.usuario.rol !== 'admin') { window.location.href = '../html/login.html'; return; }
+            if (!data.logueado || data.usuario.rol !== 'admin') {
+                if (data.logueado && data.usuario.rol === 'protectora') { window.location.href = 'mi-protectora.html'; return; }
+                window.location.href = '../html/login.html'; return;
+            }
             document.getElementById('adminNombre').textContent = data.usuario.nombre;
             document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
             if (cb) cb();
@@ -212,18 +279,16 @@ function verificarAdmin(cb) {
 }
 
 function cargarProtectoras() {
-    var q = document.getElementById('inputBuscar').value;
-    fetch('../backend/admin/protectoras.php?q=' + encodeURIComponent(q), { credentials: 'include' })
+    var q     = encodeURIComponent(document.getElementById('inputBuscar').value);
+    var nom   = encodeURIComponent(document.getElementById('inputNombre').value);
+    var todos = document.getElementById('filtroActiva').value === '1' ? '&todos=1' : '';
+
+    fetch('../backend/admin/protectoras.php?q=' + q + '&nombre=' + nom + todos, { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
             if (!data.ok) return;
             renderTabla(data.protectoras);
         });
-}
-
-function srcLogo(ruta) {
-    if (!ruta) return '';
-    return ruta.indexOf('http') === 0 ? ruta : '../' + ruta;
 }
 
 function renderTabla(protectoras) {
@@ -234,95 +299,125 @@ function renderTabla(protectoras) {
     }
     tb.innerHTML = protectoras.map(function(p) {
         var logo = p.foto_logo
-            ? '<img src="' + srcLogo(p.foto_logo) + '" style="width:40px;height:40px;border-radius:8px;object-fit:contain;" onerror="this.outerHTML=\'<div style=&quot;width:40px;height:40px;border-radius:8px;background:var(--azul-lite);display:flex;align-items:center;justify-content:center;font-size:1.1rem;&quot;>🐾</div>\'">'
+            ? '<img src="../' + p.foto_logo + '" style="width:40px;height:40px;border-radius:8px;object-fit:contain;" onerror="this.style.display=\'none\'">'
             : '<div style="width:40px;height:40px;border-radius:8px;background:var(--azul-lite);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🐾</div>';
 
         var estado = p.activa
             ? '<span class="badge badge-verde">Activa</span>'
             : '<span class="badge badge-rojo">Inactiva</span>';
 
-        var contacto = '';
-        if (p.email)    contacto += '<div>' + p.email + '</div>';
-        if (p.telefono) contacto += '<div>' + p.telefono + '</div>';
-        if (p.web) {
-            var labelWeb = p.tipo_pagina === 'red_social' ? 'Red social'
-                         : p.tipo_pagina === 'otra'       ? 'Otra página'
-                         : 'Web';
-            contacto += '<div><a href="' + p.web + '" target="_blank" style="color:var(--azul);">' + labelWeb + '</a></div>';
+        var donacion = [];
+        if (p.iban)           donacion.push('<i class="fa-solid fa-building-columns" title="IBAN"></i>');
+        if (p.bizum)          donacion.push('<i class="fa-solid fa-mobile-screen-button" title="Bizum"></i>');
+        if (p.teaming)        donacion.push('<i class="fa-solid fa-mug-hot" title="Teaming"></i>');
+        if (p.red_social_url) donacion.push('<i class="fa-solid fa-share-nodes" title="Red social"></i>');
+
+        var especieLabel = p.especie_atencion === 'perros' ? '🐕' : p.especie_atencion === 'gatos' ? '🐱' : '🐕🐱';
+
+        var badgesLabel = '';
+        if (p.badges) {
+            var keys = p.badges.split(',').filter(Boolean);
+            if (keys.length) {
+                badgesLabel = '<div style="font-size:0.72rem;color:var(--texto-sub);margin-top:0.2em;">'
+                            + keys.length + ' badge' + (keys.length > 1 ? 's' : '')
+                            + '</div>';
+            }
         }
-        if (p.iban)    contacto += '<div style="font-size:0.72rem;color:var(--texto-sub);">IBAN ✓</div>';
-        if (p.bizum)   contacto += '<div style="font-size:0.72rem;color:var(--texto-sub);">Bizum ✓</div>';
-        if (p.teaming) contacto += '<div style="font-size:0.72rem;color:var(--texto-sub);">Teaming ✓</div>';
 
         return '<tr>'
             + '<td>' + logo + '</td>'
             + '<td><strong>' + p.nombre + '</strong>'
             + (p.verificada ? ' <span class="badge badge-azul" style="font-size:0.65rem;">✓ Verificada</span>' : '')
+            + (donacion.length ? '<div style="margin-top:0.3em;color:var(--azul);font-size:0.8rem;display:flex;gap:0.4em;">' + donacion.join('') + '</div>' : '')
+            + badgesLabel
             + '</td>'
             + '<td style="font-size:0.82rem;">' + (p.localidad || '—') + '</td>'
-            + '<td style="font-size:0.78rem;">' + contacto + '</td>'
-            + '<td style="text-align:center;">' + (p.num_animales || 0) + '</td>'
+            + '<td style="font-size:0.78rem;">'
+            + (p.email    ? '<div>' + p.email + '</div>' : '')
+            + (p.telefono ? '<div>' + p.telefono + '</div>' : '')
+            + (p.web      ? '<div><a href="' + p.web + '" target="_blank" style="color:var(--azul);">' + (p.tipo_pagina || 'Web') + '</a></div>' : '')
+            + '</td>'
+            + '<td style="text-align:center;">' + (p.num_animales || 0) + ' ' + especieLabel + '</td>'
             + '<td>' + estado + '</td>'
             + '<td><div class="tabla-acciones">'
             + '<button class="btn btn-sm btn-outline btn-icon" onclick="editarProtectora(' + JSON.stringify(p).replace(/"/g, '&quot;') + ')" title="Editar"><i class="fa-solid fa-pen"></i></button>'
-            + '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminarProtectora(' + p.idProtectora + ',\'' + p.nombre.replace(/'/g, '') + '\')" title="Eliminar"><i class="fa-solid fa-trash"></i></button>'
+            + '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminarProtectora(event,' + p.idProtectora + ',\'' + p.nombre.replace(/'/g, '') + '\')" title="Eliminar"><i class="fa-solid fa-trash"></i></button>'
             + '</div></td>'
             + '</tr>';
     }).join('');
 }
 
-
-
 function abrirModalNueva() {
     document.getElementById('modalId').value = '';
     document.getElementById('modalTitulo').textContent = 'Nueva protectora';
-    document.getElementById('modalError').textContent = '';
+    document.getElementById('modalError').textContent  = '';
     limpiarForm();
     document.getElementById('modalOverlay').classList.add('abierto');
 }
 
 function editarProtectora(p) {
-    document.getElementById('modalId').value       = p.idProtectora;
-    document.getElementById('modalTitulo').textContent = 'Editar: ' + p.nombre;
-    document.getElementById('modalError').textContent  = '';
-    document.getElementById('fNombre').value       = p.nombre       || '';
-    document.getElementById('fLocalidad').value    = p.localidad    || '';
-    document.getElementById('fEmail').value        = p.email        || '';
-    document.getElementById('fTelefono').value     = p.telefono     || '';
-    document.getElementById('fWeb').value          = p.web          || '';
-    document.getElementById('fTipoPagina').value   = p.tipo_pagina  || 'sin_pagina';
-    document.getElementById('fIban').value         = p.iban         || '';
-    document.getElementById('fBizum').value        = p.bizum        || '';
-    document.getElementById('fTeaming').value      = p.teaming      || '';
-    document.getElementById('fLogo').value         = p.foto_logo    || '';
-    document.getElementById('fDescripcion').value  = p.descripcion  || '';
-    document.getElementById('fDireccion').value    = p.direccion    || '';
-    document.getElementById('fLatitud').value      = p.latitud      || '';
-    document.getElementById('fLongitud').value     = p.longitud     || '';
-    document.getElementById('fVerificada').checked = !!p.verificada;
-    document.getElementById('fActiva').checked     = !!p.activa;
+    document.getElementById('modalId').value             = p.idProtectora;
+    document.getElementById('modalTitulo').textContent   = 'Editar: ' + p.nombre;
+    document.getElementById('modalError').textContent    = '';
+    document.getElementById('fNombre').value             = p.nombre            || '';
+    document.getElementById('fLocalidad').value          = p.localidad         || '';
+    document.getElementById('fEmail').value              = p.email             || '';
+    document.getElementById('fTelefono').value           = p.telefono          || '';
+    document.getElementById('fWeb').value                = p.web               || '';
+    document.getElementById('fTipoPagina').value         = p.tipo_pagina       || 'sin_pagina';
+    document.getElementById('fRedSocial').value          = p.red_social_url    || '';
+    document.getElementById('fIban').value               = p.iban              || '';
+    document.getElementById('fBizum').value              = p.bizum             || '';
+    document.getElementById('fTeaming').value            = p.teaming           || '';
+    document.getElementById('fLogo').value               = p.foto_logo         || '';
+    document.getElementById('fEspecie').value            = p.especie_atencion  || 'ambos';
+    document.getElementById('fDescripcion').value        = p.descripcion       || '';
+    document.getElementById('fDescripcionDona').value    = p.descripcion_dona  || '';
+    document.getElementById('fDireccion').value          = p.direccion         || '';
+    document.getElementById('fLatitud').value            = p.latitud           || '';
+    document.getElementById('fLongitud').value           = p.longitud          || '';
+    document.getElementById('fVerificada').checked       = !!p.verificada;
+    document.getElementById('fActiva').checked           = !!p.activa;
+
+    /* Marcar badges */
+    var activos = (p.badges || '').split(',').map(function(k){ return k.trim(); }).filter(Boolean);
+    document.querySelectorAll('.badge-check').forEach(function(cb) {
+        cb.checked = activos.indexOf(cb.value) !== -1;
+    });
+
     document.getElementById('modalOverlay').classList.add('abierto');
 }
 
 function guardarProtectora() {
     var id    = document.getElementById('modalId').value;
+
+    /* Recoger badges seleccionados */
+    var badgesSeleccionados = [];
+    document.querySelectorAll('.badge-check:checked').forEach(function(cb) {
+        badgesSeleccionados.push(cb.value);
+    });
+
     var datos = {
-        nombre:      document.getElementById('fNombre').value.trim(),
-        localidad:   document.getElementById('fLocalidad').value.trim(),
-        email:       document.getElementById('fEmail').value.trim(),
-        telefono:    document.getElementById('fTelefono').value.trim(),
-        web:         document.getElementById('fWeb').value.trim(),
-        tipo_pagina: document.getElementById('fTipoPagina').value,
-        iban:        document.getElementById('fIban').value.trim(),
-        bizum:       document.getElementById('fBizum').value.trim(),
-        teaming:     document.getElementById('fTeaming').value.trim(),
-        foto_logo:   document.getElementById('fLogo').value.trim(),
-        descripcion: document.getElementById('fDescripcion').value.trim(),
-        direccion:   document.getElementById('fDireccion').value.trim(),
-        latitud:     document.getElementById('fLatitud').value || null,
-        longitud:    document.getElementById('fLongitud').value || null,
-        verificada:  document.getElementById('fVerificada').checked ? 1 : 0,
-        activa:      document.getElementById('fActiva').checked ? 1 : 0,
+        nombre:           document.getElementById('fNombre').value.trim(),
+        localidad:        document.getElementById('fLocalidad').value.trim(),
+        email:            document.getElementById('fEmail').value.trim(),
+        telefono:         document.getElementById('fTelefono').value.trim(),
+        web:              document.getElementById('fWeb').value.trim(),
+        tipo_pagina:      document.getElementById('fTipoPagina').value,
+        red_social_url:   document.getElementById('fRedSocial').value.trim()    || null,
+        iban:             document.getElementById('fIban').value.trim()          || null,
+        bizum:            document.getElementById('fBizum').value.trim()         || null,
+        teaming:          document.getElementById('fTeaming').value.trim()       || null,
+        foto_logo:        document.getElementById('fLogo').value.trim(),
+        especie_atencion: document.getElementById('fEspecie').value,
+        badges:           badgesSeleccionados.join(','),
+        descripcion:      document.getElementById('fDescripcion').value.trim(),
+        descripcion_dona: document.getElementById('fDescripcionDona').value.trim(),
+        direccion:        document.getElementById('fDireccion').value.trim(),
+        latitud:          document.getElementById('fLatitud').value  || null,
+        longitud:         document.getElementById('fLongitud').value || null,
+        verificada:       document.getElementById('fVerificada').checked ? 1 : 0,
+        activa:           document.getElementById('fActiva').checked ? 1 : 0,
     };
 
     if (!datos.nombre) {
@@ -330,51 +425,77 @@ function guardarProtectora() {
         return;
     }
 
+    if (datos.telefono && !/^\d{9}$/.test(datos.telefono)) {
+        document.getElementById('modalError').textContent = 'El teléfono debe tener exactamente 9 dígitos.';
+        return;
+    }
+
     if (id) datos.idProtectora = parseInt(id);
 
     fetch('../backend/admin/protectoras.php', {
-        method: id ? 'PUT' : 'POST',
+        method:  id ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify(datos),
+        body:    JSON.stringify(datos),
     })
     .then(function(r){ return r.json(); })
     .then(function(data){
-        if (!data.ok) { document.getElementById('modalError').textContent = data.error || 'Error.'; return; }
+        if (!data.ok) {
+            document.getElementById('modalError').textContent = data.error || 'Error al guardar.';
+            return;
+        }
         cerrarModalBtn();
         mostrarToast(data.mensaje, 'ok');
         cargarProtectoras();
     });
 }
 
-function eliminarProtectora(id, nombre) {
+function eliminarProtectora(e, id, nombre) {
     if (!confirm('¿Eliminar a ' + nombre + '? Si tiene animales activos no se podrá eliminar.')) return;
+    var fila = e.currentTarget.closest('tr');
     fetch('../backend/admin/protectoras.php', {
-        method: 'DELETE',
+        method:  'DELETE',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ idProtectora: id }),
+        body:    JSON.stringify({ idProtectora: id }),
     })
     .then(function(r){ return r.json(); })
     .then(function(data){
         mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
-        if (data.ok) cargarProtectoras();
+        if (data.ok && fila) fila.remove();
     });
 }
 
 function limpiarForm() {
-    ['fNombre','fLocalidad','fEmail','fTelefono','fWeb','fIban','fBizum','fTeaming','fLogo','fDescripcion','fDireccion','fLatitud','fLongitud'].forEach(function(id){
+    ['fNombre','fLocalidad','fEmail','fTelefono','fWeb','fRedSocial',
+     'fIban','fBizum','fTeaming','fLogo','fDescripcion','fDescripcionDona',
+     'fDireccion','fLatitud','fLongitud'].forEach(function(id){
         document.getElementById(id).value = '';
     });
-    document.getElementById('fTipoPagina').value = 'sin_pagina';
+    document.getElementById('fTipoPagina').value   = 'sin_pagina';
+    document.getElementById('fEspecie').value      = 'ambos';
     document.getElementById('fVerificada').checked = false;
-    document.getElementById('fActiva').checked = true;
+    document.getElementById('fActiva').checked     = true;
+    document.querySelectorAll('.badge-check').forEach(function(cb){ cb.checked = false; });
 }
 
-function cerrarModal(e) { if (e.target === document.getElementById('modalOverlay')) cerrarModalBtn(); }
-function cerrarModalBtn() { document.getElementById('modalOverlay').classList.remove('abierto'); }
-function toggleSidebar() { document.getElementById('sidebar').classList.toggle('abierto'); }
-function cerrarSesion() { fetch('../backend/api/auth/logout.php', { credentials: 'include' }).then(function(){ window.location.href = '../html/login.html'; }); }
+function cerrarModal(e) {
+    if (e.target === document.getElementById('modalOverlay')) cerrarModalBtn();
+}
+
+function cerrarModalBtn() {
+    document.getElementById('modalOverlay').classList.remove('abierto');
+}
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('abierto');
+}
+
+function cerrarSesion() {
+    fetch('../backend/api/auth/logout.php', { credentials: 'include' })
+        .then(function(){ window.location.href = '../html/login.html'; });
+}
+
 function mostrarToast(msg, tipo) {
     var t = document.getElementById('toast');
     t.textContent = msg;

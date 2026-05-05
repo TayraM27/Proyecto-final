@@ -30,13 +30,14 @@ $_SESSION['ultima_actividad'] = $ahora;
 /*------- datos extendidos desde BD si faltan -------*/
 if (!isset($_SESSION['email'])) {
     $pdo  = conectar();
-    $stmt = $pdo->prepare('SELECT email, localidad, telefono FROM usuarios WHERE idUsuario = ? LIMIT 1');
+    $stmt = $pdo->prepare('SELECT email, localidad, telefono, idProtectora FROM usuarios WHERE idUsuario = ? LIMIT 1');
     $stmt->execute([$_SESSION['idUsuario']]);
     $extra = $stmt->fetch();
     if ($extra) {
-        $_SESSION['email']     = $extra['email'];
-        $_SESSION['localidad'] = $extra['localidad'];
-        $_SESSION['telefono']  = $extra['telefono'];
+        $_SESSION['email']       = $extra['email'];
+        $_SESSION['localidad']   = $extra['localidad'];
+        $_SESSION['telefono']    = $extra['telefono'];
+        $_SESSION['idProtectora'] = $extra['idProtectora'] ? $extra['idProtectora'] : null;
     }
 }
 
@@ -47,13 +48,14 @@ session_write_close();
 respuestaOk([
     'logueado' => true,
     'usuario'  => [
-        'idUsuario'   => $_SESSION['idUsuario'],
-        'nombre'      => $_SESSION['nombre'],
-        'username'    => $_SESSION['username'],
-        'rol'         => $_SESSION['rol'],
-        'foto_perfil' => $_SESSION['foto_perfil'] ?? null,
-        'email'       => $_SESSION['email']     ?? null,
-        'localidad'   => $_SESSION['localidad'] ?? null,
-        'telefono'    => $_SESSION['telefono']  ?? null,
+        'idUsuario'    => $_SESSION['idUsuario'],
+        'nombre'       => $_SESSION['nombre'],
+        'username'     => $_SESSION['username'],
+        'rol'          => $_SESSION['rol'],
+        'foto_perfil'  => $_SESSION['foto_perfil'] ?? null,
+        'email'        => $_SESSION['email']     ?? null,
+        'localidad'    => $_SESSION['localidad'] ?? null,
+        'telefono'     => $_SESSION['telefono']  ?? null,
+        'idProtectora' => $_SESSION['idProtectora'] ?? null,
     ],
 ]);

@@ -114,8 +114,6 @@
                 <div class="col-md-5">
                     <div class="test-card test-card-compatibilidad" id="card-compatibilidad">
                         <div class="test-card-franja"></div>
-                        <!-- IMAGEN: reemplaza la URL con una foto de un gato (tierno, cómodo en casa) -->
-                        <!-- Tamaño recomendado: 400x180px, formato horizontal -->
                         <img src="../img/imagenes-animales/WhatsApp Image 2026-04-12 at 01.05.35.jpeg"
                              alt="Gato esperando su familia"
                              class="test-card-img"
@@ -143,10 +141,8 @@
             </div>
         </div>
 
-
-        <!-- ============================================= -->
         <!-- TEST DE CONOCIMIENTOS                         -->
-        <!-- ============================================= -->
+      
         <div id="test-conocimiento" class="test-contenedor d-none">
 
             <div class="test-header">
@@ -180,12 +176,14 @@
                 <p class="test-resultado-puntuacion" id="res-puntuacion-conocimiento"></p>
                 <p class="test-resultado-mensaje" id="res-mensaje-conocimiento"></p>
                 <div class="test-resultado-detalle" id="res-detalle-conocimiento"></div>
-                <button class="btn-azul mt-3" onclick="reiniciarTest('conocimiento')">
-                    <i class="fa-solid fa-rotate-left me-2"></i>Repetir test
-                </button>
-                <button class="btn-amarillo mt-3 ms-2" onclick="volverSelector()">
-                    <i class="fa-solid fa-house me-2"></i>Volver a Tests
-                </button>
+                <div class="test-resultado-bots">
+                    <button class="btn-azul" onclick="reiniciarTest('conocimiento')">
+                        <i class="fa-solid fa-rotate-left me-2"></i>Repetir test
+                    </button>
+                    <button class="btn-amarillo" onclick="volverSelector()">
+                        <i class="fa-solid fa-house me-2"></i>Volver a Tests
+                    </button>
+                </div>
             </div>
 
         </div>
@@ -266,8 +264,8 @@
                     <i class="fa-solid fa-ranking-star me-2"></i>Tu ranking de compatibilidad
                 </h3>
                 <p class="test-resultado-mensaje" id="res-mensaje-compatibilidad"></p>
-                <div class="test-aviso-orientativo">
-                    <i class="fa-solid fa-circle-info me-2"></i>
+                <div class="test-aviso-orientativo" style="color:var(--texto-sub);font-size:12px;">
+                    <i class="fa-solid fa-circle-info me-2" style="color: #F8BA56;"></i>
                     Este ranking es <strong>orientativo</strong>. El vínculo con un animal va más allá de la compatibilidad — la mejor forma de saberlo es conocerlo en persona.
                 </div>
                 <div id="res-mascotas-compatibilidad"></div>

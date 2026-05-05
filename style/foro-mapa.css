@@ -135,6 +135,19 @@ input.foro-publicar-textarea {
     transform: translateY(-1px);
 }
 
+.foro-emoji-btn {
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0.2em 0.4em;
+    font-size: 1rem;
+}
+
+.foro-emoji-btn:hover {
+    color: #1B358F;
+}
+
 /* aviso login */
 .foro-aviso-login {
     background: #EEF2FF;
@@ -406,7 +419,8 @@ input.foro-publicar-textarea {
 .foro-com-acciones {
     display: flex;
     align-items: center;
-    gap: 0.8em;
+    gap: 0.6em;
+    margin-left: auto;
 }
 
 .foro-com-like {
@@ -424,6 +438,18 @@ input.foro-publicar-textarea {
 
 .foro-com-like:hover { color: #e53935; }
 .foro-com-like.liked { color: #e53935; }
+
+.foro-com-delete, .foro-com-reply {
+    background: none;
+    border: none;
+    color: #adb5bd;
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 0.1em 0.3em;
+}
+
+.foro-com-delete:hover { color: #e74c3c; }
+.foro-com-reply:hover { color: #1B358F; }
 
 .foro-com-hora {
     font-size: 0.75rem;
@@ -946,6 +972,11 @@ input.foro-publicar-textarea {
 @keyframes pulso {
     0%, 100% { box-shadow: 0 0 0 4px rgba(27, 53, 143, 0.25); }
     50%       { box-shadow: 0 0 0 10px rgba(27, 53, 143, 0.07); }
+}
+
+@keyframes comFadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* popup leaflet */

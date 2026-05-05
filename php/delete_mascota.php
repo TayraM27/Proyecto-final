@@ -5,7 +5,7 @@ Elimina una mascota */
 require_once __DIR__ . '/../backend/config/db.php';
 require_once __DIR__ . '/mascotas_crud.php';
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);

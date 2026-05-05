@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PetFamily – Ficha de mascota</title>
-
     <link rel="stylesheet" href="../style/header.css">
     <link rel="stylesheet" href="../style/footer.css">
     <link rel="stylesheet" href="../style/style.css">
@@ -14,7 +13,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/093cf7cd82.js" crossorigin="anonymous"></script>
 </head>
-
 <body>
 
 <header>
@@ -24,7 +22,6 @@
             <h2 id="title-logo">Pet<span style="color:#F8BA56;">Family</span></h2>
         </a>
     </div>
-
     <div id="menu_burger" class="container-fluid justify-content-between align-content-center d-lg-none">
         <i id="btn_burger" class="fa-solid fa-bars text-center col-2 ms-n5"></i>
         <a id="logoMD" href="index.html" class="mb-2">
@@ -36,7 +33,6 @@
             <a href="register.html" class="btn-register">Registrarse</a>
         </div>
     </div>
-
     <nav id="menu" class="d-none d-lg-block">
         <ul id="lista_menu">
             <li><a href="adopta.html">Adopta</a></li>
@@ -53,12 +49,10 @@
             <li><a href="test.html">Tests</a></li>
         </ul>
     </nav>
-
     <div id="user_container" class="d-none d-lg-block">
         <a href="login.html"><img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px"></a>
         <a href="register.html" class="btn-register">Registrarse</a>
     </div>
-
 </header>
 
 <main>
@@ -66,19 +60,19 @@
 
         <p class="migas">
             <a href="index.html">Inicio</a>
-            <span>›</span>
+            <span>&#x203a;</span>
             <a href="adopta.html">Adopta</a>
-            <span>›</span>
+            <span>&#x203a;</span>
             <span id="miga-nombre">...</span>
         </p>
 
         <div class="row g-4">
 
             <div class="col-lg-6">
-                <div style="position:relative;">
+                <div class="ficha-foto-wrap">
                     <img id="foto-principal" src="" alt="Foto del animal">
                     <div class="ficha-iconos-foto">
-                        <button class="btn-fav" id="btn-fav-ficha" onclick="toggleFavoritoFicha()" title="Guardar en favoritos" style="position:relative;top:auto;right:auto;">
+                        <button class="btn-fav" id="btn-fav-ficha" onclick="toggleFavoritoFicha()" title="Guardar en favoritos">
                             <i class="fa-regular fa-heart"></i>
                         </button>
                         <button class="ficha-ico-btn" id="btn-compartir-ficha" onclick="compartirAnimalFicha()" title="Compartir">
@@ -90,15 +84,13 @@
             </div>
 
             <div class="col-lg-6">
-
                 <div class="d-flex align-items-center gap-3 flex-wrap mb-1">
                     <h1 class="animal-nombre mb-0" id="animal-nombre">...</h1>
                     <span id="animal-sexo-icono"></span>
                 </div>
-
                 <p class="animal-subtitulo" id="animal-subtitulo"></p>
-
                 <div class="d-flex gap-2 flex-wrap mb-3" id="animal-badges"></div>
+                <div class="d-flex gap-2 flex-wrap mb-3" id="animal-prioritaria"></div>
 
                 <div class="tarjeta">
                     <p class="tarjeta-titulo">
@@ -114,33 +106,33 @@
                     <ul class="caracteristicas" id="animal-compatibilidad"></ul>
                 </div>
 
-                <div class="d-flex flex-column gap-2">
+                <div class="ficha-acciones">
                     <button class="btn-adoptar" onclick="mostrarModalAdopcion()">
                         <i class="fa-solid fa-house"></i> Quiero adoptar
                     </button>
-                    <div class="ficha-btns-secundarios">
-                        <button class="btn-apadrinar" id="btn-apadrinar" hidden onclick="mostrarModalApadrina()">
-                            <i class="fa-solid fa-star me-1"></i> <span id="btn-apadrinar-texto">Apadrinar</span>
+                    <div class="ficha-btns-secundarios" id="ficha-btns-secundarios">
+                        <button class="btn-secundario-ficha" id="btn-apadrinar" hidden onclick="mostrarModalApadrina()">
+                            <i class="fa-solid fa-star me-1"></i>
+                            <span id="btn-apadrinar-texto">Apadrinar</span>
                         </button>
-                        <button class="btn-apadrinar btn-acoger-ficha" id="btn-acoger" hidden onclick="mostrarModalAcoger()">
-                            <i class="fa-solid fa-heart me-1"> </i><span id="btn-acoger-texto"> Acoger</span>
+                        <button class="btn-secundario-ficha" id="btn-acoger" hidden onclick="mostrarModalAcoger()">
+                            <i class="fa-solid fa-heart me-1"></i>
+                            <span id="btn-acoger-texto">Acoger</span>
                         </button>
                     </div>
                 </div>
-
             </div>
 
         </div>
 
-
         <div class="row g-4 mt-1">
-
             <div class="col-lg-8">
                 <div class="tarjeta">
                     <p class="tarjeta-titulo" id="descripcion-titulo">
                         <i class="fa-solid fa-align-left"></i> Sobre ...
                     </p>
                     <div id="animal-descripcion"></div>
+                    <div id="animal-tags" class="animal-tags mt-3"></div>
                     <div class="aviso-responsable mt-3">
                         <i class="fa-solid fa-circle-info"></i>
                         <strong>Adopción responsable:</strong> antes de adoptar, la protectora realizará
@@ -149,27 +141,22 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-lg-4">
                 <div class="tarjeta">
                     <p class="tarjeta-titulo">
                         <i class="fa-solid fa-building-shield"></i> Protectora responsable
                     </p>
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <img id="protectora-logo" src="" alt="Logo protectora" style="width:60px; height:60px; object-fit:contain; border-radius:8px; border:1px solid #eee;">
+                        <img id="protectora-logo" src="" alt="Logo protectora" style="width:60px;height:60px;object-fit:contain;border-radius:8px;border:1px solid #eee;">
                         <div>
                             <p class="protectora-nombre mb-0" id="protectora-nombre"></p>
                             <p class="protectora-info mb-0" id="protectora-ubicacion"></p>
                         </div>
                     </div>
                     <ul class="caracteristicas mb-3" id="protectora-contacto"></ul>
-                    <hr class="separador-protectora">
-                    <a href="protectoras.html" class="enlace-ver-protectoras">
-                        Ver todas las protectoras
-                    </a>
+                    <a href="protectoras.html" class="enlace-ver-protectoras">Ver todas las protectoras</a>
                 </div>
             </div>
-
         </div>
 
         <div class="seccion-mas">
@@ -184,52 +171,333 @@
     </div>
 </main>
 
+<!-- modal adopción -->
+<div class="modal fade" id="modalAdopcion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius:14px;border:none;overflow:hidden;">
+            <div class="modal-header modal-header-pf">
+                <h5 class="modal-title text-white fw-bold">
+                    <i class="fa-solid fa-house-chimney me-2" style="color:#F8BA56;"></i>Solicitud de adopción
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5em;">
+                <div id="adoptFormError" class="form-error" style="display:none;background:#fff0f0;color:#c0392b;padding:0.5em 0.8em;border-radius:6px;font-size:0.85rem;margin-bottom:1em;"></div>
+                <div id="adoptFormOk" class="form-success" style="display:none;background:#f0fff4;color:#27ae60;padding:0.5em 0.8em;border-radius:6px;font-size:0.85rem;margin-bottom:1em;"></div>
+                <div id="adoptMascotaInfo" style="background:#f0f4ff;padding:0.8em;border-radius:8px;margin-bottom:1em;font-size:0.9rem;"></div>
+                <form id="formAdopcion" onsubmit="enviarAdopcionFicha(event)">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Nombre completo <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="aNombre" required maxlength="120" style="border-radius:8px;">
+                            <div class="invalid-feedback" id="aNombreError"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">DNI <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="aDni" required maxlength="20" style="border-radius:8px;">
+                            <div class="invalid-feedback" id="aDniError"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Fecha de nacimiento <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="aFechaNac" required style="border-radius:8px;">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="aEmail" required maxlength="120" style="border-radius:8px;">
+                            <div class="invalid-feedback" id="aEmailError"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Teléfono <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" id="aTelefono" required maxlength="9" pattern="[0-9]{9}" placeholder="9 dígitos" style="border-radius:8px;">
+                            <div class="invalid-feedback" id="aTelefonoError"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Dirección completa <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="aDireccion" required maxlength="255" style="border-radius:8px;">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Localidad <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="aLocalidad" required maxlength="100" style="border-radius:8px;">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Tipo de vivienda <span class="text-danger">*</span></label>
+                            <select class="form-select" id="aTipoVivienda" required style="border-radius:8px;">
+                                <option value="">Selecciona...</option>
+                                <option value="piso">Piso</option>
+                                <option value="casa">Casa</option>
+                                <option value="finca">Finca</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">¿Vivienda en propiedad? <span class="text-danger">*</span></label>
+                            <select class="form-select" id="aViviendaProp" required style="border-radius:8px;" onchange="togglePermiso()">
+                                <option value="">Selecciona...</option>
+                                <option value="si">Sí</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6" id="divPermiso" style="display:none;">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Permiso del propietario (PDF) <span class="text-danger">*</span></label>
+                            <input type="file" class="form-control" id="aPermiso" accept=".pdf" style="border-radius:8px;">
+                            <div class="form-text">Máximo 5MB</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Personas en el hogar <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="aPersonas" required min="1" max="20" style="border-radius:8px;">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">¿Hay niños en el hogar? <span class="text-danger">*</span></label>
+                            <select class="form-select" id="aNinos" required style="border-radius:8px;">
+                                <option value="">Selecciona...</option>
+                                <option value="si">Sí</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">¿Tenéis otros animales? <span class="text-danger">*</span></label>
+                            <select class="form-select" id="aOtrosAnimales" required style="border-radius:8px;" onchange="toggleDescOtros()">
+                                <option value="">Selecciona...</option>
+                                <option value="si">Sí</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6" id="divDescOtros" style="display:none;">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Descripción de otros animales</label>
+                            <textarea class="form-control" id="aDescOtros" maxlength="500" style="border-radius:8px;resize:vertical;min-height:60px;"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Experiencia con animales <span class="text-danger">*</span> <span class="text-muted" style="font-size:0.8rem;">(mín. 20 caracteres)</span></label>
+                            <textarea class="form-control" id="aExperiencia" required maxlength="1000" style="border-radius:8px;resize:vertical;min-height:80px;"></textarea>
+                            <div class="invalid-feedback" id="aExperienciaError"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Tiempo fuera de casa (horas/día) <span class="text-danger">*</span></label>
+                            <select class="form-select" id="aTiempoFuera" required style="border-radius:8px;">
+                                <option value="">Selecciona...</option>
+                                <option value="menos_2h">Menos de 2 horas</option>
+                                <option value="2_4h">2 a 4 horas</option>
+                                <option value="mas_4h">Más de 4 horas</option>
+                                <option value="todo_el_dia">Todo el día</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Motivo de la adopción <span class="text-danger">*</span> <span class="text-muted" style="font-size:0.8rem;">(mín. 20 caracteres)</span></label>
+                            <textarea class="form-control" id="aMotivo" required maxlength="1000" style="border-radius:8px;resize:vertical;min-height:80px;"></textarea>
+                            <div class="invalid-feedback" id="aMotivoError"></div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="aCompromisoVisitas" required>
+                                <label class="form-check-label" for="aCompromisoVisitas" style="font-size:0.85rem;">
+                                    Me comprometo a recibir visitas de seguimiento por parte de la protectora.
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="aAceptaPolitica" required>
+                                <label class="form-check-label" for="aAceptaPolitica" style="font-size:0.85rem;">
+                                    Acepto la <a href="privacidad.html" target="_blank">política de privacidad</a> y el tratamiento de mis datos.
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-adoptar w-100 mt-3" style="border:none;cursor:pointer;padding:0.7em;border-radius:8px;font-weight:600;">
+                        <i class="fa-solid fa-paper-plane me-1"></i> Enviar solicitud
+                    </button>
+                </form>
+                <div class="mt-3" style="border-top:1px solid #eee;padding-top:1em;">
+                    <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#adoptContacto" style="font-size:0.85rem;color:#1B358F;text-decoration:none;font-weight:500;">
+                        <i class="fa-solid fa-circle-info me-1"></i> ¿Dudas? Contacta directamente con la protectora
+                    </button>
+                    <div class="collapse" id="adoptContacto">
+                        <div id="adoptContactoDatos" class="mt-2" style="font-size:0.88rem;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal acogida -->
+<div class="modal fade" id="modalAcoge" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:14px;border:none;overflow:hidden;">
+            <div class="modal-header modal-header-pf" style="background:linear-gradient(135deg, #F8BA56 0%, #e5a840 100%);">
+                <h5 class="modal-title text-white fw-bold">
+                    <i class="fa-solid fa-hand-holding-heart me-2"></i>Solicitud de acogida
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5em;">
+                <div id="acogFormError" class="form-error" style="display:none;background:#fff0f0;color:#c0392b;padding:0.5em 0.8em;border-radius:6px;font-size:0.85rem;margin-bottom:1em;"></div>
+                <div id="acogFormOk" class="form-success" style="display:none;background:#f0fff4;color:#27ae60;padding:0.5em 0.8em;border-radius:6px;font-size:0.85rem;margin-bottom:1em;"></div>
+                <div id="acogMascotaInfo" style="background:#fff8e6;padding:0.8em;border-radius:8px;margin-bottom:1em;font-size:0.9rem;"></div>
+                <form id="formAcogida" onsubmit="enviarAcogidaFicha(event)">
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">Nombre completo <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="cNombre" required maxlength="120" style="border-radius:8px;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="cEmail" required maxlength="120" style="border-radius:8px;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">Teléfono <span class="text-danger">*</span></label>
+                        <input type="tel" class="form-control" id="cTelefono" required maxlength="9" pattern="[0-9]{9}" placeholder="9 dígitos" style="border-radius:8px;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">Tipo de vivienda <span class="text-danger">*</span></label>
+                        <select class="form-select" id="cVivienda" required style="border-radius:8px;">
+                            <option value="">Selecciona...</option>
+                            <option value="piso">Piso</option>
+                            <option value="casa_con_jardin">Casa con jardín</option>
+                            <option value="casa_sin_jardin">Casa sin jardín</option>
+                            <option value="finca">Finca / terreno amplio</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">¿Tienes experiencia con animales?</label>
+                        <textarea class="form-control" id="cExperiencia" maxlength="500" placeholder="Cuéntanos..." style="border-radius:8px;resize:vertical;min-height:70px;"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">¿Cuánto tiempo podrías dedicar?</label>
+                        <select class="form-select" id="cTiempo" style="border-radius:8px;">
+                            <option value="">Selecciona...</option>
+                            <option value="menos_de_2h">Menos de 2 horas al día</option>
+                            <option value="2_a_4h">2 a 4 horas al día</option>
+                            <option value="mas_de_4h">Más de 4 horas al día</option>
+                            <option value="disponibilidad_completa">Disponibilidad completa</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">Mensaje adicional</label>
+                        <textarea class="form-control" id="cMensaje" maxlength="500" style="border-radius:8px;resize:vertical;min-height:60px;"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="cTerminos" required>
+                            <label class="form-check-label" for="cTerminos" style="font-size:0.85rem;">Acepto que mis datos serán tratados por la protectora para gestionar esta solicitud.</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn w-100" style="background:#F8BA56;color:#1B358F;border:none;cursor:pointer;padding:0.7em;border-radius:8px;font-weight:600;">
+                        <i class="fa-solid fa-paper-plane me-1"></i> Enviar solicitud
+                    </button>
+                </form>
+                <div class="mt-3" style="border-top:1px solid #eee;padding-top:1em;">
+                    <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#acogContacto" style="font-size:0.85rem;color:#1B358F;text-decoration:none;font-weight:500;">
+                        <i class="fa-solid fa-circle-info me-1"></i> ¿Dudas? Contacta directamente con la protectora
+                    </button>
+                    <div class="collapse" id="acogContacto">
+                        <div id="acogContactoDatos" class="mt-2" style="font-size:0.88rem;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- modal apadrinamiento -->
 <div class="modal fade" id="modalApadrina" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content modal-content-pf">
-            <div class="modal-header modal-header-pf">
+        <div class="modal-content" style="border-radius:14px;border:none;overflow:hidden;">
+            <div class="modal-header modal-header-pf" style="background:linear-gradient(135deg, #27ae60 0%, #1e8e4e 100%);">
                 <h5 class="modal-title text-white fw-bold">
-                    <i class="fa-solid fa-star me-2" style="color:#F8BA56;"></i>
-                    Apadrinar a <span id="modal-apadrina-nombre">–</span>
+                    <i class="fa-solid fa-ribbon me-2"></i>Apadrinar animal
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body modal-body-pf">
-                <p class="modal-intro">
-                    El apadrinamiento se gestiona directamente con la protectora. Contacta con ellos para acordar tu aportación mensual.
+            <div class="modal-body" style="padding:1.5em;">
+                <div id="apadFormError" class="form-error" style="display:none;background:#fff0f0;color:#c0392b;padding:0.5em 0.8em;border-radius:6px;font-size:0.85rem;margin-bottom:1em;"></div>
+                <div id="apadFormOk" class="form-success" style="display:none;background:#f0fff4;color:#27ae60;padding:0.5em 0.8em;border-radius:6px;font-size:0.85rem;margin-bottom:1em;"></div>
+                <div id="apadMascotaInfo" style="background:#f0fff4;padding:0.8em;border-radius:8px;margin-bottom:1em;font-size:0.9rem;"></div>
+                <form id="formApadrinamiento" onsubmit="enviarApadrinamientoFicha(event)">
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">Cuota mensual <span class="text-danger">*</span></label>
+                        <div id="cuotaGridFicha" style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.5em;margin-bottom:0.5em;">
+                            <div class="cuota-op" data-cuota="3" onclick="selCuotaFicha(this)" style="border:2px solid #ddd;border-radius:8px;padding:0.6em;text-align:center;cursor:pointer;transition:all 0.2s;">
+                                <div style="font-size:1.3rem;font-weight:700;color:#27ae60;">3 €</div><div style="font-size:0.75rem;color:#666;">Básica</div>
+                            </div>
+                            <div class="cuota-op" data-cuota="5" onclick="selCuotaFicha(this)" style="border:2px solid #ddd;border-radius:8px;padding:0.6em;text-align:center;cursor:pointer;transition:all 0.2s;">
+                                <div style="font-size:1.3rem;font-weight:700;color:#27ae60;">5 €</div><div style="font-size:0.75rem;color:#666;">Estándar</div>
+                            </div>
+                            <div class="cuota-op" data-cuota="8" onclick="selCuotaFicha(this)" style="border:2px solid #ddd;border-radius:8px;padding:0.6em;text-align:center;cursor:pointer;transition:all 0.2s;">
+                                <div style="font-size:1.3rem;font-weight:700;color:#27ae60;">8 €</div><div style="font-size:0.75rem;color:#666;">Premium</div>
+                            </div>
+                            <div class="cuota-op" data-cuota="10" onclick="selCuotaFicha(this)" style="border:2px solid #ddd;border-radius:8px;padding:0.6em;text-align:center;cursor:pointer;transition:all 0.2s;">
+                                <div style="font-size:1.3rem;font-weight:700;color:#27ae60;">10 €</div><div style="font-size:0.75rem;color:#666;">Oro</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="pCuota" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">Nombre del padrino/madrina <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="pNombre" required maxlength="120" style="border-radius:8px;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="pEmail" required maxlength="120" style="border-radius:8px;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">Teléfono</label>
+                        <input type="tel" class="form-control" id="pTelefono" maxlength="9" pattern="[0-9]{9}" placeholder="9 dígitos" style="border-radius:8px;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">Mensaje (opcional)</label>
+                        <textarea class="form-control" id="pMensaje" maxlength="300" style="border-radius:8px;resize:vertical;min-height:60px;"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="pTerminos" required>
+                            <label class="form-check-label" for="pTerminos" style="font-size:0.85rem;">Acepto que mis datos serán tratados por la protectora para gestionar este apadrinamiento.</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn w-100" style="background:#27ae60;color:#fff;border:none;cursor:pointer;padding:0.7em;border-radius:8px;font-weight:600;">
+                        <i class="fa-solid fa-paper-plane me-1"></i> Confirmar apadrinamiento
+                    </button>
+                </form>
+                <div class="mt-3" style="border-top:1px solid #eee;padding-top:1em;">
+                    <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#apadContacto" style="font-size:0.85rem;color:#1B358F;text-decoration:none;font-weight:500;">
+                        <i class="fa-solid fa-circle-info me-1"></i> ¿Dudas? Contacta directamente con la protectora
+                    </button>
+                    <div class="collapse" id="apadContacto">
+                        <div id="apadContactoDatos" class="mt-2" style="font-size:0.88rem;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal favoritos -->
+<div class="modal fade" id="modalLoginFav" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content" style="border-radius:14px;border:none;">
+            <div class="modal-header modal-header-pf">
+                <h5 class="modal-title text-white fw-bold">
+                    <i class="fa-solid fa-heart me-2" style="color:#F8BA56;"></i>
+                    Guardar favoritos
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5em;text-align:center;">
+                <div style="font-size:2.5rem;margin-bottom:0.5em;">&#128062;</div>
+                <p style="font-size:0.95rem;color:#333;margin-bottom:1.2em;">
+                    Para guardar animales en favoritos necesitas una cuenta.
                 </p>
-                <div id="modal-apadrina-datos"></div>
+                <div style="display:flex;flex-direction:column;gap:0.6em;">
+                    <a href="register.html" class="btn-azul" style="text-align:center;">
+                        <i class="fa-solid fa-user-plus me-2"></i>Crear cuenta gratis
+                    </a>
+                    <a href="login.html" style="text-align:center;display:block;padding:0.7em;border-radius:10px;border:2px solid #1B358F;color:#1B358F;font-weight:700;text-decoration:none;font-size:0.9rem;">
+                        <i class="fa-solid fa-right-to-bracket me-2"></i>Ya tengo cuenta
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
-<!-- fin modal apadrinamiento -->
-
-<div class="modal fade" id="modalAdopcion" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content modal-content-pf">
-            <div class="modal-header modal-header-pf">
-                <h5 class="modal-title text-white fw-bold">
-                    <i class="fa-solid fa-house-heart me-2" style="color:#F8BA56;"></i>
-                    <span id="modal-titulo">¿Quieres adoptar?</span>
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body modal-body-pf" id="modal-body"></div>
-            <div class="modal-footer" style="border:none; padding-top:0;">
-                <button type="button" class="btn-adoptar" style="border-radius:8px; padding:0.6em 1.5em; width:auto;" data-bs-dismiss="modal">
-                    Entendido
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
 
 <footer>
-    <p>© 2026 PetFamily. Todos los derechos reservados.</p>
+    <p>&#169; 2026 PetFamily. Todos los derechos reservados.</p>
     <p><a href="privacidad.html" style="color:white;">Política de Privacidad</a> | <a href="terminos.html" style="color:white;">Términos de Servicio</a></p>
 </footer>
 
@@ -243,198 +511,233 @@ var _mascotaActual = null;
 document.addEventListener('DOMContentLoaded', function() {
     var params = new URLSearchParams(window.location.search);
     var id = params.get('id');
-    
-    if (!id) {
-        window.location.href = 'adopta.html';
-        return;
-    }
-    
-    fetch('../php/get_mascota.php?id=' + encodeURIComponent(id))
-        .then(function(response) {
-            if (!response.ok) throw new Error('Error ' + response.status);
-            return response.json();
+    if (!id) { window.location.href = 'adopta.html'; return; }
+
+    fetch('/ProyectoCat/php/get_mascota.php?id=' + encodeURIComponent(id))
+        .then(function(r) {
+            if (!r.ok) throw new Error('Error ' + r.status);
+            return r.json();
         })
-        .then(function(response) {
-            if (!response.success) {
-                window.location.href = 'adopta.html';
-                return;
-            }
-            
-            var mascota = response.data;
-            _mascotaActual = mascota;
-            contarVista(String(id));
-            renderizarFicha(mascota);
+        .then(function(res) {
+            if (!res.success) { window.location.href = 'adopta.html'; return; }
+            _mascotaActual = res.data;
+            sessionStorage.setItem('pf_vista_pendiente', id);
+            renderizarFicha(res.data);
             cargarOtrosAnimales(id);
             if (estaLogueadoFicha()) actualizarBtnFavorito(id);
         })
-        .catch(function(error) {
-            console.error('Error:', error);
-            window.location.href = 'adopta.html';
-        });
-    
+        .catch(function(e) { console.error('Error fichaAnimal:', e); window.location.href = 'adopta.html'; });
+
     function renderizarFicha(mascota) {
-        document.title = 'PetFamily – ' + mascota.nombre;
+        document.title = 'PetFamily \u2013 ' + mascota.nombre;
         document.getElementById('miga-nombre').textContent = mascota.nombre;
-        
-        var fotoPrincipal = document.getElementById('foto-principal');
-        fotoPrincipal.src = mascota.foto;
-        fotoPrincipal.alt = 'Foto de ' + mascota.nombre;
-        
-        var contenedorMiniaturas = document.getElementById('contenedor-miniaturas');
+
+        var fp = document.getElementById('foto-principal');
+        fp.src = mascota.foto;
+        fp.alt = 'Foto de ' + mascota.nombre;
+
+        var minWrap = document.getElementById('contenedor-miniaturas');
         if (mascota.fotos && mascota.fotos.length > 1) {
-            mascota.fotos.forEach(function(fotoObj, i) {
+            mascota.fotos.forEach(function(fo, i) {
                 var img = document.createElement('img');
-                img.src = fotoObj.ruta;
+                img.src = fo.ruta;
                 img.alt = mascota.nombre + ' foto ' + (i + 1);
                 img.className = 'miniatura' + (i === 0 ? ' activa' : '');
-                img.addEventListener('click', function() { cambiarFoto(img, fotoObj.ruta); });
-                contenedorMiniaturas.appendChild(img);
+                img.addEventListener('click', function() { cambiarFoto(img, fo.ruta); });
+                minWrap.appendChild(img);
             });
         }
-        
+
         document.getElementById('animal-nombre').textContent = mascota.nombre;
         document.getElementById('animal-sexo-icono').innerHTML = mascota.sexo === 'macho' ? svgMacho : svgHembra;
-        
-        var subtitulo = mascota.raza || 'Sin especificar';
-        if (mascota.tamano) subtitulo = mascota.tamano.charAt(0).toUpperCase() + mascota.tamano.slice(1) + ' · ' + subtitulo;
-        document.getElementById('animal-subtitulo').textContent = subtitulo;
-        
-        var btnApadrinar = document.getElementById('btn-apadrinar');
+
+        var sub = mascota.raza || 'Sin especificar';
+        if (mascota.tamano) sub = mascota.tamano.charAt(0).toUpperCase() + mascota.tamano.slice(1) + ' \u00b7 ' + sub;
+        document.getElementById('animal-subtitulo').textContent = sub;
+
+        /* botones secundarios */
+        var btnApad = document.getElementById('btn-apadrinar');
+        var btnAcog = document.getElementById('btn-acoger');
+        var wrapSec = document.getElementById('ficha-btns-secundarios');
+        var numSec  = 0;
+
         if (mascota.disponible_apadrinamiento) {
-            btnApadrinar.removeAttribute('hidden');
+            btnApad.removeAttribute('hidden');
             document.getElementById('btn-apadrinar-texto').textContent = 'Apadrinar a ' + mascota.nombre;
+            numSec++;
         }
-        var btnAcoger = document.getElementById('btn-acoger');
         if (mascota.disponible_acogida) {
-            btnAcoger.removeAttribute('hidden');
+            btnAcog.removeAttribute('hidden');
             document.getElementById('btn-acoger-texto').textContent = 'Acoger a ' + mascota.nombre;
+            numSec++;
         }
-        
-        var badgesEl = document.getElementById('animal-badges');
-        badgesEl.innerHTML = '';
-        if (mascota.vacunado) badgesEl.innerHTML += '<span class="badge badge-estado badge-verde"><i class="fa-solid fa-syringe me-1"></i>Vacunado</span>';
-        if (mascota.esterilizado) badgesEl.innerHTML += '<span class="badge badge-estado badge-verde"><i class="fa-solid fa-check-circle me-1"></i>Esterilizado</span>';
-        if (mascota.microchip) badgesEl.innerHTML += '<span class="badge badge-estado badge-verde"><i class="fa-solid fa-microchip me-1"></i>Microchip</span>';
-        if (mascota.desparasitado) badgesEl.innerHTML += '<span class="badge badge-estado badge-verde"><i class="fa-solid fa-check-circle me-1"></i>Desparasitado</span>';
-        
+
+        /* si solo hay uno, ocupa el ancho completo */
+        if (numSec === 1) wrapSec.classList.add('ficha-btns-sec-solo');
+
+        /* badges veterinarios */
+        var badges = document.getElementById('animal-badges');
+        badges.innerHTML = '';
+        if (mascota.badge_extra) badges.innerHTML += '<span class="badge badge-estado badge-gris"><i class="fa-solid fa-tag me-1"></i>' + mascota.badge_extra + '</span>';
+        if (mascota.prioritaria == 1) badges.innerHTML += '<span class="badge badge-estado badge-oro"><i class="fa-solid fa-star me-1"></i>Prioritaria</span>';
+
+        /* características */
         var caract = document.getElementById('animal-caracteristicas');
         caract.innerHTML = '';
-        
-        var edad = 'Sin datos';
+        var edad = '';
         if (mascota.fecha_nacimiento) {
-            var hoy = new Date();
-            var nac = new Date(mascota.fecha_nacimiento);
-            var anos = hoy.getFullYear() - nac.getFullYear();
-            var mes = hoy.getMonth() - nac.getMonth();
-            if (mes < 0) anos--;
-            edad = anos + ' año' + (anos !== 1 ? 's' : '');
+            var hoy    = new Date();
+            var nac    = new Date(mascota.fecha_nacimiento);
+            var cumple = new Date(hoy.getFullYear(), nac.getMonth(), nac.getDate());
+            var anos   = hoy.getFullYear() - nac.getFullYear();
+            if (hoy < cumple) anos--;
+            if (anos > 0) {
+                edad = anos + ' año' + (anos > 1 ? 's' : '');
+            } else {
+                var meses = hoy.getMonth() - nac.getMonth();
+                if (hoy.getDate() < nac.getDate()) meses--;
+                if (meses < 0) meses += 12;
+                if (meses > 0) {
+                    edad = meses + ' mes' + (meses > 1 ? 'es' : '');
+                } else {
+                    var d = Math.floor((hoy - nac) / 86400000);
+                    edad = d > 0 ? d + ' día' + (d > 1 ? 's' : '') : 'Recién nacido';
+                }
+            }
+        } else if (mascota.edad_texto) {
+            edad = mascota.edad_texto;
         }
-        
+        var colorVal = mascota.color || 'Sin datos';
+        if (colorVal !== 'Sin datos') {
+            colorVal = colorVal.split('_').map(function(p) {
+                var map = {negro:'Negro',blanco:'Blanco',marron:'Marrón',naranja:'Naranja',gris:'Gris',dorado:'Dorado',atigrado:'Atigrado',bicolor:'Bicolor',tricolor:'Tricolor'};
+                return map[p] || p;
+            }).join(', ');
+        }
         var filas = [
-            { icono: 'fa-location-dot', label: 'Ubicación', valor: mascota.ubicacion || 'Sin datos' },
-            { icono: 'fa-cake-candles', label: 'Edad', valor: edad },
-            { icono: 'fa-weight-scale', label: 'Tamaño', valor: mascota.tamano ? mascota.tamano.charAt(0).toUpperCase() + mascota.tamano.slice(1) : 'Sin datos' },
-            { icono: 'fa-palette', label: 'Color', valor: mascota.color || 'Sin datos' },
-            { icono: 'fa-clock', label: 'En adopción', valor: (mascota.estado_adopcion || 'Sin datos').charAt(0).toUpperCase() + (mascota.estado_adopcion || 'sin datos').slice(1) },
-            { icono: 'fa-heart-pulse', label: 'Estado de salud', valor: mascota.estado_salud || 'Sin datos' }
+            { icono: 'fa-location-dot', label: 'Ubicación',      valor: mascota.ubicacion || 'Sin datos' },
+            { icono: 'fa-cake-candles', label: 'Edad',             valor: edad || '' },
+            { icono: 'fa-weight-scale', label: 'Tamaño',         valor: mascota.tamano ? mascota.tamano.charAt(0).toUpperCase() + mascota.tamano.slice(1) : 'Sin datos' },
+            { icono: 'fa-palette',      label: 'Color',             valor: colorVal },
+            { icono: 'fa-clock',        label: 'En protectora',   valor: calcTiempoProtectora(mascota.fecha_entrada) },
+            { icono: 'fa-heart-pulse',  label: 'Estado de salud',  valor: mascota.estado_salud || 'Sin datos' }
         ];
         filas.forEach(function(f) {
             caract.innerHTML += '<li><span class="etiqueta"><i class="fa-solid ' + f.icono + '"></i> ' + f.label + '</span><span class="valor">' + f.valor + '</span></li>';
         });
-        
+
+        /* compatibilidad */
         var compat = document.getElementById('animal-compatibilidad');
         compat.innerHTML = '';
-        var filasCompat = [
-            { icono: 'fa-child', label: 'Niños', val: mascota.compatible_ninos },
-            { icono: 'fa-dog', label: 'Perros', val: mascota.compatible_perros },
-            { icono: 'fa-cat', label: 'Gatos', val: mascota.compatible_gatos },
-            { icono: 'fa-house', label: 'Piso', val: mascota.apto_piso }
-        ];
-        filasCompat.forEach(function(f) {
-            var valHTML;
-            if (f.val === true || f.val === 1) valHTML = '<span class="valor icono-si"><i class="fa-solid fa-check"></i> Sí</span>';
-            else if (f.val === false || f.val === 0) valHTML = '<span class="valor icono-no"><i class="fa-solid fa-xmark"></i> No</span>';
-            else valHTML = '<span class="valor" style="color:#aaa;">Sin datos</span>';
-            compat.innerHTML += '<li><span class="etiqueta"><i class="fa-solid ' + f.icono + '"></i> ' + f.label + '</span>' + valHTML + '</li>';
+        [
+            { icono: 'fa-child', label: 'Ni\u00f1os',  val: mascota.compatible_ninos },
+            { icono: 'fa-dog',   label: 'Perros',    val: mascota.compatible_perros },
+            { icono: 'fa-cat',   label: 'Gatos',     val: mascota.compatible_gatos },
+            { icono: 'fa-house', label: 'Piso',      val: mascota.apto_piso }
+        ].forEach(function(f) {
+            var v = (f.val === 1 || f.val === true)
+                ? '<span class="valor icono-si"><i class="fa-solid fa-check"></i> S\u00ed</span>'
+                : (f.val === 0 || f.val === false)
+                ? '<span class="valor icono-no"><i class="fa-solid fa-xmark"></i> No</span>'
+                : '<span class="valor" style="color:#aaa;">Sin datos</span>';
+            compat.innerHTML += '<li><span class="etiqueta"><i class="fa-solid ' + f.icono + '"></i> ' + f.label + '</span>' + v + '</li>';
         });
-        
+
+        /* descripción */
         document.getElementById('descripcion-titulo').innerHTML = '<i class="fa-solid fa-align-left"></i> Sobre ' + mascota.nombre;
-        document.getElementById('animal-descripcion').innerHTML = mascota.descripcion || 'Sin descripción disponible';
-        
+        document.getElementById('animal-descripcion').innerHTML = mascota.descripcion || 'Sin descripci\u00f3n disponible';
+
+        /* tags positivos debajo descripción */
+        var tagsDef = [
+            { icono: 'fa-syringe',      label: 'Vacunado',              val: mascota.vacunado },
+            { icono: 'fa-scissors',     label: 'Esterilizado',          val: mascota.esterilizado },
+            { icono: 'fa-microchip',    label: 'Microchip',             val: mascota.microchip },
+            { icono: 'fa-shield-virus', label: 'Desparasitado',         val: mascota.desparasitado },
+            { icono: 'fa-child',        label: 'Compatible con ni\u00f1os', val: mascota.compatible_ninos },
+            { icono: 'fa-dog',          label: 'Compatible con perros', val: mascota.compatible_perros },
+            { icono: 'fa-cat',          label: 'Compatible con gatos',  val: mascota.compatible_gatos },
+            { icono: 'fa-house',        label: 'Apto para piso',        val: mascota.apto_piso }
+        ];
+        document.getElementById('animal-tags').innerHTML = tagsDef
+            .filter(function(t) { return t.val === 1 || t.val === true; })
+            .map(function(t) {
+                return '<span class="animal-tag"><i class="fa-solid ' + t.icono + '"></i> ' + t.label + '</span>';
+            })
+            .join('');
+
+        /* protectora */
         var logoUrl = '../img/iconosHeader/gato_logo.png';
-        if (mascota.logo_protectora) {
-            logoUrl = '../' + mascota.logo_protectora;
-        }
+        if (mascota.logo_protectora) logoUrl = '../' + mascota.logo_protectora;
         document.getElementById('protectora-logo').src = logoUrl;
         document.getElementById('protectora-nombre').textContent = mascota.protectora || 'Sin especificar';
-        document.getElementById('protectora-ubicacion').innerHTML = '<i class="fa-solid fa-location-dot"></i> ' + (mascota.ubicacion || 'Sin ubicación');
-        
-        var asunto = encodeURIComponent('Adopción – ' + mascota.nombre);
-        var cuerpo = encodeURIComponent(
-            'Hola, me pongo en contacto desde PetFamily para interesarme por la adopción de:\n\n' +
-            '  Animal: ' + mascota.nombre + '\n' +
-            '  ID: ' + mascota.idMascota + '\n' +
-            '  Raza: ' + (mascota.raza || 'Sin especificar') + '\n' +
-            '  Especie: ' + (mascota.especie || 'Sin especificar') + '\n\n' +
-            'Quedo a la espera de vuestras instrucciones para continuar con el proceso.\n\n' +
-            'Un saludo.'
+        document.getElementById('protectora-ubicacion').innerHTML = '<i class="fa-solid fa-location-dot"></i> ' + (mascota.ubicacion || 'Sin ubicaci\u00f3n');
+
+        var asuntoContacto = encodeURIComponent('Consulta sobre ' + mascota.nombre);
+        var cuerpoContacto = encodeURIComponent(
+            'Hola, desde PetFamily me interesa saber más sobre ' + mascota.nombre + '.\n\nUn saludo.'
         );
-        var mailtoLink = 'mailto:' + mascota.email_protectora + '?subject=' + asunto + '&body=' + cuerpo;
+        var mailtoLink = 'mailto:' + mascota.email_protectora + '?cc=petfamilycontact%40yopmail.com&subject=' + asuntoContacto + '&body=' + cuerpoContacto;
 
         var contactoEl = document.getElementById('protectora-contacto');
         contactoEl.innerHTML = '';
-        if (mascota.email_protectora) {
+        if (mascota.email_protectora)
             contactoEl.innerHTML += '<li><span class="etiqueta"><i class="fa-solid fa-envelope"></i></span><span class="valor"><a href="' + mailtoLink + '" class="enlace-contacto">' + mascota.email_protectora + '</a></span></li>';
-        }
-        if (mascota.telefono_protectora) {
+        if (mascota.telefono_protectora)
             contactoEl.innerHTML += '<li><span class="etiqueta"><i class="fa-solid fa-phone"></i></span><span class="valor"><a href="tel:' + mascota.telefono_protectora + '" class="enlace-contacto">' + mascota.telefono_protectora + '</a></span></li>';
-        }
-        
-        document.getElementById('modal-titulo').textContent = '¿Quieres adoptar a ' + mascota.nombre + '?';
-        var contactoModal = '<p style="color:#444; font-size:0.95rem;">Para iniciar el proceso de adopción, ponte en contacto con <strong>' + (mascota.protectora || 'la protectora') + '</strong>. Ellos te guiarán en cada paso. 🐾</p><ul style="font-size:0.9rem; color:#555;">';
-        if (mascota.email_protectora) {
-            contactoModal += '<li>📧 <a href="' + mailtoLink + '" style="color:#1B358F;"><strong>' + mascota.email_protectora + '</strong></a></li>';
-        }
-        if (mascota.telefono_protectora) {
-            contactoModal += '<li>📞 <strong>' + mascota.telefono_protectora + '</strong></li>';
-        }
-        contactoModal += '</ul>';
-        document.getElementById('modal-body').innerHTML = contactoModal;
+
+        /* modal adopción */
+        renderContactoProtectora(mascota);
     }
 });
 
-function cargarOtrosAnimales(idActual) {
-    fetch('../php/get_mascotas.php')
-        .then(function(response) {
-            if (!response.ok) throw new Error('Error cargando mascotas');
-            return response.json();
-        })
-        .then(function(response) {
-            if (!response.success || !response.data) {
-                document.getElementById('otros-animales').innerHTML = '<p style="text-align:center; color:#999; grid-column:1/-1;">No hay otros animales disponibles</p>';
-                return;
-            }
-            
-            var otrosEl = document.getElementById('otros-animales');
-            otrosEl.innerHTML = '';
-            
-            response.data.forEach(function(mascota) {
-                if (String(mascota.idMascota) === String(idActual)) return;
-                
-                var card = document.createElement('div');
-                card.className = 'col-12 col-sm-6 col-lg-4';
-                card.innerHTML = '<div class="card-sugerencia card" onclick="window.location.href=\'fichaAnimal.html?id=' + mascota.idMascota + '\'" style="cursor:pointer;"><img src="' + mascota.foto + '" alt="' + mascota.nombre + '" style="height:420px; object-fit:cover;"><div class="card-body"><p class="card-title" style="font-weight:600; margin:0;">' + mascota.nombre + '</p><p class="card-text" style="font-size:0.85rem; color:#666; margin:5px 0 0 0;">' + (mascota.raza || 'Sin especificar') + '</p></div></div>';
-                otrosEl.appendChild(card);
-            });
-        })
-        .catch(function(error) {
-            console.error('Error:', error);
-        });
+function calcTiempoProtectora(fechaEntrada) {
+    if (!fechaEntrada) return 'Sin datos';
+    var entrada = new Date(fechaEntrada);
+    var ahora = new Date();
+    var diffMs = ahora - entrada;
+    if (diffMs <= 0) return 'Hoy';
+    var dias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (dias < 7) return dias + ' d\xEDas';
+    if (dias < 30) return Math.floor(dias / 7) + ' sem.';
+    var meses = Math.floor(dias / 30);
+    var restoDias = dias % 30;
+    if (meses < 12) return meses + ' mes' + (meses > 1 ? 'es' : '') + (restoDias ? ' y ' + restoDias + ' d\xEDas' : '');
+    var anios = Math.floor(meses / 12);
+    var mesesResto = meses % 12;
+    return anios + ' a\xF1o' + (anios > 1 ? 's' : '') + (mesesResto ? ' y ' + mesesResto + ' mes' + (mesesResto > 1 ? 'es' : '') : '');
 }
 
-var svgMacho = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#0419CC" title="Macho"><path d="M768-768v216h-72v-93L564-513q17.54 26.15 26.77 55.58Q600-428 600-396.41q0 85.48-59.28 144.95Q481.44-192 396.22-192T251.5-251.28Q192-310.56 192-395.78t59.35-144.72Q310.69-600 396-600q32 0 61.5 8.5T513-564l132-132h-93v-72h216Z"/></svg>';
+function cargarOtrosAnimales(idActual) {
+    fetch('/ProyectoCat/php/get_mascotas.php')
+        .then(function(r) {
+            if (!r.ok) throw new Error('Error');
+            return r.json();
+        })
+        .then(function(res) {
+            var el = document.getElementById('otros-animales');
+            if (!res.success || !res.data) {
+                el.innerHTML = '<p style="text-align:center;color:#999;grid-column:1/-1;">No hay otros animales disponibles</p>';
+                return;
+            }
+            el.innerHTML = '';
+            res.data.forEach(function(m) {
+                if (String(m.idMascota) === String(idActual)) return;
+                var d = document.createElement('div');
+                d.className = 'col-12 col-sm-6 col-lg-4';
+                d.innerHTML = '<div class="card-sugerencia card" onclick="window.location.href=\'fichaAnimal.html?id=' + m.idMascota + '\'" style="cursor:pointer;">' +
+                    '<img src="' + m.foto + '" alt="' + m.nombre + '" style="height:420px;object-fit:cover;">' +
+                    '<div class="card-body">' +
+                    '<p class="card-title" style="font-weight:600;margin:0;">' + m.nombre + '</p>' +
+                    '<p class="card-text" style="font-size:0.85rem;color:#666;margin:5px 0 0;">' + (m.raza || 'Sin especificar') + '</p>' +
+                    '</div></div>';
+                el.appendChild(d);
+            });
+        })
+        .catch(function(e) { console.error(e); });
+}
 
-var svgHembra = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#CC0479" title="Hembra"><path d="M440-120v-80h-80v-80h80v-84q-79-14-129.5-75.5T260-582q0-91 64.5-154.5T480-800q91 0 155.5 63.5T700-582q0 81-50.5 142.5T520-364v84h80v80h-80v80h-80Zm139-361q41-41 41-99t-41-99q-41-41-99-41t-99 41q-41 41-41 99t41 99q41 41 99 41t99-41Z"/></svg>';
+var svgMacho  = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#0419CC"><path d="M768-768v216h-72v-93L564-513q17.54 26.15 26.77 55.58Q600-428 600-396.41q0 85.48-59.28 144.95Q481.44-192 396.22-192T251.5-251.28Q192-310.56 192-395.78t59.35-144.72Q310.69-600 396-600q32 0 61.5 8.5T513-564l132-132h-93v-72h216Z"/></svg>';
+var svgHembra = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" fill="#CC0479"><path d="M440-120v-80h-80v-80h80v-84q-79-14-129.5-75.5T260-582q0-91 64.5-154.5T480-800q91 0 155.5 63.5T700-582q0 81-50.5 142.5T520-364v84h80v80h-80v80h-80Zm139-361q41-41 41-99t-41-99q-41-41-99-41t-99 41q-41 41-41 99t41 99q41 41 99 41t99-41Z"/></svg>';
 
 function cambiarFoto(img, ruta) {
     document.querySelectorAll('.miniatura').forEach(function(m) { m.classList.remove('activa'); });
@@ -446,8 +749,8 @@ var CLAVE_FAVORITOS = 'petfamily_favoritos';
 var CLAVE_SESION    = 'pf_session';
 
 function obtenerFavoritos() {
-    var datos = localStorage.getItem(CLAVE_FAVORITOS);
-    return datos ? JSON.parse(datos) : [];
+    var d = localStorage.getItem(CLAVE_FAVORITOS);
+    return d ? JSON.parse(d) : [];
 }
 
 function estaLogueadoFicha() {
@@ -455,14 +758,14 @@ function estaLogueadoFicha() {
 }
 
 function actualizarBtnFavorito(id) {
-    var btn  = document.getElementById('btn-fav-ficha');
+    var btn = document.getElementById('btn-fav-ficha');
     var favs = obtenerFavoritos();
     if (favs.indexOf(String(id)) !== -1) {
         btn.classList.add('activo');
-        btn.innerHTML = '<i class="fa-solid fa-heart me-1"></i> Guardado en favoritos';
+        btn.querySelector('i').className = 'fa-solid fa-heart';
     } else {
         btn.classList.remove('activo');
-        btn.innerHTML = '<i class="fa-regular fa-heart me-1"></i> Guardar en favoritos';
+        btn.querySelector('i').className = 'fa-regular fa-heart';
     }
 }
 
@@ -471,13 +774,9 @@ function toggleFavoritoFicha() {
         new bootstrap.Modal(document.getElementById('modalLoginFav')).show();
         return;
     }
-
-    var params = new URLSearchParams(window.location.search);
-    var id     = params.get('id');
-    var btn    = document.getElementById('btn-fav-ficha');
-
+    var id  = new URLSearchParams(window.location.search).get('id');
+    var btn = document.getElementById('btn-fav-ficha');
     btn.disabled = true;
-
     fetch('../backend/mascotas/favoritos.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -489,131 +788,331 @@ function toggleFavoritoFicha() {
         btn.disabled = false;
         if (!data.ok) return;
         var favs = obtenerFavoritos();
-        if (data.accion === 'eliminado') {
+        var eliminado = data.accion === 'eliminado';
+        if (eliminado) {
             var pos = favs.indexOf(id);
             if (pos !== -1) favs.splice(pos, 1);
             btn.classList.remove('activo');
-            btn.innerHTML = '<i class="fa-regular fa-heart me-1"></i> Guardar en favoritos';
-            mostrarToastFav('💔 Eliminado de favoritos', '#666');
+            btn.querySelector('i').className = 'fa-regular fa-heart';
         } else {
             if (favs.indexOf(id) === -1) favs.push(id);
             btn.classList.add('activo');
-            btn.innerHTML = '<i class="fa-solid fa-heart me-1"></i> Guardado en favoritos';
-            mostrarToastFav('❤️ Guardado en favoritos', '#1B358F');
+            btn.querySelector('i').className = 'fa-solid fa-heart';
         }
         localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify(favs));
+        mostrarToastFav(
+            eliminado ? '💔 Eliminado de favoritos' : '❤️ Guardado en favoritos',
+            eliminado ? '#666' : '#1B358F'
+        );
     })
-    .catch(function() {
-        btn.disabled = false;
+    .catch(function() { btn.disabled = false; });
+}
+
+function renderContactoProtectora(m) {
+    var tipos = [
+        { id: 'adopt', tipo: 'adopción', verbo: 'adoptar a' },
+        { id: 'acog',  tipo: 'acogida',  verbo: 'acoger a' },
+        { id: 'apad',  tipo: 'apadrinamiento', verbo: 'apadrinar a' }
+    ];
+
+    tipos.forEach(function(t) {
+        var asunto = encodeURIComponent('Solicitud de ' + t.tipo + ' \u2013 ' + m.nombre);
+        var infoAnimal = '  Animal: ' + m.nombre + '\n  ID: ' + m.idMascota + '\n  Especie: ' + (m.especie || 'Sin especificar') + '\n  Raza: ' + (m.raza || 'Sin especificar');
+        var camposExtra = '';
+        if (t.id === 'acog') {
+            camposExtra = '\n\n  Datos adicionales:\n  - Tipo de vivienda:\n  - Disponibilidad horaria:\n  - Experiencia con animales:';
+        } else if (t.id === 'apad') {
+            camposExtra = '\n\n  Datos adicionales:\n  - Cuota mensual deseada:\n  - Duración del apadrinamiento:';
+        }
+        var cuerpo = encodeURIComponent(
+            'Hola, desde PetFamily me interesa ' + t.verbo + ' ' + m.nombre + '.\n\n' +
+            infoAnimal + camposExtra + '\n\n' +
+            'Quedo a la espera de vuestras instrucciones.\n\nUn saludo.'
+        );
+        var contacto = '';
+        if (m.email_protectora) contacto += '<div class="mb-2"><i class="fa-solid fa-envelope me-1" style="color:#1B358F;"></i><a href="mailto:' + m.email_protectora + '?cc=petfamilycontact%40yopmail.com&subject=' + asunto + '&body=' + cuerpo + '" style="color:#1B358F;">' + m.email_protectora + '</a></div>';
+        if (m.telefono_protectora) contacto += '<div class="mb-2"><i class="fa-solid fa-phone me-1" style="color:#1B358F;"></i><a href="tel:' + m.telefono_protectora + '" style="color:#1B358F;">' + m.telefono_protectora + '</a></div>';
+        if (!contacto) contacto = '<div class="text-muted">Sin datos de contacto disponibles.</div>';
+
+        document.getElementById(t.id + 'ContactoDatos').innerHTML = contacto;
     });
+}
+
+function togglePermiso() {
+    var prop = document.getElementById('aViviendaProp').value;
+    document.getElementById('divPermiso').style.display = prop === 'no' ? 'block' : 'none';
+    document.getElementById('aPermiso').required = prop === 'no';
+}
+
+function toggleDescOtros() {
+    var otros = document.getElementById('aOtrosAnimales').value;
+    document.getElementById('divDescOtros').style.display = otros === 'si' ? 'block' : 'none';
+    document.getElementById('aDescOtros').required = otros === 'si';
+}
+
+function mostrarModalAdopcion() {
+    if (!_mascotaActual) return;
+    var m = _mascotaActual;
+    document.getElementById('adoptMascotaInfo').innerHTML = '<strong>' + m.nombre + '</strong> — ' + (m.raza || 'Mestizo') + ' · ' + (m.sexo || '').charAt(0).toUpperCase() + (m.sexo || '').slice(1);
+    document.getElementById('aNombre').value = '';
+    document.getElementById('aDni').value = '';
+    document.getElementById('aFechaNac').value = '';
+    document.getElementById('aEmail').value = '';
+    document.getElementById('aTelefono').value = '';
+    document.getElementById('aDireccion').value = '';
+    document.getElementById('aLocalidad').value = '';
+    document.getElementById('aTipoVivienda').value = '';
+    document.getElementById('aViviendaProp').value = '';
+    document.getElementById('aPermiso').value = '';
+    document.getElementById('divPermiso').style.display = 'none';
+    document.getElementById('aPersonas').value = '';
+    document.getElementById('aNinos').value = '';
+    document.getElementById('aOtrosAnimales').value = '';
+    document.getElementById('aDescOtros').value = '';
+    document.getElementById('divDescOtros').style.display = 'none';
+    document.getElementById('aExperiencia').value = '';
+    document.getElementById('aTiempoFuera').value = '';
+    document.getElementById('aMotivo').value = '';
+    document.getElementById('aCompromisoVisitas').checked = false;
+    document.getElementById('aAceptaPolitica').checked = false;
+    document.getElementById('adoptFormError').style.display = 'none';
+    document.getElementById('adoptFormOk').style.display = 'none';
+    new bootstrap.Modal(document.getElementById('modalAdopcion')).show();
 }
 
 function mostrarModalApadrina() {
     if (!_mascotaActual) return;
     var m = _mascotaActual;
-    document.getElementById('modal-apadrina-nombre').textContent = m.nombre;
-
-    var asunto = encodeURIComponent('Apadrinamiento – ' + m.nombre);
-    var cuerpo = encodeURIComponent(
-        'Hola, me pongo en contacto desde PetFamily para interesarme por apadrinar a:\n\n' +
-        '  Animal: ' + m.nombre + '\n' +
-        '  ID: ' + m.idMascota + '\n' +
-        '  Raza: ' + (m.raza || 'Sin especificar') + '\n' +
-        '  Especie: ' + (m.especie || 'Sin especificar') + '\n\n' +
-        'Quedo a la espera de información sobre las condiciones del apadrinamiento.\n\n' +
-        'Un saludo.'
-    );
-
-    var html = '<p class="protectora-nombre mb-2">' + (m.protectora || '') + '</p>';
-    if (m.telefono_protectora) {
-        html += '<div class="modal-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + m.telefono_protectora + '">' + m.telefono_protectora + '</a></div>';
-    }
-    if (m.email_protectora) {
-        html += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + m.email_protectora + '?subject=' + asunto + '&body=' + cuerpo + '">' + m.email_protectora + '</a></div>';
-    }
-
-    html += '<a href="apadrina.html" class="btn-azul d-block text-center mt-3" style="text-decoration:none;">'
-         + '<i class="fa-solid fa-heart me-2"></i>Ver todos los animales para apadrinar</a>';
-    document.getElementById('modal-apadrina-datos').innerHTML = html;
+    document.getElementById('apadMascotaInfo').innerHTML = '<strong>' + m.nombre + '</strong> — ' + (m.raza || 'Mestizo') + ' · ' + (m.sexo || '').charAt(0).toUpperCase() + (m.sexo || '').slice(1);
+    document.getElementById('pNombre').value = '';
+    document.getElementById('pEmail').value = '';
+    document.getElementById('pTelefono').value = '';
+    document.getElementById('pMensaje').value = '';
+    document.getElementById('pCuota').value = '';
+    document.getElementById('pTerminos').checked = false;
+    document.querySelectorAll('.cuota-op').forEach(function(o) { o.style.borderColor = '#ddd'; o.style.background = 'transparent'; });
+    document.getElementById('apadFormError').style.display = 'none';
+    document.getElementById('apadFormOk').style.display = 'none';
     new bootstrap.Modal(document.getElementById('modalApadrina')).show();
 }
 
 function mostrarModalAcoger() {
     if (!_mascotaActual) return;
     var m = _mascotaActual;
-    document.getElementById('modal-apadrina-nombre').textContent = 'Acoger a ' + m.nombre;
-
-    var asunto = encodeURIComponent('Acogida – ' + m.nombre);
-    var cuerpo = encodeURIComponent(
-        'Hola, me pongo en contacto desde PetFamily para interesarme en acoger a:\n\n' +
-        '  Animal: ' + m.nombre + '\n' +
-        '  ID: ' + m.idMascota + '\n' +
-        '  Raza: ' + (m.raza || 'Sin especificar') + '\n' +
-        '  Especie: ' + (m.especie || 'Sin especificar') + '\n\n' +
-        'Quedo a la espera de información sobre el proceso de acogida.\n\n' +
-        'Un saludo.'
-    );
-
-    var html = '<p class="protectora-nombre mb-2">' + (m.protectora || '') + '</p>';
-    if (m.telefono_protectora) {
-        html += '<div class="modal-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + m.telefono_protectora + '">' + m.telefono_protectora + '</a></div>';
-    }
-    if (m.email_protectora) {
-        html += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + m.email_protectora + '?subject=' + asunto + '&body=' + cuerpo + '">' + m.email_protectora + '</a></div>';
-    }
-    if (m.web_protectora) {
-        html += '<div class="modal-dato"><i class="fa-solid fa-globe"></i><a href="' + m.web_protectora + '" target="_blank" rel="noopener">Web de la protectora</a></div>';
-    }
-
-    document.getElementById('modal-apadrina-datos').innerHTML = html;
-    new bootstrap.Modal(document.getElementById('modalApadrina')).show();
+    document.getElementById('acogMascotaInfo').innerHTML = '<strong>' + m.nombre + '</strong> — ' + (m.raza || 'Mestizo') + ' · ' + (m.sexo || '').charAt(0).toUpperCase() + (m.sexo || '').slice(1);
+    document.getElementById('cNombre').value = '';
+    document.getElementById('cEmail').value = '';
+    document.getElementById('cTelefono').value = '';
+    document.getElementById('cVivienda').value = '';
+    document.getElementById('cExperiencia').value = '';
+    document.getElementById('cTiempo').value = '';
+    document.getElementById('cMensaje').value = '';
+    document.getElementById('cTerminos').checked = false;
+    document.getElementById('acogFormError').style.display = 'none';
+    document.getElementById('acogFormOk').style.display = 'none';
+    new bootstrap.Modal(document.getElementById('modalAcoge')).show();
 }
 
-/* compartirAnimal definido en script.js */
+function selCuotaFicha(el) {
+    document.querySelectorAll('.cuota-op').forEach(function(o) { o.style.borderColor = '#ddd'; o.style.background = 'transparent'; });
+    el.style.borderColor = '#27ae60';
+    el.style.background = '#f0fff4';
+    document.getElementById('pCuota').value = el.dataset.cuota;
+}
+
+function enviarAdopcionFicha(e) {
+    e.preventDefault();
+    var err = document.getElementById('adoptFormError');
+    var ok = document.getElementById('adoptFormOk');
+    err.style.display = 'none';
+    ok.style.display = 'none';
+
+    var idMascota = _mascotaActual.idMascota;
+    var nombre = document.getElementById('aNombre').value.trim();
+    var dni = document.getElementById('aDni').value.trim();
+    var fechaNac = document.getElementById('aFechaNac').value;
+    var email = document.getElementById('aEmail').value.trim();
+    var telefono = document.getElementById('aTelefono').value.trim();
+    var direccion = document.getElementById('aDireccion').value.trim();
+    var localidad = document.getElementById('aLocalidad').value.trim();
+    var tipoVivienda = document.getElementById('aTipoVivienda').value;
+    var viviendaProp = document.getElementById('aViviendaProp').value;
+    var personas = document.getElementById('aPersonas').value;
+    var ninos = document.getElementById('aNinos').value;
+    var otrosAnimales = document.getElementById('aOtrosAnimales').value;
+    var descOtros = document.getElementById('aDescOtros').value.trim();
+    var experiencia = document.getElementById('aExperiencia').value.trim();
+    var tiempoFuera = document.getElementById('aTiempoFuera').value;
+    var motivo = document.getElementById('aMotivo').value.trim();
+    var compromiso = document.getElementById('aCompromisoVisitas').checked;
+    var aceptaPolitica = document.getElementById('aAceptaPolitica').checked;
+
+    // Validaciones
+    if (!nombre) { err.textContent = 'El nombre es obligatorio.'; err.style.display = 'block'; return; }
+    if (!dni || !/^[0-9XYZ][0-9]{7}[A-Z]$/i.test(dni)) { err.textContent = 'DNI no válido.'; err.style.display = 'block'; return; }
+    if (!fechaNac) { err.textContent = 'La fecha de nacimiento es obligatoria.'; err.style.display = 'block'; return; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Introduce un email válido.'; err.style.display = 'block'; return; }
+    if (!/^\d{9}$/.test(telefono)) { err.textContent = 'El teléfono debe tener exactamente 9 dígitos.'; err.style.display = 'block'; return; }
+    if (!direccion) { err.textContent = 'La dirección es obligatoria.'; err.style.display = 'block'; return; }
+    if (!localidad) { err.textContent = 'La localidad es obligatoria.'; err.style.display = 'block'; return; }
+    if (!tipoVivienda) { err.textContent = 'Selecciona un tipo de vivienda.'; err.style.display = 'block'; return; }
+    if (!viviendaProp) { err.textContent = 'Indica si la vivienda es en propiedad.'; err.style.display = 'block'; return; }
+    if (viviendaProp === 'no' && !document.getElementById('aPermiso').value) { err.textContent = 'Debes subir el permiso del propietario (PDF).'; err.style.display = 'block'; return; }
+    if (!personas || personas < 1) { err.textContent = 'Indica el número de personas en el hogar.'; err.style.display = 'block'; return; }
+    if (!ninos) { err.textContent = 'Indica si hay niños en el hogar.'; err.style.display = 'block'; return; }
+    if (!otrosAnimales) { err.textContent = 'Indica si tenéis otros animales.'; err.style.display = 'block'; return; }
+    if (otrosAnimales === 'si' && !descOtros) { err.textContent = 'Describe los otros animales.'; err.style.display = 'block'; return; }
+    if (!experiencia || experiencia.length < 20) { err.textContent = 'La experiencia debe tener al menos 20 caracteres.'; err.style.display = 'block'; return; }
+    if (!tiempoFuera) { err.textContent = 'Selecciona el tiempo fuera de casa.'; err.style.display = 'block'; return; }
+    if (!motivo || motivo.length < 20) { err.textContent = 'El motivo debe tener al menos 20 caracteres.'; err.style.display = 'block'; return; }
+    if (!compromiso) { err.textContent = 'Debes comprometerte a las visitas de seguimiento.'; err.style.display = 'block'; return; }
+    if (!aceptaPolitica) { err.textContent = 'Debes aceptar la política de privacidad.'; err.style.display = 'block'; return; }
+
+    var formData = new FormData();
+    formData.append('idMascota', idMascota);
+    formData.append('nombre', nombre);
+    formData.append('dni', dni);
+    formData.append('fecha_nacimiento', fechaNac);
+    formData.append('email', email);
+    formData.append('telefono', telefono);
+    formData.append('direccion_completa', direccion);
+    formData.append('localidad', localidad);
+    formData.append('tipo_vivienda', tipoVivienda);
+    formData.append('vivienda_en_propiedad', viviendaProp);
+    formData.append('personas_en_hogar', personas);
+    formData.append('ninos_en_hogar', ninos);
+    formData.append('otros_animales', otrosAnimales);
+    formData.append('descripcion_otros_animales', descOtros);
+    formData.append('experiencia_animales', experiencia);
+    formData.append('tiempo_fuera_casa', tiempoFuera);
+    formData.append('motivo_adopcion', motivo);
+    formData.append('compromiso_visitas', compromiso ? '1' : '0');
+    formData.append('aceptar_politica_privacidad', aceptaPolitica ? '1' : '0');
+    formData.append('mensaje', '');
+
+    var permisoInput = document.getElementById('aPermiso');
+    if (permisoInput.files.length > 0) {
+        formData.append('permiso_propietario', permisoInput.files[0]);
+    }
+
+    fetch('../backend/adopcion/solicitud.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (!data.ok) {
+            err.textContent = data.error || 'Error al enviar la solicitud.';
+            err.style.display = 'block';
+            return;
+        }
+        ok.textContent = '¡Solicitud enviada! La protectora se pondrá en contacto contigo.';
+        ok.style.display = 'block';
+        document.getElementById('formAdopcion').reset();
+        document.getElementById('divPermiso').style.display = 'none';
+        document.getElementById('divDescOtros').style.display = 'none';
+        setTimeout(function() { bootstrap.Modal.getInstance(document.getElementById('modalAdopcion')).hide(); }, 2500);
+    })
+    .catch(function() {
+        err.textContent = 'Error de conexión. Inténtalo de nuevo.';
+        err.style.display = 'block';
+    });
+}
+
+function enviarAcogidaFicha(e) {
+    e.preventDefault();
+    var err = document.getElementById('acogFormError');
+    var ok = document.getElementById('acogFormOk');
+    err.style.display = 'none';
+    ok.style.display = 'none';
+
+    var idMascota = _mascotaActual.idMascota;
+    var nombre = document.getElementById('cNombre').value.trim();
+    var email = document.getElementById('cEmail').value.trim();
+    var telefono = document.getElementById('cTelefono').value.trim();
+    var vivienda = document.getElementById('cVivienda').value;
+    var experiencia = document.getElementById('cExperiencia').value.trim();
+    var tiempo = document.getElementById('cTiempo').value;
+    var mensaje = document.getElementById('cMensaje').value.trim();
+
+    if (!nombre) { err.textContent = 'El nombre es obligatorio.'; err.style.display = 'block'; return; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Introduce un email válido.'; err.style.display = 'block'; return; }
+    if (!/^\d{9}$/.test(telefono)) { err.textContent = 'El teléfono debe tener exactamente 9 dígitos.'; err.style.display = 'block'; return; }
+    if (!vivienda) { err.textContent = 'Selecciona un tipo de vivienda.'; err.style.display = 'block'; return; }
+
+    fetch('../backend/adopcion/solicitud_acogida.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idMascota: idMascota, nombre: nombre, email: email, telefono: telefono, vivienda: vivienda, experiencia: experiencia, tiempo: tiempo, mensaje: mensaje })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (!data.ok) {
+            err.textContent = data.error || 'Error al enviar la solicitud.';
+            err.style.display = 'block';
+            return;
+        }
+        ok.textContent = '¡Solicitud de acogida enviada! La protectora se pondrá en contacto contigo.';
+        ok.style.display = 'block';
+        document.getElementById('formAcogida').reset();
+        setTimeout(function() { bootstrap.Modal.getInstance(document.getElementById('modalAcoge')).hide(); }, 2500);
+    })
+    .catch(function() {
+        err.textContent = 'Error de conexión. Inténtalo de nuevo.';
+        err.style.display = 'block';
+    });
+}
+
+function enviarApadrinamientoFicha(e) {
+    e.preventDefault();
+    var err = document.getElementById('apadFormError');
+    var ok = document.getElementById('apadFormOk');
+    err.style.display = 'none';
+    ok.style.display = 'none';
+
+    var idMascota = _mascotaActual.idMascota;
+    var cuota = document.getElementById('pCuota').value;
+    var nombre = document.getElementById('pNombre').value.trim();
+    var email = document.getElementById('pEmail').value.trim();
+    var telefono = document.getElementById('pTelefono').value.trim();
+    var mensaje = document.getElementById('pMensaje').value.trim();
+
+    if (!cuota || ['3','5','8','10'].indexOf(cuota) === -1) { err.textContent = 'Selecciona una cuota válida.'; err.style.display = 'block'; return; }
+    if (!nombre) { err.textContent = 'El nombre es obligatorio.'; err.style.display = 'block'; return; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Introduce un email válido.'; err.style.display = 'block'; return; }
+    if (telefono && !/^\d{9}$/.test(telefono)) { err.textContent = 'El teléfono debe tener exactamente 9 dígitos.'; err.style.display = 'block'; return; }
+
+    fetch('../backend/apadrinamiento/apadrinar.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idMascota: idMascota, cuota: parseFloat(cuota).toFixed(2), nombre_pagador: nombre, email_pagador: email, telefono: telefono, mensaje: mensaje })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (!data.ok) {
+            err.textContent = data.error || 'Error al enviar el apadrinamiento.';
+            err.style.display = 'block';
+            return;
+        }
+        ok.textContent = '¡Apadrinamiento registrado! Gracias por tu apoyo.';
+        ok.style.display = 'block';
+        document.getElementById('formApadrinamiento').reset();
+        document.querySelectorAll('.cuota-op').forEach(function(o) { o.style.borderColor = '#ddd'; o.style.background = 'transparent'; });
+        setTimeout(function() { bootstrap.Modal.getInstance(document.getElementById('modalApadrina')).hide(); }, 2500);
+    })
+    .catch(function() {
+        err.textContent = 'Error de conexión. Inténtalo de nuevo.';
+        err.style.display = 'block';
+    });
+}
 
 function compartirAnimalFicha() {
-    var el     = document.getElementById('animal-nombre');
+    var el = document.getElementById('animal-nombre');
     var nombre = el ? el.textContent.trim() : '';
-    var id     = new URLSearchParams(window.location.search).get('id') || '';
+    var id = new URLSearchParams(window.location.search).get('id') || '';
     compartirAnimal(id, nombre);
 }
-
-function mostrarModalAdopcion() {
-    var modal = new bootstrap.Modal(document.getElementById('modalAdopcion'));
-    modal.show();
-}
 </script>
-
-
-<!-- modal favoritos — requiere login -->
-<div class="modal fade" id="modalLoginFav" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-        <div class="modal-content" style="border-radius:14px; border:none;">
-            <div class="modal-header modal-header-pf">
-                <h5 class="modal-title text-white fw-bold">
-                    <i class="fa-solid fa-heart me-2" style="color:#F8BA56;"></i>
-                    Guardar favoritos
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" style="padding:1.5em; text-align:center;">
-                <div style="font-size:2.5rem; margin-bottom:0.5em;">🐾</div>
-                <p style="font-size:0.95rem; color:#333; margin-bottom:1.2em;">
-                    Para guardar animales en favoritos y hacerles seguimiento necesitas una cuenta.
-                </p>
-                <div style="display:flex; flex-direction:column; gap:0.6em;">
-                    <a href="register.html" class="btn-azul" style="text-align:center;">
-                        <i class="fa-solid fa-user-plus me-2"></i>Crear cuenta gratis
-                    </a>
-                    <a href="login.html" class="btn-outline-azul" style="text-align:center; display:block; padding:0.7em; border-radius:10px; border:2px solid #1B358F; color:#1B358F; font-weight:700; text-decoration:none; font-size:0.9rem;">
-                        <i class="fa-solid fa-right-to-bracket me-2"></i>Ya tengo cuenta
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- fin modal favoritos -->
 
 </body>
 </html>

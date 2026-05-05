@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetFamily – Apadrinamientos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily">
+            <span>Pet<em>Family</em></span>
+        </div>
+        <nav class="sidebar-nav">
+            <p class="sidebar-seccion">General</p>
+            <a href="dashboard.html" class="sidebar-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+            <p class="sidebar-seccion">Gestión</p>
+            <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
+            <a href="protectoras.html" class="sidebar-link"><i class="fa-solid fa-building-shield"></i> Protectoras</a>
+            <a href="usuarios.html" class="sidebar-link"><i class="fa-solid fa-users"></i> Usuarios</a>
+            <a href="apadrinamientos.html" class="sidebar-link activo"><i class="fa-solid fa-star"></i> Apadrinamientos</a>
+            <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
+            <a href="solicitudes-protectora.html" class="sidebar-link"><i class="fa-solid fa-clipboard-check"></i> Sol. Protectora</a>
+            <p class="sidebar-seccion">Contenido</p>
+            <a href="eventos.html" class="sidebar-link"><i class="fa-solid fa-calendar-days"></i> Eventos</a>
+            <a href="entidades.html" class="sidebar-link"><i class="fa-solid fa-handshake"></i> Entidades</a>
+            <a href="banners.html" class="sidebar-link"><i class="fa-solid fa-image"></i> Banners</a>
+            <p class="sidebar-seccion">Comunidad</p>
+            <a href="foro.html" class="sidebar-link"><i class="fa-solid fa-comments"></i> Foro</a>
+            <p class="sidebar-seccion">Web pública</p>
+            <a href="../html/index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
+        </nav>
+        <div class="sidebar-pie">
+            <div class="sidebar-usuario">
+                <div class="sidebar-avatar" id="avatarInicial">A</div>
+                <div class="sidebar-usuario-info">
+                    <p class="sidebar-usuario-nombre" id="adminNombre">Admin</p>
+                    <p class="sidebar-usuario-rol">Administrador</p>
+                </div>
+                <button class="btn-logout" onclick="cerrarSesion()"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <header class="topbar">
+        <div style="display:flex;align-items:center;gap:0.8em;">
+            <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+            <span class="topbar-titulo"><i class="fa-solid fa-star" style="color:var(--gold);margin-right:0.4em;"></i>Apadrinamientos</span>
+        </div>
+        <button class="btn btn-primario btn-sm" onclick="abrirModalNuevo()">
+            <i class="fa-solid fa-plus"></i> Nuevo apadrinamiento
+        </button>
+    </header>
+
+    <main class="admin-contenido">
+        <div class="panel">
+            <div class="panel-header">
+                <p class="panel-titulo"><i class="fa-solid fa-star"></i> Listado de apadrinamientos</p>
+            </div>
+            <div class="tabla-wrap">
+                <table class="tabla">
+                    <thead>
+                        <tr>
+                            <th>Mascota</th>
+                            <th>Padrino / Madrina</th>
+                            <th>Cuota</th>
+                            <th>Inicio</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaApadrinamientos">
+                        <tr><td colspan="6" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- modal nuevo apadrinamiento -->
+<div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
+    <div class="modal">
+        <div class="modal-header">
+            <p class="modal-titulo"><i class="fa-solid fa-star"></i> Nuevo apadrinamiento</p>
+            <button class="modal-cerrar" onclick="cerrarModalBtn()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-campo">
+                <label class="form-label">Mascota *</label>
+                <select class="form-select" id="fMascota"></select>
+            </div>
+            <div class="form-campo">
+                <label class="form-label">Usuario (padrino/madrina) *</label>
+                <select class="form-select" id="fUsuario"></select>
+            </div>
+            <div class="form-fila">
+                <div class="form-campo">
+                    <label class="form-label">Cuota mensual (€) *</label>
+                    <input type="number" class="form-input" id="fCuota" min="1" step="0.50" placeholder="Ej: 15">
+                </div>
+                <div class="form-campo">
+                    <label class="form-label">Fecha de inicio *</label>
+                    <input type="date" class="form-input" id="fFechaInicio">
+                </div>
+            </div>
+            <div class="form-campo">
+                <label class="form-label">Estado</label>
+                <select class="form-select" id="fEstado">
+                    <option value="activo">Activo</option>
+                    <option value="pausado">Pausado</option>
+                    <option value="cancelado">Cancelado</option>
+                </select>
+            </div>
+            <p class="form-error" id="modalError"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="cerrarModalBtn()">Cancelar</button>
+            <button class="btn btn-primario" onclick="guardarApadrinamiento()">
+                <i class="fa-solid fa-floppy-disk"></i> Guardar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- modal seguimientos -->
+<div class="modal-overlay" id="modalSeguimientos" onclick="cerrarModalSeg(event)">
+    <div class="modal" style="max-width:600px;">
+        <div class="modal-header">
+            <p class="modal-titulo" id="tituloSeguimientos"><i class="fa-solid fa-clock-rotate-left"></i> Seguimientos</p>
+            <button class="modal-cerrar" onclick="cerrarModalSegBtn()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <div id="listaSeguimientos" style="max-height:300px;overflow-y:auto;margin-bottom:1.2em;">
+                <p class="form-nota">Cargando...</p>
+            </div>
+            <hr style="border:none;border-top:1px solid var(--borde);margin:1em 0;">
+            <p class="form-label" style="font-weight:600;margin-bottom:0.5em;">Añadir actualización</p>
+            <div class="form-campo">
+                <textarea class="form-textarea" id="fContenido" rows="3" placeholder="Escribe la actualización sobre el animal..."></textarea>
+            </div>
+            <div class="form-campo">
+                <label class="form-label">Tipo</label>
+                <select class="form-select" id="fTipoArchivo">
+                    <option value="texto">Texto</option>
+                    <option value="foto">Foto (adjunta ruta)</option>
+                    <option value="video">Vídeo (adjunta ruta)</option>
+                </select>
+            </div>
+            <div class="form-campo" id="campoRuta" style="display:none;">
+                <label class="form-label">Ruta del archivo</label>
+                <input type="text" class="form-input" id="fRutaArchivo" placeholder="Ej: img/mascotas/bosque3-protectora-de-asturias.jpg">
+            </div>
+            <p class="form-error" id="segError"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="cerrarModalSegBtn()">Cerrar</button>
+            <button class="btn btn-primario" onclick="guardarSeguimiento()">
+                <i class="fa-solid fa-plus"></i> Añadir
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var apadIdActual = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    verificarAdmin(function() {
+        cargarApadrinamientos();
+    });
+});
+
+function verificarAdmin(cb) {
+    fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.logueado || data.usuario.rol !== 'admin') {
+                if (data.logueado && data.usuario.rol === 'protectora') { window.location.href = 'mi-protectora.html'; return; }
+                window.location.href = '../html/login.html'; return;
+            }
+            document.getElementById('adminNombre').textContent = data.usuario.nombre;
+            document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
+            if (cb) cb();
+        });
+}
+
+/*--------------------------------------------------------------------------------------------
+tabla apadrinamientos */
+
+function cargarApadrinamientos() {
+    fetch('../backend/admin/apadrinamientos.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            var tb = document.getElementById('tablaApadrinamientos');
+            if (!data.ok || !data.apadrinamientos.length) {
+                tb.innerHTML = '<tr><td colspan="6"><div class="estado-vacio"><i class="fa-solid fa-star"></i><p>Sin apadrinamientos registrados</p></div></td></tr>';
+                return;
+            }
+            tb.innerHTML = data.apadrinamientos.map(function(a){
+                var badgeEst = a.estado === 'activo'
+                    ? '<span class="badge badge-verde">Activo</span>'
+                    : a.estado === 'pausado'
+                    ? '<span class="badge badge-gold">Pausado</span>'
+                    : '<span class="badge badge-rojo">Cancelado</span>';
+
+                var especie = a.especie === 'perro' ? '🐕' : '🐱';
+
+                return '<tr>'
+                    + '<td><strong>' + especie + ' ' + a.mascota + '</strong></td>'
+                    + '<td style="font-size:0.85rem;">' + a.padrino + '<br><span style="color:var(--texto-sub);font-size:0.78rem;">' + a.padrino_email + '</span></td>'
+                    + '<td><strong>' + parseFloat(a.cuota).toFixed(2) + ' €</strong>/mes</td>'
+                    + '<td style="font-size:0.82rem;">' + formatFecha(a.fecha_inicio) + '</td>'
+                    + '<td>' + badgeEst + '</td>'
+                    + '<td><div class="tabla-acciones">'
+                    + '<button class="btn btn-sm btn-outline btn-icon" onclick="verSeguimientos(' + a.idApadrinamiento + ',\'' + a.mascota.replace(/'/g, '') + '\')" title="Seguimientos"><i class="fa-solid fa-clock-rotate-left"></i></button>'
+                    + '<button class="btn btn-sm btn-outline btn-icon" onclick="cambiarEstado(' + a.idApadrinamiento + ',\'' + a.estado + '\')" title="Cambiar estado"><i class="fa-solid fa-arrows-rotate"></i></button>'
+                    + '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminarApadrinamiento(' + a.idApadrinamiento + ')" title="Eliminar"><i class="fa-solid fa-trash"></i></button>'
+                    + '</div></td>'
+                    + '</tr>';
+            }).join('');
+        });
+}
+
+/*--------------------------------------------------------------------------------------------
+modal nuevo */
+
+function abrirModalNuevo() {
+    document.getElementById('modalError').textContent = '';
+    document.getElementById('fCuota').value = '';
+    document.getElementById('fFechaInicio').value = new Date().toISOString().split('T')[0];
+    document.getElementById('fEstado').value = 'activo';
+    cargarSelects();
+    document.getElementById('modalOverlay').classList.add('abierto');
+}
+
+function cargarSelects() {
+    /* mascotas disponibles para apadrinamiento */
+    fetch('../backend/admin/mascotas.php?especie=todos&estado=todos&pagina=1', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            var sel = document.getElementById('fMascota');
+            sel.innerHTML = '';
+            if (!data.ok) return;
+            data.mascotas.forEach(function(m){
+                var opt = document.createElement('option');
+                opt.value = m.idMascota;
+                opt.textContent = (m.especie === 'perro' ? '🐕' : '🐱') + ' ' + m.nombre + ' — ' + m.protectora_nombre;
+                sel.appendChild(opt);
+            });
+        });
+
+    /* usuarios */
+    fetch('../backend/admin/usuarios.php?pagina=1', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            var sel = document.getElementById('fUsuario');
+            sel.innerHTML = '';
+            if (!data.ok) return;
+            data.usuarios.forEach(function(u){
+                var opt = document.createElement('option');
+                opt.value = u.idUsuario;
+                opt.textContent = u.nombre + ' (' + u.email + ')';
+                sel.appendChild(opt);
+            });
+        });
+}
+
+function guardarApadrinamiento() {
+    var idMascota = document.getElementById('fMascota').value;
+    var idUsuario = document.getElementById('fUsuario').value;
+    var cuota     = parseFloat(document.getElementById('fCuota').value);
+    var fecha     = document.getElementById('fFechaInicio').value;
+
+    if (!idMascota || !idUsuario) {
+        document.getElementById('modalError').textContent = 'Selecciona una mascota y un usuario.';
+        return;
+    }
+    if (!cuota || cuota <= 0) {
+        document.getElementById('modalError').textContent = 'Introduce una cuota válida.';
+        return;
+    }
+    if (!fecha) {
+        document.getElementById('modalError').textContent = 'La fecha de inicio es obligatoria.';
+        return;
+    }
+
+    fetch('../backend/admin/apadrinamientos.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            idMascota:  parseInt(idMascota),
+            idUsuario:  parseInt(idUsuario),
+            cuota:      cuota,
+            fecha_inicio: fecha,
+            estado:     document.getElementById('fEstado').value,
+        }),
+        credentials: 'include',
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        if (!data.ok) {
+            document.getElementById('modalError').textContent = data.error || 'Error al guardar.';
+            return;
+        }
+        cerrarModalBtn();
+        mostrarToast(data.mensaje, 'ok');
+        cargarApadrinamientos();
+    });
+}
+
+function cambiarEstado(id, estadoActual) {
+    var estados  = ['activo', 'pausado', 'cancelado'];
+    var siguiente = estados[(estados.indexOf(estadoActual) + 1) % estados.length];
+    if (!confirm('Cambiar estado a "' + siguiente + '"?')) return;
+    fetch('../backend/admin/apadrinamientos.php', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idApadrinamiento: id, estado: siguiente }),
+        credentials: 'include',
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
+        if (data.ok) cargarApadrinamientos();
+    });
+}
+
+function eliminarApadrinamiento(id) {
+    if (!confirm('¿Eliminar este apadrinamiento y todos sus seguimientos?')) return;
+    fetch('../backend/admin/apadrinamientos.php', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idApadrinamiento: id }),
+        credentials: 'include',
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
+        if (data.ok) cargarApadrinamientos();
+    });
+}
+
+/*--------------------------------------------------------------------------------------------
+modal seguimientos */
+
+function verSeguimientos(id, nombreMascota) {
+    apadIdActual = id;
+    document.getElementById('tituloSeguimientos').innerHTML = '<i class="fa-solid fa-clock-rotate-left"></i> Seguimientos de ' + nombreMascota;
+    document.getElementById('segError').textContent = '';
+    document.getElementById('fContenido').value = '';
+    document.getElementById('fTipoArchivo').value = 'texto';
+    document.getElementById('campoRuta').style.display = 'none';
+    document.getElementById('fRutaArchivo').value = '';
+    cargarSeguimientos(id);
+    document.getElementById('modalSeguimientos').classList.add('abierto');
+}
+
+function cargarSeguimientos(id) {
+    var lista = document.getElementById('listaSeguimientos');
+    lista.innerHTML = '<p class="form-nota">Cargando...</p>';
+    fetch('../backend/admin/seguimientos.php?idApadrinamiento=' + id, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok || !data.seguimientos.length) {
+                lista.innerHTML = '<p class="form-nota">Sin actualizaciones todavía.</p>';
+                return;
+            }
+            lista.innerHTML = data.seguimientos.map(function(s){
+                var icono = s.tipo_archivo === 'foto' ? '<i class="fa-solid fa-image" style="color:var(--azul);"></i>'
+                    : s.tipo_archivo === 'video' ? '<i class="fa-solid fa-video" style="color:#8e24aa;"></i>'
+                    : '<i class="fa-solid fa-comment-dots" style="color:var(--verde);"></i>';
+
+                var media = '';
+                if (s.ruta_archivo && s.tipo_archivo === 'foto') {
+                    media = '<img src="../' + s.ruta_archivo + '" style="max-width:100%;border-radius:6px;margin-top:0.4em;" onerror="this.style.display=\'none\'">';
+                }
+
+                return '<div class="seguimiento-item">'
+                    + '<div class="seguimiento-meta">' + icono + ' ' + formatFechaHora(s.fecha)
+                    + ' <button class="btn btn-sm btn-danger btn-icon" style="margin-left:auto;" onclick="eliminarSeguimiento(' + s.idSeguimiento + ')" title="Eliminar"><i class="fa-solid fa-trash"></i></button>'
+                    + '</div>'
+                    + '<p style="margin:0.3em 0 0;font-size:0.88rem;">' + s.contenido + '</p>'
+                    + media
+                    + '</div>';
+            }).join('');
+        });
+}
+
+function guardarSeguimiento() {
+    var contenido = document.getElementById('fContenido').value.trim();
+    if (!contenido) {
+        document.getElementById('segError').textContent = 'El contenido es obligatorio.';
+        return;
+    }
+    fetch('../backend/admin/seguimientos.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            idApadrinamiento: apadIdActual,
+            contenido:        contenido,
+            tipo_archivo:     document.getElementById('fTipoArchivo').value,
+            ruta_archivo:     document.getElementById('fRutaArchivo').value.trim() || null,
+        }),
+        credentials: 'include',
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        if (!data.ok) {
+            document.getElementById('segError').textContent = data.error || 'Error al guardar.';
+            return;
+        }
+        document.getElementById('fContenido').value = '';
+        document.getElementById('fRutaArchivo').value = '';
+        document.getElementById('segError').textContent = '';
+        mostrarToast(data.mensaje, 'ok');
+        cargarSeguimientos(apadIdActual);
+    });
+}
+
+function eliminarSeguimiento(id) {
+    if (!confirm('¿Eliminar esta actualización?')) return;
+    fetch('../backend/admin/seguimientos.php', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idSeguimiento: id }),
+        credentials: 'include',
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
+        if (data.ok) cargarSeguimientos(apadIdActual);
+    });
+}
+
+document.getElementById('fTipoArchivo').addEventListener('change', function() {
+    document.getElementById('campoRuta').style.display = (this.value !== 'texto') ? '' : 'none';
+});
+
+/*--------------------------------------------------------------------------------------------
+utilidades */
+
+function formatFecha(f) {
+    if (!f) return '—';
+    return new Date(f).toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+function formatFechaHora(f) {
+    if (!f) return '—';
+    return new Date(f).toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+function cerrarModal(e) {
+    if (e.target === document.getElementById('modalOverlay')) cerrarModalBtn();
+}
+
+function cerrarModalBtn() {
+    document.getElementById('modalOverlay').classList.remove('abierto');
+}
+
+function cerrarModalSeg(e) {
+    if (e.target === document.getElementById('modalSeguimientos')) cerrarModalSegBtn();
+}
+
+function cerrarModalSegBtn() {
+    document.getElementById('modalSeguimientos').classList.remove('abierto');
+}
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('abierto');
+}
+
+function cerrarSesion() {
+    fetch('../backend/api/auth/logout.php', { credentials: 'include' })
+        .then(function(){ window.location.href = '../html/login.html'; });
+}
+
+function mostrarToast(msg, tipo) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast visible toast-' + (tipo || 'ok');
+    setTimeout(function(){ t.className = 'toast'; }, 3000);
+}
+</script>
+
+</body>
+</html>

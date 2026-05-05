@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetFamily – Solicitudes de Protectora</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily">
+            <span>Pet<em>Family</em></span>
+        </div>
+        <nav class="sidebar-nav">
+            <p class="sidebar-seccion">General</p>
+            <a href="dashboard.html" class="sidebar-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+            <p class="sidebar-seccion">Gestión</p>
+            <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
+            <a href="protectoras.html" class="sidebar-link"><i class="fa-solid fa-building-shield"></i> Protectoras</a>
+            <a href="usuarios.html" class="sidebar-link"><i class="fa-solid fa-users"></i> Usuarios</a>
+            <a href="apadrinamientos.html" class="sidebar-link"><i class="fa-solid fa-star"></i> Apadrinamientos</a>
+            <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
+            <a href="solicitudes-protectora.html" class="sidebar-link activo"><i class="fa-solid fa-clipboard-check"></i> Sol. Protectora</a>
+            <p class="sidebar-seccion">Contenido</p>
+            <a href="eventos.html" class="sidebar-link"><i class="fa-solid fa-calendar-days"></i> Eventos</a>
+            <a href="entidades.html" class="sidebar-link"><i class="fa-solid fa-handshake"></i> Entidades</a>
+            <p class="sidebar-seccion">Comunidad</p>
+            <a href="foro.html" class="sidebar-link"><i class="fa-solid fa-comments"></i> Foro</a>
+            <p class="sidebar-seccion">Web pública</p>
+            <a href="../html/index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
+        </nav>
+        <div class="sidebar-pie">
+            <div class="sidebar-usuario">
+                <div class="sidebar-avatar" id="avatarInicial">A</div>
+                <div class="sidebar-usuario-info">
+                    <p class="sidebar-usuario-nombre" id="adminNombre">Admin</p>
+                    <p class="sidebar-usuario-rol">Administrador</p>
+                </div>
+                <button class="btn-logout" onclick="cerrarSesion()" title="Cerrar sesión">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <header class="topbar">
+        <div class="topbar-izq">
+            <button class="sidebar-toggle" onclick="toggleSidebar()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <span class="topbar-titulo">Solicitudes de Protectora</span>
+        </div>
+    </header>
+
+    <main class="admin-contenido">
+
+        <div style="display:flex;gap:0.5em;flex-wrap:wrap;margin-bottom:1.5em;">
+            <button class="btn btn-sm btn-outline filtro-btn activo" data-filtro="todas" onclick="filtrarSol(this)">Todas</button>
+            <button class="btn btn-sm btn-outline filtro-btn" data-filtro="pendiente" onclick="filtrarSol(this)">
+                <i class="fa-solid fa-clock"></i> Pendientes
+            </button>
+            <button class="btn btn-sm btn-outline filtro-btn" data-filtro="aprobada" onclick="filtrarSol(this)">
+                <i class="fa-solid fa-circle-check"></i> Aprobadas
+            </button>
+            <button class="btn btn-sm btn-outline filtro-btn" data-filtro="rechazada" onclick="filtrarSol(this)">
+                <i class="fa-solid fa-circle-xmark"></i> Rechazadas
+            </button>
+            <button class="btn btn-sm btn-outline filtro-btn" data-filtro="info_adicional" onclick="filtrarSol(this)">
+                <i class="fa-solid fa-circle-info"></i> Info adicional
+            </button>
+        </div>
+
+        <div class="tabla-wrap">
+            <table class="tabla">
+                <thead>
+                    <tr>
+                        <th>Protectora</th>
+                        <th>Solicitante</th>
+                        <th>CIF/NIF</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaSolicitudes">
+                    <tr><td colspan="6" style="text-align:center;color:var(--texto-sub);padding:2em;">Cargando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+</div>
+
+<!-- modal revisión -->
+<div class="modal-overlay" id="modalRevision" onclick="if(event&&event.target===event.currentTarget)cerrarModalRevision()">
+    <div class="modal" style="max-width:550px;">
+        <div class="modal-header">
+            <p class="modal-titulo"><i class="fa-solid fa-clipboard-check"></i> Revisar solicitud</p>
+            <button class="modal-cerrar" onclick="cerrarModalRevision()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <div id="modalDetalleSol" style="margin-bottom:1em;"></div>
+            <div class="form-campo">
+                <label class="form-label">Respuesta / Motivo</label>
+                <textarea class="form-textarea" id="revRespuesta" rows="3" placeholder="Opcional: añade una nota para el solicitante..."></textarea>
+            </div>
+            <div class="form-campo" id="revProtectoraSelectWrap" style="display:none;">
+                <label class="form-label">Vincular a protectora existente</label>
+                <select class="form-select" id="revProtectoraSelect">
+                    <option value="">-- Ninguna --</option>
+                </select>
+            </div>
+            <p id="errorRevision" style="color:var(--error);font-size:0.82rem;display:none;"></p>
+            <div style="display:flex;gap:0.5em;flex-wrap:wrap;">
+                <button class="btn btn-verde" onclick="revisarSol('aprobada')"><i class="fa-solid fa-circle-check me-1"></i>Aprobar</button>
+                <button class="btn btn-rojo" onclick="revisarSol('rechazada')"><i class="fa-solid fa-circle-xmark me-1"></i>Rechazar</button>
+                <button class="btn btn-outline" onclick="revisarSol('info_adicional')"><i class="fa-solid fa-circle-info me-1"></i>Pedir info</button>
+                <button class="btn btn-ghost" onclick="cerrarModalRevision()" style="margin-left:auto;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var filtroActual = 'todas';
+var todasSolicitudes = [];
+var solSeleccionada = null;
+var protectorasList = [];
+
+function abrirModalRevision(id) {
+    solSeleccionada = todasSolicitudes.find(function(s){ return s.idSolicitud === id; });
+    if (!solSeleccionada) return;
+
+    document.getElementById('revRespuesta').value = solSeleccionada.respuesta_admin || '';
+    document.getElementById('errorRevision').style.display = 'none';
+
+    var detalle = '<div style="background:#f8f9fa;border-radius:8px;padding:1em;font-size:0.88rem;">'
+        + '<p style="margin:0 0 0.5em;"><strong>Protectora:</strong> ' + solSeleccionada.nombre_protectora + '</p>'
+        + '<p style="margin:0 0 0.5em;"><strong>Solicitante:</strong> ' + solSeleccionada.nombre_usuario + ' (' + solSeleccionada.email_usuario + ')</p>'
+        + '<p style="margin:0 0 0.5em;"><strong>CIF/NIF:</strong> ' + solSeleccionada.cif_nif + '</p>'
+        + '<p style="margin:0 0 0.5em;"><strong>Direccion:</strong> ' + solSeleccionada.direccion + '</p>'
+        + (solSeleccionada.telefono ? '<p style="margin:0 0 0.5em;"><strong>Telefono:</strong> ' + solSeleccionada.telefono + '</p>' : '')
+        + (solSeleccionada.web_redes ? '<p style="margin:0 0 0.5em;"><strong>Web/Redes:</strong> ' + solSeleccionada.web_redes + '</p>' : '');
+
+    if (solSeleccionada.respuesta_usuario) {
+        detalle += '<div style="margin-top:0.8em;padding:0.8em;background:#e8f5e9;border-radius:6px;border-left:3px solid #28a745;">'
+            + '<p style="margin:0;font-weight:600;font-size:0.82rem;color:#155724;"><i class="fa-solid fa-reply me-1"></i>Respuesta del usuario:</p>'
+            + '<p style="margin:0.3em 0 0;font-size:0.88rem;color:#155724;">' + solSeleccionada.respuesta_usuario + '</p>'
+            + (solSeleccionada.fecha_respuesta_usuario ? '<p style="margin:0.3em 0 0;font-size:0.75rem;color:#6c757d;">' + new Date(solSeleccionada.fecha_respuesta_usuario).toLocaleString('es-ES') + '</p>' : '')
+            + '</div>';
+    }
+
+    detalle += '</div>';
+
+    document.getElementById('modalDetalleSol').innerHTML = detalle;
+
+    document.getElementById('revProtectoraSelectWrap').style.display = 'none';
+    document.getElementById('modalRevision').classList.add('activo');
+}
+
+function cerrarModalRevision() {
+    document.getElementById('modalRevision').classList.remove('activo');
+    solSeleccionada = null;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.logueado || data.usuario.rol !== 'admin') {
+                window.location.href = '../html/login.html';
+                return;
+            }
+            document.getElementById('adminNombre').textContent = data.usuario.nombre;
+            document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
+            cargarSolicitudes();
+            cargarProtectoras();
+        })
+        .catch(function(){ window.location.href = '../html/login.html'; });
+});
+
+function cargarSolicitudes() {
+    fetch('../backend/adopcion/solicitud_protectora.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok || !data.solicitudes) return;
+            todasSolicitudes = data.solicitudes;
+            renderTabla();
+        });
+}
+
+function cargarProtectoras() {
+    fetch('../backend/admin/protectoras.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (data.ok && data.protectoras) {
+                protectorasList = data.protectoras;
+                var sel = document.getElementById('revProtectoraSelect');
+                protectorasList.forEach(function(p){
+                    var opt = document.createElement('option');
+                    opt.value = p.idProtectora;
+                    opt.textContent = p.nombre;
+                    sel.appendChild(opt);
+                });
+            }
+        })
+        .catch(function(){});
+}
+
+function renderTabla() {
+    var tbody = document.getElementById('tablaSolicitudes');
+    var filtradas = filtroActual === 'todas'
+        ? todasSolicitudes
+        : todasSolicitudes.filter(function(s){ return s.estado === filtroActual; });
+
+    if (!filtradas.length) {
+        tbody.innerHTML = '<tr><td colspan="6"><div class="estado-vacio"><i class="fa-solid fa-clipboard-check"></i><p>No hay solicitudes' + (filtroActual !== 'todas' ? ' con este filtro' : '') + '</p></div></td></tr>';
+        return;
+    }
+
+    var badges = {
+        'pendiente': '<span class="badge badge-amarillo">Pendiente</span>',
+        'aprobada': '<span class="badge badge-verde">Aprobada</span>',
+        'rechazada': '<span class="badge badge-rojo">Rechazada</span>',
+        'info_adicional': '<span class="badge badge-info">Info adicional</span>',
+    };
+
+    tbody.innerHTML = filtradas.map(function(s){
+        var accion = (s.estado === 'pendiente' || s.estado === 'info_adicional')
+            ? '<button class="btn btn-sm btn-azul" onclick="abrirModalRevision(' + s.idSolicitud + ')"><i class="fa-solid fa-eye me-1"></i>Revisar</button>'
+            : '<span style="color:var(--texto-sub);font-size:0.8rem;">' + (s.nombre_admin || '—') + '</span>';
+
+        return '<tr>'
+            + '<td><strong>' + s.nombre_protectora + '</strong></td>'
+            + '<td style="font-size:0.82rem;">' + s.nombre_usuario + '<br><span style="color:var(--texto-sub);">' + s.email_usuario + '</span></td>'
+            + '<td><code style="font-size:0.8rem;">' + s.cif_nif + '</code></td>'
+            + '<td>' + badges[s.estado] + '</td>'
+            + '<td style="font-size:0.8rem;color:var(--texto-sub);">' + new Date(s.fecha_solicitud).toLocaleDateString('es-ES') + '</td>'
+            + '<td>' + accion + '</td>'
+            + '</tr>';
+    }).join('');
+}
+
+function filtrarSol(btn) {
+    document.querySelectorAll('.filtro-btn').forEach(function(b){ b.classList.remove('activo'); });
+    btn.classList.add('activo');
+    filtroActual = btn.dataset.filtro;
+    renderTabla();
+}
+
+function revisarSol(estado) {
+    if (!solSeleccionada) return;
+
+    var respuesta = document.getElementById('revRespuesta').value.trim();
+    var idProtectora = document.getElementById('revProtectoraSelect').value;
+
+    document.getElementById('errorRevision').style.display = 'none';
+
+    if (estado === 'rechazada' && !respuesta) {
+        document.getElementById('errorRevision').textContent = 'Indica el motivo del rechazo.';
+        document.getElementById('errorRevision').style.display = 'block';
+        return;
+    }
+
+    fetch('../backend/adopcion/solicitud_protectora.php', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ idSolicitud: solSeleccionada.idSolicitud, estado: estado, respuesta_admin: respuesta, idProtectora: idProtectora || null }),
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        if (data.ok) {
+            cerrarModalRevision();
+            cargarSolicitudes();
+            mostrarToast('Solicitud actualizada correctamente.', 'ok');
+        } else {
+            document.getElementById('errorRevision').textContent = data.error;
+            document.getElementById('errorRevision').style.display = 'block';
+        }
+    })
+    .catch(function(){
+        document.getElementById('errorRevision').textContent = 'Error de conexión.';
+        document.getElementById('errorRevision').style.display = 'block';
+    });
+}
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('abierto');
+}
+
+function cerrarSesion() {
+    fetch('../backend/api/auth/logout.php', { credentials: 'include' })
+        .then(function(){ window.location.href = '../html/login.html'; });
+}
+
+function mostrarToast(msg, tipo) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast visible toast-' + (tipo || 'ok');
+    setTimeout(function(){ t.className = 'toast'; }, 3000);
+}
+</script>
+
+</body>
+</html>

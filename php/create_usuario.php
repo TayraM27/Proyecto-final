@@ -9,7 +9,7 @@ header('Content-Type: application/json; charset=utf-8');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
-    echo json_encode(['success' => false, 'error' => 'Método no permitido']);
+    echo json_encode(['success' => false, 'error' => 'Método no permitido'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -17,7 +17,7 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 if (!$data || empty($data['nombre']) || empty($data['email']) || empty($data['password_hash'])) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Faltan datos obligatorios: nombre, email, password_hash']);
+    echo json_encode(['success' => false, 'error' => 'Faltan datos obligatorios: nombre, email, password_hash'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 

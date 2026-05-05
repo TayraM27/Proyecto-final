@@ -15,12 +15,20 @@ session_write_close();
 
 $pdo = conectar();
 
-$pagina  = max(1, (int)($_GET['pagina']  ?? 1));
-$especie = $_GET['especie']              ?? 'todos';
-$acogida = (int)($_GET['acogida']        ?? 0);
-$apadrina= (int)($_GET['apadrina']       ?? 0);
-$limite  = 30;
-$offset  = ($pagina - 1) * $limite;
+$pagina   = max(1, (int)($_GET['pagina'] ?? 1));
+$especie  = $_GET['especie']               ?? 'todos';
+$acogida  = (int)($_GET['acogida']         ?? 0);
+$apadrina = (int)($_GET['apadrina']        ?? 0);
+$protectora = (int)($_GET['protectora']    ?? 0);
+$tamano   = $_GET['tamano']              ?? 'todos';
+$edad     = $_GET['edad']                ?? 'todos';
+$color    = $_GET['color']               ?? 'todos';
+$salud    = $_GET['salud']               ?? 'todos';
+$sexo     = $_GET['sexo']                ?? 'todos';
+$ubicacion = $_GET['ubicacion']            ?? 'todos';
+$limite   = (int)($_GET['limite']        ?? 12);
+$limite   = min(max($limite, 1), 100); // Entre 1 y 100
+$offset   = ($pagina - 1) * $limite;
 
 $where  = ['m.activa = 1'];
 $params = [];
@@ -29,6 +37,48 @@ $params = [];
 if ($especie !== 'todos') {
     $where[]  = 'm.especie = ?';
     $params[] = $especie;
+}
+
+/* Filtro por protectora */
+if ($protectora) {
+    $where[]  = 'm.idProtectora = ?';
+    $params[] = $protectora;
+}
+
+/* Filtros adicionales para adopta.html */
+if ($tamano !== 'todos') {
+    $where[]  = 'm.tamanyo = ?';
+    $params[] = $tamano;
+}
+if ($edad !== 'todos') {
+    if ($edad === 'cachorro') {
+        $where[] = "(TIMESTAMPDIFF(MONTH, m.fecha_nacimiento, CURDATE()) <= 12)";
+    } elseif ($edad === 'joven') {
+        $where[] = "(TIMESTAMPDIFF(YEAR, m.fecha_nacimiento, CURDATE()) BETWEEN 1 AND 3)";
+    } elseif ($edad === 'adulto') {
+        $where[] = "(TIMESTAMPDIFF(YEAR, m.fecha_nacimiento, CURDATE()) BETWEEN 4 AND 7)";
+    } elseif ($edad === 'senior') {
+        $where[] = "(TIMESTAMPDIFF(YEAR, m.fecha_nacimiento, CURDATE()) >= 8)";
+    }
+}
+if ($color !== 'todos') {
+    $where[]  = 'm.color LIKE ?';
+    $params[] = '%' . $color . '%';
+}
+if ($salud !== 'todos') {
+    if ($salud === 'bueno') {
+        $where[] = "(m.estado_salud IS NULL OR m.estado_salud = '' OR m.estado_salud = 'bueno')";
+    } elseif ($salud === 'especial') {
+        $where[] = "(m.estado_salud IS NOT NULL AND m.estado_salud != '' AND m.estado_salud != 'bueno')";
+    }
+}
+if ($sexo !== 'todos') {
+    $where[]  = 'm.sexo = ?';
+    $params[] = $sexo;
+}
+if ($ubicacion !== 'todos') {
+    $where[]  = 'p.localidad = ?';
+    $params[] = $ubicacion;
 }
 
 /* Filtro según contexto de la página */
@@ -41,13 +91,14 @@ if ($acogida) {
     $where[] = 'm.disponible_apadrinamiento = 1';
     $where[] = 'm.estado_adopcion != "adoptado"';
 } else {
-    /* adopta.html: solo disponibles o en proceso, nunca no_disponible ni adoptado */
-    $where[] = 'm.estado_adopcion IN ("disponible", "en_proceso")';
+    /* adopta.html: disponible, en_proceso y no_disponible (badge especial en la card) */
+    $where[] = "m.estado_adopcion IN ('disponible', 'en_proceso', 'no_disponible')";
 }
 
 $cond = implode(' AND ', $where);
 
-$stmtTotal = $pdo->prepare("SELECT COUNT(*) FROM mascotas m WHERE $cond");
+$joins = ' JOIN protectoras p ON m.idProtectora = p.idProtectora';
+$stmtTotal = $pdo->prepare("SELECT COUNT(*) FROM mascotas m $joins WHERE $cond");
 $stmtTotal->execute($params);
 $total = (int)$stmtTotal->fetchColumn();
 

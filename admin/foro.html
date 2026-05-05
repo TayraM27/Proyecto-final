@@ -24,7 +24,13 @@
             <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
             <a href="protectoras.html" class="sidebar-link"><i class="fa-solid fa-building-shield"></i> Protectoras</a>
             <a href="usuarios.html" class="sidebar-link"><i class="fa-solid fa-users"></i> Usuarios</a>
+            <a href="apadrinamientos.html" class="sidebar-link"><i class="fa-solid fa-star"></i> Apadrinamientos</a>
             <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
+            <a href="solicitudes-protectora.html" class="sidebar-link"><i class="fa-solid fa-clipboard-check"></i> Sol. Protectora</a>
+            <p class="sidebar-seccion">Contenido</p>
+            <a href="eventos.html" class="sidebar-link"><i class="fa-solid fa-calendar-days"></i> Eventos</a>
+            <a href="entidades.html" class="sidebar-link"><i class="fa-solid fa-handshake"></i> Entidades</a>
+            <a href="banners.html" class="sidebar-link"><i class="fa-solid fa-image"></i> Banners</a>
             <p class="sidebar-seccion">Comunidad</p>
             <a href="foro.html" class="sidebar-link activo"><i class="fa-solid fa-comments"></i> Foro</a>
             <p class="sidebar-seccion">Web pública</p>
@@ -48,90 +54,76 @@
             <span class="topbar-titulo"><i class="fa-solid fa-comments" style="color:var(--gold);margin-right:0.4em;"></i>Moderación del foro</span>
         </div>
         <div style="display:flex;gap:0.6em;">
-            <button class="btn btn-primario btn-sm" id="btnPub" onclick="setVista('publicaciones')">Publicaciones</button>
-            <button class="btn btn-outline btn-sm" id="btnCom" onclick="setVista('comentarios')">Comentarios</button>
+            <button class="btn btn-sm btn-primario" onclick="setVista('comentarios')" id="btnCom">Comentarios</button>
+            <button class="btn btn-sm btn-outline"  onclick="setVista('publicaciones')" id="btnPub">Publicaciones</button>
         </div>
     </header>
 
     <main class="admin-contenido">
+        <div id="contenedorPaneles">
 
-        <!-- panel publicaciones -->
-        <div class="panel" id="panelPublicaciones">
-            <div class="panel-header">
-                <p class="panel-titulo"><i class="fa-solid fa-newspaper"></i> Publicaciones</p>
-                <div style="display:flex;align-items:center;gap:0.6em;">
-                    <label style="font-size:0.82rem;color:var(--texto-sub);display:flex;align-items:center;gap:0.4em;">
-                        <input type="checkbox" id="chkSoloActivasPub" checked onchange="cargarPublicaciones()">
-                        Solo activas
-                    </label>
+            <div class="panel" id="panelComentarios" style="margin-bottom:1.5em;">
+                <div class="panel-header">
+                    <p class="panel-titulo"><i class="fa-solid fa-comment"></i> Comentarios</p>
+                </div>
+                <div class="tabla-wrap">
+                    <table class="tabla">
+                        <thead>
+                            <tr>
+                                <th>Contenido</th>
+                                <th>Autor</th>
+                                <th>Publicación</th>
+                                <th>Likes</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaComentarios">
+                            <tr><td colspan="7" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="tabla-wrap">
-                <table class="tabla">
-                    <thead>
-                        <tr>
-                            <th>Título</th>
-                            <th>Autor</th>
-                            <th>Categoría</th>
-                            <th>Likes</th>
-                            <th>Comentarios</th>
-                            <th>Fecha</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaPublicaciones">
-                        <tr><td colspan="8" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="paginacion" id="paginacionPub"></div>
-        </div>
 
-        <!-- panel comentarios -->
-        <div class="panel" id="panelComentarios">
-            <div class="panel-header">
-                <p class="panel-titulo"><i class="fa-solid fa-comment"></i> Comentarios</p>
-                <div style="display:flex;align-items:center;gap:0.6em;">
-                    <label style="font-size:0.82rem;color:var(--texto-sub);display:flex;align-items:center;gap:0.4em;">
-                        <input type="checkbox" id="chkSoloActivasCom" checked onchange="cargarComentarios()">
-                        Solo activos
-                    </label>
+            <div class="panel" id="panelPublicaciones">
+                <div class="panel-header">
+                    <p class="panel-titulo"><i class="fa-solid fa-newspaper"></i> Publicaciones</p>
+                </div>
+                <div class="tabla-wrap">
+                    <table class="tabla">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Autor</th>
+                                <th>Categoría</th>
+                                <th>Likes</th>
+                                <th>Comentarios</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaPublicaciones">
+                            <tr><td colspan="8" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="tabla-wrap">
-                <table class="tabla">
-                    <thead>
-                        <tr>
-                            <th>Contenido</th>
-                            <th>Autor</th>
-                            <th>Publicación</th>
-                            <th>Likes</th>
-                            <th>Fecha</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaComentarios">
-                        <tr><td colspan="7" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
+        </div>
     </main>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-var vistaActual  = 'publicaciones';
+var vistaActual  = 'comentarios';
 var paginaActual = 1;
-var totalPaginas = 1;
 
 document.addEventListener('DOMContentLoaded', function() {
     verificarAdmin(function() {
-        setVista('publicaciones');
+        setVista('comentarios');
     });
 });
 
@@ -140,8 +132,8 @@ function verificarAdmin(cb) {
         .then(function(r){ return r.json(); })
         .then(function(data){
             if (!data.logueado || data.usuario.rol !== 'admin') {
-                window.location.href = '../html/login.html';
-                return;
+                if (data.logueado && data.usuario.rol === 'protectora') { window.location.href = 'mi-protectora.html'; return; }
+                window.location.href = '../html/login.html'; return;
             }
             document.getElementById('adminNombre').textContent = data.usuario.nombre;
             document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
@@ -152,46 +144,52 @@ function verificarAdmin(cb) {
 function setVista(v) {
     vistaActual  = v;
     paginaActual = 1;
-    document.getElementById('btnPub').className = 'btn btn-sm ' + (v === 'publicaciones' ? 'btn-primario' : 'btn-outline');
+
     document.getElementById('btnCom').className = 'btn btn-sm ' + (v === 'comentarios'   ? 'btn-primario' : 'btn-outline');
-    var main   = document.querySelector('.admin-contenido');
-    var panPub = document.getElementById('panelPublicaciones');
-    var panCom = document.getElementById('panelComentarios');
+    document.getElementById('btnPub').className = 'btn btn-sm ' + (v === 'publicaciones' ? 'btn-primario' : 'btn-outline');
+
+    var contenedor = document.getElementById('contenedorPaneles');
+    var panelCom   = document.getElementById('panelComentarios');
+    var panelPub   = document.getElementById('panelPublicaciones');
+
     if (v === 'comentarios') {
-        main.insertBefore(panCom, panPub);
+        contenedor.insertBefore(panelCom, panelPub);
         cargarComentarios();
     } else {
-        main.insertBefore(panPub, panCom);
+        contenedor.insertBefore(panelPub, panelCom);
         cargarPublicaciones();
     }
 }
 
+/*--------------------------------------------------------------------------------------------
+publicaciones */
 function cargarPublicaciones() {
-    var soloActivas = document.getElementById('chkSoloActivasPub').checked ? 1 : 0;
-    fetch('../backend/admin/foro.php?tipo=publicaciones&pagina=' + paginaActual + '&soloActivas=' + soloActivas, { credentials: 'include' })
+    fetch('../backend/admin/foro.php?tipo=publicaciones&pagina=' + paginaActual, { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
-            if (!data.ok) return;
             var tb = document.getElementById('tablaPublicaciones');
-            if (!data.publicaciones.length) {
-                tb.innerHTML = '<tr><td colspan="8"><div class="estado-vacio"><i class="fa-solid fa-newspaper"></i><p>Sin publicaciones</p></div></td></tr>';
+            if (!data.ok) {
+                tb.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:3em;color:var(--texto-sub);">Error al cargar.</td></tr>';
                 return;
             }
-            var cats = {
-                'adopcion':'Adopción','perdidos':'Perdidos','consejos':'Consejos',
-                'salud':'Salud','noticias':'Noticias','general':'General'
-            };
+            if (!data.publicaciones.length) {
+                tb.innerHTML = '<tr><td colspan="8"><div class="estado-vacio"><i class="fa-solid fa-comments"></i><p>Sin publicaciones</p></div></td></tr>';
+                return;
+            }
             tb.innerHTML = data.publicaciones.map(function(p) {
-                var badgeCat = '<span class="badge badge-gris">' + (cats[p.categoria] || p.categoria || '—') + '</span>';
+                var badgeCat = '<span class="badge badge-azul">' + p.categoria + '</span>';
                 var badgeEst = p.activa
                     ? '<span class="badge badge-verde">Activa</span>'
                     : '<span class="badge badge-rojo">Eliminada</span>';
                 var fijado = p.fijada
                     ? '<span class="badge badge-gold" style="margin-left:0.3em;"><i class="fa-solid fa-thumbtack"></i></span>'
                     : '';
+                var mediaIcono = p.imagen
+                    ? ' <i class="fa-solid fa-image" style="color:#0277bd;font-size:0.78rem;" title="Tiene imagen"></i>'
+                    : '';
 
                 return '<tr>'
-                    + '<td style="max-width:200px;"><strong>' + p.titulo.substring(0,50) + (p.titulo.length>50?'…':'') + '</strong>' + fijado + '</td>'
+                    + '<td style="max-width:200px;"><strong>' + p.titulo.substring(0, 50) + (p.titulo.length > 50 ? '…' : '') + '</strong>' + fijado + mediaIcono + '</td>'
                     + '<td style="font-size:0.82rem;">' + p.autor_nombre + '<br><span style="color:var(--texto-sub);">@' + p.autor_username + '</span></td>'
                     + '<td>' + badgeCat + '</td>'
                     + '<td>' + p.num_likes + '</td>'
@@ -200,24 +198,31 @@ function cargarPublicaciones() {
                     + '<td>' + badgeEst + '</td>'
                     + '<td><div class="tabla-acciones">'
                     + (p.fijada
-                        ? '<button class="btn btn-sm btn-outline btn-icon" onclick="accionPub('+p.idPublicacion+',\'desfijar\')" title="Desfijar"><i class="fa-solid fa-thumbtack-slash"></i></button>'
-                        : '<button class="btn btn-sm btn-outline btn-icon" onclick="accionPub('+p.idPublicacion+',\'fijar\')" title="Fijar"><i class="fa-solid fa-thumbtack"></i></button>')
+                        ? '<button class="btn btn-sm btn-outline btn-icon" onclick="accionPub(' + p.idPublicacion + ',\'desfijar\')" title="Desfijar"><i class="fa-solid fa-thumbtack-slash"></i></button>'
+                        : '<button class="btn btn-sm btn-outline btn-icon" onclick="accionPub(' + p.idPublicacion + ',\'fijar\')" title="Fijar"><i class="fa-solid fa-thumbtack"></i></button>')
                     + (p.activa
-                        ? '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminarPub('+p.idPublicacion+')" title="Eliminar"><i class="fa-solid fa-trash"></i></button>'
-                        : '<button class="btn btn-sm btn-outline btn-icon" onclick="accionPub('+p.idPublicacion+',\'reactivar_publicacion\')" title="Reactivar"><i class="fa-solid fa-rotate-left"></i></button>')
+                        ? '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminarPub(event,' + p.idPublicacion + ')" title="Eliminar"><i class="fa-solid fa-trash"></i></button>'
+                        : '<button class="btn btn-sm btn-outline btn-icon" onclick="accionPub(' + p.idPublicacion + ',\'reactivar_publicacion\')" title="Reactivar"><i class="fa-solid fa-rotate-left"></i></button>')
                     + '</div></td>'
                     + '</tr>';
             }).join('');
+        })
+        .catch(function() {
+            document.getElementById('tablaPublicaciones').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:3em;color:var(--texto-sub);">Error al cargar publicaciones.</td></tr>';
         });
 }
 
+/*--------------------------------------------------------------------------------------------
+comentarios */
 function cargarComentarios() {
-    var soloActivos = document.getElementById('chkSoloActivasCom').checked ? 1 : 0;
-    fetch('../backend/admin/foro.php?tipo=comentarios&pagina=' + paginaActual + '&soloActivas=' + soloActivos, { credentials: 'include' })
+    fetch('../backend/admin/foro.php?tipo=comentarios&pagina=' + paginaActual, { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
-            if (!data.ok) return;
             var tb = document.getElementById('tablaComentarios');
+            if (!data.ok) {
+                tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:3em;color:var(--texto-sub);">Error al cargar.</td></tr>';
+                return;
+            }
             if (!data.comentarios.length) {
                 tb.innerHTML = '<tr><td colspan="7"><div class="estado-vacio"><i class="fa-solid fa-comment"></i><p>Sin comentarios</p></div></td></tr>';
                 return;
@@ -228,27 +233,32 @@ function cargarComentarios() {
                     : '<span class="badge badge-rojo">Eliminado</span>';
 
                 return '<tr>'
-                    + '<td style="max-width:220px;font-size:0.85rem;">' + c.contenido.substring(0,80) + (c.contenido.length>80?'…':'') + '</td>'
+                    + '<td style="max-width:220px;font-size:0.85rem;">' + c.contenido.substring(0, 80) + (c.contenido.length > 80 ? '…' : '') + '</td>'
                     + '<td style="font-size:0.82rem;">' + c.autor_nombre + '</td>'
-                    + '<td style="font-size:0.82rem;max-width:160px;">' + c.publicacion_titulo.substring(0,50) + (c.publicacion_titulo.length>50?'…':'') + '</td>'
+                    + '<td style="font-size:0.82rem;max-width:160px;">' + c.publicacion_titulo.substring(0, 50) + (c.publicacion_titulo.length > 50 ? '…' : '') + '</td>'
                     + '<td>' + c.num_likes + '</td>'
                     + '<td style="font-size:0.78rem;">' + formatFecha(c.fecha) + '</td>'
                     + '<td>' + badgeEst + '</td>'
                     + '<td><div class="tabla-acciones">'
                     + (c.activo
-                        ? '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminarCom('+c.idComentario+')" title="Eliminar"><i class="fa-solid fa-trash"></i></button>'
-                        : '<button class="btn btn-sm btn-outline btn-icon" onclick="accionCom('+c.idComentario+',\'reactivar_comentario\')" title="Reactivar"><i class="fa-solid fa-rotate-left"></i></button>')
+                        ? '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminarCom(event,' + c.idComentario + ')" title="Eliminar"><i class="fa-solid fa-trash"></i></button>'
+                        : '<button class="btn btn-sm btn-outline btn-icon" onclick="accionCom(' + c.idComentario + ',\'reactivar_comentario\')" title="Reactivar"><i class="fa-solid fa-rotate-left"></i></button>')
                     + '</div></td>'
                     + '</tr>';
             }).join('');
+        })
+        .catch(function() {
+            document.getElementById('tablaComentarios').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:3em;color:var(--texto-sub);">Error al cargar comentarios.</td></tr>';
         });
 }
 
+/*--------------------------------------------------------------------------------------------
+acciones */
 function accionPub(id, accion) {
     fetch('../backend/admin/foro.php', {
-        method: 'PUT',
+        method:  'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ accion: accion, idPublicacion: id }),
+        body:    JSON.stringify({ accion: accion, idPublicacion: id }),
         credentials: 'include',
     })
     .then(function(r){ return r.json(); })
@@ -260,9 +270,9 @@ function accionPub(id, accion) {
 
 function accionCom(id, accion) {
     fetch('../backend/admin/foro.php', {
-        method: 'PUT',
+        method:  'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ accion: accion, idComentario: id }),
+        body:    JSON.stringify({ accion: accion, idComentario: id }),
         credentials: 'include',
     })
     .then(function(r){ return r.json(); })
@@ -272,43 +282,54 @@ function accionCom(id, accion) {
     });
 }
 
-function eliminarPub(id) {
+function eliminarPub(e, id) {
     if (!confirm('¿Eliminar esta publicación? También se ocultarán sus comentarios.')) return;
+    var fila = e.currentTarget.closest('tr');
     fetch('../backend/admin/foro.php', {
-        method: 'DELETE',
+        method:  'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tipo: 'publicacion', idPublicacion: id }),
+        body:    JSON.stringify({ tipo: 'publicacion', idPublicacion: id }),
         credentials: 'include',
     })
     .then(function(r){ return r.json(); })
     .then(function(data){
         mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
-        if (data.ok) cargarPublicaciones();
+        if (data.ok && fila) fila.remove();
     });
 }
 
-function eliminarCom(id) {
+function eliminarCom(e, id) {
     if (!confirm('¿Eliminar este comentario?')) return;
+    var fila = e.currentTarget.closest('tr');
     fetch('../backend/admin/foro.php', {
-        method: 'DELETE',
+        method:  'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tipo: 'comentario', idComentario: id }),
+        body:    JSON.stringify({ tipo: 'comentario', idComentario: id }),
         credentials: 'include',
     })
     .then(function(r){ return r.json(); })
     .then(function(data){
         mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
-        if (data.ok) cargarComentarios();
+        if (data.ok && fila) fila.remove();
     });
 }
 
+/*--------------------------------------------------------------------------------------------
+utilidades */
 function formatFecha(f) {
     if (!f) return '—';
-    return new Date(f).toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' });
+    return new Date(f).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
-function toggleSidebar() { document.getElementById('sidebar').classList.toggle('abierto'); }
-function cerrarSesion() { fetch('../backend/api/auth/logout.php', { credentials: 'include' }).then(function(){ window.location.href = '../html/login.html'; }); }
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('abierto');
+}
+
+function cerrarSesion() {
+    fetch('../backend/api/auth/logout.php', { credentials: 'include' })
+        .then(function(){ window.location.href = '../html/login.html'; });
+}
+
 function mostrarToast(msg, tipo) {
     var t = document.getElementById('toast');
     t.textContent = msg;

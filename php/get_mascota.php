@@ -44,6 +44,8 @@ try {
             m.num_vistas AS vistas,
             m.fecha_nacimiento,
             m.fecha_entrada,
+            m.edad_texto,
+            m.badge_extra,
             p.idProtectora,
             p.nombre AS protectora,
             p.localidad AS ubicacion,

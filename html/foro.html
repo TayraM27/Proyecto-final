@@ -52,10 +52,38 @@
         </ul>
     </nav>
     <div id="user_container" class="d-none d-lg-block">
-        <a href="login.html"><img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px"></a>
-        <a href="register.html" class="btn-register">Registrarse</a>
+        <a href="perfil.html?tab=notificaciones" id="btnNotifBell" style="position:relative;margin-right:0.5em;">
+            <i class="fa-solid fa-bell" style="font-size:1.2rem;color:#1B358F;"></i>
+            <span id="badgeNotif" class="notif-badge" style="display:none;">0</span>
+        </a>
+        <a href="perfil.html" style="position:relative;" id="btnPerfil">
+            <img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px" id="imgPerfilHeader">
+            <span id="badgePerfil" class="notif-badge" style="display:none;">●</span>
+        </a>
+            <a href="admin/dashboard.html" id="btnDashboard" style="display:none;margin-left:0.5em;" class="btn-azul btn-sm">
+            <i class="fa-solid fa-gauge-high me-1"></i>Dashboard
+        </a>
+        <a href="register.html" id="btnRegister" class="btn-register">Registrarse</a>
     </div>
 </header>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.ok && data.usuario) {
+                var dash = document.getElementById('btnDashboard');
+                var reg = document.getElementById('btnRegister');
+                if (data.usuario.rol === 'admin' || data.usuario.rol === 'protectora') {
+                    if (dash) dash.style.display = '';
+                    if (reg) reg.style.display = 'none';
+                }
+            }
+        })
+        .catch(function() {});
+});
+</script>
 
 
 <main>
@@ -77,41 +105,9 @@
 
         <div class="row g-4">
 
-            <!-- columna principal -->
             <div class="col-lg-8">
 
-                <!-- caja publicar — estado SIN sesión -->
-                <div class="foro-publicar-caja mb-4" id="cajaSinSesion">
-                    <div class="foro-publicar-top">
-                        <div class="foro-avatar foro-avatar-gris foro-avatar-lg">
-                            <i class="fa-solid fa-user"></i>
-                        </div>
-                        <input
-                            type="text"
-                            id="textareaPublicar"
-                            class="foro-publicar-textarea"
-                            placeholder="🐾 ¿Qué quieres compartir?"
-                            readonly
-                            style="cursor:pointer;"
-                        >
-                    </div>
-                    <div class="foro-publicar-separador"></div>
-                    <div class="foro-publicar-acciones">
-                        <div class="foro-publicar-adjuntos">
-                            <button class="foro-adj-btn" title="Foto"><i class="fa-solid fa-image"></i><span>Foto</span></button>
-                            <button class="foro-adj-btn" title="Video"><i class="fa-solid fa-video"></i><span>Video</span></button>
-                            <button class="foro-adj-btn" title="GIF"><i class="fa-solid fa-film"></i><span>GIF</span></button>
-                            <button class="foro-adj-btn" title="Archivo"><i class="fa-solid fa-paperclip"></i><span>Archivo</span></button>
-                            <button class="foro-adj-btn" title="Emoji"><i class="fa-regular fa-face-smile"></i><span>Emoji</span></button>
-                        </div>
-                        <button class="foro-publicar-btn" id="btnPublicarFake">
-                            <i class="fa-solid fa-paper-plane me-2"></i>Publicar
-                        </button>
-                    </div>
-                </div>
-
-                <!-- caja publicar — estado CON sesión -->
-                <div class="foro-publicar-caja mb-4 d-none" id="cajaConSesion">
+                <div class="foro-publicar-caja mb-4" id="cajaConSesion">
                     <div class="foro-publicar-top">
                         <div class="foro-avatar foro-avatar-azul foro-avatar-lg" id="avatarPub">
                             <i class="fa-solid fa-user"></i>
@@ -183,7 +179,7 @@
                     <button class="foro-filtro-btn activo" data-cat="todas"><i class="fa-solid fa-border-all me-1"></i>Todas</button>
                     <button class="foro-filtro-btn" data-cat="adopcion"><i class="fa-solid fa-paw me-1"></i>Adopción</button>
                     <button class="foro-filtro-btn" data-cat="cuidados"><i class="fa-solid fa-heart me-1"></i>Cuidados</button>
-                    <button class="foro-filtro-btn" data-cat="acogida"><i class="fa-solid fa-house-chimney-heart me-1"></i>Acogida</button>
+                    <button class="foro-filtro-btn" data-cat="acogida"><i class="fa-solid fa-house me-1"></i>Acogida</button>
                     <button class="foro-filtro-btn" data-cat="salud"><i class="fa-solid fa-stethoscope me-1"></i>Salud</button>
                     <button class="foro-filtro-btn" data-cat="informacion"><i class="fa-solid fa-circle-info me-1"></i>Información</button>
                 </div>
@@ -217,7 +213,7 @@
                     <ul class="foro-cat-lista">
                         <li data-cat="adopcion" style="cursor:pointer;"><span><i class="fa-solid fa-paw foro-cat-icon-adopcion me-2"></i>Adopción</span><span class="foro-cat-count" id="count-adopcion">—</span></li>
                         <li data-cat="cuidados" style="cursor:pointer;"><span><i class="fa-solid fa-heart foro-cat-icon-cuidados me-2"></i>Cuidados</span><span class="foro-cat-count" id="count-cuidados">—</span></li>
-                        <li data-cat="acogida" style="cursor:pointer;"><span><i class="fa-solid fa-house-chimney-heart foro-cat-icon-acogida me-2"></i>Acogida</span><span class="foro-cat-count" id="count-acogida">—</span></li>
+                        <li data-cat="acogida" style="cursor:pointer;"><span><i class="fa-solid fa-house foro-cat-icon-acogida me-2"></i>Acogida</span><span class="foro-cat-count" id="count-acogida">—</span></li>
                         <li data-cat="salud" style="cursor:pointer;"><span><i class="fa-solid fa-stethoscope foro-cat-icon-salud me-2"></i>Salud</span><span class="foro-cat-count" id="count-salud">—</span></li>
                         <li data-cat="informacion" style="cursor:pointer;"><span><i class="fa-solid fa-circle-info foro-cat-icon-info me-2"></i>Información</span><span class="foro-cat-count" id="count-informacion">—</span></li>
                     </ul>
@@ -226,7 +222,7 @@
                 <div class="foro-lateral-bloque mb-4">
                     <h4 class="foro-lateral-titulo"><i class="fa-solid fa-fire me-2"></i>Más activas</h4>
                     <ul class="foro-populares-lista" id="listaPopulares">
-                        <li style="color:#aaa;font-size:0.85rem;">Cargando...</li>
+                    <li style="color:#aaa;font-size:0.85rem;">Sin publicaciones aún.</li>
                     </ul>
                 </div>
 
@@ -276,19 +272,27 @@ init */
 document.addEventListener('DOMContentLoaded', function() {
     cargarSesionForo();
     cargarConteos();
+    /* Iniciar polling de notificaciones */
+    if (typeof iniciarPollingNotificaciones === 'function') {
+        iniciarPollingNotificaciones();
+    } else {
+        cargarNotificaciones();
+    }
 
     document.getElementById('btnCerrarAviso').addEventListener('click', function() {
         document.getElementById('avisoLogin').classList.add('d-none');
     });
 
-    document.getElementById('btnPublicarFake').addEventListener('click', function() {
-        var texto = document.getElementById('textareaPublicar').value.trim();
-        if (texto) sessionStorage.setItem('foroTextoPendiente', texto);
-        document.getElementById('avisoLogin').classList.remove('d-none');
-        document.getElementById('avisoLogin').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    document.getElementById('btnPublicar').addEventListener('click', function() {
+        if (!sesionForo) {
+            var texto = document.getElementById('textareaPublicarReal').value.trim();
+            if (texto) sessionStorage.setItem('foroTextoPendiente', texto);
+            document.getElementById('avisoLogin').classList.remove('d-none');
+            document.getElementById('avisoLogin').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            return;
+        }
+        enviarPublicacion();
     });
-
-    document.getElementById('btnPublicar').addEventListener('click', enviarPublicacion);
 
     /* auto-crecer textarea y restaurar placeholder */
     var textareaReal = document.getElementById('textareaPublicarReal');
@@ -305,14 +309,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    var textareaFake = document.getElementById('textareaPublicar');
-    if (textareaFake) {
-        textareaFake.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = this.scrollHeight + 'px';
-        });
-    }
-
     /* Preview multimedia */
     var inputMedia = document.getElementById('inputMedia');
     if (inputMedia) {
@@ -404,8 +400,6 @@ function cargarSesionForo() {
 }
 
 function activarFormPub(usuario) {
-    document.getElementById('cajaSinSesion').classList.add('d-none');
-    document.getElementById('cajaConSesion').classList.remove('d-none');
     document.getElementById('bloqueUnete').style.display = 'none';
 
     var avatar = document.getElementById('avatarPub');
@@ -428,7 +422,7 @@ function activarFormPub(usuario) {
 
 /*--------------------------------------------------------------------------------------------
 cargar posts */
-function cargarPosts(pagina) {
+function cargarPosts(pagina, callback) {
     paginaActual = pagina || 1;
     var contenedor = document.getElementById('contenedorPosts');
     contenedor.innerHTML = '<div class="text-center py-5"><div class="spinner-border" style="color:#1B358F;" role="status"></div></div>';
@@ -451,6 +445,7 @@ function cargarPosts(pagina) {
             renderPosts(todosLosPosts);
             renderPaginacion();
             actualizarPopulares(todosLosPosts);
+            if (callback) callback();
         })
         .catch(function(err) {
             console.error('cargarPosts error:', err);
@@ -493,7 +488,7 @@ function renderPost(p) {
         : '';
 
     var catClases = { adopcion:'foro-cat-adopcion', cuidados:'foro-cat-cuidados', acogida:'foro-cat-acogida', salud:'foro-cat-salud', informacion:'foro-cat-informacion' };
-    var catIconos = { adopcion:'fa-paw', cuidados:'fa-heart', acogida:'fa-house-chimney-heart', salud:'fa-stethoscope', informacion:'fa-circle-info' };
+    var catIconos = { adopcion:'fa-paw', cuidados:'fa-heart', acogida:'fa-house', salud:'fa-stethoscope', informacion:'fa-circle-info' };
     var catNombre = { adopcion:'Adopción', cuidados:'Cuidados', acogida:'Acogida', salud:'Salud', informacion:'Información' };
 
     var catHtml = p.categoria
@@ -592,8 +587,8 @@ function activarListenersPost() {
 
     document.querySelectorAll('.foro-btn-eliminar').forEach(function(btn) {
         btn.addEventListener('click', function() {
-            if (!confirm('\u00bfEliminar esta publicaci\u00f3n?')) return;
             var id = btn.dataset.id;
+            if (!confirm('¿Eliminar esta publicación?')) return;
             fetch('../backend/foro/publicaciones.php', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
@@ -602,7 +597,19 @@ function activarListenersPost() {
             })
             .then(function(r) { return r.json(); })
             .then(function(data) {
-                if (data.ok) { var post = document.getElementById('post-' + id); if (post) post.remove(); }
+                if (data.ok) {
+                    var post = document.getElementById('post-' + id);
+                    if (post) {
+                        var cat = post.dataset.cat;
+                        post.remove();
+                        var countEl = document.getElementById('count-' + cat);
+                        if (countEl) {
+                            var actual = parseInt(countEl.textContent) || 0;
+                            if (actual > 0) countEl.textContent = actual - 1;
+                        }
+                    }
+                    mostrarToast('Publicación eliminada', 'error');
+                }
             });
         });
     });
@@ -610,11 +617,18 @@ function activarListenersPost() {
 
 /*--------------------------------------------------------------------------------------------
 comentarios */
+var _intervaloComs = {};  /* { idPublicacion: setIntervalId } */
+
 function toggleComentarios(idPublicacion, btn) {
     var seccion   = document.getElementById('coms-' + idPublicacion);
     var yaAbierto = seccion.getAttribute('data-abierto') === '1';
 
     if (yaAbierto) {
+        /* Detener polling */
+        if (_intervaloComs[idPublicacion]) {
+            clearInterval(_intervaloComs[idPublicacion]);
+            delete _intervaloComs[idPublicacion];
+        }
         seccion.querySelector('.bloque-coms')    && seccion.querySelector('.bloque-coms').remove();
         seccion.querySelector('.input-com-wrap') && seccion.querySelector('.input-com-wrap').remove();
         seccion.setAttribute('data-abierto', '0');
@@ -642,17 +656,30 @@ function toggleComentarios(idPublicacion, btn) {
             }
 
             seccion.appendChild(bloqueComs);
-            bloqueComs.querySelectorAll('.foro-com-like').forEach(activarLikeCom);
+            activarEventosComentarios(bloqueComs, idPublicacion);
+
+            /* Iniciar polling para nuevos comentarios */
+            if (_intervaloComs[idPublicacion]) clearInterval(_intervaloComs[idPublicacion]);
+            _intervaloComs[idPublicacion] = setInterval(function() {
+                actualizarComentarios(idPublicacion, bloqueComs);
+            }, 10000); /* cada 10 segundos */
 
             var inputWrap = document.createElement('div');
             inputWrap.className = 'foro-comentario-input input-com-wrap mt-1';
 
             if (sesionForo) {
-                var color   = COLORES[sesionForo.idUsuario % COLORES.length];
-                var inicial = sesionForo.nombre.charAt(0).toUpperCase();
+                var avatarHtml;
+                if (sesionForo.foto_perfil) {
+                    var fotoSrc = (sesionForo.foto_perfil.startsWith('http') ? '' : '../backend/api/auth/') + sesionForo.foto_perfil;
+                    avatarHtml = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.style.display=\'none\';this.nextElementChild.style.display=\'flex\'">'
+                        + '<div class="foro-avatar foro-avatar-sm" style="background:' + COLORES[sesionForo.idUsuario % COLORES.length] + ';flex-shrink:0;display:none;">' + sesionForo.nombre.charAt(0).toUpperCase() + '</div>';
+                } else {
+                    avatarHtml = '<div class="foro-avatar foro-avatar-sm" style="background:' + COLORES[sesionForo.idUsuario % COLORES.length] + ';flex-shrink:0;">' + sesionForo.nombre.charAt(0).toUpperCase() + '</div>';
+                }
                 inputWrap.innerHTML =
-                    '<div class="foro-avatar foro-avatar-sm" style="background:' + color + ';flex-shrink:0;">' + inicial + '</div>'
+                    avatarHtml
                     + '<input type="text" class="foro-input-com" id="com-input-' + idPublicacion + '" placeholder="Escribe un comentario...">'
+                    + '<button type="button" class="foro-emoji-btn" onclick="event.stopPropagation();toggleEmojiPickerCom(' + idPublicacion + ')" title="Emoji"><i class="fa-regular fa-face-smile"></i></button>'
                     + '<button class="foro-publicar-btn" style="padding:0.4em 0.8em;font-size:0.82rem;" onclick="enviarComentario(' + idPublicacion + ')">'
                     + '<i class="fa-solid fa-paper-plane"></i></button>';
             } else {
@@ -675,43 +702,118 @@ function toggleComentarios(idPublicacion, btn) {
         });
 }
 
-function renderComentario(c) {
-    var color   = COLORES[c.autor_nombre.charCodeAt(0) % COLORES.length];
-    var inicial = c.autor_nombre.charAt(0).toUpperCase() + (c.autor_nombre.split(' ')[1] ? c.autor_nombre.split(' ')[1].charAt(0).toUpperCase() : '');
+function activarEventosComentarios(bloqueComs, idPublicacion) {
+    bloqueComs.querySelectorAll('.foro-com-like').forEach(activarLikeCom);
+    bloqueComs.querySelectorAll('.foro-com-delete').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            eliminarComentario(this.dataset.id, this.dataset.pub);
+        });
+    });
+    bloqueComs.querySelectorAll('.foro-com-reply').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            prepararRespuesta(this.dataset.user, this.dataset.pub);
+        });
+    });
+}
+
+function actualizarComentarios(idPublicacion, bloqueComs) {
+    if (_ultimosComsEnviados[idPublicacion] && (Date.now() - _ultimosComsEnviados[idPublicacion]) < 3000) return;
+    fetch('../backend/foro/comentarios.php?idPublicacion=' + idPublicacion)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (!data.comentarios) return;
+            var html = data.comentarios.map(renderComentario).join('');
+            bloqueComs.innerHTML = html;
+            activarEventosComentarios(bloqueComs, idPublicacion);
+            var countEl = document.querySelector('#post-' + idPublicacion + ' .com-count');
+            if (countEl) countEl.textContent = data.comentarios.length;
+        })
+        .catch(function() {});
+}
+
+function renderComentario(c, esRespuesta) {
+    if (c.deleted && !c.respuestas) {
+        return '<div class="foro-comentario foro-comentario-deleted" data-id="' + c.idComentario + '">'
+            + '<p class="foro-com-texto text-muted"><em>Este comentario ha sido eliminado por el usuario.</em></p>'
+            + '</div>';
+    }
+
+    var autor = c.autor_nombre || c.prot_nombre || 'Usuario';
+    var color   = COLORES[autor.charCodeAt(0) % COLORES.length];
+    var inicial = autor.charAt(0).toUpperCase() + (autor.split(' ')[1] ? autor.split(' ')[1].charAt(0).toUpperCase() : '');
 
     var avatarHtml;
-    if (c.autor_foto) {
-        var fotoSrc = (c.autor_foto.startsWith('http') ? '' : '../backend/api/auth/') + c.autor_foto;
-        avatarHtml = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer"'
-            + ' style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;"'
-            + ' onerror="this.outerHTML=\'<div class=&quot;foro-avatar foro-avatar-sm&quot; style=&quot;background:' + color + ';flex-shrink:0;&quot;>' + inicial + '</div>\'">';
+    if (c.autor_foto || c.prot_email) {
+        var fotoSrc = '';
+        if (c.autor_foto) fotoSrc = (c.autor_foto.startsWith('http') ? '' : '../backend/api/auth/') + c.autor_foto;
+        if (fotoSrc) {
+            avatarHtml = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer"'
+                + ' style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;"'
+                + ' onerror="this.outerHTML=\'<div class=&quot;foro-avatar foro-avatar-sm&quot; style=&quot;background:' + color + ';flex-shrink:0;&quot;>' + inicial + '</div>\'">';
+        } else {
+            avatarHtml = '<div class="foro-avatar foro-avatar-sm" style="background:' + color + ';flex-shrink:0;">' + inicial + '</div>';
+        }
     } else {
         avatarHtml = '<div class="foro-avatar foro-avatar-sm" style="background:' + color + ';flex-shrink:0;">' + inicial + '</div>';
     }
 
     var badgeRol = c.autor_rol === 'admin'
         ? '<span class="foro-badge-protectora" style="font-size:0.65rem;">Admin</span>'
-        : '';
+        : (c.autor_rol === 'protectora' ? '<span class="foro-badge-protectora" style="font-size:0.65rem;">Protectora</span>' : '');
 
     var fecha = c.fecha
         ? new Date(c.fecha).toLocaleDateString('es-ES', { day:'2-digit', month:'short' })
         : '';
 
     var esVerificado = c.autor_rol === 'admin' ? ' foro-comentario-verificado' : '';
+    var paddingLeft = esRespuesta ? ' style="margin-left:2.5rem;"' : '';
+    
+    var idUsuarioActual = sesionForo ? (sesionForo.idUsuario || null) : null;
+    var idProtectoraActual = sesionForo ? (sesionForo.idProtectora || null) : null;
+    
+    var esAutor = (idUsuarioActual && String(c.idUsuario) === String(idUsuarioActual)) ||
+                  (idProtectoraActual && String(c.idProtectora) === String(idProtectoraActual));
+    var puedeAccionar = esAutor || (sesionForo && sesionForo.rol === 'admin');
+    
+    var btnEliminar = (puedeAccionar && !c.deleted)
+        ? '<button class="foro-com-delete" data-id="' + c.idComentario + '" data-pub="' + c.idPublicacion + '" title="Eliminar"><i class="fa-solid fa-trash"></i></button>'
+        : '';
+    var btnResponder = (sesionForo && !c.deleted)
+        ? '<button class="foro-com-reply" data-user="' + (c.autor_username || c.prot_nombre || 'usuario') + '" data-pub="' + c.idPublicacion + '" title="Responder"><i class="fa-solid fa-reply"></i></button>'
+        : '';
 
-    return '<div class="foro-comentario' + esVerificado + '">'
-        + avatarHtml
-        + '<div class="foro-comentario-burbuja">'
-        + '<span class="foro-com-autor">' + c.autor_nombre + badgeRol + '</span>'
-        + '<p class="foro-com-texto">' + c.contenido + '</p>'
-        + '<div class="foro-com-acciones">'
-        + '<button class="foro-com-like" data-id="' + c.idComentario + '">'
-        + '<i class="fa-regular fa-heart"></i> <span class="like-count">' + (c.num_likes||0) + '</span>'
-        + '</button>'
-        + '<span class="foro-com-hora">' + fecha + '</span>'
-        + '</div>'
-        + '</div>'
-        + '</div>';
+    var heartClass = c.tiene_like ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart';
+    
+    var html = '<div class="foro-comentario' + esVerificado + '" data-id="' + c.idComentario + '"' + paddingLeft + '>';
+    
+    if (c.deleted) {
+        html += '<p class="foro-com-texto text-muted"><em>Este comentario ha sido eliminado por el usuario.</em></p>';
+    } else {
+        html += avatarHtml
+            + '<div class="foro-comentario-burbuja">'
+            + '<span class="foro-com-autor">' + autor + badgeRol + '</span>'
+            + '<p class="foro-com-texto">' + c.contenido + '</p>'
+            + '<div class="foro-com-acciones">'
+            + '<button class="foro-com-like" data-id="' + c.idComentario + '">'
+            + '<i class="' + heartClass + '"></i> <span class="like-count">' + (c.num_likes||0) + '</span>'
+            + '</button>'
+            + btnResponder
+            + btnEliminar
+            + '<span class="foro-com-hora">' + fecha + '</span>'
+            + '</div>'
+            + '</div>';
+    }
+    
+    if (c.respuestas && c.respuestas.length) {
+        html += '<div class="foro-respuestas">';
+        c.respuestas.forEach(function(r) {
+            html += renderComentario(r, true);
+        });
+        html += '</div>';
+    }
+    
+    html += '</div>';
+    return html;
 }
 
 function activarLikeCom(btn) {
@@ -741,6 +843,63 @@ function activarLikeCom(btn) {
             if (count) count.textContent = data.num_likes;
         });
     });
+}
+
+/*--------------------------------------------------------------------------------------------
+eliminar comentario */
+function eliminarComentario(id, idPub) {
+    if (!confirm('¿Eliminar este comentario?')) return;
+    fetch('../backend/foro/comentarios.php', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ idComentario: id }),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.ok) {
+            var com = document.querySelector('.foro-comentario[data-id="' + id + '"]');
+            if (com) {
+                com.classList.add('foro-comentario-deleted');
+                com.querySelectorAll('.foro-com-like, .foro-com-reply, .foro-com-delete').forEach(function(b) { b.remove(); });
+                var texto = com.querySelector('.foro-com-texto');
+                if (texto) texto.innerHTML = '<em>Este comentario ha sido eliminado por el usuario.</em>';
+                var autor = com.querySelector('.foro-com-autor');
+                if (autor) autor.textContent = '';
+                var avatar = com.querySelector('img, .foro-avatar');
+                if (avatar) avatar.remove();
+            }
+            actualizarContadorCom(idPub, -1);
+        }
+    });
+}
+
+/*--------------------------------------------------------------------------------------------
+responder a comentario - preparar input */
+var replyingTo = {};
+
+function prepararRespuesta(username, idPub) {
+    replyingTo[idPub] = username;
+    var input = document.getElementById('com-input-' + idPub);
+    if (!input) {
+        toggleComentarios(idPub, document.querySelector('#post-' + idPub + ' .foro-ver-mas-com'));
+        input = document.getElementById('com-input-' + idPub);
+    }
+    if (input) {
+        input.value = '@' + username + ' ';
+        input.placeholder = 'Respondiendo a @' + username + '...';
+        input.focus();
+    }
+}
+
+function actualizarContadorCom(idPub, delta) {
+    var post = document.getElementById('post-' + idPub);
+    if (!post) return;
+    var cnt = post.querySelector('.com-count');
+    if (cnt) {
+        var n = parseInt(cnt.textContent) || 0;
+        cnt.textContent = n + delta;
+    }
 }
 
 /*--------------------------------------------------------------------------------------------
@@ -785,6 +944,11 @@ function enviarPublicacion() {
             if (prev) { prev.innerHTML = ''; prev.style.display = 'none'; }
             if (document.getElementById('inputMedia')) document.getElementById('inputMedia').value = '';
             cargarPosts(1);
+            var countEl = document.getElementById('count-' + categoria);
+            if (countEl) {
+                var actual = parseInt(countEl.textContent) || 0;
+                countEl.textContent = actual + 1;
+            }
         } else {
             errorEl.textContent = data.error || 'Error al publicar.';
             errorEl.style.display = 'inline';
@@ -800,6 +964,8 @@ function enviarPublicacion() {
 
 /*--------------------------------------------------------------------------------------------
 enviar comentario */
+var _ultimosComsEnviados = {};
+
 function enviarComentario(idPublicacion) {
     var input     = document.getElementById('com-input-' + idPublicacion);
     var contenido = input ? input.value.trim() : '';
@@ -807,139 +973,78 @@ function enviarComentario(idPublicacion) {
 
     input.disabled = true;
 
-    fetch('../backend/foro/comentarios.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ idPublicacion: idPublicacion, contenido: contenido }),
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        input.disabled = false;
-        if (!data.ok) return;
-        input.value = '';
+    var seccion = document.getElementById('coms-' + idPublicacion);
+    var bloqueComs = seccion.querySelector('.bloque-coms');
 
-        var nuevoCom = renderComentario({
-            idComentario:   data.idComentario,
-            contenido:      contenido,
-            autor_nombre:   sesionForo.nombre,
-            autor_username: sesionForo.username,
-            autor_rol:      sesionForo.rol,
-            autor_foto:     sesionForo.foto_perfil,
-            num_likes:      0,
-            fecha:          new Date().toISOString(),
-        });
+    if (bloqueComs && bloqueComs.querySelectorAll('.foro-comentario').length === 0) {
+        bloqueComs.innerHTML = '';
+    }
 
-        var bloqueComs = document.querySelector('#coms-' + idPublicacion + ' .bloque-coms');
-        if (bloqueComs) {
-            bloqueComs.insertAdjacentHTML('beforeend', nuevoCom);
-            var nuevoBtn = bloqueComs.lastElementChild.querySelector('.foro-com-like');
-            if (nuevoBtn) activarLikeCom(nuevoBtn);
+    if (!bloqueComs) {
+        bloqueComs = document.createElement('div');
+        bloqueComs.className = 'bloque-coms mt-2';
+        var inputWrap = seccion.querySelector('.input-com-wrap');
+        if (inputWrap) {
+            seccion.insertBefore(bloqueComs, inputWrap);
+        } else {
+            seccion.appendChild(bloqueComs);
         }
+    }
 
-        var countEl = document.querySelector('#post-' + idPublicacion + ' .com-count');
-        if (countEl) countEl.textContent = parseInt(countEl.textContent||0) + 1;
-    })
-    .catch(function() { input.disabled = false; });
-}
-
-function quitarMedia() {
-    var inp = document.getElementById('inputMedia');
-    if (inp) inp.value = '';
-    var prev = document.getElementById('mediaPreview');
-    if (prev) { prev.innerHTML = ''; prev.style.display = 'none'; }
-}
-
-/*--------------------------------------------------------------------------------------------
-emojis */
-var EMOJIS = ['😀','😂','😍','🥰','😎','😊','🤔','😢','😅','🤣',
-              '👍','👎','❤️','🔥','⭐','🎉','🙏','💪','👏','✅',
-              '🐾','🐶','🐱','🐕','🐈','🧸','😺','💗','💙','💛'];
-
-function toggleEmojiPicker() {
-    var picker = document.getElementById('emojiPicker');
-    if (!picker) return;
-    if (picker.style.display === 'none' || !picker.style.display) {
-        if (!picker.innerHTML) {
-            picker.innerHTML = EMOJIS.map(function(e) {
-                return '<button type="button" onclick="insertarEmoji(\'' + e + '\')" style="background:none;border:none;cursor:pointer;font-size:1.4rem;padding:0.15em;border-radius:6px;" onmouseover="this.style.background=\'#f0f4ff\'" onmouseout="this.style.background=\'none\'">' + e + '</button>';
-            }).join('');
-        }
-        picker.style.display = 'flex';
+    var color   = COLORES[sesionForo.nombre.charCodeAt(0) % COLORES.length];
+    var inicial = sesionForo.nombre.charAt(0).toUpperCase() + (sesionForo.nombre.split(' ')[1] ? sesionForo.nombre.split(' ')[1].charAt(0).toUpperCase() : '');
+    var avatarHtml;
+    if (sesionForo.foto_perfil) {
+        var fotoSrc = (sesionForo.foto_perfil.startsWith('http') ? '' : '../backend/api/auth/') + sesionForo.foto_perfil;
+        avatarHtml = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer"'
+            + ' style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;"'
+            + ' onerror="this.outerHTML=\'<div class=&quot;foro-avatar foro-avatar-sm&quot; style=&quot;background:' + color + ';flex-shrink:0;&quot;>' + inicial + '</div>\'">';
     } else {
-        picker.style.display = 'none';
+        avatarHtml = '<div class="foro-avatar foro-avatar-sm" style="background:' + color + ';flex-shrink:0;">' + inicial + '</div>';
     }
-}
 
-function insertarEmoji(emoji) {
-    var ta = document.getElementById('textareaPublicarReal');
-    if (!ta) return;
-    if (ta.style.display === 'none') {
-        ta.style.display = 'block';
-        var ph = document.getElementById('foroPlaceholder');
-        if (ph) ph.style.display = 'none';
-    }
-    var start = ta.selectionStart !== undefined ? ta.selectionStart : ta.value.length;
-    ta.value = ta.value.slice(0, start) + emoji + ta.value.slice(start);
-    ta.focus();
-    ta.selectionStart = ta.selectionEnd = start + emoji.length;
-    document.getElementById('emojiPicker').style.display = 'none';
-}
+    var fechaHoy = new Date().toLocaleDateString('es-ES', { day:'2-digit', month:'short' });
 
-document.addEventListener('click', function(e) {
-    var picker = document.getElementById('emojiPicker');
-    var btn    = document.getElementById('btnEmoji');
-    if (picker && btn && !picker.contains(e.target) && !btn.contains(e.target)) {
-        picker.style.display = 'none';
+    var contenidoEscapado = contenido.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    var esRespondiendo = input.placeholder.includes('Respondiendo');
+    var tempId = esRespondiendo ? 'temp-reply-' + Date.now() : 'temp-' + idPublicacion;
+    
+    var htmlCom = '<div class="foro-comentario' + (esRespondiendo ? ' foro-respuesta' : '') + '" data-id="' + tempId + '" style="animation:comFadeIn 0.3s ease;">'
+        + avatarHtml
+        + '<div class="foro-comentario-burbuja">'
+        + '<span class="foro-com-autor">' + sesionForo.nombre + '</span>'
+        + '<p class="foro-com-texto">' + contenidoEscapado + '</p>'
+        + '<div class="foro-com-acciones">'
+        + '<button class="foro-com-like" data-id="0"><i class="fa-regular fa-heart"></i> <span class="like-count">0</span></button>'
+        + '<span class="foro-com-hora">' + fechaHoy + '</span>'
+        + '</div></div></div>';
+
+    bloqueComs.insertAdjacentHTML('beforeend', htmlCom);
+    var nuevoEl = bloqueComs.lastElementChild;
+
+    var countEl = document.querySelector('#post-' + idPublicacion + ' .com-count');
+    if (countEl && !esRespondiendo) countEl.textContent = parseInt(countEl.textContent||0) + 1;
+
+    nuevoEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    _ultimosComsEnviados[idPublicacion] = Date.now();
+
+    var parentId = esRespondiendo ? (function() {
+        var com = nuevoEl.previousElementSibling;
+        while (com) {
+            if (com.classList.contains('foro-comentario') && com.dataset.id && !String(com.dataset.id).startsWith('temp')) {
+                return parseInt(com.dataset.id);
+}
+    contenedor.innerHTML = html;
+}
+document.addEventListener('DOMContentLoaded', function() {
+    var params = new URLSearchParams(window.location.search);
+    var postId = params.get('post');
+    if (postId) {
+        irAPost(postId);
     }
 });
-
-/*--------------------------------------------------------------------------------------------
-búsqueda */
-function hacerBusqueda() {
-    busquedaActual  = document.getElementById('inputBusqueda').value.trim();
-    categoriaActual = 'todas';
-    document.querySelectorAll('.foro-filtro-btn').forEach(function(b) {
-        b.classList.toggle('activo', b.dataset.cat === 'todas');
-    });
-    cargarPosts(1);
-}
-
-/*--------------------------------------------------------------------------------------------
-conteos categorías lateral */
-function cargarConteos() {
-    var cats = ['adopcion', 'cuidados', 'acogida', 'salud', 'informacion'];
-    cats.forEach(function(cat) {
-        fetch('../backend/foro/publicaciones.php?pagina=1&categoria=' + cat)
-            .then(function(r) { return r.json(); })
-            .then(function(data) {
-                var el = document.getElementById('count-' + cat);
-                if (el && data.ok) el.textContent = data.total || 0;
-            });
-    });
-}
-
-/*--------------------------------------------------------------------------------------------
-más activas (sidebar) */
-function actualizarPopulares(posts) {
-    var lista = document.getElementById('listaPopulares');
-    if (!lista || !posts || !posts.length) return;
-    var ordenados = posts.slice().sort(function(a, b) { return (b.num_comentarios||0) - (a.num_comentarios||0); });
-    var top4 = ordenados.slice(0, 4);
-    lista.innerHTML = top4.map(function(p) {
-        return '<li>'
-            + '<a href="#post-' + p.idPublicacion + '" onclick="irAPost(' + p.idPublicacion + ')">'
-            + p.titulo.substring(0,55) + (p.titulo.length>55?'…':'')
-            + '</a>'
-            + '<span class="foro-populares-count"><i class="fa-regular fa-comment"></i> ' + (p.num_comentarios||0) + '</span>'
-            + '</li>';
-    }).join('');
-}
-
-function irAPost(id) {
-    var el = document.getElementById('post-' + id);
-    if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-}
 
 /*--------------------------------------------------------------------------------------------
 paginación */
@@ -964,7 +1069,21 @@ function renderPaginacion() {
     html += '</div>';
     contenedor.innerHTML = html;
 }
-</script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.ok && data.usuario) {
+                var dash = document.getElementById('btnDashboard');
+                var reg = document.getElementById('btnRegister');
+                if (data.usuario.rol === 'admin' || data.usuario.rol === 'protectora') {
+                    if (dash) dash.style.display = '';
+                    if (reg) reg.style.display = 'none';
+                }
+            }
+        })
+        .catch(function() {});
+});
 
 </body>
 </html>

@@ -236,7 +236,7 @@ function renderUserArea(usuario) {
 
 /* Carga notificaciones y muestra badge en el avatar */
 function cargarNotificaciones() {
-    fetch('../php/get_notificaciones.php', { credentials: 'include' })
+    fetch('../backend/foro/notificaciones.php', { credentials: 'include' })
         .then(function(r) { return r.json(); })
         .then(function(data) {
             if (!data.success || !data.total || data.total < 1) return;
@@ -324,6 +324,10 @@ function inicializarUserArea() {
 document.addEventListener('DOMContentLoaded', function() {
     cargarProtectorasDinamicasEnDona();
 
+    if (document.getElementById('gridProtectoras')) {
+        cargarProtectoras(1);
+    }
+
     // ----------------------------------------------------------------
     // User area
     // ----------------------------------------------------------------
@@ -331,6 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     /* Cerrar dropdown al hacer click fuera */
     document.addEventListener('click', function(e) {
+        if (e.target.closest('#tidio-chat-code, iframe[src*="tidio"]')) return;
         if (_dropdownOverlay && !_dropdownOverlay.contains(e.target)) {
             _cerrarOverlay();
         }
@@ -474,6 +479,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         document.addEventListener('click', function(evento) {
+            if (evento.target.closest('#tidio-chat-code, iframe[src*="tidio"]')) return;
             if (esMobil()) {
                 if (!itemColabora.contains(evento.target)) {
                     menuColabora.classList.remove('d-block');
@@ -724,7 +730,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify({
                     email:    inputEmail.value.trim(),
                     password: inputPassword.value,
-                    rol:      inputRol.value || 'usuario'
+                    rol:      (inputRol && inputRol.value) || 'usuario'
                 }),
                 credentials: 'include'
             })
@@ -942,40 +948,11 @@ document.addEventListener('DOMContentLoaded', function() {
             btnRegistro.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Creando cuenta...';
             alertaRegistro.classList.add('d-none');
 
-            var fd = new FormData();
-            fd.append('nombre',           inputNombre.value.trim());
-            fd.append('username',         inputUsername.value.trim());
-            fd.append('email',            inputEmailR.value.trim());
-            fd.append('localidad',        inputLocalidad.value.trim());
-            fd.append('telefono',         inputTelefono.value.trim());
-            fd.append('password',         inputPasswordR.value);
-            fd.append('password_confirm', inputPasswordConfirm.value);
-            fd.append('terminos',         inputTerminos.checked ? '1' : '');
-            if (inputFoto.files[0]) fd.append('foto_perfil', inputFoto.files[0]);
-
-            fetch('../backend/api/auth/registro.php', {
-                method: 'POST',
-                body: fd,
-                credentials: 'include'
-            })
-            .then(function(r) { return r.json(); })
-            .then(function(data) {
+            setTimeout(function() {
                 btnRegistro.disabled = false;
                 btnRegistro.innerHTML = '<i class="fa-solid fa-user-plus me-2"></i>Crear cuenta gratis';
-                if (data.ok) {
-                    sessionStorage.setItem('pf_session', JSON.stringify(data.usuario));
-                    window.location.href = data.redirigir || 'index.html';
-                } else {
-                    document.getElementById('alertaRegistroMsg').textContent = data.error || 'Error al crear la cuenta.';
-                    alertaRegistro.classList.remove('d-none');
-                }
-            })
-            .catch(function() {
-                btnRegistro.disabled = false;
-                btnRegistro.innerHTML = '<i class="fa-solid fa-user-plus me-2"></i>Crear cuenta gratis';
-                document.getElementById('alertaRegistroMsg').textContent = 'Error de conexión. Inténtalo de nuevo.';
                 alertaRegistro.classList.remove('d-none');
-            });
+            }, 1200);
         });
     }
 
@@ -1068,6 +1045,20 @@ function toggleFavorito(evento, id) {
 /* ------------------------------------------------------------------ */
 /* dona                                                                */
 /* ------------------------------------------------------------------ */
+var BADGES_PROT = [
+    { key: 'gestion_municipal',     icon: 'fa-shield-halved',            label: 'Gestión municipal' },
+    { key: 'casas_acogida',         icon: 'fa-home',                    label: 'Casas de acogida' },
+    { key: 'fundacion_oficial',     icon: 'fa-star',                     label: 'Fundación oficial' },
+    { key: 'teaming',               icon: 'fa-mug-hot',                  label: 'Teaming' },
+    { key: 'voluntarios',           icon: 'fa-people-group',             label: '100% voluntarios' },
+    { key: 'trato_familiar',        icon: 'fa-handshake',                label: 'Trato familiar' },
+    { key: 'animales_mayores',      icon: 'fa-heart',                    label: 'Animales mayores' },
+    { key: 'licencia_ppp',          icon: 'fa-id-card',                  label: 'Licencia PPP' },
+    { key: 'principalmente_perros', icon: 'fa-dog',                      label: 'Principalmente perros' },
+    { key: 'principalmente_gatos',  icon: 'fa-cat',                      label: 'Principalmente gatos' },
+    { key: 'sin_instalaciones',     icon: 'fa-house-circle-exclamation', label: 'Sin instalaciones' },
+];
+
 var protectoras = {
     'prot-1': {
         nombre:   'Centro de Proteccion Animal de Gijon',
@@ -1109,100 +1100,173 @@ var protectoras = {
     }
 };
 
-/* Carga TODAS las protectoras desde BD — completamente dinámico */
+/* Carga todas las protectoras desde BD y las registra en el objeto protectoras */
 function cargarProtectorasDinamicasEnDona() {
     fetch('../backend/api/protectoras/listar.php')
         .then(function(r){ return r.json(); })
         .then(function(data){
             if (!data.ok || !data.protectoras) return;
 
-            var todas = data.protectoras;
+            var nuevas = data.protectoras;
+            if (!nuevas.length) return;
 
-            /* Registrar todas en objeto protectoras para modales */
-            todas.forEach(function(p) {
+            /* Registrar en objeto protectoras */
+            nuevas.forEach(function(p) {
                 var key = 'prot-' + p.idProtectora;
                 protectoras[key] = {
                     nombre:   p.nombre,
                     telefono: p.telefono || null,
                     email:    p.email    || null,
                     web:      p.web      || null,
-                    teaming:  p.teaming  || null,
-                    iban:     p.iban     || null,
-                    bizum:    p.bizum    || null
+                    teaming:       p.teaming        || null,
+                    iban:          p.iban           || null,
+                    bizum:         p.bizum          || null,
+                    red_social_url: p.red_social_url || null,
+                    badges:             p.badges              || '',
+                    url_formulario_acogida: p.url_formulario_acogida || null
                 };
             });
 
-            /* Inyectar en dona.html */
+            /* Inyectar cards en dona.html */
             var cont = document.getElementById('containerProtDinamicasDona');
             if (cont) {
-                cont.innerHTML = todas.map(function(p) {
-                    var id  = 'prot-' + p.idProtectora;
+                cont.innerHTML = nuevas.map(function(p) {
+                    var id = 'prot-' + p.idProtectora;
+
                     var logo = p.foto_logo
-                        ? '<img class="logo-protectora" src="../' + p.foto_logo + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" alt="Logo ' + p.nombre.replace(/"/g, '&quot;') + '">'
+                        ? '<img class="logo-protectora" src="../' + p.foto_logo + '" ' +
+                          'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" ' +
+                          'alt="Logo ' + p.nombre.replace(/"/g, '&quot;') + '">'
                         : '';
+
                     return '<label class="card-protectora" id="' + id + '" onclick="toggleProtectora(\'' + id + '\')">' +
-                        '<input type="checkbox" name="protectora" value="' + id + '">' +
-                        logo + '<div class="icono-prot-fb">🐾</div>' +
-                        '<div style="flex:1;"><p class="protectora-nombre">' + p.nombre + '</p>' +
-                        (p.localidad ? '<p class="protectora-lugar"><i class="fa-solid fa-location-dot"></i> ' + p.localidad + '</p>' : '') +
-                        (p.descripcion ? '<p class="descripcion-protectora">' + p.descripcion + '</p>' : '') +
-                        '</div></label>';
+                           '<input type="checkbox" name="protectora" value="' + id + '">' +
+                           logo +
+                           '<div class="icono-prot-fb">🐾</div>' +
+                           '<div style="flex:1;">' +
+                           '<p class="protectora-nombre">' + p.nombre + '</p>' +
+                           (p.localidad ? '<p class="protectora-lugar"><i class="fa-solid fa-location-dot"></i> ' + p.localidad + '</p>' : '') +
+                           ((p.descripcion_dona || p.descripcion) ? '<p class="descripcion-protectora">' + (p.descripcion_dona || p.descripcion) + '</p>' : '') +
+                           '</div></label>';
                 }).join('');
-            }
-
-            /* Inyectar TODAS en protectoras.html — alternancia azul/gold */
-            var gridProt = document.getElementById('gridProtectoras');
-            if (gridProt) {
-                var spinner = document.getElementById('spinnerProtectoras');
-                if (spinner) spinner.remove();
-
-                if (!todas.length) {
-                    gridProt.innerHTML = '<div class="col-12 text-center py-4 text-muted">No hay protectoras disponibles.</div>';
-                    return;
-                }
-
-                gridProt.innerHTML = todas.map(function(p, i) {
-                    var franja   = i % 2 === 0 ? 'prot-franja' : 'prot-franja prot-franja-gold';
-                    var logoSrc  = p.foto_logo
-                        ? (p.foto_logo.indexOf('http') === 0 ? p.foto_logo : '../' + p.foto_logo)
-                        : null;
-                    var logo = logoSrc
-                        ? '<img src="' + logoSrc + '" alt="Logo ' + p.nombre.replace(/"/g, '&quot;') + '" onerror="this.style.display=\'none\'">'
-                        : '<span class="prot-logo-emoji">🐾</span>';
-                    var labelWeb = p.tipo_pagina === 'red_social' ? 'Red social'
-                                 : p.tipo_pagina === 'otra'       ? 'Otra página'
-                                 : 'Web';
-
-                    return '<div class="col-md-6 col-lg-4 prot-item" data-especie="perros gatos" data-nombre="' + p.nombre + ' ' + (p.localidad || '') + '" data-teaming="' + (p.teaming ? 'si' : 'no') + '">' +
-                        '<div class="card-protectora-pag">' +
-                        '<div class="' + franja + '"></div>' +
-                        '<div class="prot-header">' +
-                        '<div class="prot-logo-container">' + logo + '</div>' +
-                        '<div style="flex:1;min-width:0;">' +
-                        '<p class="prot-nombre">' + p.nombre + '</p>' +
-                        (p.localidad ? '<p class="prot-lugar"><i class="fa-solid fa-location-dot"></i> ' + p.localidad + '</p>' : '') +
-                        '</div>' +
-                        (p.verificada ? '<span class="prot-badge-anos">✓ Verificada</span>' : '') +
-                        '</div>' +
-                        (p.descripcion ? '<div class="prot-desc"><p>' + p.descripcion + '</p></div>' : '<div class="prot-desc"><p></p></div>') +
-                        '<div class="prot-contacto">' +
-                        (p.telefono ? '<div class="prot-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + p.telefono + '">' + p.telefono + '</a></div>' : '') +
-                        (p.email    ? '<div class="prot-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + p.email + '">' + p.email + '</a></div>' : '') +
-                        (p.web      ? '<div class="prot-dato"><i class="fa-solid fa-globe"></i><a href="' + p.web + '" target="_blank" rel="noopener">' + labelWeb + '</a></div>' : '') +
-                        (p.teaming  ? '<div class="prot-dato"><i class="fa-solid fa-mug-hot"></i><a href="' + p.teaming + '" target="_blank" rel="noopener">Teaming · 1 €/mes</a></div>' : '') +
-                        (p.iban     ? '<div class="prot-dato prot-dato-iban"><i class="fa-solid fa-building-columns"></i>' + p.iban + '</div>' : '') +
-                        '</div>' +
-                        '<div class="prot-acciones">' +
-                        '<button class="btn-prot-donar" onclick="abrirModalDonarProtDinamica(' + p.idProtectora + ')"><i class="fa-solid fa-hand-holding-heart me-1"></i> Donar</button>' +
-                        (p.web ? '<a href="' + p.web + '" target="_blank" rel="noopener" class="btn-prot-ext"><i class="fa-solid fa-arrow-up-right-from-square me-1"></i> ' + labelWeb + '</a>' : '') +
-                        '</div>' +
-                        '</div></div>';
-                }).join('');
-
-                if (typeof filtrarProtectoras === 'function') filtrarProtectoras();
             }
         })
         .catch(function(){});
+}
+
+/* Carga paginada en protectoras.html */
+var paginaActualProtectoras = 1;
+var totalPaginasProtectoras = 1;
+
+function cargarProtectoras(pagina) {
+    pagina = pagina || 1;
+    paginaActualProtectoras = pagina;
+    var grid = document.getElementById('gridProtectoras');
+    if (!grid) return;
+    grid.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border" style="color:#1B358F;" role="status"></div></div>';
+
+    fetch('../backend/api/protectoras/listar.php?pagina=' + pagina, { cache: 'no-store' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok || !data.protectoras || !data.protectoras.length) {
+                grid.innerHTML = '<div class="col-12 text-center py-5"><p class="text-muted">No hay protectoras disponibles en este momento.</p></div>';
+                generarPaginacionProtectoras(1, 1);
+                return;
+            }
+            totalPaginasProtectoras = data.totalPaginas || 1;
+            grid.innerHTML = data.protectoras.map(function(p) {
+                var logo = p.foto_logo
+                    ? '<img src="../' + p.foto_logo + '" alt="Logo ' + p.nombre.replace(/"/g, '&quot;') + '" ' +
+                      'onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<span class=\\\'prot-logo-emoji\\\'>🐾</span>\';">'
+                    : '<span class="prot-logo-emoji">🐾</span>';
+
+                var ibanNum    = p.iban ? p.iban.replace(/\s*\([^)]*\)/, '').trim() : '';
+                var ibanBanco  = p.iban ? (p.iban.match(/\(([^)]+)\)/) || [])[1] || '' : '';
+                var bizumNum   = p.bizum ? p.bizum.replace(/\s/g, '') : '';
+                var especieData = p.especie_atencion === 'perros' ? 'perros'
+                                : p.especie_atencion === 'gatos'  ? 'gatos'
+                                : 'perros gatos';
+                var tipoLabel  = { web: 'Web oficial', red_social: 'Red social', portal: 'Portal', otra: 'Página' }[p.tipo_pagina] || 'Web';
+                var socialIcon = (p.red_social_url || '').includes('facebook') ? 'fa-brands fa-facebook'
+                               : (p.red_social_url || '').includes('instagram') ? 'fa-brands fa-instagram'
+                               : 'fa-solid fa-share-nodes';
+                var badgesHtml = '';
+                if (p.badges && typeof BADGES_PROT !== 'undefined') {
+                    badgesHtml = p.badges.split(',').filter(Boolean).map(function(k) {
+                        var bd = BADGES_PROT.filter(function(b){ return b.key === k.trim(); })[0];
+                        return bd ? '<span class="prot-caracteristica"><i class="fa-solid ' + bd.icon + '"></i>' + bd.label + '</span>' : '';
+                    }).join('');
+                }
+                var socialHtml = p.red_social_url
+                    ? '<a href="' + p.red_social_url + '" target="_blank" rel="noopener" class="prot-social-ico" title="Red social"><i class="' + socialIcon + '"></i></a>'
+                    : '';
+
+                return '<div class="col-md-6 col-lg-4 prot-item" data-especie="' + especieData + '" data-nombre="' + p.nombre + '" data-localidad="' + (p.localidad || '') + '" data-teaming="' + (p.teaming ? 'si' : 'no') + '">' +
+                       '<div class="card-protectora-pag">' +
+                       '<div class="prot-franja"></div>' +
+                       '<div class="prot-header">' +
+                       '<div class="prot-logo-container">' + logo + '</div>' +
+                       '<div style="flex:1;min-width:0;">' +
+                       '<p class="prot-nombre">' + p.nombre + '</p>' +
+                       (p.localidad ? '<p class="prot-lugar"><i class="fa-solid fa-location-dot"></i> ' + p.localidad + '</p>' : '') +
+                       '</div>' +
+                       socialHtml +
+                       '</div>' +
+                       (p.descripcion ? '<div class="prot-desc"><p>' + p.descripcion + '</p></div>' : '') +
+                       '<div class="prot-caracteristicas-wrap">' + (badgesHtml || '') + '</div>' +
+                 '<div class="prot-contacto">' +
+                         (p.email    ? '<div class="prot-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + p.email + '">' + p.email + '</a></div>' : '') +
+                         (p.telefono ? '<div class="prot-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + p.telefono.replace(/\s/g, '') + '">' + p.telefono + '</a></div>' : '') +
+                         (p.iban     ? '<div class="prot-dato-iban"><i class="fa-solid fa-building-columns"></i><span class="prot-iban-num">' + ibanNum + '</span>' + (ibanBanco ? '<span class="prot-iban-banco">(' + ibanBanco + ')</span>' : '') + '<button onclick="copiarIban(this,\'' + ibanNum + '\')" title="Copiar IBAN" style="background:none;border:none;cursor:pointer;color:#1B358F;padding:0;font-size:0.9rem;margin-left:auto;"><i class="fa-regular fa-copy"></i></button></div>' : '') +
+                        '</div>' +
+                       '<div class="prot-acciones">' +
+                       '<button class="btn-prot-donar" onclick="abrirModalDonarProtDinamica(' + p.idProtectora + ')">' +
+                       '<i class="fa-solid fa-hand-holding-heart me-1"></i> Donar</button>' +
+                       (p.web && p.tipo_pagina !== 'sin_pagina' ? '<a href="' + p.web + '" target="_blank" rel="noopener" class="btn-prot-ext"><i class="fa-solid fa-arrow-up-right-from-square me-1"></i> ' + tipoLabel + '</a>' : '') +
+                       '</div>' +
+                       '</div></div>';
+            }).join('');
+
+            if (typeof filtrarProtectoras === 'function') filtrarProtectoras();
+            generarPaginacionProtectoras(totalPaginasProtectoras, pagina);
+        })
+        .catch(function(){
+            grid.innerHTML = '<div class="col-12 text-center py-4 text-muted">Error al cargar las protectoras.</div>';
+        });
+}
+
+function generarPaginacionProtectoras(totalPag, pagAct) {
+    var cont = document.getElementById('paginacionProtectoras');
+    var grid = document.getElementById('gridProtectoras');
+
+    if (!cont) {
+        if (!grid) return;
+        cont = document.createElement('div');
+        cont.id = 'paginacionProtectoras';
+        cont.className = 'paginacion-container mt-4 mb-4 text-center';
+        grid.parentNode.appendChild(cont);
+    }
+
+    if (totalPag <= 1) {
+        cont.innerHTML = '';
+        return;
+    }
+
+    var html = '';
+
+    if (pagAct > 1) {
+        html += '<button class="btn-pag" onclick="cargarProtectoras(' + (pagAct - 1) + ')"><i class="fa-solid fa-chevron-left"></i></button>';
+    }
+
+    for (var i = 1; i <= totalPag; i++) {
+        html += '<button class="btn-pag ' + (i === pagAct ? 'activo' : '') + '" onclick="cargarProtectoras(' + i + ')">' + i + '</button>';
+    }
+
+    if (pagAct < totalPag) {
+        html += '<button class="btn-pag" onclick="cargarProtectoras(' + (pagAct + 1) + ')"><i class="fa-solid fa-chevron-right"></i></button>';
+    }
+
+    cont.innerHTML = html;
 }
 
 /* Modal donar para protectoras dinámicas en protectoras.html */
@@ -1240,25 +1304,7 @@ function copiarTexto(btn, texto) {
 }
 
 function copiarIban(btn, iban) {
-    var texto = iban.replace(/\s*\([^)]*\)/, '').trim();
-    var icono = btn.querySelector('i');
-    function feedback() {
-        icono.className = 'fa-solid fa-check';
-        setTimeout(function() { icono.className = 'fa-regular fa-copy'; }, 2000);
-    }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(texto).then(feedback);
-    } else {
-        var el = document.createElement('textarea');
-        el.value = texto;
-        el.style.position = 'fixed';
-        el.style.opacity = '0';
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);
-        feedback();
-    }
+    copiarTexto(btn, iban.replace(/\s*\([^)]*\)/, '').trim());
 }
 
 function buildDatosProt(p) {
@@ -1270,265 +1316,81 @@ function buildDatosProt(p) {
           + '<strong style="font-size:0.97rem;color:#1B358F;letter-spacing:0.01em;">' + p.nombre + '</strong>'
           + '</div>';
 
-    if (!p.web) {
-        if (p.teaming) {
-            html += '<div class="aviso-teaming" style="margin-bottom:0.8em;">'
-                  + '<i class="fa-solid fa-mug-hot" style="color:#1B358F;margin-right:0.3em;"></i>'
-                  + 'Esta protectora no dispone de p&aacute;gina oficial de donaciones, pero puedes '
-                  + 'apoyarles con <strong>1&nbsp;&euro;/mes</strong> a trav&eacute;s de '
-                  + '<strong>Teaming</strong>, una plataforma de microdonaciones continuadas.'
-                  + '</div>';
-        } else {
-            html += '<div class="aviso-teaming" style="margin-bottom:0.8em;">'
-                  + '<i class="fa-solid fa-circle-info"></i> '
-                  + 'Esta protectora no dispone de p&aacute;gina oficial de donaciones. '
-                  + 'Puedes contactarles directamente por tel&eacute;fono o email.'
-                  + '</div>';
-        }
-    }
-
-    if (p.telefono) {
-        html += '<div class="modal-dato">'
-              + '<i class="fa-solid fa-phone"></i>'
-              + '<a href="tel:' + p.telefono.replace(/\s/g, '') + '">' + p.telefono + '</a>'
+    /* Aviso si no tiene pagina ni teaming */
+    if (!p.web && !p.teaming) {
+        html += '<div class="aviso-teaming" style="margin-bottom:0.8em;">'
+              + '<i class="fa-solid fa-circle-info"></i> '
+              + 'Esta protectora no dispone de página oficial de donaciones. '
+              + 'Puedes contactarles directamente por teléfono o email.'
               + '</div>';
     }
+
     if (p.email) {
         html += '<div class="modal-dato">'
               + '<i class="fa-solid fa-envelope"></i>'
               + '<a href="mailto:' + p.email + '?subject=%C2%BFC%C3%B3mo%20puedo%20ayudar%3F">'
-              + p.email
-              + '</a>'
-              + '</div>';
+              + p.email + '</a></div>';
+    }
+    if (p.bizum) {
+        var bL = p.bizum.replace(/\s/g, '');
+        html += '<div class="modal-dato">'
+              + '<i class="fa-solid fa-mobile-screen-button"></i>'
+              + '<span>Bizum: <strong>' + p.bizum + '</strong></span>'
+              + '<button onclick="copiarTexto(this,\'' + bL + '\')" title="Copiar Bizum" '
+              + 'style="background:none;border:none;cursor:pointer;color:#1B358F;padding:0 0 0 0.5em;font-size:0.9rem;">'
+              + '<i class="fa-regular fa-copy"></i></button></div>';
     }
 
     if (p.teaming) {
-        html += '<a href="' + p.teaming + '" target="_blank" rel="noopener" class="btn-ir-web btn-ir-web-teaming" style="margin-top:0.6em;">'
-              + '<i class="fa-solid fa-mug-hot me-2"></i>Colaborar con 1&nbsp;&euro;/mes en Teaming'
+        /* Aviso siempre encima del btn teaming */
+        var avisoTeaming = !p.web
+            ? 'Esta protectora no dispone de página oficial de donaciones, pero puedes apoyarles con <strong>1 €/mes</strong> a través de <strong>Teaming</strong>.'
+            : 'También puedes colaborar con <strong>1 €/mes</strong> a través de Teaming.';
+        html += '<div class="aviso-teaming" style="margin-top:0.8em;">'
+              + '<i class="fa-solid fa-mug-hot" style="color:#1B358F;margin-right:0.3em;"></i>'
+              + avisoTeaming
+              + '</div>';
+        html += '<a href="' + p.teaming + '" target="_blank" rel="noopener" class="btn-ir-web btn-ir-web-teaming" style="margin-top:0.4em;">'
+              + '<i class="fa-solid fa-mug-hot me-2"></i>Colaborar con 1 €/mes en Teaming'
               + '</a>';
     }
 
     if (p.web) {
         html += '<a href="' + p.web + '" target="_blank" rel="noopener" class="btn-ir-web" style="margin-top:0.6em;">'
-              + '<i class="fa-solid fa-arrow-up-right-from-square me-2"></i>Ir a la p&aacute;gina de donaciones'
+              + '<i class="fa-solid fa-arrow-up-right-from-square me-2"></i>Ir a la página de donaciones'
               + '</a>';
-        if (p.teaming) {
-            html += '<div class="aviso-teaming" style="margin-top:0.6em;background:#f0f4ff;border-left-color:#1B358F;">'
-                  + '<i class="fa-solid fa-mug-hot" style="color:#1B358F;"></i> '
-                  + 'Tambi&eacute;n puedes colaborar con <strong>1&nbsp;&euro;/mes</strong> a trav&eacute;s de Teaming.'
-                  + '</div>';
-        }
     }
 
     if (p.iban) {
-        var ibanEsc = p.iban.replace(/'/g, "\\'");
-        html += '<div class="modal-dato" style="margin-top:0.8em;padding-top:0.6em;border-top:1px solid #f0f0f0;">'
+        var ibanL = p.iban.replace(/\s*\([^)]*\)/, '').trim();
+        var ibanB = (p.iban.match(/\(([^)]+)\)/) || [])[1] || '';
+        html += '<div class="prot-dato-iban" style="margin-top:0.8em;">'
               + '<i class="fa-solid fa-building-columns"></i>'
-              + '<span>' + p.iban + '</span>'
-              + '<button onclick="copiarIban(this,\'' + ibanEsc + '\')" title="Copiar IBAN" '
-              + 'style="background:none;border:none;cursor:pointer;color:#1B358F;'
-              + 'padding:0 0 0 0.5em;font-size:0.9rem;">'
-              + '<i class="fa-regular fa-copy"></i>'
-              + '</button>'
-              + '</div>';
+              + '<span class="prot-iban-num">' + ibanL + '</span>'
+              + (ibanB ? '<span class="prot-iban-banco">(' + ibanB + ')</span>' : '')
+              + '<button onclick="copiarIban(this,\'' + ibanL + '\')" title="Copiar IBAN" '
+              + 'style="background:none;border:none;cursor:pointer;color:#1B358F;padding:0;font-size:0.9rem;margin-left:auto;">'
+              + '<i class="fa-regular fa-copy"></i></button></div>';
     }
+
 
     html += '</div>';
     return html;
 }
 
-function mostrarModalDona() {
-    var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-    var errorEl    = document.getElementById('errorSeleccion');
-    if (checkboxes.length === 0) {
-        if (errorEl) {
-            errorEl.style.display = 'block';
-            errorEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-        return;
-    }
-    if (errorEl) errorEl.style.display = 'none';
-    var bloques = [];
-    for (var i = 0; i < checkboxes.length; i++) {
-        var id = checkboxes[i].closest('label').id;
-        bloques.push(buildDatosProt(protectoras[id]));
-    }
-    document.getElementById('modal-datos-protectora').innerHTML = bloques.join(
-        '<hr style="border:none;border-top:1px solid #e9ecef;margin:1.4em 0;">'
-    );
-    new bootstrap.Modal(document.getElementById('modalDonacion')).show();
-}
-
-
 /* ------------------------------------------------------------------ */
 /* apadrina                                                            */
 /* ------------------------------------------------------------------ */
-var animalesApadrina = {
-    leia: {
-        nombre:     'Leia',
-        protectora: 'Centro de Proteccion Animal de Gijon',
-        telefono:   '615 411 417',
-        email:      'cproteccionanimalgijon@gmail.com',
-        web:        'https://www.albergaria.es/protectoras/centro-proteccion-animales-gijon/leia_4431.html',
-        teaming:    null,
-        iban:       null
-    },
-    dexter: {
-        nombre:     'Dexter',
-        protectora: 'Nortemascotas',
-        telefono:   '665 971 933',
-        email:      null,
-        web:        'https://www.albergaria.es/animales-en-adopcion/dexter-4/',
-        teaming:    null,
-        iban:       'ES39 0182 2800 1902 0163 9405 (BBVA)'
-    },
-    bosque: {
-        nombre:     'Bosque',
-        protectora: 'Fundacion Protectora de Asturias',
-        telefono:   null,
-        email:      null,
-        web:        'https://www.albergaria.es/animales-en-adopcion/bosque/',
-        teaming:    'https://www.teaming.net/fundacionprotectoradeasturias',
-        iban:       'ES15 0081 5665 2400 0109 0516 (Sabadell)'
-    }
-};
 
-function abrirModalApadrina(idAnimal) {
-    var animal = animalesApadrina[idAnimal];
-    document.getElementById('modal-animal-nombre').textContent = animal.nombre;
-
-    var html = '<p class="protectora-nombre mb-2">' + animal.protectora + '</p>';
-    if (animal.telefono) html += '<div class="modal-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + animal.telefono.replace(/\s/g, '') + '">' + animal.telefono + '</a></div>';
-    if (animal.email)    html += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + animal.email + '">' + animal.email + '</a></div>';
-    if (animal.iban)     html += '<div class="modal-dato"><i class="fa-solid fa-building-columns"></i><span>' + animal.iban + '</span></div>';
-    if (animal.web)      html += '<a href="' + animal.web + '" target="_blank" rel="noopener" class="btn-ir-web mt-2"><i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Ver ficha en la protectora</a>';
-    if (animal.teaming)  html += '<a href="' + animal.teaming + '" target="_blank" rel="noopener" class="btn-ir-web btn-ir-web-teaming mt-2"><i class="fa-solid fa-mug-hot me-1"></i> Colaborar por Teaming</a>';
-
-    document.getElementById('modal-datos-apadrina').innerHTML = html;
-    new bootstrap.Modal(document.getElementById('modalApadrina')).show();
-}
 
 
 /* ------------------------------------------------------------------ */
 /* carga dinamica de mascotas                                          */
 /* ------------------------------------------------------------------ */
-async function cargarMascotasAdopta() {
-    const contenedor = document.getElementById('contenedor-mascotas');
-    if (!contenedor) return;
-    contenedor.innerHTML = '<div class="text-center w-100 py-5"><div class="spinner-border" role="status"></div></div>';
-    try {
-        const res  = await fetch('../php/get_mascotas.php');
-        const json = await res.json();
-        if (!json.success) throw new Error(json.error || 'Error cargando mascotas');
-        const mascotas = json.data;
-        if (!mascotas.length) {
-            contenedor.innerHTML = '<div class="alert alert-info">No hay animales en adopción actualmente.</div>';
-            return;
-        }
-        contenedor.innerHTML = mascotas.map(mascota => renderTarjetaMascota(mascota)).join('');
-    } catch (e) {
-        contenedor.innerHTML = '<div class="alert alert-danger">Error cargando animales: ' + e.message + '</div>';
-    }
-}
 
-function renderTarjetaMascota(m) {
 
-    var edad = '';
-    if (m.fecha_nacimiento) {
-        var nacimiento = new Date(m.fecha_nacimiento);
-        var hoy        = new Date();
-        var edadAnos   = hoy.getFullYear() - nacimiento.getFullYear();
-        var mes        = hoy.getMonth() - nacimiento.getMonth();
-        if (mes < 0) edadAnos--;
-        edad = edadAnos;
-    }
 
-    var badgeHtml = '';
-    if (m.urgencia === 'urgente') {
-        badgeHtml = '<span class="badge bg-danger">Urgente</span>';
-    } else if (m.urgencia === 'nuevo') {
-        badgeHtml = '<span class="badge bg-info">Nuevo</span>';
-    }
 
-    var infoExtra = '';
-    if (m.compatible_ninos)  infoExtra += '<span class="badge bg-light text-dark me-1"><i class="fa-solid fa-child"></i></span>';
-    if (m.compatible_perros) infoExtra += '<span class="badge bg-light text-dark me-1"><i class="fa-solid fa-dog"></i></span>';
-    if (m.compatible_gatos)  infoExtra += '<span class="badge bg-light text-dark me-1"><i class="fa-solid fa-cat"></i></span>';
-    if (m.apto_piso)         infoExtra += '<span class="badge bg-light text-dark me-1"><i class="fa-solid fa-home"></i></span>';
-
-    return `
-    <div class="col-sm-12 col-md-6 col-lg-4 animalCard"
-         data-especie="${m.especie}"
-         data-ubicacion="${m.ubicacion || ''}"
-         data-tamano="${m.tamano || ''}"
-         data-urgencia="${m.urgencia || ''}"
-         data-edad="${edad}"
-         data-sexo="${m.sexo || ''}"
-         data-color="${m.color || ''}"
-         data-salud="${m.estado_salud || ''}">
-        <div class="card h-100 shadow-sm">
-            <div class="contenedor-imagen position-relative">
-                <img src="${m.foto}" class="card-img-top" alt="${m.nombre}">
-                ${badgeHtml}
-                <button class="btn-fav" onclick="toggleFavorito(event, '${m.idMascota}')" title="Agregar a favoritos">
-                    <i class="fa-regular fa-heart"></i>
-                </button>
-            </div>
-            <div class="card-body d-flex flex-column">
-                <div class="d-flex align-items-center mb-2">
-                    <h5 class="card-title mb-0">${m.nombre}</h5>
-                    <span class="ms-2 fs-6">
-                        ${m.sexo === 'hembra' ? '<i class="fa-solid fa-venus" style="color:#E91E63;"></i>' : '<i class="fa-solid fa-mars" style="color:#2196F3;"></i>'}
-                    </span>
-                </div>
-                <ul class="card-meta list-unstyled small text-secondary mb-2">
-                    ${m.raza   ? '<li><i class="fa-solid fa-dog"></i> ' + m.raza + '</li>' : ''}
-                    ${edad     ? '<li><i class="fa-solid fa-calendar"></i> ' + edad + ' años</li>' : ''}
-                    ${m.tamano ? '<li><i class="fa-solid fa-expand"></i> ' + (m.tamano.charAt(0).toUpperCase() + m.tamano.slice(1)) + '</li>' : ''}
-                </ul>
-                ${m.ubicacion     ? '<div class="small text-muted mb-2"><i class="fa-solid fa-location-dot"></i> ' + m.ubicacion + '</div>' : ''}
-                ${m.estado_adopcion ? '<div class="small text-muted mb-2"><i class="fa-solid fa-hourglass-end"></i> En adopción: ' + m.estado_adopcion.replace('_', ' ') + '</div>' : ''}
-                ${infoExtra ? '<div class="mb-2">' + infoExtra + '</div>' : ''}
-                <div class="contador-vistas small text-warning mt-2">
-                    <i class="fa-solid fa-eye"></i>
-                    <span>Vista <strong id="vistas-${m.idMascota}">0</strong> veces</span>
-                </div>
-                <a href="fichaAnimal.html?id=${m.idMascota}" class="btn btn-primary w-100 mt-auto" onclick="registrarVistaFicha('${m.idMascota}')">
-                    Ver ficha
-                </a>
-            </div>
-        </div>
-    </div>
-    `;
-}
-
-async function cargarMascotaFicha() {
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
-    if (!id) return;
-    try {
-        const res  = await fetch('../php/get_mascota.php?id=' + id);
-        const json = await res.json();
-        if (!json.success) throw new Error(json.error || 'No encontrada');
-        const m = json.data;
-        document.getElementById('animal-nombre').textContent    = m.nombre;
-        document.getElementById('animal-subtitulo').textContent = (m.raza || '') + ' · ' + (m.sexo || '');
-        document.getElementById('animal-descripcion').textContent = m.descripcion || '';
-        document.getElementById('foto-principal').src = m.foto || '../img/mascotas/default.jpg';
-    } catch (e) {
-        document.querySelector('main').innerHTML = '<div class="alert alert-danger">Error: ' + e.message + '</div>';
-    }
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-        if (document.getElementById('contenedor-mascotas')) cargarMascotasAdopta();
-        if (document.getElementById('animal-nombre')) cargarMascotaFicha();
-    });
-} else {
-    if (document.getElementById('contenedor-mascotas')) cargarMascotasAdopta();
-    if (document.getElementById('animal-nombre')) cargarMascotaFicha();
-}
 
 /*--------------------------------------------------------------------------------------------
 compartir animal — función global usada en adopta, fichaAnimal, apadrina y acoge */

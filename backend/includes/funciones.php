@@ -30,6 +30,21 @@ function esAdmin(): bool {
     return isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin';
 }
 
+function esProtectora(): bool {
+    iniciarSesionSegura();
+    return isset($_SESSION['rol']) && $_SESSION['rol'] === 'protectora';
+}
+
+function esAdminOProtectora(): bool {
+    iniciarSesionSegura();
+    return isset($_SESSION['rol']) && in_array($_SESSION['rol'], ['admin', 'protectora']);
+}
+
+function getIdProtectoraUsuario(): ?int {
+    iniciarSesionSegura();
+    return isset($_SESSION['idProtectora']) ? (int)$_SESSION['idProtectora'] : null;
+}
+
 function requerirLogin(): void {
     if (!usuarioLogueado()) {
         respuestaError('Debes iniciar sesión para realizar esta acción.', 401);
@@ -39,6 +54,12 @@ function requerirLogin(): void {
 function requerirAdmin(): void {
     if (!esAdmin()) {
         respuestaError('Acceso restringido a administradores.', 403);
+    }
+}
+
+function requerirAdminOProtectora(): void {
+    if (!esAdminOProtectora()) {
+        respuestaError('Acceso restringido.', 403);
     }
 }
 
@@ -101,4 +122,34 @@ function paginacion(int $pagina, int $porPagina = 12): array {
     $pagina = max(1, $pagina);
     $offset = ($pagina - 1) * $porPagina;
     return ['limite' => $porPagina, 'offset' => $offset, 'pagina' => $pagina];
+}
+
+/*--------------------------------------------------------------------------------------------
+JSON input */
+
+function jsonInput(): array {
+    $input = file_get_contents('php://input');
+    $data = json_decode($input, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        respuestaError('Datos JSON inválidos', 400);
+    }
+    return $data ?? [];
+}
+
+/*--------------------------------------------------------------------------------------------
+Método HTTP */
+
+function metodoGetOPost(): void {
+    if ($_SERVER['REQUEST_METHOD'] !== 'GET' && $_SERVER['REQUEST_METHOD'] !== 'POST') {
+        respuestaError('Método no permitido', 405);
+    }
+}
+
+/*--------------------------------------------------------------------------------------------
+notificaciones */
+
+function crearNotificacion(int $idUsuario, string $tipo, string $mensaje, string $ruta_destino = ''): bool {
+    $pdo = conectar();
+    $stmt = $pdo->prepare('INSERT INTO notificaciones (idUsuario, tipo, mensaje, ruta_destino) VALUES (?, ?, ?, ?)');
+    return $stmt->execute([$idUsuario, $tipo, $mensaje, $ruta_destino]);
 }

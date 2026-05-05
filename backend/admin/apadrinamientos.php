@@ -4,65 +4,65 @@
 require_once __DIR__ . '/../includes/funciones.php';
 
 iniciarSesionSegura();
-requerirAdmin();
-
-header('Content-Type: application/json; charset=utf-8');
+requerirAdminOProtectora();
 
 $pdo = conectar();
+$esAdmin = esAdmin();
+$idProtectoraUsuario = getIdProtectoraUsuario();
 
 switch ($_SERVER['REQUEST_METHOD']) {
 
     /*--------------------------------------------------------------------------------------------
     GET - listar apadrinamientos */
     case 'GET':
-        $stmt = $pdo->query(
+        $where = [];
+        $params = [];
+        if (!$esAdmin && $idProtectoraUsuario) {
+            $where[] = 'm.idProtectora = ?';
+            $params[] = $idProtectoraUsuario;
+        }
+        $cond = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+        $stmt = $pdo->prepare(
             'SELECT a.idApadrinamiento, a.cuota, a.fecha_inicio, a.fecha_fin, a.estado,
                     a.nombre_pagador, a.email_pagador,
-                    m.nombre AS mascota, m.especie,
+                    m.nombre AS mascota, m.especie, m.idProtectora,
                     u.nombre AS padrino, u.email AS padrino_email
              FROM apadrinamientos a
              JOIN mascotas m ON a.idMascota = m.idMascota
              JOIN usuarios u ON a.idUsuario = u.idUsuario
+             ' . $cond . '
              ORDER BY a.idApadrinamiento DESC'
         );
+        $stmt->execute($params);
         respuestaOk(['apadrinamientos' => $stmt->fetchAll()]);
         break;
 
     /*--------------------------------------------------------------------------------------------
-    POST - crear apadrinamiento manual */
+    POST - crear apadrinamiento (SOLO FLUJO PUBLICO, admin NO puede crear) */
     case 'POST':
-        $data = json_decode(file_get_contents('php://input'), true);
-        if (!isset($data['idMascota'], $data['idUsuario'], $data['cuota'])) {
-            respuestaError('Faltan campos obligatorios: idMascota, idUsuario, cuota.', 422);
-        }
-        $stmt = $pdo->prepare(
-            'INSERT INTO apadrinamientos
-                (idMascota, idUsuario, cuota, fecha_inicio, estado, nombre_pagador, email_pagador)
-             VALUES (?,?,?,?,?,?,?)'
-        );
-        $ok = $stmt->execute([
-            $data['idMascota'],
-            $data['idUsuario'],
-            $data['cuota'],
-            $data['fecha_inicio']    ?? date('Y-m-d'),
-            $data['estado']          ?? 'activo',
-            $data['nombre_pagador']  ?? null,
-            $data['email_pagador']   ?? null,
-        ]);
-        if ($ok) {
-            respuestaOk(['mensaje' => 'Apadrinamiento creado correctamente.']);
-        } else {
-            respuestaError('Error al crear el apadrinamiento.');
-        }
+        respuestaError('Los apadrinamientos se crean desde el flujo público. Los administradores no pueden crear apadrinamientos.', 403);
         break;
 
     /*--------------------------------------------------------------------------------------------
-    PUT - actualizar estado */
+    PUT - actualizar estado (SOLO PROTECTORA sobre sus apadrinamientos, admin NO puede) */
     case 'PUT':
+        if ($esAdmin) {
+            respuestaError('Los administradores no pueden gestionar apadrinamientos. Esta acción corresponde a la protectora.', 403);
+        }
+        if (!$idProtectoraUsuario) respuestaError('No tienes una protectora asignada.');
+
         $data = json_decode(file_get_contents('php://input'), true);
         if (!isset($data['idApadrinamiento'])) {
             respuestaError('Falta idApadrinamiento.', 422);
         }
+
+        $check = $pdo->prepare('SELECT m.idProtectora FROM apadrinamientos a JOIN mascotas m ON a.idMascota = m.idMascota WHERE a.idApadrinamiento = ?');
+        $check->execute([$data['idApadrinamiento']]);
+        $res = $check->fetch();
+        if (!$res || (int)$res['idProtectora'] !== $idProtectoraUsuario) {
+            respuestaError('No puedes gestionar este apadrinamiento.', 403);
+        }
+
         $campos = [];
         $params = [];
 
@@ -91,12 +91,25 @@ switch ($_SERVER['REQUEST_METHOD']) {
         break;
 
     /*--------------------------------------------------------------------------------------------
-    DELETE - eliminar */
+    DELETE - eliminar (SOLO PROTECTORA sobre sus apadrinamientos, admin NO puede) */
     case 'DELETE':
+        if ($esAdmin) {
+            respuestaError('Los administradores no pueden eliminar apadrinamientos. Esta acción corresponde a la protectora.', 403);
+        }
+        if (!$idProtectoraUsuario) respuestaError('No tienes una protectora asignada.');
+
         $data = json_decode(file_get_contents('php://input'), true);
         if (!isset($data['idApadrinamiento'])) {
             respuestaError('Falta idApadrinamiento.', 422);
         }
+
+        $check = $pdo->prepare('SELECT m.idProtectora FROM apadrinamientos a JOIN mascotas m ON a.idMascota = m.idMascota WHERE a.idApadrinamiento = ?');
+        $check->execute([$data['idApadrinamiento']]);
+        $res = $check->fetch();
+        if (!$res || (int)$res['idProtectora'] !== $idProtectoraUsuario) {
+            respuestaError('No puedes eliminar este apadrinamiento.', 403);
+        }
+
         $pdo->prepare('DELETE FROM apadrinamientos WHERE idApadrinamiento = ?')
             ->execute([$data['idApadrinamiento']]);
         respuestaOk(['mensaje' => 'Apadrinamiento eliminado correctamente.']);
