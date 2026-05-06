@@ -380,19 +380,20 @@ input.foro-publicar-textarea {
 .foro-comentarios-seccion {
     display: flex;
     flex-direction: column;
-    gap: 0.7em;
+    gap: 1em;
 }
 
 .foro-comentario {
     display: flex;
-    gap: 0.6em;
+    gap: 0.7em;
     align-items: flex-start;
 }
 
 /*--------------------------------------------------------------------------------------------
 respuestas - misma profundidad, diferenciadas por borde */
 .foro-comentario-respuesta {
-    margin-left: 2.2rem;
+    margin-left: 2.4rem;
+    margin-top: 0.15em;
 }
 
 .foro-comentario-respuesta .foro-comentario-burbuja {
@@ -411,7 +412,7 @@ respuestas - misma profundidad, diferenciadas por borde */
 .foro-comentario-burbuja {
     background: #f8f9fa;
     border-radius: 0 10px 10px 10px;
-    padding: 0.6em 0.9em;
+    padding: 0.65em 1em;
     flex: 1;
 }
 
@@ -480,6 +481,8 @@ respuestas - misma profundidad, diferenciadas por borde */
     gap: 0.6em;
     align-items: center;
     margin-top: 0.3em;
+    position: relative;
+    flex-wrap: wrap;
 }
 
 .foro-input-com {

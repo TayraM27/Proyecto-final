@@ -3,7 +3,7 @@ require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
-$pdo = conectar();
+$pdo    = conectar();
 $metodo = $_SERVER['REQUEST_METHOD'];
 
 function obtenerSesion() {
@@ -61,7 +61,7 @@ if ($metodo === 'GET') {
 
     foreach ($comentarios as &$com) {
         if ($com['deleted'] && !$esAdmin) {
-            $com['contenido']      = 'Este comentario ha sido eliminado por el usuario.';
+            $com['contenido']      = null;
             $com['autor_nombre']   = '';
             $com['autor_username'] = '';
             $com['autor_foto']     = '';
@@ -107,7 +107,7 @@ if ($metodo === 'GET') {
 
         foreach ($respuestas as &$resp) {
             if ($resp['deleted'] && !$esAdmin) {
-                $resp['contenido']      = 'Este comentario ha sido eliminado por el usuario.';
+                $resp['contenido']      = null;
                 $resp['autor_nombre']   = '';
                 $resp['autor_username'] = '';
                 $resp['autor_foto']     = '';
@@ -140,13 +140,12 @@ if ($metodo === 'POST') {
 
     $datos         = jsonInput();
     $idPublicacion = (int)($datos['idPublicacion'] ?? 0);
-    $parent_id     = !empty($datos['idPadre'])   ? (int)$datos['idPadre']   : null;
+    $parent_id     = !empty($datos['idPadre']) ? (int)$datos['idPadre'] : null;
     $contenido     = limpiar($datos['contenido'] ?? '');
 
     if (!$idPublicacion || !$contenido) respuestaError('Publicacion y contenido son obligatorios.');
     if (mb_strlen($contenido) > 1000)   respuestaError('Maximo 1000 caracteres.');
 
-    /* Bug 2 fix: traer idProtectora para notificar correctamente a autores protectora */
     $stmt = $pdo->prepare(
         'SELECT idPublicacion, idUsuario, idProtectora FROM publicaciones WHERE idPublicacion = ? AND activa = 1 LIMIT 1'
     );
@@ -154,12 +153,17 @@ if ($metodo === 'POST') {
     $pub = $stmt->fetch();
     if (!$pub) respuestaError('Publicacion no encontrada.', 404);
 
+    /* Validar padre y aplanar a 1 nivel de profundidad */
     if ($parent_id) {
-        $chkParent = $pdo->prepare('SELECT idComentario, deleted FROM comentarios WHERE idComentario = ? AND idPublicacion = ?');
+        $chkParent = $pdo->prepare('SELECT idComentario, deleted, parent_id FROM comentarios WHERE idComentario = ? AND idPublicacion = ?');
         $chkParent->execute([$parent_id, $idPublicacion]);
         $parent = $chkParent->fetch();
         if (!$parent)           respuestaError('Comentario padre no encontrado.', 404);
         if ($parent['deleted']) respuestaError('No puedes responder a un comentario eliminado.', 400);
+        /* Si el padre es ya una respuesta, usar su padre (max 1 nivel) */
+        if ($parent['parent_id']) {
+            $parent_id = (int)$parent['parent_id'];
+        }
     }
 
     $idUsuario    = $ses['idUsuario'];
@@ -172,7 +176,7 @@ if ($metodo === 'POST') {
     $stmt->execute([$idPublicacion, $idUsuario, $idProtectora, $parent_id, $contenido]);
     $idComentario = (int)$pdo->lastInsertId();
 
-    /* Notificaciones solo en comentarios raíz */
+    /* Notificaciones solo en comentarios raiz */
     if (!$parent_id) {
         if ($idUsuario) {
             $stmtUser = $pdo->prepare('SELECT username FROM usuarios WHERE idUsuario = ?');
@@ -181,16 +185,13 @@ if ($metodo === 'POST') {
             $stmtUser = $pdo->prepare('SELECT nombre AS username FROM protectoras WHERE idProtectora = ?');
             $stmtUser->execute([$idProtectora]);
         }
-        $userCom = $stmtUser->fetch();
+        $userCom  = $stmtUser->fetch();
         $msgNotif = $userCom ? ($userCom['username'] . ' ha comentado tu publicacion') : 'Nuevo comentario en tu publicacion';
 
-        /* Notificar al usuario autor */
         if ($pub['idUsuario'] && $pub['idUsuario'] != $idUsuario) {
             $pdo->prepare('INSERT INTO notificaciones (idUsuario, tipo, mensaje, idPublicacion) VALUES (?, ?, ?, ?)')
                 ->execute([$pub['idUsuario'], 'comentario', $msgNotif, $idPublicacion]);
         }
-
-        /* Notificar a la protectora autora */
         if ($pub['idProtectora'] && $pub['idProtectora'] != $idProtectora) {
             $pdo->prepare('INSERT INTO notificaciones (idProtectora, tipo, mensaje, idPublicacion) VALUES (?, ?, ?, ?)')
                 ->execute([$pub['idProtectora'], 'comentario', $msgNotif, $idPublicacion]);
@@ -225,16 +226,12 @@ if ($metodo === 'PUT') {
         $yaLike = (bool)$chk->fetchColumn();
 
         if ($yaLike) {
-            $pdo->prepare('DELETE FROM likes_comentarios WHERE idComentario = ? AND idUsuario = ?')
-                ->execute([$idComentario, $idUsuario]);
-            $pdo->prepare('UPDATE comentarios SET num_likes = GREATEST(0, num_likes - 1) WHERE idComentario = ?')
-                ->execute([$idComentario]);
+            $pdo->prepare('DELETE FROM likes_comentarios WHERE idComentario = ? AND idUsuario = ?')->execute([$idComentario, $idUsuario]);
+            $pdo->prepare('UPDATE comentarios SET num_likes = GREATEST(0, num_likes - 1) WHERE idComentario = ?')->execute([$idComentario]);
             $accion = 'unlike';
         } else {
-            $pdo->prepare('INSERT IGNORE INTO likes_comentarios (idUsuario, idComentario) VALUES (?, ?)')
-                ->execute([$idUsuario, $idComentario]);
-            $pdo->prepare('UPDATE comentarios SET num_likes = num_likes + 1 WHERE idComentario = ?')
-                ->execute([$idComentario]);
+            $pdo->prepare('INSERT IGNORE INTO likes_comentarios (idUsuario, idComentario) VALUES (?, ?)')->execute([$idUsuario, $idComentario]);
+            $pdo->prepare('UPDATE comentarios SET num_likes = num_likes + 1 WHERE idComentario = ?')->execute([$idComentario]);
             $accion = 'like';
         }
     } else {
@@ -243,16 +240,12 @@ if ($metodo === 'PUT') {
         $yaLike = (bool)$chk->fetchColumn();
 
         if ($yaLike) {
-            $pdo->prepare('DELETE FROM likes_comentarios WHERE idComentario = ? AND idProtectora = ?')
-                ->execute([$idComentario, $idProtectora]);
-            $pdo->prepare('UPDATE comentarios SET num_likes = GREATEST(0, num_likes - 1) WHERE idComentario = ?')
-                ->execute([$idComentario]);
+            $pdo->prepare('DELETE FROM likes_comentarios WHERE idComentario = ? AND idProtectora = ?')->execute([$idComentario, $idProtectora]);
+            $pdo->prepare('UPDATE comentarios SET num_likes = GREATEST(0, num_likes - 1) WHERE idComentario = ?')->execute([$idComentario]);
             $accion = 'unlike';
         } else {
-            $pdo->prepare('INSERT IGNORE INTO likes_comentarios (idProtectora, idComentario) VALUES (?, ?)')
-                ->execute([$idProtectora, $idComentario]);
-            $pdo->prepare('UPDATE comentarios SET num_likes = num_likes + 1 WHERE idComentario = ?')
-                ->execute([$idComentario]);
+            $pdo->prepare('INSERT IGNORE INTO likes_comentarios (idProtectora, idComentario) VALUES (?, ?)')->execute([$idProtectora, $idComentario]);
+            $pdo->prepare('UPDATE comentarios SET num_likes = num_likes + 1 WHERE idComentario = ?')->execute([$idComentario]);
             $accion = 'like';
         }
     }

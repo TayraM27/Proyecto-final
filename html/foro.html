@@ -616,6 +616,14 @@ function toggleComentarios(idPublicacion, btn) {
 
             if (data.comentarios && data.comentarios.length) {
                 bloqueComs.innerHTML = data.comentarios.map(function(c) { return renderComentario(c, false); }).join('');
+                /* Sincronizar contador con recuento real al abrir */
+                var total = 0;
+                data.comentarios.forEach(function(c) {
+                    if (!c.deleted) total++;
+                    if (c.respuestas) c.respuestas.forEach(function(r) { if (!r.deleted) total++; });
+                });
+                var countEl = document.querySelector('#post-' + idPublicacion + ' .com-count');
+                if (countEl) countEl.textContent = total;
             } else {
                 bloqueComs.innerHTML = '<p style="font-size:0.82rem;color:#6c757d;padding:0.4em 0;">Sin comentarios aún. ¡Sé el primero!</p>';
             }
@@ -689,8 +697,16 @@ function actualizarComentarios(idPublicacion, bloqueComs) {
             if (!data.comentarios) return;
             bloqueComs.innerHTML = data.comentarios.map(function(c) { return renderComentario(c, false); }).join('');
             activarEventosComentarios(bloqueComs, idPublicacion);
+            /* Contar padres activos + todas sus respuestas activas */
+            var total = 0;
+            data.comentarios.forEach(function(c) {
+                if (!c.deleted) total++;
+                if (c.respuestas) {
+                    c.respuestas.forEach(function(r) { if (!r.deleted) total++; });
+                }
+            });
             var countEl = document.querySelector('#post-' + idPublicacion + ' .com-count');
-            if (countEl) countEl.textContent = data.comentarios.length;
+            if (countEl) countEl.textContent = total;
         })
         .catch(function() {});
 }
@@ -949,9 +965,7 @@ function enviarComentario(idPublicacion) {
 
     var esReply   = !!replyingToId[idPublicacion];
     var tempClass = 'foro-comentario' + (esReply ? ' foro-comentario-respuesta' : '');
-
-    bloqueComs.insertAdjacentHTML('beforeend',
-        '<div class="' + tempClass + '" data-id="' + tempId + '">'
+    var tempHtml  = '<div class="' + tempClass + '" data-id="' + tempId + '">'
         + avatarHtml
         + '<div class="foro-comentario-burbuja">'
         + '<span class="foro-com-autor">' + sesionForo.nombre + '</span>'
@@ -959,8 +973,19 @@ function enviarComentario(idPublicacion) {
         + '<div class="foro-com-acciones">'
         + '<button class="foro-com-like" data-id="0"><i class="fa-regular fa-heart"></i> <span class="like-count">0</span></button>'
         + '<span class="foro-com-hora">' + fechaHoy + '</span>'
-        + '</div></div></div>'
-    );
+        + '</div></div></div>';
+
+    if (esReply) {
+        /* Insertar justo después del comentario padre para posición correcta */
+        var parentEl = bloqueComs.querySelector('[data-id="' + replyingToId[idPublicacion] + '"]');
+        if (parentEl) {
+            parentEl.insertAdjacentHTML('afterend', tempHtml);
+        } else {
+            bloqueComs.insertAdjacentHTML('beforeend', tempHtml);
+        }
+    } else {
+        bloqueComs.insertAdjacentHTML('beforeend', tempHtml);
+    }
 
     var nuevoEl = bloqueComs.lastElementChild;
     nuevoEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1052,28 +1077,34 @@ function actualizarPopulares(posts) {
 
 /*--------------------------------------------------------------------------------------------
 emoji picker */
+var EMOJIS = ['😊','😄','😂','🥹','😍','🥰','🤗','😎','😅','🙄','😢','😡','🤔','🥳','🎉','👏','🙌','🔥','💪','👍','👋','🤝','❤️','🧡','💛','💚','💙','💜','🖤','🤍','🐱','🐶','🐰','🐹','🐻','🐼','🦊','🐸','🐷','🦁','🐾','🦴','🍖','🏠','🏥','📷','🎥','✨','🌟','💊','🚑','📋','📝','✅','❌','⚠️','📢','🔔','💬','🗨️','🌈','🌻','🌸','🍀','⭐','🎵','🎶','🏆','🎗️','🙏','💡','🔑','📌','💯'];
+
 function toggleEmojiPicker() {
     var picker = document.getElementById('emojiPicker');
     if (!picker) return;
     if (picker.style.display === 'flex') { picker.style.display = 'none'; return; }
-    var emojis = ['😊','❤️','🐱','🐶','🎉','👏','🙌','🔥','💪','👍','🏠','🏥','📷','🎥','✨','🌟','🥰','😍','🤗','💙','🧡','🐾','🦴','🍖','💊','🚑','📋','📝','✅','❌','⚠️','📢','🔔','🎗️','🏷️','💬','🗨️','💭'];
-    picker.innerHTML = emojis.map(function(e) {
+    picker.innerHTML = EMOJIS.map(function(e) {
         return '<span style="cursor:pointer;font-size:1.2rem;padding:3px 4px;border-radius:4px;" onclick="insertarEmoji(\'' + e.replace(/'/g,'\\\'') + '\',\'textareaPublicarReal\')">' + e + '</span>';
     }).join('');
     picker.style.display = 'flex';
 }
 
 function toggleEmojiPickerCom(idPub) {
-    var picker = document.getElementById('emojiPickerCom-' + idPub);
+    /* Buscar el inputWrap del post */
+    var inputWrap = document.querySelector('#coms-' + idPub + ' .input-com-wrap');
+    if (!inputWrap) return;
+
+    var pickerId = 'emojiPickerCom-' + idPub;
+    var picker   = document.getElementById(pickerId);
+
     if (!picker) {
         picker = document.createElement('div');
-        picker.id = 'emojiPickerCom-' + idPub;
-        picker.style.cssText = 'display:flex;position:absolute;z-index:999;background:#fff;border:1px solid #e9ecef;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.12);padding:0.6em;width:280px;max-height:200px;overflow-y:auto;flex-wrap:wrap;gap:2px;';
-        var emojis = ['😊','❤️','🐱','🐶','🎉','👏','🙌','🔥','💪','👍','🏠','🏥','📷','🎥','✨','🌟','🥰','😍','🤗','💙','🧡','🐾','🦴','🍖','💊','🚑','📋','📝','✅','❌','⚠️','📢','🔔','🎗️','🏷️','💬','🗨️','💭'];
-        picker.innerHTML = emojis.map(function(e) {
+        picker.id = pickerId;
+        picker.style.cssText = 'display:flex;position:absolute;bottom:calc(100% + 4px);right:0;z-index:999;background:#fff;border:1px solid #e9ecef;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.12);padding:0.6em;width:280px;max-height:200px;overflow-y:auto;flex-wrap:wrap;gap:2px;';
+        picker.innerHTML = EMOJIS.map(function(e) {
             return '<span style="cursor:pointer;font-size:1.2rem;padding:3px 4px;border-radius:4px;" onclick="insertarEmoji(\'' + e.replace(/'/g,'\\\'') + '\',\'com-input-' + idPub + '\')">' + e + '</span>';
         }).join('');
-        document.getElementById('coms-' + idPub).appendChild(picker);
+        inputWrap.appendChild(picker);
     }
     picker.style.display = picker.style.display === 'flex' ? 'none' : 'flex';
 }
