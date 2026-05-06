@@ -138,7 +138,8 @@ function verificarAdmin(cb) {
             document.getElementById('adminNombre').textContent = data.usuario.nombre;
             document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
             if (cb) cb();
-        });
+        })
+        .catch(function(){ window.location.href = '../html/login.html'; });
 }
 
 function setVista(v) {
@@ -265,7 +266,8 @@ function accionPub(id, accion) {
     .then(function(data){
         mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
         if (data.ok) cargarPublicaciones();
-    });
+    })
+    .catch(function(){ mostrarToast('Error de conexión.', 'error'); });
 }
 
 function accionCom(id, accion) {
@@ -279,7 +281,8 @@ function accionCom(id, accion) {
     .then(function(data){
         mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
         if (data.ok) cargarComentarios();
-    });
+    })
+    .catch(function(){ mostrarToast('Error de conexión.', 'error'); });
 }
 
 function eliminarPub(e, id) {
@@ -295,7 +298,8 @@ function eliminarPub(e, id) {
     .then(function(data){
         mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
         if (data.ok && fila) fila.remove();
-    });
+    })
+    .catch(function(){ mostrarToast('Error de conexión.', 'error'); });
 }
 
 function eliminarCom(e, id) {
@@ -311,7 +315,8 @@ function eliminarCom(e, id) {
     .then(function(data){
         mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
         if (data.ok && fila) fila.remove();
-    });
+    })
+    .catch(function(){ mostrarToast('Error de conexión.', 'error'); });
 }
 
 /*--------------------------------------------------------------------------------------------

@@ -234,73 +234,220 @@ function renderUserArea(usuario) {
 }
 
 
-/* Carga notificaciones y muestra badge en el avatar */
+/* Iconos y colores por tipo de notificación */
+var NOTIF_ICONOS = {
+    like:                          { icon: 'fa-heart',            color: '#e74c3c' },
+    like_comentario:               { icon: 'fa-heart',            color: '#e74c3c' },
+    comentario:                    { icon: 'fa-comment',           color: '#1B358F' },
+    respuesta:                     { icon: 'fa-reply',             color: '#8e24aa' },
+    solicitud_adopcion:            { icon: 'fa-paw',               color: '#2e7d32' },
+    solicitud_acogida:             { icon: 'fa-house',             color: '#2e7d32' },
+    solicitud_apadrinamiento:      { icon: 'fa-star',              color: '#F8BA56' },
+    aprobacion:                    { icon: 'fa-circle-check',      color: '#28a745' },
+    rechazo:                       { icon: 'fa-circle-xmark',      color: '#dc3545' },
+    actualizacion_protectora:      { icon: 'fa-bullhorn',          color: '#0277bd' },
+    mensaje:                       { icon: 'fa-envelope',          color: '#6f42c1' },
+    solicitud_protectora:          { icon: 'fa-building-shield',   color: '#1B358F' },
+    protectora_aprobada:           { icon: 'fa-circle-check',      color: '#28a745' },
+    protectora_rechazada:          { icon: 'fa-circle-xmark',      color: '#dc3545' },
+    protectora_info_adicional:     { icon: 'fa-circle-info',       color: '#0dcaf0' },
+    solicitud_protectora_respuesta:{ icon: 'fa-reply',             color: '#6f42c1' },
+};
+
+function _notifIcono(tipo) {
+    var n = NOTIF_ICONOS[tipo];
+    return n || { icon: 'fa-bell', color: '#1B358F' };
+}
+
+function _notifRuta(n) {
+    if (n.ruta_destino) return n.ruta_destino;
+    if (n.idPublicacion) return 'foro.html?post=' + n.idPublicacion;
+    if (n.tipo === 'solicitud_adopcion' || n.tipo === 'solicitud_acogida') return 'perfil.html?tab=apadrinamientos';
+    if (n.tipo === 'solicitud_apadrinamiento' || n.tipo === 'actualizacion_protectora') return 'perfil.html?tab=apadrinamientos';
+    if (n.tipo && n.tipo.startsWith('protectora')) return 'perfil.html?tab=solicitud-protectora';
+    return 'perfil.html?tab=notificaciones';
+}
+
+function _marcarLeidaYRedirigir(idNotif, ruta) {
+    fetch('../backend/foro/notificaciones.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ leer: true, id: idNotif }),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        _actualizarBadgesNum(data.noLeidas || 0);
+        window.location.href = ruta;
+    })
+    .catch(function() { window.location.href = ruta; });
+}
+
+var _notifDropdownEl = null;
+
+function _mostrarDropdownNotif(notificaciones, noLeidas) {
+    /* Cerrar si ya está abierto */
+    if (_notifDropdownEl) { _notifDropdownEl.remove(); _notifDropdownEl = null; return; }
+
+    var btnBell = document.getElementById('btnNotifBell');
+    if (!btnBell) return;
+
+    var dp = document.createElement('div');
+    dp.id  = 'notifDropdown';
+    dp.style.cssText = 'position:absolute;top:calc(100% + 8px);right:-8px;width:320px;background:#fff;'
+        + 'border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.15);z-index:10000;overflow:hidden;'
+        + 'border:1px solid #e9ecef;font-family:Poppins,sans-serif;';
+
+    var ultimas = notificaciones.slice(0, 5);
+
+    var itemsHtml = ultimas.length ? ultimas.map(function(n) {
+        var ni    = _notifIcono(n.tipo);
+        var ruta  = _notifRuta(n);
+        var leida = n.leida == 1;
+        return '<div class="notif-dp-item" onclick="_marcarLeidaYRedirigir(' + n.idNotificacion + ',\'' + ruta + '\')" '
+            + 'style="display:flex;gap:0.75em;align-items:center;padding:0.75em 1em;cursor:pointer;border-bottom:1px solid #f0f0f0;'
+            + (leida ? 'opacity:0.6;' : 'background:#f8faff;')
+            + 'transition:background 0.15s;" '
+            + 'onmouseenter="this.style.background=\'#eef2ff\'" onmouseleave="this.style.background=\'' + (leida ? '#fff' : '#f8faff') + '\'">'
+            + '<div style="width:34px;height:34px;border-radius:50%;background:#EEF2FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+            + '<i class="fa-solid ' + ni.icon + '" style="color:' + ni.color + ';font-size:0.85rem;"></i>'
+            + '</div>'
+            + '<div style="flex:1;min-width:0;">'
+            + '<p style="margin:0;font-size:0.82rem;font-weight:' + (leida ? '400' : '600') + ';color:#222;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (n.mensaje || '') + '</p>'
+            + '<p style="margin:0;font-size:0.72rem;color:#aaa;margin-top:0.15em;">' + _formatRelativo(n.fecha) + '</p>'
+            + '</div>'
+            + (leida ? '' : '<span style="width:8px;height:8px;border-radius:50%;background:#1B358F;flex-shrink:0;"></span>')
+            + '</div>';
+    }).join('')
+    : '<p style="text-align:center;color:#aaa;padding:1.5em;font-size:0.85rem;margin:0;">Sin notificaciones recientes</p>';
+
+    dp.innerHTML = '<div style="padding:0.75em 1em;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center;">'
+        + '<strong style="font-size:0.9rem;color:#1B358F;">Notificaciones' + (noLeidas > 0 ? ' <span style=\'background:#e74c3c;color:#fff;border-radius:50px;font-size:0.65rem;padding:1px 6px;\'>' + noLeidas + '</span>' : '') + '</strong>'
+        + (noLeidas > 0 ? '<button onclick="_marcarTodasLeidasDropdown()" style="border:none;background:none;font-size:0.75rem;color:#1B358F;cursor:pointer;font-family:Poppins,sans-serif;">Marcar leídas</button>' : '')
+        + '</div>'
+        + itemsHtml
+        + '<div style="padding:0.6em 1em;text-align:center;">'
+        + '<a href="perfil.html?tab=notificaciones" style="font-size:0.82rem;color:#1B358F;text-decoration:none;font-weight:600;">Ver todas las notificaciones →</a>'
+        + '</div>';
+
+    /* Posicionar relativo al botón campana */
+    btnBell.style.position = 'relative';
+    btnBell.appendChild(dp);
+    _notifDropdownEl = dp;
+
+    /* Cerrar al hacer clic fuera */
+    setTimeout(function() {
+        document.addEventListener('click', _cerrarDropdownNotif);
+    }, 50);
+}
+
+function _cerrarDropdownNotif(e) {
+    if (_notifDropdownEl && !_notifDropdownEl.contains(e.target)) {
+        _notifDropdownEl.remove();
+        _notifDropdownEl = null;
+        document.removeEventListener('click', _cerrarDropdownNotif);
+    }
+}
+
+function _marcarTodasLeidasDropdown() {
+    fetch('../backend/foro/notificaciones.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ leerTodos: true }),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function() {
+        _actualizarBadgesNum(0);
+        if (_notifDropdownEl) { _notifDropdownEl.remove(); _notifDropdownEl = null; }
+        document.removeEventListener('click', _cerrarDropdownNotif);
+    });
+}
+
+function _actualizarBadgesNum(noLeidas) {
+    var texto = noLeidas > 9 ? '9+' : String(noLeidas);
+
+    /* Avatar badges */
+    ['user-notif-badge', 'user-notif-badge-b'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        if (noLeidas > 0) { el.textContent = texto; el.removeAttribute('hidden'); }
+        else { el.textContent = ''; el.setAttribute('hidden', ''); }
+    });
+
+    /* Bell badge — crear si no existe */
+    var bellBadge = document.getElementById('badgeNotif');
+    if (!bellBadge) {
+        var btnBell = document.getElementById('btnNotifBell');
+        if (btnBell) {
+            bellBadge = document.createElement('span');
+            bellBadge.id        = 'badgeNotif';
+            bellBadge.className = 'notif-badge';
+            bellBadge.style.display = 'none';
+            btnBell.appendChild(bellBadge);
+        }
+    }
+    if (bellBadge) {
+        if (noLeidas > 0) { bellBadge.textContent = texto; bellBadge.style.display = 'block'; }
+        else { bellBadge.style.display = 'none'; }
+    }
+
+    /* Badge en ítem del dropdown de usuario */
+    var menuBadge = document.getElementById('notif-menu-badge');
+    if (menuBadge) {
+        if (noLeidas > 0) { menuBadge.textContent = texto; menuBadge.style.display = 'inline'; }
+        else { menuBadge.style.display = 'none'; }
+    }
+}
+
+function _formatRelativo(fechaStr) {
+    if (!fechaStr) return '';
+    var diff = Math.floor((Date.now() - new Date(fechaStr).getTime()) / 1000);
+    if (diff < 60)   return 'ahora';
+    if (diff < 3600) return Math.floor(diff / 60) + ' min';
+    if (diff < 86400) return Math.floor(diff / 3600) + ' h';
+    if (diff < 604800) return Math.floor(diff / 86400) + ' d';
+    return new Date(fechaStr).toLocaleDateString('es-ES', { day:'2-digit', month:'short' });
+}
+
+var _notifCache = [];
+
 function cargarNotificaciones() {
     fetch('../backend/foro/notificaciones.php', { credentials: 'include' })
         .then(function(r) { return r.json(); })
         .then(function(data) {
+            if (!data.success) return;
+            var noLeidas = data.noLeidas || 0;
+            _notifCache = data.notificaciones || [];
+
             /* No mostrar badge si es admin */
             var sesion = sessionStorage.getItem('pf_session');
             if (sesion) {
                 try { if (JSON.parse(sesion).rol === 'admin') return; } catch(e) {}
             }
 
-            var total = (data.success && data.total && data.total > 0) ? data.total : 0;
-            var texto = total > 9 ? '9+' : String(total);
+            _actualizarBadgesNum(noLeidas);
 
-            /* 1. Badge en avatar (desktop y burger) */
-            ['user-notif-badge', 'user-notif-badge-b'].forEach(function(id) {
-                var el = document.getElementById(id);
-                if (!el) return;
-                if (total > 0) {
-                    el.textContent = texto;
-                    el.removeAttribute('hidden');
-                } else {
-                    el.textContent = '';
-                    el.setAttribute('hidden', '');
-                }
-            });
-
-            /* 2. Badge en campana del header (#badgeNotif)
-               Si no existe en el HTML lo inyectamos junto al btnNotifBell */
-            var bellBadge = document.getElementById('badgeNotif');
-            if (!bellBadge) {
-                var btnBell = document.getElementById('btnNotifBell');
-                if (btnBell) {
-                    bellBadge = document.createElement('span');
-                    bellBadge.id = 'badgeNotif';
-                    bellBadge.className = 'notif-badge';
-                    bellBadge.style.display = 'none';
-                    btnBell.appendChild(bellBadge);
-                }
-            }
-            if (bellBadge) {
-                if (total > 0) {
-                    bellBadge.textContent = texto;
-                    bellBadge.style.display = 'block';
-                } else {
-                    bellBadge.style.display = 'none';
-                }
-            }
-
-            /* 3. Badge en ítem "Notificaciones" del dropdown */
-            var menuBadge = document.getElementById('notif-menu-badge');
-            if (menuBadge) {
-                if (total > 0) {
-                    menuBadge.textContent = texto;
-                    menuBadge.style.display = 'inline';
-                } else {
-                    menuBadge.style.display = 'none';
-                }
+            /* Activar dropdown en campana si no está conectado aún */
+            var btnBell = document.getElementById('btnNotifBell');
+            if (btnBell && !btnBell.dataset.notifInit) {
+                btnBell.dataset.notifInit = '1';
+                btnBell.style.cursor = 'pointer';
+                btnBell.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    _mostrarDropdownNotif(_notifCache, _actualizarBadgesNum._noLeidas || noLeidas);
+                    _actualizarBadgesNum._noLeidas = noLeidas;
+                });
             }
         })
         .catch(function() {});
 }
 
-/* Polling cada 60 segundos para mantener el badge actualizado */
+/* Polling cada 10 segundos */
 function iniciarPollingNotificaciones() {
     cargarNotificaciones();
-    setInterval(cargarNotificaciones, 60000);
+    setInterval(cargarNotificaciones, 10000);
 }
 
 /* Sincroniza favoritos desde la BD al localStorage para que los corazones

@@ -133,22 +133,12 @@
         </div>
 
         <!-- tab: actualizaciones -->
-        <!-- tab: actualizaciones -->
         <div id="tab-actualizaciones" class="tab-contenido d-none">
-            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1em;margin-bottom:1.5em;">
-                <h3 style="margin:0;font-weight:700;font-size:1.1rem;color:#1B358F;">
-                    <i class="fa-solid fa-bullhorn me-2"></i>Actualizaciones
-                </h3>
-                <div class="d-flex gap-2 flex-wrap">
-                    <select id="filtroAnimal" class="form-select" style="width:auto;font-size:0.88rem;">
-                        <option value="0">Todos los animales</option>
-                    </select>
-                    <select id="filtroLeido" class="form-select" style="width:auto;font-size:0.88rem;">
-                        <option value="todas">Todas</option>
-                        <option value="no_leidas">No leídas</option>
-                        <option value="leidas">Leídas</option>
-                    </select>
-                </div>
+            <h3 style="font-size:1.1rem;font-weight:700;color:#1B358F;margin-bottom:1em;">
+                <i class="fa-solid fa-bullhorn me-2"></i>Actualizaciones
+            </h3>
+            <div class="alert alert-secondary d-none" id="sinActualizaciones">
+                No tienes actualizaciones.
             </div>
             <div id="listaActualizaciones"></div>
             <div class="text-center py-3" id="paginacionActualizaciones"></div>
@@ -166,9 +156,16 @@
 
         <!-- tab: notificaciones -->
         <div id="tab-notificaciones" class="tab-contenido d-none">
-            <h3 style="font-size:1.1rem;font-weight:700;color:#1B358F;margin-bottom:1em;">
-                <i class="fa-solid fa-bell me-2"></i>Notificaciones
-            </h3>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.6em;margin-bottom:1em;">
+                <h3 style="font-size:1.1rem;font-weight:700;color:#1B358F;margin:0;">
+                    <i class="fa-solid fa-bell me-2"></i>Notificaciones
+                </h3>
+                <div style="display:flex;gap:0.5em;align-items:center;">
+                    <button class="btn btn-sm btn-outline" id="filtroNotifTodas" onclick="filtrarNotificaciones('todas')" style="font-size:0.8rem;">Todas</button>
+                    <button class="btn btn-sm btn-outline" id="filtroNotifNoLeidas" onclick="filtrarNotificaciones('no_leidas')" style="font-size:0.8rem;">No leídas</button>
+                    <button class="btn btn-sm btn-outline" onclick="marcarTodasLeidas()" style="font-size:0.8rem;"><i class="fa-solid fa-check-double me-1"></i>Marcar todas</button>
+                </div>
+            </div>
             <div id="listaNotificaciones">
                 <div class="text-center py-4"><div class="spinner-border" style="color:#1B358F;"></div></div>
             </div>
@@ -344,6 +341,24 @@
         </a>
     </div>
 
+    <div id="tab-actualizaciones" class="d-none">
+        <div style="display:flex;justify-content-between;align-items:center;flex-wrap:wrap;gap:1em;margin-bottom:1.5em;">
+            <h3 style="margin:0;font-weight:700;"><i class="fa-solid fa-bullhorn me-2"></i>Actualizaciones</h3>
+            <div class="d-flex gap-2 flex-wrap">
+                <select id="filtroAnimal" class="form-select" style="width:auto;">
+                    <option value="0">Todos los animales</option>
+                </select>
+                <select id="filtroLeido" class="form-select" style="width:auto;">
+                    <option value="todas">Todas</option>
+                    <option value="no_leidas">No leídas</option>
+                    <option value="leidas">Leídas</option>
+                </select>
+            </div>
+        </div>
+        <div id="contActualizaciones"></div>
+        <div class="text-center py-3" id="paginacionActualizaciones"></div>
+    </div>
+
     <div class="text-center mt-5">
         <a href="#"><img src="../img/sectionIndex/up-arrow.png" alt="Volver arriba" id="arrow" width="40px"></a>
     </div>
@@ -388,18 +403,19 @@ document.addEventListener('DOMContentLoaded', function() {
             var params   = new URLSearchParams(window.location.search);
             var tabParam = params.get('tab');
             if (tabParam) {
+                var tabEl  = document.getElementById('tab-' + tabParam);
                 var btnTab = document.querySelector('.tab-btn[data-tab="' + tabParam + '"]');
-                if (btnTab) {
+                if (tabEl) {
                     document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('activo'); });
-                    btnTab.classList.add('activo');
+                    if (btnTab) btnTab.classList.add('activo');
                     document.querySelectorAll('.tab-contenido').forEach(function(t) { t.classList.add('d-none'); });
-                    document.getElementById('tab-' + tabParam).classList.remove('d-none');
-                    if (tabParam === 'favoritos')       cargarFavoritos();
-                    if (tabParam === 'apadrinamientos') cargarApadrinamientos();
-                    if (tabParam === 'actualizaciones') cargarActualizaciones(1);
-                    if (tabParam === 'tests')           cargarTests();
-                    if (tabParam === 'notificaciones')  cargarNotificaciones();
-                    if (tabParam === 'perfil')          cargarDatos();
+                    tabEl.classList.remove('d-none');
+                    if (tabParam === 'favoritos')            cargarFavoritos();
+                    if (tabParam === 'apadrinamientos')      cargarApadrinamientos();
+                    if (tabParam === 'actualizaciones')      cargarActualizaciones(1);
+                    if (tabParam === 'tests')                cargarTests();
+                    if (tabParam === 'notificaciones')       cargarNotificaciones();
+                    if (tabParam === 'perfil')               cargarDatos();
                     if (tabParam === 'solicitud-protectora') cargarSolicitudProtectora();
                     return;
                 }
@@ -453,17 +469,18 @@ function mostrarDatosUsuario(u) {
 function cambiarTab(btn) {
     document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('activo'); });
     btn.classList.add('activo');
-    var tab = btn.dataset.tab;
+    var tab    = btn.dataset.tab;
+    var tabEl  = document.getElementById('tab-' + tab);
     document.querySelectorAll('.tab-contenido').forEach(function(t) { t.classList.add('d-none'); });
-    document.getElementById('tab-' + tab).classList.remove('d-none');
-    if (tab === 'favoritos')       cargarFavoritos();
-    if (tab === 'apadrinamientos')  cargarApadrinamientos();
-    if (tab === 'actualizaciones')  cargarActualizaciones(1);
-    if (tab === 'tests')              cargarTests();
-    if (tab === 'notificaciones')   cargarNotificaciones();
-    if (tab === 'perfil')           cargarDatos();
-    if (tab === 'panel-protectora') cargarPanelProtectora();
-    if (tab === 'solicitud-protectora') cargarSolicitudProtectora();
+    if (tabEl) tabEl.classList.remove('d-none');
+    if (tab === 'favoritos')             cargarFavoritos();
+    if (tab === 'apadrinamientos')       cargarApadrinamientos();
+    if (tab === 'actualizaciones')       cargarActualizaciones(1);
+    if (tab === 'tests')                 cargarTests();
+    if (tab === 'notificaciones')        cargarNotificaciones();
+    if (tab === 'perfil')                cargarDatos();
+    if (tab === 'panel-protectora')      cargarPanelProtectora();
+    if (tab === 'solicitud-protectora')  cargarSolicitudProtectora();
 }
 
 /*--------------------------------------------------------------------------------------------
@@ -607,125 +624,179 @@ function eliminarResultadoTest(tipo) {
 
 /*--------------------------------------------------------------------------------------------
 notificaciones */
+var _notifFiltroActual = 'todas';
+var _notifDatos = [];
+
+var NOTIF_CONF = {
+    like:                           { icon: 'fa-heart',           color: '#e74c3c', label: 'Like en publicación' },
+    like_comentario:                { icon: 'fa-heart',           color: '#e74c3c', label: 'Like en comentario' },
+    comentario:                     { icon: 'fa-comment',          color: '#1B358F', label: 'Nuevo comentario' },
+    respuesta:                      { icon: 'fa-reply',            color: '#8e24aa', label: 'Respuesta a comentario' },
+    solicitud_adopcion:             { icon: 'fa-paw',              color: '#2e7d32', label: 'Solicitud de adopción' },
+    solicitud_acogida:              { icon: 'fa-house',            color: '#2e7d32', label: 'Solicitud de acogida' },
+    solicitud_apadrinamiento:       { icon: 'fa-star',             color: '#F8BA56', label: 'Solicitud de apadrinamiento' },
+    aprobacion:                     { icon: 'fa-circle-check',     color: '#28a745', label: 'Solicitud aprobada' },
+    rechazo:                        { icon: 'fa-circle-xmark',     color: '#dc3545', label: 'Solicitud rechazada' },
+    actualizacion_protectora:       { icon: 'fa-bullhorn',         color: '#0277bd', label: 'Actualización de protectora' },
+    mensaje:                        { icon: 'fa-envelope',         color: '#6f42c1', label: 'Mensaje nuevo' },
+    solicitud_protectora:           { icon: 'fa-building-shield',  color: '#1B358F', label: 'Solicitud protectora' },
+    protectora_aprobada:            { icon: 'fa-circle-check',     color: '#28a745', label: 'Protectora aprobada' },
+    protectora_rechazada:           { icon: 'fa-circle-xmark',     color: '#dc3545', label: 'Protectora rechazada' },
+    protectora_info_adicional:      { icon: 'fa-circle-info',      color: '#0dcaf0', label: 'Info adicional requerida' },
+    solicitud_protectora_respuesta: { icon: 'fa-reply',            color: '#6f42c1', label: 'Respuesta de protectora' },
+};
+
+function _notifConf(tipo) {
+    return NOTIF_CONF[tipo] || { icon: 'fa-bell', color: '#1B358F', label: 'Notificación' };
+}
+
+function _notifRutaPerfil(n) {
+    if (n.ruta_destino) return n.ruta_destino;
+    if (n.idPublicacion) return 'foro.html?post=' + n.idPublicacion;
+    if (n.tipo === 'solicitud_adopcion')  return 'perfil.html?tab=apadrinamientos';
+    if (n.tipo === 'solicitud_acogida')   return 'perfil.html?tab=apadrinamientos';
+    if (n.tipo && n.tipo.startsWith('solicitud_apadrinamiento')) return 'perfil.html?tab=apadrinamientos';
+    if (n.tipo && n.tipo.startsWith('actualizacion')) return 'perfil.html?tab=actualizaciones';
+    if (n.tipo && n.tipo.startsWith('protectora'))    return 'perfil.html?tab=solicitud-protectora';
+    return 'perfil.html?tab=notificaciones';
+}
+
+function filtrarNotificaciones(filtro) {
+    _notifFiltroActual = filtro;
+    /* Resaltar botón activo */
+    document.getElementById('filtroNotifTodas').classList.toggle('btn-primario', filtro === 'todas');
+    document.getElementById('filtroNotifNoLeidas').classList.toggle('btn-primario', filtro === 'no_leidas');
+    document.getElementById('filtroNotifTodas').classList.toggle('btn-outline', filtro !== 'todas');
+    document.getElementById('filtroNotifNoLeidas').classList.toggle('btn-outline', filtro !== 'no_leidas');
+    _renderNotificaciones(_notifDatos);
+}
+
 function cargarNotificaciones() {
     var cont = document.getElementById('listaNotificaciones');
-    if (cont.dataset.cargando) return;
-    cont.dataset.cargando = '1';
-    cont.innerHTML = '<div class="text-center py-4"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:#1B358F;"></i></div>';
+    if (!cont) return;
+    cont.innerHTML = '<div class="text-center py-4"><div class="spinner-border" style="color:#1B358F;"></div></div>';
 
     fetch('../backend/foro/notificaciones.php', { credentials: 'include' })
         .then(function(r) { return r.json(); })
         .then(function(data) {
-            cont.dataset.cargando = '';
             if (!data.ok) {
-                cont.innerHTML = '<p class="text-muted text-center py-4">Error: ' + (data.error || 'Unknown') + '</p>';
+                cont.innerHTML = '<p class="text-muted text-center py-4">Error al cargar notificaciones.</p>';
                 return;
             }
-            if (!data.notificaciones || !data.notificaciones.length) {
-                cont.innerHTML = '<div class="text-center py-4 text-muted"><i class="fa-regular fa-bell-slash fa-2x mb-2"></i><p>Sin notificaciones.</p><small>Te avisaremos cuando alguien interactúe contigo.</small></div>';
-                return;
-            }
-
-            var html = '';
-            var iconos = { like:'fa-heart', like_comentario:'fa-heart', comentario:'fa-comment', solicitud_protectora:'fa-building-shield', protectora_aprobada:'fa-circle-check', protectora_rechazada:'fa-circle-xmark', protectora_info_adicional:'fa-circle-info', solicitud_protectora_respuesta:'fa-reply' };
-            var colores = { like:'#e74c3c', like_comentario:'#e74c3c', comentario:'#1B358F', solicitud_protectora:'#1B358F', protectora_aprobada:'#28a745', protectora_rechazada:'#dc3545', protectora_info_adicional:'#0dcaf0', solicitud_protectora_respuesta:'#6f42c1' };
-            var tieneNoLeidas = false;
-
-            data.notificaciones.forEach(function(n) {
-                if (n.leida) return;
-                tieneNoLeidas = true;
-                
-                var icono = iconos[n.tipo] || 'fa-bell';
-                var color = colores[n.tipo] || '#1B358F';
-
-                var mensaje = n.mensaje || '';
-                var link = 'href="perfil.html?tab=notificaciones"';
-                if (n.ruta_destino) {
-                    link = 'href="' + n.ruta_destino + '"';
-                } else if (n.idPublicacion) {
-                    link = 'href="foro.html?post=' + n.idPublicacion + '"';
-                }
-
-                html += '<a class="notif-item" ' + link + ' data-id="' + n.idNotificacion + '" onclick="marcarLeida(' + n.idNotificacion + ', this)">'
-                    + '<div class="notif-icono"><i class="fa-solid ' + icono + '" style="color:' + color + ';"></i></div>'
-                    + '<div class="notif-texto">' + mensaje + '<p class="notif-fecha">' + formatFecha(n.fecha) + '</p></div>'
-                    + '</a>';
-            });
-
-            if (!tieneNoLeidas) {
-                html = '<div class="text-center py-4 text-muted"><i class="fa-regular fa-bell-slash fa-2x mb-2"></i><p>Sin notificaciones.</p><small>Te avisaremos cuando alguien interactúe contigo.</small></div>';
-            }
-
-            html += '<button class="btn btn-outline-secondary w-100 mt-2" onclick="marcarTodasLeidas()"><i class="fa-solid fa-check-double me-2"></i>Marcar todas como leídas</button>';
-            cont.innerHTML = html;
-
+            _notifDatos = data.notificaciones || [];
+            _renderNotificaciones(_notifDatos);
             actualizarBadgeNotif(data.noLeidas || 0);
+
+            /* Activar botón "Todas" por defecto */
+            filtrarNotificaciones(_notifFiltroActual || 'todas');
         })
-        .catch(function(err) {
-            cont.dataset.cargando = '';
-            cont.innerHTML = '<p class="text-muted text-center py-4">Error al cargar.</p>';
+        .catch(function() {
+            cont.innerHTML = '<p class="text-muted text-center py-4">Error de conexión.</p>';
         });
 }
 
+function _renderNotificaciones(todas) {
+    var cont = document.getElementById('listaNotificaciones');
+    if (!cont) return;
+
+    var lista = _notifFiltroActual === 'no_leidas'
+        ? todas.filter(function(n) { return !n.leida; })
+        : todas;
+
+    if (!lista.length) {
+        cont.innerHTML = '<div class="text-center py-5 text-muted">'
+            + '<i class="fa-regular fa-bell-slash fa-2x mb-2" style="display:block;"></i>'
+            + (_notifFiltroActual === 'no_leidas' ? '<p>Sin notificaciones sin leer.</p>' : '<p>Sin notificaciones.</p>')
+            + '<small>Te avisaremos cuando alguien interactúe contigo.</small>'
+            + '</div>';
+        return;
+    }
+
+    var html = lista.map(function(n) {
+        var conf  = _notifConf(n.tipo);
+        var ruta  = _notifRutaPerfil(n);
+        var leida = n.leida == 1;
+
+        return '<div class="notif-item' + (leida ? ' notif-leida' : '') + '" '
+            + 'style="display:flex;gap:0.8em;align-items:flex-start;padding:0.85em 1em;border-radius:10px;margin-bottom:0.4em;cursor:pointer;'
+            + (leida ? 'background:#f8f9fa;opacity:0.75;' : 'background:#fff;border-left:3px solid ' + conf.color + ';box-shadow:0 1px 4px rgba(0,0,0,0.06);')
+            + 'transition:background 0.15s;" '
+            + 'onclick="clicNotificacion(' + n.idNotificacion + ',\'' + ruta + '\',this)" '
+            + 'data-id="' + n.idNotificacion + '">'
+            + '<div style="width:36px;height:36px;border-radius:50%;background:#EEF2FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+            + '<i class="fa-solid ' + conf.icon + '" style="color:' + conf.color + ';font-size:0.9rem;"></i>'
+            + '</div>'
+            + '<div style="flex:1;min-width:0;">'
+            + '<p style="margin:0;font-size:0.85rem;font-weight:' + (leida ? '400' : '600') + ';color:#222;">' + (n.mensaje || '') + '</p>'
+            + '<p style="margin:0.2em 0 0;font-size:0.75rem;color:#aaa;">'
+            + '<i class="fa-regular fa-clock me-1"></i>' + formatFecha(n.fecha)
+            + '</p>'
+            + '</div>'
+            + (leida ? '' : '<span style="width:8px;height:8px;border-radius:50%;background:#1B358F;flex-shrink:0;margin-top:0.3em;"></span>')
+            + '</div>';
+    }).join('');
+
+    cont.innerHTML = html;
+}
+
+function clicNotificacion(id, ruta, el) {
+    fetch('../backend/foro/notificaciones.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ leer: true, id: id }),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        /* Actualizar visualmente el item como leído */
+        if (el) {
+            el.style.opacity = '0.75';
+            el.style.background = '#f8f9fa';
+            el.style.borderLeft = 'none';
+            var dot = el.querySelector('span[style*="border-radius:50%"]');
+            if (dot) dot.remove();
+            var texto = el.querySelector('p');
+            if (texto) texto.style.fontWeight = '400';
+        }
+        /* Actualizar badge */
+        actualizarBadgeNotif(data.noLeidas || 0);
+        /* Actualizar dato en caché */
+        _notifDatos.forEach(function(n) { if (n.idNotificacion == id) n.leida = 1; });
+        /* Redirigir si no es la misma página */
+        if (ruta && ruta !== 'perfil.html?tab=notificaciones') {
+            window.location.href = ruta;
+        }
+    })
+    .catch(function() { if (ruta) window.location.href = ruta; });
+}
+
 function actualizarBadgeNotif(cuantas) {
-    var badge = document.getElementById('badgeNotif');
+    var badge      = document.getElementById('badgeNotif');
     var badgePerfil = document.getElementById('badgePerfil');
     if (cuantas > 0) {
-        if (badge) {
-            badge.textContent = cuantas > 9 ? '9+' : cuantas;
-            badge.style.display = 'block';
-        }
+        if (badge) { badge.textContent = cuantas > 9 ? '9+' : cuantas; badge.style.display = 'block'; }
         if (badgePerfil) badgePerfil.style.display = 'block';
     } else {
         if (badge) badge.style.display = 'none';
         if (badgePerfil) badgePerfil.style.display = 'none';
     }
 
-    /* Actualizar badge en el título de la sección */
-    var tituloTab = document.querySelector('[data-tab="notificaciones"]');
-    if (tituloTab && cuantas > 0) {
-        var badgeTab = tituloTab.querySelector('.badge-notif-num');
-        if (!badgeTab) {
-            badgeTab = document.createElement('span');
-            badgeTab.className = 'badge-notif-num';
-            badgeTab.style.cssText = 'background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:5px;box-shadow:0 2px 4px rgba(231,76,60,0.4);vertical-align:middle;';
-            tituloTab.appendChild(badgeTab);
-        }
-        badgeTab.textContent = cuantas > 9 ? '9+' : String(cuantas);
-    } else if (tituloTab) {
-        var badgeTab = tituloTab.querySelector('.badge-notif-num');
-        if (badgeTab) badgeTab.remove();
-    }
-}
-
-function marcarLeida(id, el) {
-    var idPub = el.dataset.post;
-    fetch('../backend/foro/notificaciones.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ leer: true, id: id })
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        if (data.ok) {
-            /* Eliminar visualmente la notificación */
-            el.style.transition = 'opacity 0.3s';
-            el.style.opacity = '0';
-            setTimeout(function() { el.remove(); }, 300);
-
-            /* Actualizar badge */
-            cargarNotificaciones();
-
-            /* Si no quedan notificaciones, mostrar mensaje */
-            if (document.querySelectorAll('#listaNotificaciones .notif-item').length === 0) {
-                document.getElementById('listaNotificaciones').innerHTML =
-                    '<div class="text-center py-4 text-muted"><i class="fa-regular fa-bell-slash fa-2x mb-2"></i><p>Sin notificaciones.</p></div>';
+    /* Badge en el tab button de notificaciones */
+    var tabBtn = document.querySelector('[data-tab="notificaciones"]');
+    if (tabBtn) {
+        var badgeTab = tabBtn.querySelector('.badge-notif-num');
+        if (cuantas > 0) {
+            if (!badgeTab) {
+                badgeTab = document.createElement('span');
+                badgeTab.className = 'badge-notif-num';
+                badgeTab.style.cssText = 'background:#e74c3c;color:#fff;font-size:0.65rem;font-weight:700;padding:1px 6px;border-radius:50px;margin-left:5px;vertical-align:middle;';
+                tabBtn.appendChild(badgeTab);
             }
-
-            if (idPub) window.location.href = 'foro.html?post=' + idPub;
+            badgeTab.textContent = cuantas > 9 ? '9+' : String(cuantas);
+        } else if (badgeTab) {
+            badgeTab.remove();
         }
-    });
+    }
 }
 
 function marcarTodasLeidas() {
@@ -733,22 +804,14 @@ function marcarTodasLeidas() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ leerTodos: true })
+        body: JSON.stringify({ leerTodos: true }),
     })
     .then(function(r) { return r.json(); })
     .then(function(data) {
         if (data.ok) {
-            /* Eliminar todas las notificaciones del DOM */
-            document.querySelectorAll('#listaNotificaciones .notif-item').forEach(function(el) {
-                el.style.transition = 'opacity 0.3s';
-                el.style.opacity = '0';
-                setTimeout(function() { el.remove(); }, 300);
-            });
-            setTimeout(function() {
-                document.getElementById('listaNotificaciones').innerHTML =
-                    '<div class="text-center py-4 text-muted"><i class="fa-regular fa-bell-slash fa-2x mb-2"></i><p>Sin notificaciones.</p></div>';
-            }, 400);
-            cargarNotificaciones();
+            _notifDatos.forEach(function(n) { n.leida = 1; });
+            _renderNotificaciones(_notifDatos);
+            actualizarBadgeNotif(0);
         }
     });
 }
@@ -1157,43 +1220,44 @@ function formatFecha(f) {
 
 /* Cargar actualizaciones */
 function cargarActualizaciones(pagina) {
-    var filtroAnimal = document.getElementById('filtroAnimal') ? document.getElementById('filtroAnimal').value : '0';
-    var filtroLeido  = document.getElementById('filtroLeido')  ? document.getElementById('filtroLeido').value  : 'todas';
-    var cont    = document.getElementById('listaActualizaciones');
+    var filtroAnimal = document.getElementById('filtroAnimal').value;
+    var filtroLeido = document.getElementById('filtroLeido').value;
+    var cont = document.getElementById('contActualizaciones');
     var pagCont = document.getElementById('paginacionActualizaciones');
-
+    
     var params = new URLSearchParams({
         pagina: pagina || 1,
         porPagina: 10,
         filtro: filtroLeido
     });
     if (filtroAnimal !== '0') params.append('idMascota', filtroAnimal);
-
+    
     fetch('../backend/actualizaciones/listar.php?' + params.toString(), { credentials: 'include' })
-    .then(function(r) { return r.json(); })
+    .then(r => r.json())
     .then(function(data) {
         if (!data.ok) { cont.innerHTML = '<p class="text-danger">Error al cargar.</p>'; return; }
-
-        if (!data.actualizaciones || data.actualizaciones.length === 0) {
-            cont.innerHTML = vacio('fa-bullhorn', 'Sin actualizaciones', 'Cuando apadrines un animal recibirás aquí las novedades sobre él.', 'apadrina.html', 'Ver animales para apadrinar');
+        
+        if (data.actualizaciones.length === 0) {
+            cont.innerHTML = '<p class="text-muted text-center py-4">No tienes actualizaciones.</p>';
             pagCont.innerHTML = '';
             return;
         }
-
+        
         var html = '';
         data.actualizaciones.forEach(function(a) {
             var nuevo = a.leido == 0 ? '<span class="badge bg-danger ms-2" style="font-size:0.7rem;">NUEVO</span>' : '';
-            html += '<div class="d-flex gap-3 align-items-start p-3 border-bottom" style="cursor:pointer;" onclick="verDetalleActualizacion(' + a.idSeguimiento + ')">'
-                + '<img src="../img/mascotas/' + (a.foto || 'default.jpg') + '" onerror="this.src=\'../img/mascotas/default.jpg\'" style="width:60px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;">'
-                + '<div style="flex:1;min-width:0;">'
-                + '<strong>' + (a.animalNombre || '') + '</strong>' + nuevo
-                + '<p class="text-muted mb-1" style="font-size:0.85rem;">' + (a.mensaje || '').substring(0, 100) + '...</p>'
-                + '<small class="text-muted">' + formatFecha(a.fecha) + '</small>'
-                + '</div>'
-                + '</div>';
+            html += '<div class="d-flex gap-3 align-items-start p-3 border-bottom" style="cursor:pointer;" onclick="verDetalleActualizacion(' + a.idActualizacion + ')">' +
+                '<img src="../img/mascotas/' + (a.foto || 'default.jpg') + '" onerror="this.src=\'../img/mascotas/default.jpg\'" style="width:60px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;">' +
+                '<div class="flex:1;min-width:0;">' +
+                    '<strong>' + (a.animalNombre || '') + '</strong>' + nuevo +
+                    '<p class="text-muted mb-1" style="font-size:0.85rem;">' + (a.mensaje || '').substring(0, 100) + '...</p>' +
+                    '<small class="text-muted">' + formatFecha(a.fecha) + '</small>' +
+                '</div>' +
+            '</div>';
         });
         cont.innerHTML = html;
-
+        
+        /* Paginación */
         if (data.totalPaginas > 1) {
             var pagHtml = '';
             for (var i = 1; i <= data.totalPaginas; i++) {
@@ -1209,17 +1273,23 @@ function cargarActualizaciones(pagina) {
 
 /* Cargar opciones de filtro */
 function cargarFiltroAnimales() {
-    fetch('../backend/actualizaciones/listar.php?pagina=1&porPagina=1', { credentials: 'include' })
-    .then(function(r) { return r.json(); })
+    fetch('../backend/actualizaciones/listar.php?pagina=1&porPagina=100', { credentials: 'include' })
+    .then(r => r.json())
     .then(function(data) {
-        if (!data.ok || !data.mascotas) return;
+        if (!data.ok) return;
         var select = document.getElementById('filtroAnimal');
-        data.mascotas.forEach(function(m) {
-            var opt = document.createElement('option');
-            opt.value       = m.idMascota;
-            opt.textContent = m.nombre;
-            select.appendChild(opt);
+        var animales = {};
+        data.actualizaciones.forEach(function(a) {
+            if (!animales[a.idAnimal]) {
+                animales[a.idAnimal] = a.animalNombre;
+            }
         });
+        for (var id in animales) {
+            var opt = document.createElement('option');
+            opt.value = id;
+            opt.textContent = animales[id];
+            select.appendChild(opt);
+        }
     });
 }
 

@@ -194,6 +194,9 @@ function cargarSolicitudes() {
             if (!data.ok || !data.solicitudes) return;
             todasSolicitudes = data.solicitudes;
             renderTabla();
+        })
+        .catch(function(){
+            document.getElementById('tablaSolicitudes').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:3em;color:var(--error);">Error de conexión.</td></tr>';
         });
 }
 

@@ -225,7 +225,8 @@ function cargarDashboard() {
                         + '</tr>';
                 }).join('');
             }
-        });
+        })
+        .catch(function(){});
 }
 
 function toggleSidebar() {

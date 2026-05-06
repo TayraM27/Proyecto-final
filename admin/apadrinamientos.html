@@ -190,7 +190,8 @@ function verificarAdmin(cb) {
             document.getElementById('adminNombre').textContent = data.usuario.nombre;
             document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
             if (cb) cb();
-        });
+        })
+        .catch(function(){ window.location.href = '../html/login.html'; });
 }
 
 /*--------------------------------------------------------------------------------------------
@@ -227,6 +228,9 @@ function cargarApadrinamientos() {
                     + '</div></td>'
                     + '</tr>';
             }).join('');
+        })
+        .catch(function(){
+            document.getElementById('tablaApadrinamientos').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:3em;color:var(--error);">Error de conexión.</td></tr>';
         });
 }
 
@@ -243,7 +247,6 @@ function abrirModalNuevo() {
 }
 
 function cargarSelects() {
-    /* mascotas disponibles para apadrinamiento */
     fetch('../backend/admin/mascotas.php?especie=todos&estado=todos&pagina=1', { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
@@ -256,9 +259,9 @@ function cargarSelects() {
                 opt.textContent = (m.especie === 'perro' ? '🐕' : '🐱') + ' ' + m.nombre + ' — ' + m.protectora_nombre;
                 sel.appendChild(opt);
             });
-        });
+        })
+        .catch(function(){});
 
-    /* usuarios */
     fetch('../backend/admin/usuarios.php?pagina=1', { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
@@ -271,7 +274,8 @@ function cargarSelects() {
                 opt.textContent = u.nombre + ' (' + u.email + ')';
                 sel.appendChild(opt);
             });
-        });
+        })
+        .catch(function(){});
 }
 
 function guardarApadrinamiento() {
@@ -314,7 +318,8 @@ function guardarApadrinamiento() {
         cerrarModalBtn();
         mostrarToast(data.mensaje, 'ok');
         cargarApadrinamientos();
-    });
+    })
+    .catch(function(){ document.getElementById('modalError').textContent = 'Error de conexión.'; });
 }
 
 function cambiarEstado(id, estadoActual) {
@@ -331,7 +336,8 @@ function cambiarEstado(id, estadoActual) {
     .then(function(data){
         mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
         if (data.ok) cargarApadrinamientos();
-    });
+    })
+    .catch(function(){ mostrarToast('Error de conexión.', 'error'); });
 }
 
 function eliminarApadrinamiento(id) {
@@ -346,7 +352,8 @@ function eliminarApadrinamiento(id) {
     .then(function(data){
         mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
         if (data.ok) cargarApadrinamientos();
-    });
+    })
+    .catch(function(){ mostrarToast('Error de conexión.', 'error'); });
 }
 
 /*--------------------------------------------------------------------------------------------
@@ -392,7 +399,8 @@ function cargarSeguimientos(id) {
                     + media
                     + '</div>';
             }).join('');
-        });
+        })
+        .catch(function(){ lista.innerHTML = '<p class="form-nota" style="color:var(--error);">Error de conexión.</p>'; });
 }
 
 function guardarSeguimiento() {
@@ -423,7 +431,8 @@ function guardarSeguimiento() {
         document.getElementById('segError').textContent = '';
         mostrarToast(data.mensaje, 'ok');
         cargarSeguimientos(apadIdActual);
-    });
+    })
+    .catch(function(){ document.getElementById('segError').textContent = 'Error de conexión.'; });
 }
 
 function eliminarSeguimiento(id) {
@@ -438,7 +447,8 @@ function eliminarSeguimiento(id) {
     .then(function(data){
         mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
         if (data.ok) cargarSeguimientos(apadIdActual);
-    });
+    })
+    .catch(function(){ mostrarToast('Error de conexión.', 'error'); });
 }
 
 document.getElementById('fTipoArchivo').addEventListener('change', function() {

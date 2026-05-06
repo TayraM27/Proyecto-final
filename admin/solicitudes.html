@@ -110,7 +110,8 @@ function verificarAdmin(cb) {
             document.getElementById('adminNombre').textContent = data.usuario.nombre;
             document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
             if (cb) cb();
-        });
+        })
+        .catch(function(){ window.location.href = '../html/login.html'; });
 }
 
 function cargarSolicitudes() {
@@ -124,6 +125,9 @@ function cargarSolicitudes() {
             totalPaginas = data.totalPaginas || 1;
             renderTabla(data.solicitudes);
             renderPaginacion();
+        })
+        .catch(function(){
+            document.getElementById('tablaSolicitudes').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:3em;color:var(--error);">Error de conexión.</td></tr>';
         });
 }
 
@@ -183,7 +187,8 @@ function cambiarEstado(id, nuevoEstado) {
     .then(function(data){
         mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
         if (data.ok) cargarSolicitudes();
-    });
+    })
+    .catch(function(){ mostrarToast('Error de conexión.', 'error'); });
 }
 
 function renderPaginacion() {

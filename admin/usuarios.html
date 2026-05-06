@@ -123,7 +123,8 @@ function verificarAdmin(cb) {
             document.getElementById('adminNombre').textContent = data.usuario.nombre;
             document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
             if (cb) cb();
-        });
+        })
+        .catch(function(){ window.location.href = '../html/login.html'; });
 }
 
 function cargarUsuarios() {
@@ -142,6 +143,9 @@ function cargarUsuarios() {
             totalPaginas = data.totalPaginas || 1;
             renderTabla(data.usuarios);
             renderPaginacion();
+        })
+        .catch(function(){
+            document.getElementById('tablaUsuarios').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:3em;color:var(--error);">Error de conexión.</td></tr>';
         });
 }
 
@@ -207,7 +211,8 @@ function accion(id, acc) {
     .then(function(data){
         mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
         if (data.ok) cargarUsuarios();
-    });
+    })
+    .catch(function(){ mostrarToast('Error de conexión.', 'error'); });
 }
 
 
