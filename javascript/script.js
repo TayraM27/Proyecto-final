@@ -181,7 +181,7 @@ function renderUserArea(usuario) {
             '<a href="perfil.html" class="user-dropdown-item"><i class="fa-solid fa-user"></i> Mi perfil</a>' +
             '<a href="perfil.html?tab=favoritos" class="user-dropdown-item"><i class="fa-solid fa-heart"></i> Mis favoritos</a>' +
             '<a href="perfil.html?tab=apadrinamientos" class="user-dropdown-item"><i class="fa-solid fa-star"></i> Mis apadrinamientos</a>' +
-            '<a href="perfil.html?tab=notificaciones" class="user-dropdown-item"><i class="fa-solid fa-bell"></i> Notificaciones</a>' +
+            '<a href="perfil.html?tab=notificaciones" class="user-dropdown-item"><i class="fa-solid fa-bell"></i> Notificaciones <span id="notif-menu-badge" style="display:none;background:#e74c3c;color:#fff;border-radius:50px;font-size:0.7rem;font-weight:700;padding:0.1em 0.45em;margin-left:0.3em;"></span></a>' +
             opcionAdmin +
             '<hr class="user-dropdown-sep">' +
             '<a href="#" class="user-dropdown-item user-dropdown-logout" onclick="cerrarSesion(event)"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</a>' +
@@ -212,7 +212,7 @@ function renderUserArea(usuario) {
         });
     }
 
-    cargarNotificaciones();
+    iniciarPollingNotificaciones();
 
     /* En pantallas muy pequeñas (#user_burger oculto) añadir accesos
        rápidos al menú hamburguesa para que el usuario pueda navegar */
@@ -239,22 +239,68 @@ function cargarNotificaciones() {
     fetch('../backend/foro/notificaciones.php', { credentials: 'include' })
         .then(function(r) { return r.json(); })
         .then(function(data) {
-            if (!data.success || !data.total || data.total < 1) return;
             /* No mostrar badge si es admin */
             var sesion = sessionStorage.getItem('pf_session');
             if (sesion) {
                 try { if (JSON.parse(sesion).rol === 'admin') return; } catch(e) {}
             }
-            var texto = data.total > 9 ? '9+' : String(data.total);
+
+            var total = (data.success && data.total && data.total > 0) ? data.total : 0;
+            var texto = total > 9 ? '9+' : String(total);
+
+            /* 1. Badge en avatar (desktop y burger) */
             ['user-notif-badge', 'user-notif-badge-b'].forEach(function(id) {
                 var el = document.getElementById(id);
-                if (el) {
+                if (!el) return;
+                if (total > 0) {
                     el.textContent = texto;
                     el.removeAttribute('hidden');
+                } else {
+                    el.textContent = '';
+                    el.setAttribute('hidden', '');
                 }
             });
+
+            /* 2. Badge en campana del header (#badgeNotif)
+               Si no existe en el HTML lo inyectamos junto al btnNotifBell */
+            var bellBadge = document.getElementById('badgeNotif');
+            if (!bellBadge) {
+                var btnBell = document.getElementById('btnNotifBell');
+                if (btnBell) {
+                    bellBadge = document.createElement('span');
+                    bellBadge.id = 'badgeNotif';
+                    bellBadge.className = 'notif-badge';
+                    bellBadge.style.display = 'none';
+                    btnBell.appendChild(bellBadge);
+                }
+            }
+            if (bellBadge) {
+                if (total > 0) {
+                    bellBadge.textContent = texto;
+                    bellBadge.style.display = 'block';
+                } else {
+                    bellBadge.style.display = 'none';
+                }
+            }
+
+            /* 3. Badge en ítem "Notificaciones" del dropdown */
+            var menuBadge = document.getElementById('notif-menu-badge');
+            if (menuBadge) {
+                if (total > 0) {
+                    menuBadge.textContent = texto;
+                    menuBadge.style.display = 'inline';
+                } else {
+                    menuBadge.style.display = 'none';
+                }
+            }
         })
         .catch(function() {});
+}
+
+/* Polling cada 60 segundos para mantener el badge actualizado */
+function iniciarPollingNotificaciones() {
+    cargarNotificaciones();
+    setInterval(cargarNotificaciones, 60000);
 }
 
 /* Sincroniza favoritos desde la BD al localStorage para que los corazones

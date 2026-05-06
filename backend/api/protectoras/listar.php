@@ -1,92 +1,60 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-backend/actualizaciones/listar.php
-Devuelve los seguimientos de los apadrinamientos activos del usuario logueado */
+Listado de protectoras. Accesible sin login para la web pública.
+Si el usuario es protectora o admin, recibe datos adicionales. */
 
 require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
-if (!usuarioLogueado()) {
-    respuestaError('Debes iniciar sesión.', 401);
-}
-
-$usuario   = obtenerUsuarioSesion();
-$idUsuario = (int)$usuario['idUsuario'];
+iniciarSesionSegura();
 
 $pdo       = conectar();
-$pagina    = max(1, (int)($_GET['pagina']    ?? 1));
-$porPagina = min(50,  (int)($_GET['porPagina'] ?? 10));
-$idMascota = (int)($_GET['idMascota'] ?? 0);
-$offset    = ($pagina - 1) * $porPagina;
+$esAdmin   = esAdmin();
+$esProt    = esProtectora();
+$idProtUser = getIdProtectoraUsuario();
 
-/*--------------------------------------------------------------------------------------------
-construir condiciones */
-$whereMascota = '';
-$params       = [$idUsuario];
+$q      = limpiar($_GET['q']      ?? '');
+$nombre = limpiar($_GET['nombre'] ?? '');
+$todos  = !empty($_GET['todos'])  ? 1 : 0;
 
-if ($idMascota > 0) {
-    $whereMascota = 'AND ap.idMascota = ?';
-    $params[]     = $idMascota;
+$where  = $todos ? [] : ['p.activa = 1'];
+$params = [];
+
+if ($q) {
+    $where[]  = 'p.localidad LIKE ?';
+    $params[] = "%$q%";
+}
+if ($nombre) {
+    $where[]  = 'p.nombre LIKE ?';
+    $params[] = "%$nombre%";
 }
 
-/*--------------------------------------------------------------------------------------------
-query principal */
-$sql = "SELECT
-            s.idSeguimiento,
-            s.contenido    AS mensaje,
-            s.ruta_archivo AS archivo,
-            s.tipo_archivo,
-            s.fecha,
-            ap.idMascota,
-            m.nombre       AS animalNombre,
-            (SELECT mf.ruta
-             FROM mascotas_fotos mf
-             WHERE mf.idMascota = m.idMascota AND mf.es_principal = 1
-             LIMIT 1)      AS foto
-        FROM seguimientos s
-        INNER JOIN apadrinamientos ap ON s.idApadrinamiento = ap.idApadrinamiento
-        INNER JOIN mascotas        m  ON ap.idMascota       = m.idMascota
-        WHERE ap.idUsuario = ?
-          AND ap.estado    = 'activo'
-          $whereMascota
-        ORDER BY s.fecha DESC
-        LIMIT ? OFFSET ?";
+$cond = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+
+$sql = "SELECT p.idProtectora, p.nombre, p.descripcion, p.descripcion_dona,
+               p.direccion, p.localidad, p.telefono, p.email,
+               p.web, p.tipo_pagina, p.red_social_url, p.especie_atencion,
+               p.iban, p.bizum, p.teaming, p.badges,
+               p.foto_logo, p.latitud, p.longitud,
+               p.verificada, p.activa, p.fecha_registro,
+               COUNT(m.idMascota) AS num_animales
+        FROM protectoras p
+        LEFT JOIN mascotas m ON m.idProtectora = p.idProtectora AND m.activa = 1
+        $cond
+        GROUP BY p.idProtectora
+        ORDER BY p.nombre";
 
 $stmt = $pdo->prepare($sql);
-$stmt->execute(array_merge($params, [$porPagina, $offset]));
-$seguimientos = $stmt->fetchAll();
+$stmt->execute($params);
 
-/*--------------------------------------------------------------------------------------------
-total para paginación */
-$stmtCount = $pdo->prepare(
-    "SELECT COUNT(*) AS total
-     FROM seguimientos s
-     INNER JOIN apadrinamientos ap ON s.idApadrinamiento = ap.idApadrinamiento
-     WHERE ap.idUsuario = ?
-       AND ap.estado    = 'activo'
-       $whereMascota"
-);
-$stmtCount->execute($params);
-$total = (int)$stmtCount->fetch()['total'];
+$protectoras = $stmt->fetchAll();
 
-/*--------------------------------------------------------------------------------------------
-mascotas apadrinadas para el selector de filtro */
-$stmtMascotas = $pdo->prepare(
-    "SELECT DISTINCT m.idMascota, m.nombre
-     FROM apadrinamientos ap
-     INNER JOIN mascotas m ON ap.idMascota = m.idMascota
-     WHERE ap.idUsuario = ? AND ap.estado = 'activo'
-     ORDER BY m.nombre ASC"
-);
-$stmtMascotas->execute([$idUsuario]);
-$mascotas = $stmtMascotas->fetchAll();
+if ($esAdmin || $esProt) {
+    respuestaOk(['protectoras' => $protectoras]);
+}
 
-respuestaOk([
-    'actualizaciones' => $seguimientos,
-    'mascotas'        => $mascotas,
-    'total'           => $total,
-    'pagina'          => $pagina,
-    'porPagina'       => $porPagina,
-    'totalPaginas'    => (int)ceil($total / $porPagina),
-]);
+respuestaOk(['protectoras' => array_map(function($p) {
+    unset($p['iban'], $p['bizum'], $p['teaming'], $p['email'], $p['verificada']);
+    return $p;
+}, $protectoras)]);

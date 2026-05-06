@@ -1,8 +1,12 @@
 <?php
-require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
+
+iniciarSesionSegura();
+if (!esAdmin()) {
+    respuestaError('Acceso restringido.', 403);
+}
 
 $pdo = conectar();
 

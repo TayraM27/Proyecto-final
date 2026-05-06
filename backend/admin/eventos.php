@@ -5,8 +5,8 @@ CRUD — Eventos (admin solo lectura, protectora CRUD sobre sus eventos) */
 require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
-metodoGetOPost();
 
+iniciarSesionSegura();
 requerirAdminOProtectora();
 
 $pdo = conectar();
