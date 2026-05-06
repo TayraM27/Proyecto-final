@@ -20,17 +20,17 @@
         <nav class="sidebar-nav">
             <p class="sidebar-seccion">General</p>
             <a href="dashboard.html" class="sidebar-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
-            <p class="sidebar-seccion">Gestión</p>
-            <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
+            <p class="sidebar-seccion">Plataforma</p>
             <a href="protectoras.html" class="sidebar-link activo"><i class="fa-solid fa-building-shield"></i> Protectoras</a>
             <a href="usuarios.html" class="sidebar-link"><i class="fa-solid fa-users"></i> Usuarios</a>
-            <a href="apadrinamientos.html" class="sidebar-link"><i class="fa-solid fa-star"></i> Apadrinamientos</a>
-            <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
             <a href="solicitudes-protectora.html" class="sidebar-link"><i class="fa-solid fa-clipboard-check"></i> Sol. Protectora</a>
-            <p class="sidebar-seccion">Contenido</p>
+            <p class="sidebar-seccion">Contenido global</p>
             <a href="eventos.html" class="sidebar-link"><i class="fa-solid fa-calendar-days"></i> Eventos</a>
-            <a href="entidades.html" class="sidebar-link"><i class="fa-solid fa-handshake"></i> Entidades</a>
-            <p class="sidebar-seccion">Comunidad</p>
+            <a href="entidades.html" class="sidebar-link"><i class="fa-solid fa-handshake"></i> Colaboradores</a>
+            <p class="sidebar-seccion">Moderación</p>
+            <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Animales</a>
+            <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
+            <a href="apadrinamientos.html" class="sidebar-link"><i class="fa-solid fa-star"></i> Apadrinamientos</a>
             <a href="foro.html" class="sidebar-link"><i class="fa-solid fa-comments"></i> Foro</a>
             <p class="sidebar-seccion">Web pública</p>
             <a href="../html/index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
@@ -52,9 +52,7 @@
             <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
             <span class="topbar-titulo"><i class="fa-solid fa-building-shield" style="color:var(--gold);margin-right:0.4em;"></i>Protectoras</span>
         </div>
-        <button class="btn btn-gold" onclick="abrirModalNueva()">
-            <i class="fa-solid fa-plus"></i> Nueva protectora
-        </button>
+        <span style="font-size:0.85rem;color:var(--texto-sub);"><i class="fa-solid fa-circle-info me-1"></i>Gestión de plataforma. Las protectoras gestionan su propio contenido.</span>
     </header>
 
     <main class="admin-contenido">
@@ -98,135 +96,16 @@
     </main>
 </div>
 
-<!-- modal -->
-<div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
-    <div class="modal">
+<!-- modal detalle protectora (solo lectura) -->
+<div class="modal-overlay" id="modalDetalleOverlay" onclick="if(event.target===this)cerrarModalDetalle()">
+    <div class="modal" style="max-width:500px;">
         <div class="modal-header">
-            <p class="modal-titulo"><i class="fa-solid fa-building-shield"></i> <span id="modalTitulo">Nueva protectora</span></p>
-            <button class="modal-cerrar" onclick="cerrarModalBtn()"><i class="fa-solid fa-xmark"></i></button>
+            <p class="modal-titulo"><i class="fa-solid fa-building-shield" style="color:var(--gold);"></i> Detalle de protectora</p>
+            <button class="modal-cerrar" onclick="cerrarModalDetalle()"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div class="modal-body">
-            <input type="hidden" id="modalId">
-
-            <div class="form-fila">
-                <div class="form-campo">
-                    <label class="form-label">Nombre *</label>
-                    <input type="text" class="form-input" id="fNombre">
-                </div>
-                <div class="form-campo">
-                    <label class="form-label">Localidad</label>
-                    <input type="text" class="form-input" id="fLocalidad" placeholder="Ej: Gijón, Oviedo">
-                </div>
-            </div>
-
-            <div class="form-fila">
-                <div class="form-campo">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-input" id="fEmail">
-                </div>
-                <div class="form-campo">
-                    <label class="form-label">Teléfono</label>
-                    <input type="text" class="form-input" id="fTelefono">
-                </div>
-            </div>
-
-            <div class="form-fila">
-                <div class="form-campo">
-                    <label class="form-label">Web / Portal</label>
-                    <input type="url" class="form-input" id="fWeb" placeholder="https://...">
-                </div>
-                <div class="form-campo">
-                    <label class="form-label">Tipo de página</label>
-                    <select class="form-select" id="fTipoPagina">
-                        <option value="sin_pagina">Sin página</option>
-                        <option value="web">Web oficial</option>
-                        <option value="red_social">Red social</option>
-                        <option value="portal">Portal de adopción</option>
-                        <option value="otra">Otra</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-campo">
-                <label class="form-label">Red social (URL independiente)</label>
-                <input type="url" class="form-input" id="fRedSocial" placeholder="https://www.facebook.com/... o https://www.instagram.com/...">
-                <span class="form-nota" style="color:var(--texto-sub);font-size:12px;"><i class="fa-solid fa-circle-info"></i> Si además de web tienen Facebook, Instagram u otra red, indícala aquí.</span>
-            </div>
-
-            <div class="form-fila">
-                <div class="form-campo">
-                    <label class="form-label">IBAN</label>
-                    <input type="text" class="form-input" id="fIban" placeholder="ES00 0000 0000 0000 0000 0000">
-                </div>
-                <div class="form-campo">
-                    <label class="form-label">Bizum</label>
-                    <input type="text" class="form-input" id="fBizum" placeholder="6XX XXX XXX">
-                </div>
-            </div>
-
-            <div class="form-campo">
-                <label class="form-label">URL Teaming</label>
-                <input type="url" class="form-input" id="fTeaming" placeholder="https://www.teaming.net/...">
-            </div>
-
-            <div class="form-campo">
-                <label class="form-label">URL del logo</label>
-                <input type="text" class="form-input" id="fLogo" placeholder="img/protectora/nombre.jpg">
-            </div>
-
-            <div class="form-campo">
-                <label class="form-label">Especie que atiende</label>
-                <select class="form-select" id="fEspecie">
-                    <option value="ambos">Perros y gatos</option>
-                    <option value="perros">Solo perros</option>
-                    <option value="gatos">Solo gatos</option>
-                </select>
-            </div>
-
-            <div class="form-campo">
-                <label class="form-label">Características <span style="color:var(--texto-sub);font-weight:400;">(badges visibles en la tarjeta)</span></label>
-                <div class="form-checks-grid" id="badgesCheckGrid"></div>
-            </div>
-
-            <div class="form-campo">
-                <label class="form-label">Descripción completa</label>
-                <textarea class="form-textarea" id="fDescripcion" rows="3"></textarea>
-            </div>
-
-            <div class="form-campo">
-                <label class="form-label">Descripción para "Dona" <span style="color:var(--texto-sub);font-weight: 400;">(resumen corto)</span></label>
-                <textarea class="form-textarea" id="fDescripcionDona" rows="2" maxlength="300" placeholder="Breve presentación para la página de donaciones. Máx. 300 caracteres."></textarea>
-                <span class="form-nota" style="color:var(--texto-sub);font-size:12px;"><i class="fa-solid fa-circle-info"></i> Aparece en la tarjeta de donación. Debe ser concisa (1 o 2 frases).</span>
-            </div>
-
-            <div class="form-campo">
-                <label class="form-label">Dirección</label>
-                <input type="text" class="form-input" id="fDireccion">
-            </div>
-
-            <div class="form-fila">
-                <div class="form-campo">
-                    <label class="form-label">Latitud</label>
-                    <input type="number" step="any" class="form-input" id="fLatitud" placeholder="43.xxx">
-                </div>
-                <div class="form-campo">
-                    <label class="form-label">Longitud</label>
-                    <input type="number" step="any" class="form-input" id="fLongitud" placeholder="-5.xxx">
-                </div>
-            </div>
-
-            <div class="form-fila">
-                <label class="form-check"><input type="checkbox" id="fVerificada"> Verificada</label>
-                <label class="form-check"><input type="checkbox" id="fActiva" checked> Activa</label>
-            </div>
-
-            <p class="form-error" id="modalError"></p>
-        </div>
+        <div class="modal-body" id="modalDetalleBody"></div>
         <div class="modal-footer">
-            <button class="btn btn-outline" onclick="cerrarModalBtn()">Cancelar</button>
-            <button class="btn btn-primario" onclick="guardarProtectora()">
-                <i class="fa-solid fa-floppy-disk"></i> Guardar
-            </button>
+            <button class="btn btn-outline" onclick="cerrarModalDetalle()">Cerrar</button>
         </div>
     </div>
 </div>
@@ -234,32 +113,6 @@
 <div class="toast" id="toast"></div>
 
 <script>
-var BADGES_PROT = [
-    { key: 'gestion_municipal',     icon: 'fa-shield-halved',            label: 'Gestión municipal' },
-    { key: 'casas_acogida',         icon: 'fa-regular fa-house',      label: 'Casas de acogida' },
-    { key: 'fundacion_oficial',     icon: 'fa-star',                     label: 'Fundación oficial' },
-    { key: 'teaming',               icon: 'fa-mug-hot',                  label: 'Teaming' },
-    { key: 'voluntarios',           icon: 'fa-people-group',             label: '100% voluntarios' },
-    { key: 'trato_familiar',        icon: 'fa-handshake',                label: 'Trato familiar' },
-    { key: 'animales_mayores',      icon: 'fa-heart',                    label: 'Animales mayores' },
-    { key: 'licencia_ppp',          icon: 'fa-id-card',                  label: 'Licencia PPP' },
-    { key: 'principalmente_perros', icon: 'fa-dog',                      label: 'Principalmente perros' },
-    { key: 'principalmente_gatos',  icon: 'fa-cat',                      label: 'Principalmente gatos' },
-    { key: 'sin_instalaciones',     icon: 'fa-house-circle-exclamation', label: 'Sin instalaciones' },
-];
-
-/* Renderizar checkboxes de badges */
-(function() {
-    var grid = document.getElementById('badgesCheckGrid');
-    grid.innerHTML = BADGES_PROT.map(function(b) {
-        return '<label class="form-check">'
-             + '<input type="checkbox" class="badge-check" value="' + b.key + '"> '
-             + '<i class="fa-solid ' + b.icon + '" style="margin-right:0.3em;color:#F8BA56;"></i>'
-             + b.label
-             + '</label>';
-    }).join('');
-})();
-
 document.addEventListener('DOMContentLoaded', function() {
     verificarAdmin(cargarProtectoras);
 });
@@ -340,151 +193,69 @@ function renderTabla(protectoras) {
             + '<td style="text-align:center;">' + (p.num_animales || 0) + ' ' + especieLabel + '</td>'
             + '<td>' + estado + '</td>'
             + '<td><div class="tabla-acciones">'
-            + '<button class="btn btn-sm btn-outline btn-icon" onclick="editarProtectora(' + JSON.stringify(p).replace(/"/g, '&quot;') + ')" title="Editar"><i class="fa-solid fa-pen"></i></button>'
-            + '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminarProtectora(event,' + p.idProtectora + ',\'' + p.nombre.replace(/'/g, '') + '\')" title="Eliminar"><i class="fa-solid fa-trash"></i></button>'
+            + '<button class="btn btn-sm btn-outline btn-icon" onclick="verDetalleProtectora(' + p.idProtectora + ')" title="Ver detalle"><i class="fa-solid fa-eye"></i></button>'
+            + (p.activa
+                ? '<button class="btn btn-sm btn-danger btn-icon" onclick="suspenderProtectora(' + p.idProtectora + ',\'' + p.nombre.replace(/'/g, '') + '\')" title="Suspender"><i class="fa-solid fa-ban"></i></button>'
+                : '<button class="btn btn-sm btn-outline btn-icon" onclick="reactivarProtectora(' + p.idProtectora + ',\'' + p.nombre.replace(/'/g, '') + '\')" title="Reactivar"><i class="fa-solid fa-circle-check"></i></button>')
             + '</div></td>'
             + '</tr>';
     }).join('');
 }
 
-function abrirModalNueva() {
-    document.getElementById('modalId').value = '';
-    document.getElementById('modalTitulo').textContent = 'Nueva protectora';
-    document.getElementById('modalError').textContent  = '';
-    limpiarForm();
-    document.getElementById('modalOverlay').classList.add('abierto');
+function verDetalleProtectora(id) {
+    fetch('../backend/admin/protectoras.php?id=' + id, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok || !data.protectora) { mostrarToast('No se pudo cargar el detalle.', 'error'); return; }
+            var p = data.protectora;
+            var html = '<div style="font-size:0.9rem;line-height:1.8;">'
+                + '<p><strong>Nombre:</strong> ' + p.nombre + '</p>'
+                + '<p><strong>Email:</strong> ' + (p.email || '—') + '</p>'
+                + '<p><strong>Teléfono:</strong> ' + (p.telefono || '—') + '</p>'
+                + '<p><strong>Localidad:</strong> ' + (p.localidad || '—') + '</p>'
+                + '<p><strong>Dirección:</strong> ' + (p.direccion || '—') + '</p>'
+                + '<p><strong>Web:</strong> ' + (p.web ? '<a href="' + p.web + '" target="_blank">' + p.web + '</a>' : '—') + '</p>'
+                + '<p><strong>Estado:</strong> ' + (p.activa ? '<span class="badge badge-verde">Activa</span>' : '<span class="badge badge-rojo">Suspendida</span>') + '</p>'
+                + '<p><strong>Verificada:</strong> ' + (p.verificada ? 'Sí' : 'No') + '</p>'
+                + '<p><strong>Animales:</strong> ' + (p.num_animales || 0) + '</p>'
+                + '</div>';
+            document.getElementById('modalDetalleBody').innerHTML = html;
+            document.getElementById('modalDetalleOverlay').classList.add('abierto');
+        });
 }
 
-function editarProtectora(p) {
-    document.getElementById('modalId').value             = p.idProtectora;
-    document.getElementById('modalTitulo').textContent   = 'Editar: ' + p.nombre;
-    document.getElementById('modalError').textContent    = '';
-    document.getElementById('fNombre').value             = p.nombre            || '';
-    document.getElementById('fLocalidad').value          = p.localidad         || '';
-    document.getElementById('fEmail').value              = p.email             || '';
-    document.getElementById('fTelefono').value           = p.telefono          || '';
-    document.getElementById('fWeb').value                = p.web               || '';
-    document.getElementById('fTipoPagina').value         = p.tipo_pagina       || 'sin_pagina';
-    document.getElementById('fRedSocial').value          = p.red_social_url    || '';
-    document.getElementById('fIban').value               = p.iban              || '';
-    document.getElementById('fBizum').value              = p.bizum             || '';
-    document.getElementById('fTeaming').value            = p.teaming           || '';
-    document.getElementById('fLogo').value               = p.foto_logo         || '';
-    document.getElementById('fEspecie').value            = p.especie_atencion  || 'ambos';
-    document.getElementById('fDescripcion').value        = p.descripcion       || '';
-    document.getElementById('fDescripcionDona').value    = p.descripcion_dona  || '';
-    document.getElementById('fDireccion').value          = p.direccion         || '';
-    document.getElementById('fLatitud').value            = p.latitud           || '';
-    document.getElementById('fLongitud').value           = p.longitud          || '';
-    document.getElementById('fVerificada').checked       = !!p.verificada;
-    document.getElementById('fActiva').checked           = !!p.activa;
-
-    /* Marcar badges */
-    var activos = (p.badges || '').split(',').map(function(k){ return k.trim(); }).filter(Boolean);
-    document.querySelectorAll('.badge-check').forEach(function(cb) {
-        cb.checked = activos.indexOf(cb.value) !== -1;
-    });
-
-    document.getElementById('modalOverlay').classList.add('abierto');
-}
-
-function guardarProtectora() {
-    var id    = document.getElementById('modalId').value;
-
-    /* Recoger badges seleccionados */
-    var badgesSeleccionados = [];
-    document.querySelectorAll('.badge-check:checked').forEach(function(cb) {
-        badgesSeleccionados.push(cb.value);
-    });
-
-    var datos = {
-        nombre:           document.getElementById('fNombre').value.trim(),
-        localidad:        document.getElementById('fLocalidad').value.trim(),
-        email:            document.getElementById('fEmail').value.trim(),
-        telefono:         document.getElementById('fTelefono').value.trim(),
-        web:              document.getElementById('fWeb').value.trim(),
-        tipo_pagina:      document.getElementById('fTipoPagina').value,
-        red_social_url:   document.getElementById('fRedSocial').value.trim()    || null,
-        iban:             document.getElementById('fIban').value.trim()          || null,
-        bizum:            document.getElementById('fBizum').value.trim()         || null,
-        teaming:          document.getElementById('fTeaming').value.trim()       || null,
-        foto_logo:        document.getElementById('fLogo').value.trim(),
-        especie_atencion: document.getElementById('fEspecie').value,
-        badges:           badgesSeleccionados.join(','),
-        descripcion:      document.getElementById('fDescripcion').value.trim(),
-        descripcion_dona: document.getElementById('fDescripcionDona').value.trim(),
-        direccion:        document.getElementById('fDireccion').value.trim(),
-        latitud:          document.getElementById('fLatitud').value  || null,
-        longitud:         document.getElementById('fLongitud').value || null,
-        verificada:       document.getElementById('fVerificada').checked ? 1 : 0,
-        activa:           document.getElementById('fActiva').checked ? 1 : 0,
-    };
-
-    if (!datos.nombre) {
-        document.getElementById('modalError').textContent = 'El nombre es obligatorio.';
-        return;
-    }
-
-    if (datos.telefono && !/^\d{9}$/.test(datos.telefono)) {
-        document.getElementById('modalError').textContent = 'El teléfono debe tener exactamente 9 dígitos.';
-        return;
-    }
-
-    if (id) datos.idProtectora = parseInt(id);
-
+function suspenderProtectora(id, nombre) {
+    if (!confirm('¿Suspender la protectora ' + nombre + '? No podrá acceder a la plataforma.')) return;
     fetch('../backend/admin/protectoras.php', {
-        method:  id ? 'PUT' : 'POST',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body:    JSON.stringify(datos),
+        body: JSON.stringify({ idProtectora: id, accion: 'suspender' }),
     })
     .then(function(r){ return r.json(); })
     .then(function(data){
-        if (!data.ok) {
-            document.getElementById('modalError').textContent = data.error || 'Error al guardar.';
-            return;
-        }
-        cerrarModalBtn();
-        mostrarToast(data.mensaje, 'ok');
-        cargarProtectoras();
+        mostrarToast(data.ok ? 'Protectora suspendida.' : data.error, data.ok ? 'ok' : 'error');
+        if (data.ok) cargarProtectoras();
     });
 }
 
-function eliminarProtectora(e, id, nombre) {
-    if (!confirm('¿Eliminar a ' + nombre + '? Si tiene animales activos no se podrá eliminar.')) return;
-    var fila = e.currentTarget.closest('tr');
+function reactivarProtectora(id, nombre) {
+    if (!confirm('¿Reactivar la protectora ' + nombre + '?')) return;
     fetch('../backend/admin/protectoras.php', {
-        method:  'DELETE',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body:    JSON.stringify({ idProtectora: id }),
+        body: JSON.stringify({ idProtectora: id, accion: 'reactivar' }),
     })
     .then(function(r){ return r.json(); })
     .then(function(data){
-        mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
-        if (data.ok && fila) fila.remove();
+        mostrarToast(data.ok ? 'Protectora reactivada.' : data.error, data.ok ? 'ok' : 'error');
+        if (data.ok) cargarProtectoras();
     });
 }
 
-function limpiarForm() {
-    ['fNombre','fLocalidad','fEmail','fTelefono','fWeb','fRedSocial',
-     'fIban','fBizum','fTeaming','fLogo','fDescripcion','fDescripcionDona',
-     'fDireccion','fLatitud','fLongitud'].forEach(function(id){
-        document.getElementById(id).value = '';
-    });
-    document.getElementById('fTipoPagina').value   = 'sin_pagina';
-    document.getElementById('fEspecie').value      = 'ambos';
-    document.getElementById('fVerificada').checked = false;
-    document.getElementById('fActiva').checked     = true;
-    document.querySelectorAll('.badge-check').forEach(function(cb){ cb.checked = false; });
-}
-
-function cerrarModal(e) {
-    if (e.target === document.getElementById('modalOverlay')) cerrarModalBtn();
-}
-
-function cerrarModalBtn() {
-    document.getElementById('modalOverlay').classList.remove('abierto');
+function cerrarModalDetalle() {
+    document.getElementById('modalDetalleOverlay').classList.remove('abierto');
 }
 
 function toggleSidebar() {

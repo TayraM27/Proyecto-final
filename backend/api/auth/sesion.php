@@ -48,14 +48,14 @@ session_write_close();
 respuestaOk([
     'logueado' => true,
     'usuario'  => [
-        'idUsuario'    => $_SESSION['idUsuario'],
-        'nombre'       => $_SESSION['nombre'],
-        'username'     => $_SESSION['username'],
-        'rol'          => $_SESSION['rol'],
-        'foto_perfil'  => $_SESSION['foto_perfil'] ?? null,
-        'email'        => $_SESSION['email']     ?? null,
-        'localidad'    => $_SESSION['localidad'] ?? null,
-        'telefono'     => $_SESSION['telefono']  ?? null,
+        'idUsuario'    => $_SESSION['idUsuario']    ?? null,
+        'nombre'       => $_SESSION['nombre']       ?? '',
+        'username'     => $_SESSION['username']     ?? '',
+        'rol'          => $_SESSION['rol']          ?? '',
+        'foto_perfil'  => $_SESSION['foto_perfil']  ?? null,
+        'email'        => $_SESSION['email']        ?? null,
+        'localidad'    => $_SESSION['localidad']    ?? null,
+        'telefono'     => $_SESSION['telefono']     ?? null,
         'idProtectora' => $_SESSION['idProtectora'] ?? null,
     ],
 ]);

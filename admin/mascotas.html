@@ -186,7 +186,8 @@ function verificarAdmin(cb) {
             document.getElementById('adminNombre').textContent = data.usuario.nombre;
             document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
             if (cb) cb();
-        });
+        })
+        .catch(function(){ window.location.href = '../html/login.html'; });
 }
 
 function cargarMascotas() {
@@ -207,6 +208,9 @@ function cargarMascotas() {
             totalPaginas = data.totalPaginas || 1;
             renderTabla(data.mascotas);
             renderPaginacion();
+        })
+        .catch(function(){
+            document.getElementById('tablaMascotas').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:3em;color:var(--error);">Error de conexión.</td></tr>';
         });
 }
 
@@ -286,6 +290,9 @@ function verDetalle(id) {
                 return;
             }
             renderDetalle(data.mascota);
+        })
+        .catch(function(){
+            document.getElementById('detalleBody').innerHTML = '<p style="color:var(--error);text-align:center;">Error de conexión.</p>';
         });
 }
 

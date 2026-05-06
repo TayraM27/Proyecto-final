@@ -88,30 +88,21 @@ if ($metodo === 'PUT') {
     if (!$id) respuestaError('idProtectora requerido.');
 
     if ($esAdmin) {
-        if (!empty($datos['email']) && !validarEmail($datos['email'])) respuestaError('Email no válido.');
-        if (!empty($datos['telefono']) && !preg_match('/^\d{9}$/', limpiar($datos['telefono']))) respuestaError('El teléfono debe tener exactamente 9 dígitos.');
-
-        $pdo->prepare(
-            'UPDATE protectoras SET verificada=?, activa=? WHERE idProtectora=?'
-        )->execute([
-            (int)($datos['verificada'] ?? 0),
-            (int)($datos['activa']     ?? 1),
-            $id,
-        ]);
-
-        $pdo->prepare(
-            'INSERT INTO audit_logs (actor_id, actor_role, action, target_type, target_id, reason)
-             VALUES (?, ?, ?, ?, ?, ?)'
-        )->execute([
-            (int)($_SESSION['idUsuario'] ?? 0),
-            'admin',
-            'moderar_protectora',
-            'protectora',
-            $id,
-            limpiar($datos['motivo'] ?? ''),
-        ]);
-
-        respuestaOk(['mensaje' => 'Moderación de protectora actualizada.']);
+        /* Soporta accion directa (suspender/reactivar) desde el panel */
+        $accion = $datos['accion'] ?? '';
+        if ($accion === 'suspender') {
+            $pdo->prepare('UPDATE protectoras SET activa = 0 WHERE idProtectora = ?')->execute([$id]);
+            $pdo->prepare('INSERT INTO audit_logs (actor_id, actor_role, action, target_type, target_id, reason) VALUES (?, ?, ?, ?, ?, ?)')
+                ->execute([(int)($_SESSION['idUsuario'] ?? 0), 'admin', 'suspender_protectora', 'protectora', $id, 'Suspendida por admin']);
+            respuestaOk(['mensaje' => 'Protectora suspendida.']);
+        }
+        if ($accion === 'reactivar') {
+            $pdo->prepare('UPDATE protectoras SET activa = 1 WHERE idProtectora = ?')->execute([$id]);
+            $pdo->prepare('INSERT INTO audit_logs (actor_id, actor_role, action, target_type, target_id, reason) VALUES (?, ?, ?, ?, ?, ?)')
+                ->execute([(int)($_SESSION['idUsuario'] ?? 0), 'admin', 'reactivar_protectora', 'protectora', $id, 'Reactivada por admin']);
+            respuestaOk(['mensaje' => 'Protectora reactivada.']);
+        }
+        respuestaError('Acción no permitida. El admin no puede editar la información de la protectora.', 403);
     } else {
         if (!$idProtectoraUsuario) respuestaError('No tienes una protectora asignada.');
         if ($id !== $idProtectoraUsuario) respuestaError('No puedes editar otra protectora.', 403);

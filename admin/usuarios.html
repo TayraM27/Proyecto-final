@@ -20,17 +20,17 @@
         <nav class="sidebar-nav">
             <p class="sidebar-seccion">General</p>
             <a href="dashboard.html" class="sidebar-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
-            <p class="sidebar-seccion">Gestión</p>
-            <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
+            <p class="sidebar-seccion">Plataforma</p>
             <a href="protectoras.html" class="sidebar-link"><i class="fa-solid fa-building-shield"></i> Protectoras</a>
             <a href="usuarios.html" class="sidebar-link activo"><i class="fa-solid fa-users"></i> Usuarios</a>
-            <a href="apadrinamientos.html" class="sidebar-link"><i class="fa-solid fa-star"></i> Apadrinamientos</a>
-            <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
             <a href="solicitudes-protectora.html" class="sidebar-link"><i class="fa-solid fa-clipboard-check"></i> Sol. Protectora</a>
-            <p class="sidebar-seccion">Contenido</p>
+            <p class="sidebar-seccion">Contenido global</p>
             <a href="eventos.html" class="sidebar-link"><i class="fa-solid fa-calendar-days"></i> Eventos</a>
-            <a href="entidades.html" class="sidebar-link"><i class="fa-solid fa-handshake"></i> Entidades</a>
-            <p class="sidebar-seccion">Comunidad</p>
+            <a href="entidades.html" class="sidebar-link"><i class="fa-solid fa-handshake"></i> Colaboradores</a>
+            <p class="sidebar-seccion">Moderación</p>
+            <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Animales</a>
+            <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
+            <a href="apadrinamientos.html" class="sidebar-link"><i class="fa-solid fa-star"></i> Apadrinamientos</a>
             <a href="foro.html" class="sidebar-link"><i class="fa-solid fa-comments"></i> Foro</a>
             <p class="sidebar-seccion">Web pública</p>
             <a href="../html/index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
@@ -171,9 +171,6 @@ function renderTabla(usuarios) {
             ? '<button class="btn btn-sm btn-outline btn-icon" onclick="accion(' + u.idUsuario + ',\'quitar_admin\')" title="Quitar admin"><i class="fa-solid fa-shield-halved"></i></button>'
             : '<button class="btn btn-sm btn-outline btn-icon" onclick="accion(' + u.idUsuario + ',\'hacer_admin\')" title="Hacer admin"><i class="fa-solid fa-crown"></i></button>');
 
-        var btnEliminar = esMismo ? '' :
-            '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminar(event,' + u.idUsuario + ',\'' + u.nombre.replace(/'/g, '') + '\')" title="Eliminar"><i class="fa-solid fa-trash"></i></button>';
-
         return '<tr>'
             + '<td><strong>' + u.nombre + '</strong><br><span style="font-size:0.78rem;color:var(--texto-sub);">@' + u.username + '</span></td>'
             + '<td style="font-size:0.82rem;">' + u.email + '</td>'
@@ -185,7 +182,6 @@ function renderTabla(usuarios) {
             + '<td><div class="tabla-acciones">'
             + btnRol
             + btnBloqueo
-            + btnEliminar
             + (esMismo ? '<span style="font-size:0.75rem;color:var(--texto-sub);">Tú</span>' : '')
             + '</div></td>'
             + '</tr>';
@@ -214,21 +210,6 @@ function accion(id, acc) {
     });
 }
 
-function eliminar(e, id, nombre) {
-    if (!confirm('¿Eliminar al usuario ' + nombre + '? Esta acción no se puede deshacer.')) return;
-    var fila = e.currentTarget.closest('tr');
-    fetch('../backend/admin/usuarios.php', {
-        method:  'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ idUsuario: id }),
-        credentials: 'include',
-    })
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-        mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
-        if (data.ok && fila) fila.remove();
-    });
-}
 
 function renderPaginacion() {
     var pg = document.getElementById('paginacion');
