@@ -76,8 +76,6 @@
         </p>
         <div class="linea-amarilla"></div>
 
-        <!-- IMAGEN HERO: reemplaza la URL con una foto de un animal en acogida (perro/gato en hogar cálido) -->
-        <!-- Tamaño recomendado: 1200x400px, formato panorámico / banner -->
         <div class="acoge-hero-img-wrap">
             <img src="../img/imagenes-animales/upscalemedia-transformed.jpeg"
                  alt="Animal en acogida"
@@ -85,7 +83,6 @@
                  onerror="this.style.display='none';">
         </div>
 
-        <!-- qué es acoger + requisitos -->
         <div class="row g-4 mb-5">
 
             <div class="col-lg-7">
@@ -121,7 +118,6 @@
 
         </div>
 
-        <!-- tipos de acogida -->
         <h2 class="acoge-titulo-seccion mb-4">Tipos de acogida</h2>
         <div class="row g-3 mb-5">
 
@@ -171,7 +167,6 @@
 
         </div>
 
-        <!-- responsabilidades -->
         <div class="row g-4 mb-5">
 
             <div class="col-lg-6">
@@ -252,7 +247,6 @@
 
         </div>
 
-        <!-- animales que necesitan acogida -->
         <h2 class="acoge-titulo-seccion mb-1">
             <i class="fa-solid fa-paw me-2"></i>Animales que necesitan acogida ahora
         </h2>
@@ -276,20 +270,123 @@
 
 <!-- modal acogida -->
 <div class="modal fade" id="modalAcoge" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content modal-content-pf">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius:14px;border:none;overflow:hidden;">
             <div class="modal-header modal-header-pf">
                 <h5 class="modal-title text-white fw-bold">
                     <i class="fa-solid fa-house-chimney-heart me-2" style="color:#F8BA56;"></i>
-                    Acoger a <span id="modal-acoge-nombre">–</span>
+                    Solicitud de acogida: <span id="modal-acoge-nombre">–</span>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body modal-body-pf">
-                <p class="modal-intro">
-                    La acogida se gestiona directamente con la protectora. Contacta con ellos para conocer las condiciones y el proceso.
-                </p>
-                <div id="modal-acoge-datos"></div>
+            <div class="modal-body" style="padding:1.5em;">
+                <div id="acogeFormError" class="form-error" style="display:none;background:#fff0f0;color:#c0392b;padding:0.5em 0.8em;border-radius:6px;font-size:0.85rem;margin-bottom:1em;"></div>
+                <div id="acogeFormOk" class="form-success" style="display:none;background:#f0fff4;color:#27ae60;padding:0.5em 0.8em;border-radius:6px;font-size:0.85rem;margin-bottom:1em;"></div>
+                <form id="formAcogida" enctype="multipart/form-data">
+                    <input type="hidden" name="idMascota" id="acoge-idMascota">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Nombre completo <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="nombre" id="cNombre" required maxlength="120" style="border-radius:8px;">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">DNI/NIE/Pasaporte <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="dni" id="cDni" required maxlength="20" style="border-radius:8px;">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Fecha de nacimiento <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" name="fecha_nacimiento" id="cFechaNac" required style="border-radius:8px;">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" name="email" id="cEmail" required maxlength="120" style="border-radius:8px;">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Teléfono <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" name="telefono" id="cTelefono" required maxlength="9" pattern="[0-9]{9}" placeholder="9 dígitos" style="border-radius:8px;">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Dirección completa <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="direccion_completa" id="cDireccion" required maxlength="255" style="border-radius:8px;">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Tipo de vivienda <span class="text-danger">*</span></label>
+                            <select class="form-select" name="tipo_vivienda" id="cTipoVivienda" required style="border-radius:8px;">
+                                <option value="">Selecciona...</option>
+                                <option value="piso">Piso</option>
+                                <option value="casa_con_jardin">Casa con jardín</option>
+                                <option value="casa_sin_jardin">Casa sin jardín</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">¿Vivienda en propiedad? <span class="text-danger">*</span></label>
+                            <select class="form-select" name="vivienda_en_propiedad" id="cViviendaProp" required style="border-radius:8px;" onchange="togglePermisoAcogida()">
+                                <option value="">Selecciona...</option>
+                                <option value="si">Sí</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6" id="divPermisoAcogida" style="display:none;">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Permiso del propietario (PDF) <span class="text-danger">*</span></label>
+                            <input type="file" class="form-control" name="permiso_propietario" id="cPermiso" accept=".pdf" style="border-radius:8px;">
+                            <div class="form-text">Máximo 5MB</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Experiencia previa en acogidas <span class="text-danger">*</span> <span class="text-muted" style="font-size:0.8rem;">(mín. 20 caracteres)</span></label>
+                            <textarea class="form-control" name="experiencia_acogida" id="cExperiencia" required maxlength="1000" style="border-radius:8px;resize:vertical;min-height:80px;"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Disponibilidad de tiempo <span class="text-danger">*</span></label>
+                            <textarea class="form-control" name="disponibilidad_tiempo" id="cDisponibilidad" rows="2" required style="border-radius:8px;resize:vertical;min-height:60px;"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Tiempo fuera de casa <span class="text-danger">*</span></label>
+                            <select class="form-select" name="tiempo_fuera_casa" id="cTiempoFuera" required style="border-radius:8px;">
+                                <option value="">Selecciona...</option>
+                                <option value="menos_4h">Menos de 4h</option>
+                                <option value="4_8h">4-8 horas</option>
+                                <option value="mas_8h">Más de 8 horas</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">¿Tenéis animales en casa?</label>
+                            <select class="form-select" name="animales_en_hogar" id="cAnimalesHogar" style="border-radius:8px;" onchange="toggleDescAnimalesAcogida()">
+                                <option value="no">No</option>
+                                <option value="si">Sí</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6" id="divDescAnimalesAcogida" style="display:none;">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Describe los animales en casa</label>
+                            <textarea class="form-control" name="descripcion_animales" id="cDescAnimales" maxlength="500" style="border-radius:8px;resize:vertical;min-height:60px;"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Motivo para acoger <span class="text-danger">*</span> <span class="text-muted" style="font-size:0.8rem;">(mín. 20 caracteres)</span></label>
+                            <textarea class="form-control" name="motivo_acogida" id="cMotivo" required maxlength="1000" style="border-radius:8px;resize:vertical;min-height:80px;"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">¿Puedes hacerte cargo de gastos veterinarios?</label>
+                            <select class="form-select" name="posibilidad_gastos" id="cPosibilidadGastos" style="border-radius:8px;">
+                                <option value="si">Sí</option>
+                                <option value="no">No (la protectora se hace cargo)</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="aceptar_politica_privacidad" id="cAceptaPolitica" required>
+                                <label class="form-check-label" for="cAceptaPolitica" style="font-size:0.85rem;">
+                                    Acepto la <a href="privacidad.html" target="_blank">política de privacidad</a> y el tratamiento de mis datos. <span class="text-danger">*</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" id="btn-enviar-acogida" class="btn-adoptar w-100 mt-3" style="border:none;cursor:pointer;padding:0.7em;border-radius:8px;font-weight:600;">
+                        <i class="fa-solid fa-paper-plane me-2"></i> Enviar solicitud
+                    </button>
+                </form>
+                <div class="mt-3" style="border-top:1px solid #eee;padding-top:1em;">
+                    <div id="acoge-contacto"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -301,14 +398,16 @@
 </footer>
 
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../javascript/script.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    cargarAnimalesAcoge();
-});
-
 var paginaActualAcoge = 1;
 var totalPaginasAcoge = 1;
+var mascotasAcoge = {};
+
+document.addEventListener('DOMContentLoaded', function() {
+    cargarAnimalesAcoge(1);
+});
 
 function cargarAnimalesAcoge(pagina) {
     paginaActualAcoge = pagina || 1;
@@ -327,6 +426,7 @@ function cargarAnimalesAcoge(pagina) {
                 return;
             }
             grid.innerHTML = data.mascotas.map(function(m) {
+                mascotasAcoge[m.idMascota] = m;
                 var foto = m.foto_principal ? '../' + m.foto_principal : '../img/mascotas/placeholder.jpg';
                 var badges = [];
                 if (m.urgencia === 'urgente') badges.push('<span class="badge bg-danger">Urgente</span>');
@@ -338,20 +438,10 @@ function cargarAnimalesAcoge(pagina) {
                     ? (m.descripcion.length > 120 ? m.descripcion.substring(0, 120) + '...' : m.descripcion)
                     : (m.raza || m.especie) + (m.edad_texto ? ', ' + m.edad_texto : '') + '.';
 
-                var nombre = m.nombre.replace(/'/g, '').replace(/"/g, '&quot;');
-
-                var dAttr = 'id=' + m.idMascota
-                    + '&nombre=' + encodeURIComponent(m.nombre)
-                    + '&protectora=' + encodeURIComponent(m.protectora_nombre || '')
-                    + '&telefono=' + encodeURIComponent(m.telefono_protectora || '')
-                    + '&email=' + encodeURIComponent(m.email_protectora || '')
-                    + '&web=' + encodeURIComponent(m.web_protectora || '')
-                    + '&iban=' + encodeURIComponent(m.iban_protectora || '');
-
                 return '<div class="col-md-6 col-lg-4">'
-                    + '<div class="card-animal-apadrina card-acoge">'
+                    + '<div class="card-animal-apadrina">'
                     + '<div class="animal-img-wrap">'
-                    + '<img src="' + foto + '" onerror="this.src=\'../img/mascotas/placeholder.jpg\'" alt="' + nombre + '" class="animal-img">'
+                    + '<img src="' + foto + '" onerror="this.src=\'../img/mascotas/placeholder.jpg\'" alt="' + (m.nombre||'Animal') + '" class="animal-img">'
                     + '</div>'
                     + '<div class="animal-info">'
                     + '<div class="d-flex justify-content-between align-items-start mb-1">'
@@ -361,13 +451,13 @@ function cargarAnimalesAcoge(pagina) {
                     + '<p class="animal-protectora"><i class="fa-solid fa-building-shield"></i> ' + m.protectora_nombre + '</p>'
                     + '<p class="animal-desc">' + desc + '</p>'
                     + '<div class="apad-btns-wrap">'
-                    + '<button class="btn-acoger" onclick="abrirModalAcoge(\'' + dAttr + '\')">'
+                    + '<button class="btn-acoger" onclick="abrirModalAcoge(' + m.idMascota + ')">'
                     + '<i class="fa-solid fa-hand-holding-heart me-2"></i>Acoger a ' + m.nombre
                     + '</button>'
                     + '<a href="fichaAnimal.html?id=' + m.idMascota + '" class="btn-ver-ficha">'
                     + '<i class="fa-solid fa-paw me-1"></i>Ver ficha'
                     + '</a>'
-                    + '<button class="btn-compartir-sm" onclick="compartirAnimal(' + m.idMascota + ',\'' + nombre + '\')">'
+                    + '<button class="btn-compartir-sm" onclick="compartirAnimal(' + m.idMascota + ',\'' + (m.nombre||'').replace(/'/g, '') + '\')">'
                     + '<i class="fa-solid fa-share-nodes"></i>'
                     + '</button>'
                     + '</div>'
@@ -387,7 +477,7 @@ function generarPaginacionAcoge(totalPag, pagAct) {
         cont = document.createElement('div');
         cont.id = 'paginacionAcoge';
         cont.className = 'paginacion-container mt-4 mb-4 text-center';
-        grid.parentNode.appendChild(cont);
+        document.getElementById('gridAcoge').parentNode.appendChild(cont);
     }
     if (totalPag <= 1) { cont.innerHTML = ''; return; }
     var html = '';
@@ -403,51 +493,149 @@ function generarPaginacionAcoge(totalPag, pagAct) {
     cont.innerHTML = html;
 }
 
-function abrirModalAcoge(qRaw) {
-    var p = new URLSearchParams(qRaw);
-    var id      = p.get('id');
-    var nombre  = p.get('nombre')    || '';
-    var prot    = p.get('protectora')|| '';
-    var tel     = p.get('telefono')  || '';
-    var em      = p.get('email')     || '';
-    var web     = p.get('web')       || '';
-    var iban    = p.get('iban')      || '';
+function abrirModalAcoge(idMascota) {
+    var m = mascotasAcoge[idMascota];
+    if (!m) return;
 
-    document.getElementById('modal-acoge-nombre').textContent = nombre;
+    document.getElementById('modal-acoge-nombre').textContent = m.nombre;
+    document.getElementById('acoge-idMascota').value = idMascota;
 
-    var asunto = encodeURIComponent('Acogida - ' + nombre);
-    var cuerpo = encodeURIComponent(
-        'Hola, me pongo en contacto desde PetFamily para interesarme en acoger a:\n\n'
-        + '  Animal: ' + nombre + '\n'
-        + '  ID: ' + id + '\n\n'
-        + 'Quedo a la espera de informacion sobre el proceso de acogida.\n\nUn saludo.'
-    );
-
-    var html = '<p class="protectora-nombre mb-2">' + prot + '</p>';
-    if (tel) html += '<div class="modal-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + tel.replace(/\s/g, '') + '">' + tel + '</a></div>';
-    if (em)  html += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + em + '?subject=' + asunto + '&body=' + cuerpo + '">' + em + '</a></div>';
-    if (web) html += '<div class="modal-dato"><i class="fa-solid fa-globe"></i><a href="' + web + '" target="_blank" rel="noopener">Web de la protectora</a></div>';
-    if (iban) {
-        var ibanL = iban.replace(/\s*\([^)]*\)/g, '').trim();
-        html += '<div class="prot-dato-iban" style="margin-top:0.7em;">'
-              + '<i class="fa-solid fa-building-columns"></i>'
-              + '<span class="prot-iban-num">' + ibanL + '</span>'
-              + '<button onclick="copiarIban(this,\'' + ibanL + '\')" title="Copiar IBAN" style="background:none;border:none;cursor:pointer;color:#1B358F;padding:0;font-size:0.9rem;margin-left:auto;"><i class="fa-regular fa-copy"></i></button>'
-              + '</div>';
-    }
-    html += '<a href="fichaAnimal.html?id=' + id + '" class="btn-azul d-block text-center mt-3" style="text-decoration:none;">'
+    var contacto = '';
+    if (m.protectora_nombre) contacto += '<p class="protectora-nombre mb-2">' + m.protectora_nombre + '</p>';
+    if (m.telefono_protectora) contacto += '<div class="modal-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + m.telefono_protectora.replace(/\s/g, '') + '">' + m.telefono_protectora + '</a></div>';
+    if (m.email_protectora) contacto += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + m.email_protectora + '">' + m.email_protectora + '</a></div>';
+    contacto += '<hr><p class="modal-intro">Si prefieres, contacta directamente con la protectora:</p>';
+    contacto += '<a href="fichaAnimal.html?id=' + m.idMascota + '" class="btn-azul d-block text-center mt-2" style="text-decoration:none;">'
           + '<i class="fa-solid fa-paw me-2"></i>Ver ficha completa</a>';
+    document.getElementById('acoge-contacto').innerHTML = contacto;
 
-    document.getElementById('modal-acoge-datos').innerHTML = html;
+    var form = document.getElementById('formAcogida');
+    form.reset();
+    document.getElementById('divPermisoAcogida').style.display = 'none';
+    document.getElementById('divDescAnimalesAcogida').style.display = 'none';
+    document.getElementById('acogeFormError').style.display = 'none';
+    document.getElementById('acogeFormOk').style.display = 'none';
+
+    form.onsubmit = function(e) {
+        e.preventDefault();
+        var err = document.getElementById('acogeFormError');
+        var ok = document.getElementById('acogeFormOk');
+        err.style.display = 'none';
+        ok.style.display = 'none';
+
+        var idMascota = document.getElementById('acoge-idMascota').value;
+        var nombre = document.getElementById('cNombre').value.trim();
+        var dni = document.getElementById('cDni').value.trim();
+        var fechaNac = document.getElementById('cFechaNac').value;
+        var email = document.getElementById('cEmail').value.trim();
+        var telefono = document.getElementById('cTelefono').value.trim();
+        var direccion = document.getElementById('cDireccion').value.trim();
+        var tipoVivienda = document.getElementById('cTipoVivienda').value;
+        var viviendaProp = document.getElementById('cViviendaProp').value;
+        var experiencia = document.getElementById('cExperiencia').value.trim();
+        var disponibilidad = document.getElementById('cDisponibilidad').value.trim();
+        var tiempoFuera = document.getElementById('cTiempoFuera').value;
+        var animalesHogar = document.getElementById('cAnimalesHogar').value;
+        var descAnimales = document.getElementById('cDescAnimales').value.trim();
+        var posibilidadGastos = document.getElementById('cPosibilidadGastos').value;
+        var motivo = document.getElementById('cMotivo').value.trim();
+        var aceptaPolitica = document.getElementById('cAceptaPolitica').checked;
+
+        if (!nombre) { err.textContent = 'El nombre es obligatorio.'; err.style.display = 'block'; return; }
+        if (!dni || !/^[XYZ]?[0-9]{7,8}[A-Z]$/i.test(dni)) { err.textContent = 'DNI no válido.'; err.style.display = 'block'; return; }
+        if (!fechaNac) { err.textContent = 'La fecha de nacimiento es obligatoria.'; err.style.display = 'block'; return; }
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Introduce un email válido.'; err.style.display = 'block'; return; }
+        if (!/^\d{9}$/.test(telefono)) { err.textContent = 'El teléfono debe tener exactamente 9 dígitos.'; err.style.display = 'block'; return; }
+        if (!direccion) { err.textContent = 'La dirección es obligatoria.'; err.style.display = 'block'; return; }
+        if (!tipoVivienda) { err.textContent = 'Selecciona un tipo de vivienda.'; err.style.display = 'block'; return; }
+        if (!viviendaProp) { err.textContent = 'Indica si la vivienda es en propiedad.'; err.style.display = 'block'; return; }
+        if (viviendaProp === 'no' && !document.getElementById('cPermiso').value) { err.textContent = 'Debes subir el permiso del propietario (PDF).'; err.style.display = 'block'; return; }
+        if (!experiencia || experiencia.length < 20) { err.textContent = 'La experiencia debe tener al menos 20 caracteres.'; err.style.display = 'block'; return; }
+        if (!disponibilidad) { err.textContent = 'Indica tu disponibilidad de tiempo.'; err.style.display = 'block'; return; }
+        if (!tiempoFuera) { err.textContent = 'Selecciona el tiempo fuera de casa.'; err.style.display = 'block'; return; }
+        if (!animalesHogar) { err.textContent = 'Indica si hay animales en el hogar.'; err.style.display = 'block'; return; }
+        if (animalesHogar === 'si' && !descAnimales) { err.textContent = 'Describe los animales.'; err.style.display = 'block'; return; }
+        if (!posibilidadGastos) { err.textContent = 'Indica si tienes posibilidad económica para gastos.'; err.style.display = 'block'; return; }
+        if (!motivo || motivo.length < 20) { err.textContent = 'El motivo debe tener al menos 20 caracteres.'; err.style.display = 'block'; return; }
+        if (!aceptaPolitica) { err.textContent = 'Debes aceptar la política de privacidad.'; err.style.display = 'block'; return; }
+
+        var formData = new FormData();
+        formData.append('idMascota', idMascota);
+        formData.append('nombre', nombre);
+        formData.append('dni', dni);
+        formData.append('fecha_nacimiento', fechaNac);
+        formData.append('email', email);
+        formData.append('telefono', telefono);
+        formData.append('direccion_completa', direccion);
+        formData.append('tipo_vivienda', tipoVivienda);
+        formData.append('vivienda_en_propiedad', viviendaProp);
+        formData.append('experiencia_acogida', experiencia);
+        formData.append('disponibilidad_tiempo', disponibilidad);
+        formData.append('tiempo_fuera_casa', tiempoFuera);
+        formData.append('animales_en_hogar', animalesHogar);
+        formData.append('descripcion_animales', descAnimales);
+        formData.append('posibilidad_gastos', posibilidadGastos);
+        formData.append('motivo_acogida', motivo);
+        formData.append('aceptar_politica_privacidad', aceptaPolitica ? '1' : '0');
+        formData.append('mensaje', '');
+
+        var permisoInput = document.getElementById('cPermiso');
+        if (permisoInput.files.length > 0) {
+            formData.append('permiso_propietario', permisoInput.files[0]);
+        }
+
+        var btn = document.getElementById('btn-enviar-acogida');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Enviando...';
+
+        fetch('../backend/adopcion/solicitud_acogida.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Enviar solicitud';
+            if (!data.ok) {
+                err.textContent = data.error || 'Error al enviar la solicitud.';
+                err.style.display = 'block';
+                return;
+            }
+            ok.textContent = '¡Solicitud de acogida enviada! La protectora se pondrá en contacto contigo por email.';
+            ok.style.display = 'block';
+            form.reset();
+            document.getElementById('divPermisoAcogida').style.display = 'none';
+            document.getElementById('divDescAnimalesAcogida').style.display = 'none';
+            setTimeout(function() {
+                var modal = bootstrap.Modal.getInstance(document.getElementById('modalAcoge'));
+                if (modal) modal.hide();
+            }, 2500);
+        })
+        .catch(function() {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Enviar solicitud';
+            err.textContent = 'Error de conexión. Inténtalo de nuevo.';
+            err.style.display = 'block';
+        });
+    };
+
     new bootstrap.Modal(document.getElementById('modalAcoge')).show();
 }
 
+function togglePermisoAcogida() {
+    var val = document.getElementById('cViviendaProp').value;
+    document.getElementById('divPermisoAcogida').style.display = val === 'no' ? 'block' : 'none';
+    document.getElementById('cPermiso').required = val === 'no';
+}
 
+function toggleDescAnimalesAcogida() {
+    var val = document.getElementById('cAnimalesHogar').value;
+    document.getElementById('divDescAnimalesAcogida').style.display = val === 'si' ? 'block' : 'none';
+    document.getElementById('cDescAnimales').required = val === 'si';
+}
 </script>
-<script src="../javascript/script.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
-
 
 </body>
 </html>

@@ -1,10 +1,4 @@
 <?php
-/*--------------------------------------------------------------------------------------------
-GET  — lista publicaciones
-POST — crea publicacion (requiere login, acepta multipart para media)
-PUT  — like/unlike (requiere login)
-DELETE — elimina publicacion propia o admin */
-
 require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
@@ -13,18 +7,31 @@ $pdo    = conectar();
 $metodo = $_SERVER['REQUEST_METHOD'];
 
 /*--------------------------------------------------------------------------------------------
-GET */
+GET - listar publicaciones */
 if ($metodo === 'GET') {
+
+    /* conteos por categoria para el sidebar */
+    if (isset($_GET['conteo'])) {
+        $cats   = ['adopcion', 'cuidados', 'acogida', 'salud', 'informacion'];
+        $conteos = [];
+        foreach ($cats as $cat) {
+            $stmt = $pdo->prepare('SELECT COUNT(*) FROM publicaciones WHERE activa = 1 AND categoria = ?');
+            $stmt->execute([$cat]);
+            $conteos[$cat] = (int)$stmt->fetchColumn();
+        }
+        respuestaOk(['conteos' => $conteos]);
+    }
+
     $categoria = $_GET['categoria'] ?? 'todas';
     $busqueda  = limpiar($_GET['q'] ?? '');
     $pagina    = (int)($_GET['pagina'] ?? 1);
-    $p         = paginacion($pagina, 15);
+    $p         = pagina($pagina, 15);
 
     $where  = ['pub.activa = 1'];
     $params = [];
 
-    $categoriasValidas = ['adopcion', 'cuidados', 'acogida', 'salud', 'informacion'];
-    if ($categoria !== 'todas' && in_array($categoria, $categoriasValidas)) {
+    $cats = ['adopcion', 'cuidados', 'acogida', 'salud', 'informacion'];
+    if ($categoria !== 'todas' && in_array($categoria, $cats)) {
         $where[]  = 'pub.categoria = ?';
         $params[] = $categoria;
     }
@@ -36,18 +43,22 @@ if ($metodo === 'GET') {
 
     $condicion = implode(' AND ', $where);
 
-    $stmtTotal = $pdo->prepare("SELECT COUNT(*) as total FROM publicaciones pub WHERE $condicion");
+    $stmtTotal = $pdo->prepare("SELECT COUNT(*) AS total FROM publicaciones pub WHERE $condicion");
     $stmtTotal->execute($params);
     $total = (int)$stmtTotal->fetch()['total'];
 
-    /* Comprobar si el usuario tiene sesión para devolver si ya dio like */
     iniciarSesionSegura();
     $idUsuarioActual = isset($_SESSION['idUsuario']) ? (int)$_SESSION['idUsuario'] : 0;
     session_write_close();
 
+    $yoLike = $idUsuarioActual
+        ? "(SELECT COUNT(*) FROM likes_publicaciones lp WHERE lp.idPublicacion = pub.idPublicacion AND lp.idUsuario = $idUsuarioActual) AS yo_like"
+        : "0 AS yo_like";
+
     $sql = "SELECT
                 pub.idPublicacion,
                 pub.idUsuario,
+                pub.idProtectora,
                 pub.titulo,
                 pub.contenido,
                 pub.categoria,
@@ -59,18 +70,18 @@ if ($metodo === 'GET') {
                 pub.fijada,
                 pub.activa,
                 pub.fecha,
-                u.nombre      AS autor_nombre,
-                u.username    AS autor_username,
-                u.rol         AS autor_rol,
-                u.foto_perfil AS autor_foto,
-                (SELECT COUNT(*) FROM comentarios c
-                 WHERE c.idPublicacion = pub.idPublicacion AND c.activo = 1) AS num_comentarios"
-        . ($idUsuarioActual
-            ? ", (SELECT COUNT(*) FROM likes_publicaciones lp
-                  WHERE lp.idPublicacion = pub.idPublicacion AND lp.idUsuario = $idUsuarioActual) AS yo_like"
-            : ", 0 AS yo_like")
-        . " FROM publicaciones pub
-            JOIN usuarios u ON pub.idUsuario = u.idUsuario
+                COALESCE(u.nombre,    prot.nombre,  'Anónimo') AS autor_nombre,
+                COALESCE(u.username,  prot.nombre,  '')        AS autor_username,
+                COALESCE(u.rol,       'protectora')             AS autor_rol,
+                COALESCE(u.foto_perfil, prot.foto_logo)         AS autor_foto,
+                (SELECT COUNT(*)
+                 FROM comentarios c
+                 WHERE c.idPublicacion = pub.idPublicacion
+                   AND c.deleted = 0) AS num_comentarios,
+                $yoLike
+            FROM publicaciones pub
+            LEFT JOIN usuarios    u    ON pub.idUsuario    = u.idUsuario
+            LEFT JOIN protectoras prot ON pub.idProtectora = prot.idProtectora
             WHERE $condicion
             ORDER BY pub.fijada DESC, pub.fecha DESC
             LIMIT ? OFFSET ?";
@@ -90,7 +101,7 @@ if ($metodo === 'GET') {
 }
 
 /*--------------------------------------------------------------------------------------------
-POST — crear publicacion */
+POST - crear publicacion */
 if ($metodo === 'POST') {
     requerirLogin();
 
@@ -108,28 +119,29 @@ if ($metodo === 'POST') {
 
     if (!$contenido) respuestaError('El contenido es obligatorio.');
     if (!$titulo)    $titulo = mb_substr($contenido, 0, 80) . (mb_strlen($contenido) > 80 ? '…' : '');
-    if (mb_strlen($titulo) > 200) respuestaError('El titulo no puede superar 200 caracteres.');
 
-    $categoriasValidas = ['adopcion', 'cuidados', 'acogida', 'salud', 'informacion'];
-    if (!in_array($categoria, $categoriasValidas)) $categoria = 'informacion';
+    $cats = ['adopcion', 'cuidados', 'acogida', 'salud', 'informacion'];
+    if (!in_array($categoria, $cats)) $categoria = 'informacion';
 
-    $idUsuario  = (int)$_SESSION['idUsuario'];
+    iniciarSesionSegura();
+    $idUsuario    = isset($_SESSION['idUsuario'])    ? (int)$_SESSION['idUsuario']    : null;
+    $idProtectora = isset($_SESSION['idProtectora']) ? (int)$_SESSION['idProtectora'] : null;
+    session_write_close();
+
     $rutaImagen = null;
     $rutaVideo  = null;
     $tipoMedia  = 'none';
 
     if (!empty($_FILES['media']) && $_FILES['media']['error'] === UPLOAD_ERR_OK) {
-        $archivo    = $_FILES['media'];
-        $mime       = mime_content_type($archivo['tmp_name']);
-        $tamanyoMax = 50 * 1024 * 1024;
-
+        $archivo     = $_FILES['media'];
+        $mime        = mime_content_type($archivo['tmp_name']);
+        $tamanoMax   = 50 * 1024 * 1024;
         $tiposImagen = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
         $tiposVideo  = ['video/mp4', 'video/webm'];
 
         if (!in_array($mime, array_merge($tiposImagen, $tiposVideo)))
             respuestaError('Solo jpg, png, webp, gif, mp4 o webm.');
-        if ($archivo['size'] > $tamanyoMax)
-            respuestaError('El archivo supera 50 MB.');
+        if ($archivo['size'] > $tamanoMax) respuestaError('El archivo supera 50 MB.');
 
         $ext    = strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION));
         $nombre = uniqid('foro_', true) . '.' . $ext;
@@ -152,16 +164,16 @@ if ($metodo === 'POST') {
     }
 
     $stmt = $pdo->prepare(
-        'INSERT INTO publicaciones (idUsuario, titulo, contenido, categoria, imagen, video, tipo_media)
-         VALUES (?, ?, ?, ?, ?, ?, ?)'
+        'INSERT INTO publicaciones (idUsuario, idProtectora, titulo, contenido, categoria, imagen, video, tipo_media)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
     );
-    $stmt->execute([$idUsuario, $titulo, $contenido, $categoria, $rutaImagen, $rutaVideo, $tipoMedia]);
+    $stmt->execute([$idUsuario, $idProtectora, $titulo, $contenido, $categoria, $rutaImagen, $rutaVideo, $tipoMedia]);
 
-    respuestaOk(['mensaje' => 'Publicacion creada.', 'idPublicacion' => (int)$pdo->lastInsertId()]);
+    respuestaOk(['mensaje' => 'Publicación creada.', 'idPublicacion' => (int)$pdo->lastInsertId()]);
 }
 
 /*--------------------------------------------------------------------------------------------
-PUT — like / unlike */
+PUT - like / unlike */
 if ($metodo === 'PUT') {
     requerirLogin();
 
@@ -169,57 +181,39 @@ if ($metodo === 'PUT') {
     $idPub = (int)($datos['idPublicacion'] ?? 0);
     if (!$idPub) respuestaError('idPublicacion requerido.');
 
+    iniciarSesionSegura();
     $idUsuario = (int)$_SESSION['idUsuario'];
+    session_write_close();
 
-    /* Verificar que la publicación existe y está activa */
-    $stmt = $pdo->prepare('SELECT idPublicacion, num_likes FROM publicaciones WHERE idPublicacion = ? AND activa = 1');
+    $stmt = $pdo->prepare('SELECT idPublicacion FROM publicaciones WHERE idPublicacion = ? AND activa = 1');
     $stmt->execute([$idPub]);
-    $pub = $stmt->fetch();
-    if (!$pub) respuestaError('Publicación no encontrada.');
+    if (!$stmt->fetch()) respuestaError('Publicación no encontrada.');
 
-    /* Toggle like */
     $stmtCheck = $pdo->prepare('SELECT COUNT(*) FROM likes_publicaciones WHERE idUsuario = ? AND idPublicacion = ?');
     $stmtCheck->execute([$idUsuario, $idPub]);
     $yaLike = (bool)$stmtCheck->fetchColumn();
 
-    /* Obtener datos del autor de la publicacion */
-    $stmtAutor = $pdo->prepare('SELECT p.idUsuario, u.username FROM publicaciones p JOIN usuarios u ON p.idUsuario = u.idUsuario WHERE p.idPublicacion = ?');
-    $stmtAutor->execute([$idPub]);
-    $autorPub = $stmtAutor->fetch();
-
     if ($yaLike) {
         $pdo->prepare('DELETE FROM likes_publicaciones WHERE idUsuario = ? AND idPublicacion = ?')
-            ->execute([$idUsuario, $idPub]);
+             ->execute([$idUsuario, $idPub]);
         $pdo->prepare('UPDATE publicaciones SET num_likes = GREATEST(0, num_likes - 1) WHERE idPublicacion = ?')
-            ->execute([$idPub]);
+             ->execute([$idPub]);
         $accion = 'unlike';
     } else {
         $pdo->prepare('INSERT IGNORE INTO likes_publicaciones (idUsuario, idPublicacion) VALUES (?, ?)')
-            ->execute([$idUsuario, $idPub]);
+             ->execute([$idUsuario, $idPub]);
         $pdo->prepare('UPDATE publicaciones SET num_likes = num_likes + 1 WHERE idPublicacion = ?')
-            ->execute([$idPub]);
+             ->execute([$idPub]);
         $accion = 'like';
-
-        /* Notificar al autor (si no es su propio like) */
-        if ($autorPub && $autorPub['idUsuario'] != $idUsuario) {
-            $stmtUser = $pdo->prepare('SELECT username FROM usuarios WHERE idUsuario = ?');
-            $stmtUser->execute([$idUsuario]);
-            $userLike = $stmtUser->fetch();
-
-            if ($userLike) {
-                $msg = $userLike['username'] . ' ha reaccionado a tu publicación';
-                $stmtNotif = $pdo->prepare('INSERT INTO notificaciones (idUsuario, tipo, mensaje, idPublicacion) VALUES (?, ?, ?, ?)');
-                $stmtNotif->execute([$autorPub['idUsuario'], 'like', $msg, $idPub]);
-            }
-        }
     }
 
-    $nuevoTotal = (int)$pdo->query("SELECT num_likes FROM publicaciones WHERE idPublicacion = $idPub")->fetchColumn();
-    respuestaOk(['accion' => $accion, 'num_likes' => $nuevoTotal]);
+    $stmt = $pdo->prepare('SELECT num_likes FROM publicaciones WHERE idPublicacion = ?');
+    $stmt->execute([$idPub]);
+    respuestaOk(['accion' => $accion, 'num_likes' => (int)$stmt->fetchColumn()]);
 }
 
 /*--------------------------------------------------------------------------------------------
-DELETE — eliminar publicacion propia */
+DELETE - eliminar publicacion */
 if ($metodo === 'DELETE') {
     requerirLogin();
 
@@ -227,8 +221,10 @@ if ($metodo === 'DELETE') {
     $idPub = (int)($datos['idPublicacion'] ?? 0);
     if (!$idPub) respuestaError('idPublicacion requerido.');
 
+    iniciarSesionSegura();
     $idUsuario = (int)$_SESSION['idUsuario'];
     $rol       = $_SESSION['rol'] ?? '';
+    session_write_close();
 
     $stmt = $pdo->prepare('SELECT idUsuario FROM publicaciones WHERE idPublicacion = ? AND activa = 1');
     $stmt->execute([$idPub]);
@@ -242,4 +238,4 @@ if ($metodo === 'DELETE') {
     respuestaOk(['mensaje' => 'Publicación eliminada.']);
 }
 
-respuestaError('Metodo no permitido.', 405);
+respuestaError('Método no permitido.', 405);

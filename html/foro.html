@@ -60,30 +60,12 @@
             <img src="../img/iconosHeader/iconUser.png" alt="Usuario" width="30px" id="imgPerfilHeader">
             <span id="badgePerfil" class="notif-badge" style="display:none;">●</span>
         </a>
-            <a href="admin/dashboard.html" id="btnDashboard" style="display:none;margin-left:0.5em;" class="btn-azul btn-sm">
+        <a href="admin/dashboard.html" id="btnDashboard" style="display:none;margin-left:0.5em;" class="btn-azul btn-sm">
             <i class="fa-solid fa-gauge-high me-1"></i>Dashboard
         </a>
         <a href="register.html" id="btnRegister" class="btn-register">Registrarse</a>
     </div>
 </header>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            if (data.ok && data.usuario) {
-                var dash = document.getElementById('btnDashboard');
-                var reg = document.getElementById('btnRegister');
-                if (data.usuario.rol === 'admin' || data.usuario.rol === 'protectora') {
-                    if (dash) dash.style.display = '';
-                    if (reg) reg.style.display = 'none';
-                }
-            }
-        })
-        .catch(function() {});
-});
-</script>
 
 
 <main>
@@ -222,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="foro-lateral-bloque mb-4">
                     <h4 class="foro-lateral-titulo"><i class="fa-solid fa-fire me-2"></i>Más activas</h4>
                     <ul class="foro-populares-lista" id="listaPopulares">
-                    <li style="color:#aaa;font-size:0.85rem;">Sin publicaciones aún.</li>
+                        <li style="color:#aaa;font-size:0.85rem;">Sin publicaciones aún.</li>
                     </ul>
                 </div>
 
@@ -264,6 +246,8 @@ var busquedaActual  = '';
 var paginaActual    = 1;
 var totalPagForo    = 1;
 var todosLosPosts   = [];
+var _intervaloComs  = {};
+var _ultimosComsEnviados = {};
 
 var COLORES = ['#1B358F','#2e7d32','#c0392b','#8e24aa','#c87a00','#0277bd'];
 
@@ -272,12 +256,7 @@ init */
 document.addEventListener('DOMContentLoaded', function() {
     cargarSesionForo();
     cargarConteos();
-    /* Iniciar polling de notificaciones */
-    if (typeof iniciarPollingNotificaciones === 'function') {
-        iniciarPollingNotificaciones();
-    } else {
-        cargarNotificaciones();
-    }
+    try { cargarNotificaciones(); } catch(e) {}
 
     document.getElementById('btnCerrarAviso').addEventListener('click', function() {
         document.getElementById('avisoLogin').classList.add('d-none');
@@ -294,7 +273,6 @@ document.addEventListener('DOMContentLoaded', function() {
         enviarPublicacion();
     });
 
-    /* auto-crecer textarea y restaurar placeholder */
     var textareaReal = document.getElementById('textareaPublicarReal');
     if (textareaReal) {
         textareaReal.addEventListener('input', function() {
@@ -309,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    /* Preview multimedia */
+
     var inputMedia = document.getElementById('inputMedia');
     if (inputMedia) {
         inputMedia.addEventListener('change', function() {
@@ -340,7 +318,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    /* filtros */
     document.querySelectorAll('.foro-filtro-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.foro-filtro-btn').forEach(function(b) { b.classList.remove('activo'); });
@@ -352,7 +329,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    /* categorías lateral */
     document.querySelectorAll('.foro-cat-lista li[data-cat]').forEach(function(li) {
         li.addEventListener('click', function() {
             categoriaActual = li.dataset.cat;
@@ -365,7 +341,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    /* búsqueda */
     document.getElementById('btnBuscar').addEventListener('click', hacerBusqueda);
     document.getElementById('inputBusqueda').addEventListener('keydown', function(e) {
         if (e.key === 'Enter') hacerBusqueda();
@@ -375,7 +350,6 @@ document.addEventListener('DOMContentLoaded', function() {
 /*--------------------------------------------------------------------------------------------
 sesión */
 function cargarSesionForo() {
-    /* Usar sessionStorage si ya está disponible para evitar llamada duplicada */
     var sesGuardada = sessionStorage.getItem('pf_session');
     if (sesGuardada) {
         try {
@@ -386,17 +360,18 @@ function cargarSesionForo() {
         cargarPosts(1);
         return;
     }
-    /* Si no hay sessionStorage, consultar sesion.php directamente */
     fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
         .then(function(r) { return r.json(); })
         .then(function(data) {
-            if (data.ok && data.logueado) {
+            if (data && data.ok && data.logueado && data.usuario) {
                 sesionForo = data.usuario;
                 activarFormPub(data.usuario);
             }
             cargarPosts(1);
         })
-        .catch(function() { cargarPosts(1); });
+        .catch(function() {
+            cargarPosts(1);
+        });
 }
 
 function activarFormPub(usuario) {
@@ -404,7 +379,7 @@ function activarFormPub(usuario) {
 
     var avatar = document.getElementById('avatarPub');
     if (usuario.foto_perfil) {
-        var fotoSrc = (usuario.foto_perfil.startsWith('http') ? '' : '../backend/api/auth/') + usuario.foto_perfil;
+        var fotoSrc = usuario.foto_perfil.startsWith('http') ? usuario.foto_perfil : ('../backend/api/auth/' + usuario.foto_perfil);
         avatar.innerHTML = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer"'
             + ' style="width:48px;height:48px;border-radius:50%;object-fit:cover;"'
             + ' onerror="this.parentElement.textContent=\'' + usuario.nombre.charAt(0).toUpperCase() + '\'">';
@@ -422,7 +397,7 @@ function activarFormPub(usuario) {
 
 /*--------------------------------------------------------------------------------------------
 cargar posts */
-function cargarPosts(pagina, callback) {
+function cargarPosts(pagina) {
     paginaActual = pagina || 1;
     var contenedor = document.getElementById('contenedorPosts');
     contenedor.innerHTML = '<div class="text-center py-5"><div class="spinner-border" style="color:#1B358F;" role="status"></div></div>';
@@ -445,10 +420,8 @@ function cargarPosts(pagina, callback) {
             renderPosts(todosLosPosts);
             renderPaginacion();
             actualizarPopulares(todosLosPosts);
-            if (callback) callback();
         })
         .catch(function(err) {
-            console.error('cargarPosts error:', err);
             contenedor.innerHTML = '<p class="text-center text-muted py-4">Error de conexión con el servidor. (' + err.message + ')</p>';
         });
 }
@@ -471,11 +444,12 @@ function renderPosts(posts) {
 
 function renderPost(p) {
     var color   = COLORES[p.autor_nombre.charCodeAt(0) % COLORES.length];
-    var inicial = p.autor_nombre.charAt(0).toUpperCase() + (p.autor_nombre.split(' ')[1] ? p.autor_nombre.split(' ')[1].charAt(0).toUpperCase() : '');
+    var partes  = p.autor_nombre.split(' ');
+    var inicial = partes[0].charAt(0).toUpperCase() + (partes[1] ? partes[1].charAt(0).toUpperCase() : '');
 
     var avatarHtml;
     if (p.autor_foto) {
-        var fotoSrc = (p.autor_foto.startsWith('http') ? '' : '../backend/api/auth/') + p.autor_foto;
+        var fotoSrc = p.autor_foto.startsWith('http') ? p.autor_foto : ('../backend/api/auth/' + p.autor_foto);
         avatarHtml = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer"'
             + ' style="width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;"'
             + ' onerror="this.outerHTML=\'<div style=&quot;width:42px;height:42px;border-radius:50%;background:' + color + ';display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.88rem;flex-shrink:0;&quot;>' + inicial + '</div>\'">';
@@ -546,11 +520,11 @@ function renderPost(p) {
 function activarListenersPost() {
     document.querySelectorAll('.foro-reaccion-like').forEach(function(btn) {
         btn.addEventListener('click', function() {
-            var id = btn.dataset.id;
             if (!sesionForo) {
                 document.getElementById('avisoLogin').classList.remove('d-none');
                 return;
             }
+            var id = btn.dataset.id;
             fetch('../backend/foro/publicaciones.php', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -599,15 +573,7 @@ function activarListenersPost() {
             .then(function(data) {
                 if (data.ok) {
                     var post = document.getElementById('post-' + id);
-                    if (post) {
-                        var cat = post.dataset.cat;
-                        post.remove();
-                        var countEl = document.getElementById('count-' + cat);
-                        if (countEl) {
-                            var actual = parseInt(countEl.textContent) || 0;
-                            if (actual > 0) countEl.textContent = actual - 1;
-                        }
-                    }
+                    if (post) post.remove();
                     mostrarToast('Publicación eliminada', 'error');
                 }
             });
@@ -617,20 +583,19 @@ function activarListenersPost() {
 
 /*--------------------------------------------------------------------------------------------
 comentarios */
-var _intervaloComs = {};  /* { idPublicacion: setIntervalId } */
-
 function toggleComentarios(idPublicacion, btn) {
     var seccion   = document.getElementById('coms-' + idPublicacion);
     var yaAbierto = seccion.getAttribute('data-abierto') === '1';
 
     if (yaAbierto) {
-        /* Detener polling */
         if (_intervaloComs[idPublicacion]) {
             clearInterval(_intervaloComs[idPublicacion]);
             delete _intervaloComs[idPublicacion];
         }
-        seccion.querySelector('.bloque-coms')    && seccion.querySelector('.bloque-coms').remove();
-        seccion.querySelector('.input-com-wrap') && seccion.querySelector('.input-com-wrap').remove();
+        var bloqueComs = seccion.querySelector('.bloque-coms');
+        var inputWrap  = seccion.querySelector('.input-com-wrap');
+        if (bloqueComs) bloqueComs.remove();
+        if (inputWrap)  inputWrap.remove();
         seccion.setAttribute('data-abierto', '0');
         btn.innerHTML = '<i class="fa-solid fa-chevron-down me-1"></i>Ver comentarios';
         return;
@@ -650,7 +615,7 @@ function toggleComentarios(idPublicacion, btn) {
             bloqueComs.className = 'bloque-coms mt-2';
 
             if (data.comentarios && data.comentarios.length) {
-                bloqueComs.innerHTML = data.comentarios.map(renderComentario).join('');
+                bloqueComs.innerHTML = data.comentarios.map(function(c) { return renderComentario(c, false); }).join('');
             } else {
                 bloqueComs.innerHTML = '<p style="font-size:0.82rem;color:#6c757d;padding:0.4em 0;">Sin comentarios aún. ¡Sé el primero!</p>';
             }
@@ -658,23 +623,23 @@ function toggleComentarios(idPublicacion, btn) {
             seccion.appendChild(bloqueComs);
             activarEventosComentarios(bloqueComs, idPublicacion);
 
-            /* Iniciar polling para nuevos comentarios */
             if (_intervaloComs[idPublicacion]) clearInterval(_intervaloComs[idPublicacion]);
             _intervaloComs[idPublicacion] = setInterval(function() {
                 actualizarComentarios(idPublicacion, bloqueComs);
-            }, 10000); /* cada 10 segundos */
+            }, 10000);
 
             var inputWrap = document.createElement('div');
             inputWrap.className = 'foro-comentario-input input-com-wrap mt-1';
 
             if (sesionForo) {
+                var color   = COLORES[sesionForo.idUsuario % COLORES.length];
+                var inicial = sesionForo.nombre.charAt(0).toUpperCase();
                 var avatarHtml;
                 if (sesionForo.foto_perfil) {
-                    var fotoSrc = (sesionForo.foto_perfil.startsWith('http') ? '' : '../backend/api/auth/') + sesionForo.foto_perfil;
-                    avatarHtml = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.style.display=\'none\';this.nextElementChild.style.display=\'flex\'">'
-                        + '<div class="foro-avatar foro-avatar-sm" style="background:' + COLORES[sesionForo.idUsuario % COLORES.length] + ';flex-shrink:0;display:none;">' + sesionForo.nombre.charAt(0).toUpperCase() + '</div>';
+                    var fotoSrc = sesionForo.foto_perfil.startsWith('http') ? sesionForo.foto_perfil : ('../backend/api/auth/' + sesionForo.foto_perfil);
+                    avatarHtml = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.style.display=\'none\'">';
                 } else {
-                    avatarHtml = '<div class="foro-avatar foro-avatar-sm" style="background:' + COLORES[sesionForo.idUsuario % COLORES.length] + ';flex-shrink:0;">' + sesionForo.nombre.charAt(0).toUpperCase() + '</div>';
+                    avatarHtml = '<div class="foro-avatar foro-avatar-sm" style="background:' + color + ';flex-shrink:0;">' + inicial + '</div>';
                 }
                 inputWrap.innerHTML =
                     avatarHtml
@@ -711,7 +676,7 @@ function activarEventosComentarios(bloqueComs, idPublicacion) {
     });
     bloqueComs.querySelectorAll('.foro-com-reply').forEach(function(btn) {
         btn.addEventListener('click', function() {
-            prepararRespuesta(this.dataset.user, this.dataset.pub);
+            prepararRespuesta(this.dataset.user, this.dataset.id, this.dataset.pub);
         });
     });
 }
@@ -722,8 +687,7 @@ function actualizarComentarios(idPublicacion, bloqueComs) {
         .then(function(r) { return r.json(); })
         .then(function(data) {
             if (!data.comentarios) return;
-            var html = data.comentarios.map(renderComentario).join('');
-            bloqueComs.innerHTML = html;
+            bloqueComs.innerHTML = data.comentarios.map(function(c) { return renderComentario(c, false); }).join('');
             activarEventosComentarios(bloqueComs, idPublicacion);
             var countEl = document.querySelector('#post-' + idPublicacion + ' .com-count');
             if (countEl) countEl.textContent = data.comentarios.length;
@@ -732,27 +696,22 @@ function actualizarComentarios(idPublicacion, bloqueComs) {
 }
 
 function renderComentario(c, esRespuesta) {
-    if (c.deleted && !c.respuestas) {
-        return '<div class="foro-comentario foro-comentario-deleted" data-id="' + c.idComentario + '">'
-            + '<p class="foro-com-texto text-muted"><em>Este comentario ha sido eliminado por el usuario.</em></p>'
-            + '</div>';
+    /* Eliminado sin respuestas → ocultar completamente */
+    if (c.deleted && (!c.respuestas || !c.respuestas.length)) {
+        return '';
     }
 
-    var autor = c.autor_nombre || c.prot_nombre || 'Usuario';
+    var autor   = c.autor_nombre || c.prot_nombre || 'Usuario';
     var color   = COLORES[autor.charCodeAt(0) % COLORES.length];
-    var inicial = autor.charAt(0).toUpperCase() + (autor.split(' ')[1] ? autor.split(' ')[1].charAt(0).toUpperCase() : '');
+    var partes  = autor.split(' ');
+    var inicial = partes[0].charAt(0).toUpperCase() + (partes[1] ? partes[1].charAt(0).toUpperCase() : '');
 
     var avatarHtml;
-    if (c.autor_foto || c.prot_email) {
-        var fotoSrc = '';
-        if (c.autor_foto) fotoSrc = (c.autor_foto.startsWith('http') ? '' : '../backend/api/auth/') + c.autor_foto;
-        if (fotoSrc) {
-            avatarHtml = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer"'
-                + ' style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;"'
-                + ' onerror="this.outerHTML=\'<div class=&quot;foro-avatar foro-avatar-sm&quot; style=&quot;background:' + color + ';flex-shrink:0;&quot;>' + inicial + '</div>\'">';
-        } else {
-            avatarHtml = '<div class="foro-avatar foro-avatar-sm" style="background:' + color + ';flex-shrink:0;">' + inicial + '</div>';
-        }
+    if (c.autor_foto) {
+        var fotoSrc = c.autor_foto.startsWith('http') ? c.autor_foto : ('../backend/api/auth/' + c.autor_foto);
+        avatarHtml = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer"'
+            + ' style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;"'
+            + ' onerror="this.outerHTML=\'<div class=&quot;foro-avatar foro-avatar-sm&quot; style=&quot;background:' + color + ';flex-shrink:0;&quot;>' + inicial + '</div>\'">';
     } else {
         avatarHtml = '<div class="foro-avatar foro-avatar-sm" style="background:' + color + ';flex-shrink:0;">' + inicial + '</div>';
     }
@@ -766,36 +725,44 @@ function renderComentario(c, esRespuesta) {
         : '';
 
     var esVerificado = c.autor_rol === 'admin' ? ' foro-comentario-verificado' : '';
-    var paddingLeft = esRespuesta ? ' style="margin-left:2.5rem;"' : '';
-    
-    var idUsuarioActual = sesionForo ? (sesionForo.idUsuario || null) : null;
+    var claseReply   = esRespuesta ? ' foro-comentario-respuesta' : '';
+
+    var idUsuarioActual    = sesionForo ? (sesionForo.idUsuario    || null) : null;
     var idProtectoraActual = sesionForo ? (sesionForo.idProtectora || null) : null;
-    
-    var esAutor = (idUsuarioActual && String(c.idUsuario) === String(idUsuarioActual)) ||
-                  (idProtectoraActual && String(c.idProtectora) === String(idProtectoraActual));
+    var esAutor = (idUsuarioActual    && String(c.idUsuario)    === String(idUsuarioActual))
+               || (idProtectoraActual && String(c.idProtectora) === String(idProtectoraActual));
     var puedeAccionar = esAutor || (sesionForo && sesionForo.rol === 'admin');
-    
+
     var btnEliminar = (puedeAccionar && !c.deleted)
         ? '<button class="foro-com-delete" data-id="' + c.idComentario + '" data-pub="' + c.idPublicacion + '" title="Eliminar"><i class="fa-solid fa-trash"></i></button>'
         : '';
     var btnResponder = (sesionForo && !c.deleted)
-        ? '<button class="foro-com-reply" data-user="' + (c.autor_username || c.prot_nombre || 'usuario') + '" data-pub="' + c.idPublicacion + '" title="Responder"><i class="fa-solid fa-reply"></i></button>'
+        ? '<button class="foro-com-reply" data-user="' + (c.autor_username || autor) + '" data-id="' + c.idComentario + '" data-pub="' + c.idPublicacion + '" title="Responder"><i class="fa-solid fa-reply"></i></button>'
         : '';
 
-    var heartClass = c.tiene_like ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart';
-    
-    var html = '<div class="foro-comentario' + esVerificado + '" data-id="' + c.idComentario + '"' + paddingLeft + '>';
-    
+    var heartClass = c.tiene_like ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+
+    var contenidoHtml = c.contenido || '';
+    if (esRespuesta) {
+        contenidoHtml = contenidoHtml.replace(/^(@\S+)\s?/, '<span class="foro-com-reply-tag">$1</span> ');
+    }
+
+    var html = '<div class="foro-comentario' + esVerificado + claseReply + '" data-id="' + c.idComentario + '">';
+
     if (c.deleted) {
-        html += '<p class="foro-com-texto text-muted"><em>Este comentario ha sido eliminado por el usuario.</em></p>';
+        /* Eliminado CON respuestas → placeholder sin datos del autor */
+        html += '<div class="foro-comentario-burbuja" style="background:#f1f3f5;opacity:0.75;">'
+            + '<p class="foro-com-texto text-muted" style="font-size:0.82rem;font-style:italic;margin:0;">'
+            + '<i class="fa-solid fa-ban me-1" style="font-size:0.75rem;"></i>Este comentario ha sido eliminado por el usuario.'
+            + '</p></div>';
     } else {
         html += avatarHtml
             + '<div class="foro-comentario-burbuja">'
             + '<span class="foro-com-autor">' + autor + badgeRol + '</span>'
-            + '<p class="foro-com-texto">' + c.contenido + '</p>'
+            + '<p class="foro-com-texto">' + contenidoHtml + '</p>'
             + '<div class="foro-com-acciones">'
             + '<button class="foro-com-like" data-id="' + c.idComentario + '">'
-            + '<i class="' + heartClass + '"></i> <span class="like-count">' + (c.num_likes||0) + '</span>'
+            + '<i class="' + heartClass + '"></i> <span class="like-count">' + (c.num_likes || 0) + '</span>'
             + '</button>'
             + btnResponder
             + btnEliminar
@@ -803,16 +770,14 @@ function renderComentario(c, esRespuesta) {
             + '</div>'
             + '</div>';
     }
-    
-    if (c.respuestas && c.respuestas.length) {
-        html += '<div class="foro-respuestas">';
-        c.respuestas.forEach(function(r) {
-            html += renderComentario(r, true);
-        });
-        html += '</div>';
-    }
-    
+
+    /* Cerrar div del comentario ANTES de las respuestas (evita cascada flex) */
     html += '</div>';
+
+    if (c.respuestas && c.respuestas.length) {
+        c.respuestas.forEach(function(r) { html += renderComentario(r, true); });
+    }
+
     return html;
 }
 
@@ -832,7 +797,6 @@ function activarLikeCom(btn) {
         .then(function(r) { return r.json(); })
         .then(function(data) {
             if (!data.ok) return;
-            var count = btn.querySelector('.like-count');
             if (data.accion === 'like') {
                 btn.classList.add('liked');
                 btn.querySelector('i').className = 'fa-solid fa-heart';
@@ -840,6 +804,7 @@ function activarLikeCom(btn) {
                 btn.classList.remove('liked');
                 btn.querySelector('i').className = 'fa-regular fa-heart';
             }
+            var count = btn.querySelector('.like-count');
             if (count) count.textContent = data.num_likes;
         });
     });
@@ -857,34 +822,24 @@ function eliminarComentario(id, idPub) {
     })
     .then(function(r) { return r.json(); })
     .then(function(data) {
-        if (data.ok) {
-            var com = document.querySelector('.foro-comentario[data-id="' + id + '"]');
-            if (com) {
-                com.classList.add('foro-comentario-deleted');
-                com.querySelectorAll('.foro-com-like, .foro-com-reply, .foro-com-delete').forEach(function(b) { b.remove(); });
-                var texto = com.querySelector('.foro-com-texto');
-                if (texto) texto.innerHTML = '<em>Este comentario ha sido eliminado por el usuario.</em>';
-                var autor = com.querySelector('.foro-com-autor');
-                if (autor) autor.textContent = '';
-                var avatar = com.querySelector('img, .foro-avatar');
-                if (avatar) avatar.remove();
-            }
-            actualizarContadorCom(idPub, -1);
+        if (!data.ok) return;
+        /* Refrescar la sección de comentarios para reflejar el estado real */
+        var seccion    = document.getElementById('coms-' + idPub);
+        var bloqueComs = seccion ? seccion.querySelector('.bloque-coms') : null;
+        if (bloqueComs) {
+            actualizarComentarios(idPub, bloqueComs);
         }
+        actualizarContadorCom(idPub, -1);
     });
 }
 
-/*--------------------------------------------------------------------------------------------
-responder a comentario - preparar input */
-var replyingTo = {};
+var replyingTo   = {};
+var replyingToId = {};
 
-function prepararRespuesta(username, idPub) {
-    replyingTo[idPub] = username;
+function prepararRespuesta(username, idComentario, idPub) {
+    replyingTo[idPub]   = username;
+    replyingToId[idPub] = idComentario;
     var input = document.getElementById('com-input-' + idPub);
-    if (!input) {
-        toggleComentarios(idPub, document.querySelector('#post-' + idPub + ' .foro-ver-mas-com'));
-        input = document.getElementById('com-input-' + idPub);
-    }
     if (input) {
         input.value = '@' + username + ' ';
         input.placeholder = 'Respondiendo a @' + username + '...';
@@ -893,13 +848,8 @@ function prepararRespuesta(username, idPub) {
 }
 
 function actualizarContadorCom(idPub, delta) {
-    var post = document.getElementById('post-' + idPub);
-    if (!post) return;
-    var cnt = post.querySelector('.com-count');
-    if (cnt) {
-        var n = parseInt(cnt.textContent) || 0;
-        cnt.textContent = n + delta;
-    }
+    var cnt = document.querySelector('#post-' + idPub + ' .com-count');
+    if (cnt) cnt.textContent = Math.max(0, (parseInt(cnt.textContent) || 0) + delta);
 }
 
 /*--------------------------------------------------------------------------------------------
@@ -914,9 +864,9 @@ function enviarPublicacion() {
 
     errorEl.style.display = 'none';
     if (!contenido) { errorEl.textContent = 'Escribe algo antes de publicar.'; errorEl.style.display = 'inline'; return; }
-    if (!titulo) { titulo = contenido.substring(0, 80).replace(/\s+$/, '') + (contenido.length > 80 ? '…' : ''); }
+    if (!titulo)    { titulo = contenido.substring(0, 80).replace(/\s+$/, '') + (contenido.length > 80 ? '…' : ''); }
 
-    btn.disabled = true;
+    btn.disabled  = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Publicando...';
 
     var fd = new FormData();
@@ -932,7 +882,7 @@ function enviarPublicacion() {
     })
     .then(function(r) { return r.json(); })
     .then(function(data) {
-        btn.disabled = false;
+        btn.disabled  = false;
         btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Publicar';
         if (data.ok) {
             document.getElementById('inputTitulo').value = '';
@@ -944,18 +894,13 @@ function enviarPublicacion() {
             if (prev) { prev.innerHTML = ''; prev.style.display = 'none'; }
             if (document.getElementById('inputMedia')) document.getElementById('inputMedia').value = '';
             cargarPosts(1);
-            var countEl = document.getElementById('count-' + categoria);
-            if (countEl) {
-                var actual = parseInt(countEl.textContent) || 0;
-                countEl.textContent = actual + 1;
-            }
         } else {
             errorEl.textContent = data.error || 'Error al publicar.';
             errorEl.style.display = 'inline';
         }
     })
     .catch(function() {
-        btn.disabled = false;
+        btn.disabled  = false;
         btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Publicar';
         errorEl.textContent = 'Error de conexión.';
         errorEl.style.display = 'inline';
@@ -964,8 +909,6 @@ function enviarPublicacion() {
 
 /*--------------------------------------------------------------------------------------------
 enviar comentario */
-var _ultimosComsEnviados = {};
-
 function enviarComentario(idPublicacion) {
     var input     = document.getElementById('com-input-' + idPublicacion);
     var contenido = input ? input.value.trim() : '';
@@ -973,12 +916,8 @@ function enviarComentario(idPublicacion) {
 
     input.disabled = true;
 
-    var seccion = document.getElementById('coms-' + idPublicacion);
+    var seccion    = document.getElementById('coms-' + idPublicacion);
     var bloqueComs = seccion.querySelector('.bloque-coms');
-
-    if (bloqueComs && bloqueComs.querySelectorAll('.foro-comentario').length === 0) {
-        bloqueComs.innerHTML = '';
-    }
 
     if (!bloqueComs) {
         bloqueComs = document.createElement('div');
@@ -992,10 +931,11 @@ function enviarComentario(idPublicacion) {
     }
 
     var color   = COLORES[sesionForo.nombre.charCodeAt(0) % COLORES.length];
-    var inicial = sesionForo.nombre.charAt(0).toUpperCase() + (sesionForo.nombre.split(' ')[1] ? sesionForo.nombre.split(' ')[1].charAt(0).toUpperCase() : '');
+    var partes  = sesionForo.nombre.split(' ');
+    var inicial = partes[0].charAt(0).toUpperCase() + (partes[1] ? partes[1].charAt(0).toUpperCase() : '');
     var avatarHtml;
     if (sesionForo.foto_perfil) {
-        var fotoSrc = (sesionForo.foto_perfil.startsWith('http') ? '' : '../backend/api/auth/') + sesionForo.foto_perfil;
+        var fotoSrc = sesionForo.foto_perfil.startsWith('http') ? sesionForo.foto_perfil : ('../backend/api/auth/' + sesionForo.foto_perfil);
         avatarHtml = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer"'
             + ' style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;"'
             + ' onerror="this.outerHTML=\'<div class=&quot;foro-avatar foro-avatar-sm&quot; style=&quot;background:' + color + ';flex-shrink:0;&quot;>' + inicial + '</div>\'">';
@@ -1003,14 +943,15 @@ function enviarComentario(idPublicacion) {
         avatarHtml = '<div class="foro-avatar foro-avatar-sm" style="background:' + color + ';flex-shrink:0;">' + inicial + '</div>';
     }
 
-    var fechaHoy = new Date().toLocaleDateString('es-ES', { day:'2-digit', month:'short' });
-
+    var fechaHoy  = new Date().toLocaleDateString('es-ES', { day:'2-digit', month:'short' });
     var contenidoEscapado = contenido.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    var tempId    = 'temp-' + Date.now();
 
-    var esRespondiendo = input.placeholder.includes('Respondiendo');
-    var tempId = esRespondiendo ? 'temp-reply-' + Date.now() : 'temp-' + idPublicacion;
-    
-    var htmlCom = '<div class="foro-comentario' + (esRespondiendo ? ' foro-respuesta' : '') + '" data-id="' + tempId + '" style="animation:comFadeIn 0.3s ease;">'
+    var esReply   = !!replyingToId[idPublicacion];
+    var tempClass = 'foro-comentario' + (esReply ? ' foro-comentario-respuesta' : '');
+
+    bloqueComs.insertAdjacentHTML('beforeend',
+        '<div class="' + tempClass + '" data-id="' + tempId + '">'
         + avatarHtml
         + '<div class="foro-comentario-burbuja">'
         + '<span class="foro-com-autor">' + sesionForo.nombre + '</span>'
@@ -1018,33 +959,149 @@ function enviarComentario(idPublicacion) {
         + '<div class="foro-com-acciones">'
         + '<button class="foro-com-like" data-id="0"><i class="fa-regular fa-heart"></i> <span class="like-count">0</span></button>'
         + '<span class="foro-com-hora">' + fechaHoy + '</span>'
-        + '</div></div></div>';
+        + '</div></div></div>'
+    );
 
-    bloqueComs.insertAdjacentHTML('beforeend', htmlCom);
     var nuevoEl = bloqueComs.lastElementChild;
-
-    var countEl = document.querySelector('#post-' + idPublicacion + ' .com-count');
-    if (countEl && !esRespondiendo) countEl.textContent = parseInt(countEl.textContent||0) + 1;
-
     nuevoEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
+    actualizarContadorCom(idPublicacion, 1);
     _ultimosComsEnviados[idPublicacion] = Date.now();
 
-    var parentId = esRespondiendo ? (function() {
-        var com = nuevoEl.previousElementSibling;
-        while (com) {
-            if (com.classList.contains('foro-comentario') && com.dataset.id && !String(com.dataset.id).startsWith('temp')) {
-                return parseInt(com.dataset.id);
+    fetch('../backend/foro/comentarios.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+            idPublicacion: idPublicacion,
+            contenido: contenido,
+            idPadre: replyingToId[idPublicacion] || null,
+        }),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.ok) {
+            input.value = '';
+            input.placeholder = 'Escribe un comentario...';
+            delete replyingTo[idPublicacion];
+            delete replyingToId[idPublicacion];
+            if (data.idComentario) {
+                nuevoEl.dataset.id = data.idComentario;
+                var likeBtn = nuevoEl.querySelector('.foro-com-like');
+                if (likeBtn) likeBtn.dataset.id = data.idComentario;
+            }
+        } else {
+            nuevoEl.remove();
+            actualizarContadorCom(idPublicacion, -1);
+            mostrarToast('Error al enviar comentario', 'error');
+        }
+    })
+    .catch(function() {
+        nuevoEl.remove();
+        actualizarContadorCom(idPublicacion, -1);
+    })
+    .finally(function() {
+        input.disabled = false;
+    });
 }
-    contenedor.innerHTML = html;
+
+/*--------------------------------------------------------------------------------------------
+búsqueda */
+function hacerBusqueda() {
+    busquedaActual  = document.getElementById('inputBusqueda').value.trim();
+    categoriaActual = 'todas';
+    document.querySelectorAll('.foro-filtro-btn').forEach(function(b) { b.classList.remove('activo'); });
+    document.querySelector('.foro-filtro-btn[data-cat="todas"]').classList.add('activo');
+    cargarPosts(1);
 }
-document.addEventListener('DOMContentLoaded', function() {
-    var params = new URLSearchParams(window.location.search);
-    var postId = params.get('post');
-    if (postId) {
-        irAPost(postId);
+
+/*--------------------------------------------------------------------------------------------
+conteos de categorías */
+function cargarConteos() {
+    fetch('../backend/foro/publicaciones.php?conteo=1')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (!data.conteos) return;
+            ['adopcion','cuidados','acogida','salud','informacion'].forEach(function(c) {
+                var el = document.getElementById('count-' + c);
+                if (el) el.textContent = data.conteos[c] || 0;
+            });
+        })
+        .catch(function() {});
+}
+
+/*--------------------------------------------------------------------------------------------
+populares */
+function actualizarPopulares(posts) {
+    var lista = document.getElementById('listaPopulares');
+    if (!lista) return;
+    var activos = posts.filter(function(p) { return p.activa != 0; });
+    if (!activos.length) {
+        lista.innerHTML = '<li style="color:#aaa;font-size:0.85rem;">Sin publicaciones aún.</li>';
+        return;
     }
-});
+    var top = activos.slice().sort(function(a, b) {
+        return (parseInt(b.num_likes) + parseInt(b.num_comentarios)) - (parseInt(a.num_likes) + parseInt(a.num_comentarios));
+    }).slice(0, 5);
+    lista.innerHTML = top.map(function(p) {
+        return '<li style="cursor:pointer;" onclick="document.getElementById(\'post-' + p.idPublicacion + '\') && document.getElementById(\'post-' + p.idPublicacion + '\').scrollIntoView({behavior:\'smooth\'})">'
+            + '<strong>' + p.titulo.substring(0, 35) + (p.titulo.length > 35 ? '…' : '') + '</strong>'
+            + '<span class="foro-cat-count">' + (parseInt(p.num_likes) + parseInt(p.num_comentarios)) + ' pts</span>'
+            + '</li>';
+    }).join('');
+}
+
+/*--------------------------------------------------------------------------------------------
+emoji picker */
+function toggleEmojiPicker() {
+    var picker = document.getElementById('emojiPicker');
+    if (!picker) return;
+    if (picker.style.display === 'flex') { picker.style.display = 'none'; return; }
+    var emojis = ['😊','❤️','🐱','🐶','🎉','👏','🙌','🔥','💪','👍','🏠','🏥','📷','🎥','✨','🌟','🥰','😍','🤗','💙','🧡','🐾','🦴','🍖','💊','🚑','📋','📝','✅','❌','⚠️','📢','🔔','🎗️','🏷️','💬','🗨️','💭'];
+    picker.innerHTML = emojis.map(function(e) {
+        return '<span style="cursor:pointer;font-size:1.2rem;padding:3px 4px;border-radius:4px;" onclick="insertarEmoji(\'' + e.replace(/'/g,'\\\'') + '\',\'textareaPublicarReal\')">' + e + '</span>';
+    }).join('');
+    picker.style.display = 'flex';
+}
+
+function toggleEmojiPickerCom(idPub) {
+    var picker = document.getElementById('emojiPickerCom-' + idPub);
+    if (!picker) {
+        picker = document.createElement('div');
+        picker.id = 'emojiPickerCom-' + idPub;
+        picker.style.cssText = 'display:flex;position:absolute;z-index:999;background:#fff;border:1px solid #e9ecef;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.12);padding:0.6em;width:280px;max-height:200px;overflow-y:auto;flex-wrap:wrap;gap:2px;';
+        var emojis = ['😊','❤️','🐱','🐶','🎉','👏','🙌','🔥','💪','👍','🏠','🏥','📷','🎥','✨','🌟','🥰','😍','🤗','💙','🧡','🐾','🦴','🍖','💊','🚑','📋','📝','✅','❌','⚠️','📢','🔔','🎗️','🏷️','💬','🗨️','💭'];
+        picker.innerHTML = emojis.map(function(e) {
+            return '<span style="cursor:pointer;font-size:1.2rem;padding:3px 4px;border-radius:4px;" onclick="insertarEmoji(\'' + e.replace(/'/g,'\\\'') + '\',\'com-input-' + idPub + '\')">' + e + '</span>';
+        }).join('');
+        document.getElementById('coms-' + idPub).appendChild(picker);
+    }
+    picker.style.display = picker.style.display === 'flex' ? 'none' : 'flex';
+}
+
+function insertarEmoji(emoji, inputId) {
+    var input = document.getElementById(inputId);
+    if (!input) return;
+    var start = input.selectionStart;
+    var end   = input.selectionEnd;
+    input.value = input.value.substring(0, start) + emoji + input.value.substring(end);
+    input.focus();
+    input.selectionStart = input.selectionEnd = start + emoji.length;
+}
+
+function quitarMedia() {
+    var prev = document.getElementById('mediaPreview');
+    if (prev) { prev.innerHTML = ''; prev.style.display = 'none'; }
+    var inp = document.getElementById('inputMedia');
+    if (inp) inp.value = '';
+}
+
+function mostrarToast(msg, tipo) {
+    var t = document.createElement('div');
+    t.className  = 'toast visible toast-' + (tipo || 'ok');
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(function() { t.remove(); }, 3000);
+}
 
 /*--------------------------------------------------------------------------------------------
 paginación */
@@ -1054,8 +1111,7 @@ function renderPaginacion() {
 
     var html = '<div class="d-flex justify-content-center gap-2 flex-wrap mt-2">';
     if (paginaActual > 1) {
-        html += '<button class="btn-azul" style="padding:0.4em 1em;border-radius:8px;font-size:0.85rem;" onclick="cargarPosts(' + (paginaActual-1) + ')">'
-              + '<i class="fa-solid fa-chevron-left"></i></button>';
+        html += '<button class="btn-azul" style="padding:0.4em 1em;border-radius:8px;font-size:0.85rem;" onclick="cargarPosts(' + (paginaActual - 1) + ')"><i class="fa-solid fa-chevron-left"></i></button>';
     }
     for (var i = 1; i <= totalPagForo; i++) {
         var esActiva = i === paginaActual;
@@ -1063,27 +1119,12 @@ function renderPaginacion() {
               + (esActiva ? 'background:#1B358F;color:white;' : 'background:#f1f3f5;color:#333;') + '">' + i + '</button>';
     }
     if (paginaActual < totalPagForo) {
-        html += '<button class="btn-azul" style="padding:0.4em 1em;border-radius:8px;font-size:0.85rem;" onclick="cargarPosts(' + (paginaActual+1) + ')">'
-              + '<i class="fa-solid fa-chevron-right"></i></button>';
+        html += '<button class="btn-azul" style="padding:0.4em 1em;border-radius:8px;font-size:0.85rem;" onclick="cargarPosts(' + (paginaActual + 1) + ')"><i class="fa-solid fa-chevron-right"></i></button>';
     }
     html += '</div>';
     contenedor.innerHTML = html;
 }
-document.addEventListener('DOMContentLoaded', function() {
-    fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            if (data.ok && data.usuario) {
-                var dash = document.getElementById('btnDashboard');
-                var reg = document.getElementById('btnRegister');
-                if (data.usuario.rol === 'admin' || data.usuario.rol === 'protectora') {
-                    if (dash) dash.style.display = '';
-                    if (reg) reg.style.display = 'none';
-                }
-            }
-        })
-        .catch(function() {});
-});
+</script>
 
 </body>
 </html>

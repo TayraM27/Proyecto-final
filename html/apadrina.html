@@ -162,19 +162,91 @@
 <!-- modal apadrinamiento -->
 <div class="modal fade" id="modalApadrina" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content modal-content-pf">
-            <div class="modal-header modal-header-pf">
+        <div class="modal-content" style="border-radius:14px;border:none;overflow:hidden;">
+            <div class="modal-header modal-header-pf" style="background:linear-gradient(135deg, #27ae60 0%, #1e8e4e 100%);">
                 <h5 class="modal-title text-white fw-bold">
-                    <i class="fa-solid fa-heart me-2" style="color:#F8BA56;"></i>
-                    Apadrinar a <span id="modal-animal-nombre">–</span>
+                    <i class="fa-solid fa-ribbon me-2"></i>Apadrinar a <span id="modal-animal-nombre">–</span>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body modal-body-pf">
-                <p class="modal-intro">
-                    El apadrinamiento se gestiona directamente con la protectora. Contacta con ellos para acordar tu aportación mensual.
-                </p>
-                <div id="modal-datos-apadrina"></div>
+            <div class="modal-body" style="padding:1.5em;">
+                <div id="apadFormError2" class="form-error" style="display:none;background:#fff0f0;color:#c0392b;padding:0.5em 0.8em;border-radius:6px;font-size:0.85rem;margin-bottom:1em;"></div>
+                <div id="apadFormOk2" class="form-success" style="display:none;background:#f0fff4;color:#27ae60;padding:0.5em 0.8em;border-radius:6px;font-size:0.85rem;margin-bottom:1em;"></div>
+                <div id="apadMascotaInfo2" style="background:#f0fff4;padding:0.8em;border-radius:8px;margin-bottom:1em;font-size:0.9rem;"></div>
+                <form id="formApadrinamiento2" onsubmit="enviarApadrinamientoApadrina(event)">
+                    <input type="hidden" id="pIdMascota2">
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">Cuota mensual <span class="text-danger">*</span></label>
+                        <div id="cuotaGridApadrina" style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.5em;margin-bottom:0.5em;">
+                            <div class="cuota-op" data-cuota="3" onclick="selCuotaApadrina(this)" style="border:2px solid #ddd;border-radius:8px;padding:0.6em;text-align:center;cursor:pointer;transition:all 0.2s;">
+                                <div style="font-size:1.3rem;font-weight:700;color:#27ae60;">3 €</div><div style="font-size:0.75rem;color:#666;">Básica</div>
+                            </div>
+                            <div class="cuota-op" data-cuota="5" onclick="selCuotaApadrina(this)" style="border:2px solid #ddd;border-radius:8px;padding:0.6em;text-align:center;cursor:pointer;transition:all 0.2s;">
+                                <div style="font-size:1.3rem;font-weight:700;color:#27ae60;">5 €</div><div style="font-size:0.75rem;color:#666;">Estándar</div>
+                            </div>
+                            <div class="cuota-op" data-cuota="8" onclick="selCuotaApadrina(this)" style="border:2px solid #ddd;border-radius:8px;padding:0.6em;text-align:center;cursor:pointer;transition:all 0.2s;">
+                                <div style="font-size:1.3rem;font-weight:700;color:#27ae60;">8 €</div><div style="font-size:0.75rem;color:#666;">Premium</div>
+                            </div>
+                            <div class="cuota-op" data-cuota="10" onclick="selCuotaApadrina(this)" style="border:2px solid #ddd;border-radius:8px;padding:0.6em;text-align:center;cursor:pointer;transition:all 0.2s;">
+                                <div style="font-size:1.3rem;font-weight:700;color:#27ae60;">10 €</div><div style="font-size:0.75rem;color:#666;">Oro</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="pCuota2" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">Nombre completo <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="pNombre2" required maxlength="120" style="border-radius:8px;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="pEmail2" required maxlength="120" style="border-radius:8px;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">Teléfono <span class="text-danger">*</span></label>
+                        <input type="tel" class="form-control" id="pTelefono2" required maxlength="9" pattern="[0-9]{9}" placeholder="9 dígitos" style="border-radius:8px;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">Método de pago <span class="text-danger">*</span></label>
+                        <select class="form-select" id="pMetodoPago2" required style="border-radius:8px;">
+                            <option value="">Selecciona...</option>
+                            <option value="tarjeta_simulada">Tarjeta (simulada)</option>
+                            <option value="transferencia_simulada">Transferencia automática (simulada)</option>
+                            <option value="bizum_simulado">Bizum (simulado)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">Mensaje (opcional)</label>
+                        <textarea class="form-control" id="pMensaje2" maxlength="300" style="border-radius:8px;resize:vertical;min-height:60px;"></textarea>
+                    </div>
+                    <div class="mb-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="pTerminos2" required>
+                            <label class="form-check-label" for="pTerminos2" style="font-size:0.85rem;">Acepto los términos y condiciones del apadrinamiento.</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="pAceptaPolitica2" required>
+                            <label class="form-check-label" for="pAceptaPolitica2" style="font-size:0.85rem;">
+                                Acepto la <a href="privacidad.html" target="_blank">política de privacidad</a> y el tratamiento de mis datos. <span class="text-danger">*</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="aviso-responsable mt-2" style="background:#fff8e1;padding:0.6em 0.8em;border-radius:8px;font-size:0.82rem;color:#856404;">
+                        <i class="fa-solid fa-bell me-1"></i> El pago es simulado. No se realizará ningún cobro real. La protectora revisará tu solicitud y se pondrá en contacto contigo.
+                    </div>
+                    <button type="submit" class="btn w-100 mt-3" style="background:#27ae60;color:#fff;border:none;cursor:pointer;padding:0.7em;border-radius:8px;font-weight:600;">
+                        <i class="fa-solid fa-paper-plane me-1"></i> Confirmar apadrinamiento
+                    </button>
+                </form>
+                <div class="mt-3" style="border-top:1px solid #eee;padding-top:1em;">
+                    <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#apadContacto2" style="font-size:0.85rem;color:#1B358F;text-decoration:none;font-weight:500;">
+                        <i class="fa-solid fa-circle-info me-1"></i> ¿Dudas? Contacta directamente con la protectora
+                    </button>
+                    <div class="collapse" id="apadContacto2">
+                        <div id="apadContactoDatos2" class="mt-2" style="font-size:0.88rem;"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -182,12 +254,13 @@
 
     <!-- script js -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../javascript/script.js"></script>
+    <script src="../javascript/script.js?v=20260504"></script>
 
 <!-- chat -->
     <script src="https://code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
 
 <script>
+/* v20260504-fixed - NO BORRAR */
 /*--------------------------------------------------------------------------------------------
 cargar animales disponibles para apadrinar */
 document.addEventListener('DOMContentLoaded', function() {
@@ -195,24 +268,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 var _apadrinaData = {};
-
-
-var _shareData = {};
-
-function compartirCard(id) {
-    var d = _shareData[id] || {};
-    var url = window.location.href.replace(/html\/apadrina\.html.*/, '') + 'html/fichaAnimal.html?id=' + id;
-    var msg = '🐾 ' + (d.nombre || 'Animal') + ' busca un hogar. Mira su ficha en PetFamily: ' + url;
-    /* Copiar siempre al portapapeles */
-    var input = document.createElement('input');
-    input.value = url;
-    document.body.appendChild(input);
-    input.select();
-    document.execCommand('copy');
-    document.body.removeChild(input);
-    /* Mostrar URL al usuario */
-    mostrarToast('Enlace copiado', 'ok');
-}
 
 var paginaActualApadrina = 1;
 var totalPaginasApadrina = 1;
@@ -223,7 +278,18 @@ function cargarAnimalesApadrina(pagina) {
     grid.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border" style="color:#1B358F;" role="status"></div></div>';
 
     fetch('../backend/mascotas/listar.php?apadrina=1&pagina=' + paginaActualApadrina + '&limite=12')
-        .then(function(r) { if (!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+        .then(function(r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.text();
+        })
+        .then(function(text) {
+            try {
+                return JSON.parse(text);
+            } catch(e) {
+                console.error('Respuesta no es JSON:', text.substring(0, 500));
+                throw new Error('Respuesta inválida del servidor');
+            }
+        })
         .then(function(data) {
             if (!data.mascotas || !data.mascotas.length) {
                 grid.innerHTML = '<div class="col-12 text-center py-4 text-muted">No hay animales disponibles para apadrinar en este momento.</div>';
@@ -291,18 +357,23 @@ function cargarAnimalesApadrina(pagina) {
             totalPaginasApadrina = data.totalPaginas || 1;
             generarPaginacionApadrina(totalPaginasApadrina, paginaActualApadrina);
         })
-        .catch(function() {
-            grid.innerHTML = '<div class="col-12 text-center py-4 text-muted">Error al cargar los animales. Inténtalo de nuevo.</div>';
+        .catch(function(e) {
+            console.error('Error cargando animales:', e);
+            grid.innerHTML = '<div class="col-12 text-center py-4 text-muted">Error al cargar los animales. ' + (e.message || '') + '<br><button class="btn-azul mt-2" onclick="cargarAnimalesApadrina(' + paginaActualApadrina + ')">Reintentar</button></div>';
         });
 }
 
 function generarPaginacionApadrina(totalPag, pagAct) {
     var cont = document.getElementById('paginacionApadrina');
+    var gridEl = document.getElementById('gridApadrina');
+
     if (!cont) {
         cont = document.createElement('div');
         cont.id = 'paginacionApadrina';
         cont.className = 'paginacion-container mt-4 mb-4 text-center';
-        grid.parentNode.appendChild(cont);
+        if (gridEl && gridEl.parentNode) {
+            gridEl.parentNode.appendChild(cont);
+        }
     }
     if (totalPag <= 1) { cont.innerHTML = ''; return; }
     var html = '';
@@ -329,6 +400,8 @@ function abrirModalApadrina(qRaw) {
     var iban    = p.get('iban')      || '';
 
     document.getElementById('modal-animal-nombre').textContent = nombre;
+    document.getElementById('apadMascotaInfo2').innerHTML = '<strong>' + nombre + '</strong>';
+    document.getElementById('pIdMascota2').value = id;
 
     var asunto = encodeURIComponent('Apadrinamiento - ' + nombre);
     var cuerpo = encodeURIComponent(
@@ -338,23 +411,100 @@ function abrirModalApadrina(qRaw) {
         + 'Quedo a la espera de informacion sobre las condiciones del apadrinamiento.\n\nUn saludo.'
     );
 
-    var html = '<p class="protectora-nombre mb-2">' + prot + '</p>';
-    if (tel) html += '<div class="modal-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + tel.replace(/\s/g, '') + '">' + tel + '</a></div>';
-    if (em)  html += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + em + '?subject=' + asunto + '&body=' + cuerpo + '">' + em + '</a></div>';
-    if (web) html += '<div class="modal-dato"><i class="fa-solid fa-globe"></i><a href="' + web + '" target="_blank" rel="noopener">Web de la protectora</a></div>';
+    var contacto = '<p class="protectora-nombre mb-2">' + prot + '</p>';
+    if (em)  contacto += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + em + '?subject=' + asunto + '&body=' + cuerpo + '">' + em + '</a></div>';
+    if (tel) contacto += '<div class="modal-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + tel.replace(/\s/g, '') + '">' + tel + '</a></div>';
+    if (web) contacto += '<div class="modal-dato"><i class="fa-solid fa-globe"></i><a href="' + web + '" target="_blank" rel="noopener">Web de la protectora</a></div>';
     if (iban) {
         var ibanL = iban.replace(/\s*\([^)]*\)/g, '').trim();
-        html += '<div class="prot-dato-iban" style="margin-top:0.7em;">'
+        contacto += '<div class="prot-dato-iban" style="margin-top:0.7em;">'
               + '<i class="fa-solid fa-building-columns"></i>'
               + '<span class="prot-iban-num">' + ibanL + '</span>'
               + '<button onclick="copiarIban(this,\'' + ibanL + '\')" title="Copiar IBAN" style="background:none;border:none;cursor:pointer;color:#1B358F;padding:0;font-size:0.9rem;margin-left:auto;"><i class="fa-regular fa-copy"></i></button>'
               + '</div>';
     }
-    html += '<a href="fichaAnimal.html?id=' + id + '" class="btn-azul d-block text-center mt-3" style="text-decoration:none;">'
+    contacto += '<a href="fichaAnimal.html?id=' + id + '" class="btn-azul d-block text-center mt-3" style="text-decoration:none;">'
           + '<i class="fa-solid fa-paw me-2"></i>Ver ficha completa</a>';
 
-    document.getElementById('modal-datos-apadrina').innerHTML = html;
+    document.getElementById('apadContactoDatos2').innerHTML = contacto;
+
+    document.getElementById('pNombre2').value = '';
+    document.getElementById('pEmail2').value = '';
+    document.getElementById('pTelefono2').value = '';
+    document.getElementById('pMensaje2').value = '';
+    document.getElementById('pCuota2').value = '';
+    document.getElementById('pMetodoPago2').value = '';
+    document.getElementById('pTerminos2').checked = false;
+    document.getElementById('pAceptaPolitica2').checked = false;
+    document.querySelectorAll('#cuotaGridApadrina .cuota-op').forEach(function(o) { o.style.borderColor = '#ddd'; o.style.background = 'transparent'; });
+    document.getElementById('apadFormError2').style.display = 'none';
+    document.getElementById('apadFormOk2').style.display = 'none';
+
     new bootstrap.Modal(document.getElementById('modalApadrina')).show();
+}
+
+function selCuotaApadrina(el) {
+    document.querySelectorAll('#cuotaGridApadrina .cuota-op').forEach(function(o) { o.style.borderColor = '#ddd'; o.style.background = 'transparent'; });
+    el.style.borderColor = '#27ae60';
+    el.style.background = '#f0fff4';
+    document.getElementById('pCuota2').value = el.dataset.cuota;
+}
+
+function enviarApadrinamientoApadrina(e) {
+    e.preventDefault();
+    var err = document.getElementById('apadFormError2');
+    var ok = document.getElementById('apadFormOk2');
+    err.style.display = 'none';
+    ok.style.display = 'none';
+
+    var idMascota = document.getElementById('pIdMascota2').value;
+    var cuota = document.getElementById('pCuota2').value;
+    var nombre = document.getElementById('pNombre2').value.trim();
+    var email = document.getElementById('pEmail2').value.trim();
+    var telefono = document.getElementById('pTelefono2').value.trim();
+    var metodoPago = document.getElementById('pMetodoPago2').value;
+    var mensaje = document.getElementById('pMensaje2').value.trim();
+    var terminos = document.getElementById('pTerminos2').checked;
+    var politica = document.getElementById('pAceptaPolitica2').checked;
+
+    if (!cuota || ['3','5','8','10'].indexOf(cuota) === -1) { err.textContent = 'Selecciona una cuota válida.'; err.style.display = 'block'; return; }
+    if (!nombre) { err.textContent = 'El nombre completo es obligatorio.'; err.style.display = 'block'; return; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Introduce un email válido.'; err.style.display = 'block'; return; }
+    if (!/^\d{9}$/.test(telefono)) { err.textContent = 'El teléfono debe tener exactamente 9 dígitos.'; err.style.display = 'block'; return; }
+    if (!metodoPago) { err.textContent = 'Selecciona un método de pago.'; err.style.display = 'block'; return; }
+    if (!terminos) { err.textContent = 'Debes aceptar los términos y condiciones.'; err.style.display = 'block'; return; }
+    if (!politica) { err.textContent = 'Debes aceptar la política de privacidad.'; err.style.display = 'block'; return; }
+
+    fetch('../backend/apadrinamiento/apadrinar.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            idMascota: parseInt(idMascota),
+            cantidad_mensual: parseFloat(cuota).toFixed(2),
+            nombre_completo: nombre,
+            email: email,
+            telefono: telefono,
+            metodo_pago: metodoPago,
+            mensaje: mensaje
+        })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (!data.ok) {
+            err.textContent = data.error || 'Error al enviar el apadrinamiento.';
+            err.style.display = 'block';
+            return;
+        }
+        ok.innerHTML = '<i class="fa-solid fa-check-circle me-1"></i> Tu apadrinamiento ha sido registrado correctamente (simulación).';
+        ok.style.display = 'block';
+        document.getElementById('formApadrinamiento2').reset();
+        document.querySelectorAll('#cuotaGridApadrina .cuota-op').forEach(function(o) { o.style.borderColor = '#ddd'; o.style.background = 'transparent'; });
+        setTimeout(function() { bootstrap.Modal.getInstance(document.getElementById('modalApadrina')).hide(); }, 2500);
+    })
+    .catch(function() {
+        err.textContent = 'Error de conexión. Inténtalo de nuevo.';
+        err.style.display = 'block';
+    });
 }
 
 </script>

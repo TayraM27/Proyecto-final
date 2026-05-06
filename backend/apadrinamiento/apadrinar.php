@@ -2,7 +2,7 @@
 /*--------------------------------------------------------------------------------------------
 POST — registra un apadrinamiento
 No requiere login (visitantes tambien pueden apadrinar)
-Recibe: { idMascota, cuota, nombre_pagador, email_pagador, telefono, mensaje } */
+Recibe: { idMascota, cantidad_mensual, nombre_completo, email, telefono, metodo_pago, mensaje } */
 
 require_once __DIR__ . '/../includes/funciones.php';
 
@@ -12,30 +12,36 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     respuestaError('Metodo no permitido.', 405);
 }
 
-$datos        = json_decode(file_get_contents('php://input'), true) ?? [];
-$idMascota    = (int)($datos['idMascota']     ?? 0);
-$cuota        = trim($datos['cuota']          ?? '');
-$nombrePagador= limpiar($datos['nombre_pagador'] ?? '');
-$emailPagador = trim($datos['email_pagador']  ?? '');
-$telefono     = limpiar($datos['telefono']    ?? '');
-$mensaje      = limpiar($datos['mensaje']     ?? '');
+$datos          = json_decode(file_get_contents('php://input'), true) ?? [];
+$idMascota      = (int)($datos['idMascota']        ?? 0);
+$cantidadMensual= trim($datos['cantidad_mensual']   ?? '');
+$nombreCompleto = limpiar($datos['nombre_completo']  ?? '');
+$email          = trim($datos['email']              ?? '');
+$telefono       = limpiar($datos['telefono']         ?? '');
+$metodoPago     = limpiar($datos['metodo_pago']      ?? '');
+$mensaje        = limpiar($datos['mensaje']          ?? '');
 
-if (!$idMascota || !$cuota || !$nombrePagador || !$emailPagador) {
-    respuestaError('Mascota, cuota, nombre y email son obligatorios.');
+if (!$idMascota || !$cantidadMensual || !$nombreCompleto || !$email) {
+    respuestaError('Mascota, cantidad, nombre y email son obligatorios.');
 }
 
-// Cuotas validas segun el frontend
-$cuotasValidas = ['3.00', '5.00', '8.00', '10.00'];
-if (!in_array($cuota, $cuotasValidas)) {
-    respuestaError('Cuota no valida. Elige entre 3, 5, 8 o 10 euros al mes.');
+// Cantidades validas segun el frontend
+$cantidadesValidas = ['3.00', '5.00', '8.00', '10.00'];
+if (!in_array($cantidadMensual, $cantidadesValidas)) {
+    respuestaError('Cantidad no valida. Elige entre 3, 5, 8 o 10 euros al mes.');
 }
 
-if (!validarEmail($emailPagador)) {
+if (!validarEmail($email)) {
     respuestaError('Email no valido.');
 }
 
-if ($telefono && !preg_match('/^\d{9}$/', $telefono)) {
+if (!preg_match('/^\d{9}$/', $telefono)) {
     respuestaError('El telefono debe tener exactamente 9 digitos.');
+}
+
+$metodosValidos = ['tarjeta_simulada', 'transferencia_simulada', 'bizum_simulado'];
+if (!in_array($metodoPago, $metodosValidos)) {
+    respuestaError('Selecciona un metodo de pago valido.');
 }
 
 $pdo = conectar();
@@ -70,30 +76,31 @@ if ($idUsuario) {
 // Evitar duplicados por email
 $stmt = $pdo->prepare(
     'SELECT idApadrinamiento FROM apadrinamientos
-     WHERE email_pagador = ? AND idMascota = ? AND estado = "activo"
+     WHERE email = ? AND idMascota = ? AND estado = "activo"
      LIMIT 1'
 );
-$stmt->execute([$emailPagador, $idMascota]);
+$stmt->execute([$email, $idMascota]);
 if ($stmt->fetch()) {
     respuestaError('Ya hay un apadrinamiento activo para esta mascota con ese email.');
 }
 
 $stmt = $pdo->prepare(
     'INSERT INTO apadrinamientos
-        (idUsuario, idMascota, cuota, fecha_inicio, nombre_pagador, email_pagador, telefono, mensaje)
-     VALUES (?, ?, ?, CURDATE(), ?, ?, ?, ?)'
+        (idUsuario, idMascota, cantidad_mensual, metodo_pago, fecha_inicio, estado, nombre_completo, email, telefono, mensaje)
+     VALUES (?, ?, ?, ?, CURDATE(), "activo", ?, ?, ?, ?)'
 );
 $stmt->execute([
     $idUsuario,
     $idMascota,
-    $cuota,
-    $nombrePagador,
-    $emailPagador,
+    $cantidadMensual,
+    $metodoPago,
+    $nombreCompleto,
+    $email,
     $telefono ?: null,
     $mensaje ?: null,
 ]);
 
 respuestaOk([
-    'mensaje'          => 'Apadrinamiento registrado correctamente.',
+    'mensaje'          => 'Apadrinamiento registrado correctamente (simulacion).',
     'idApadrinamiento' => $pdo->lastInsertId(),
 ]);

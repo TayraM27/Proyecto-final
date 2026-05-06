@@ -1,11 +1,5 @@
 <?php
-/*--------------------------------------------------------------------------------------------
-Utilidades compartidas: sesión, respuestas JSON, validaciones, seguridad */
-
 require_once __DIR__ . '/../config/db.php';
-
-/*--------------------------------------------------------------------------------------------
-sesión */
 
 function iniciarSesionSegura(): void {
     if (session_status() === PHP_SESSION_NONE) {
@@ -57,18 +51,21 @@ function requerirAdmin(): void {
     }
 }
 
+function requerirProtectora(): void {
+    if (!esProtectora()) {
+        respuestaError('Acceso restringido a protectoras.', 403);
+    }
+}
+
 function requerirAdminOProtectora(): void {
     if (!esAdminOProtectora()) {
         respuestaError('Acceso restringido.', 403);
     }
 }
 
-/*--------------------------------------------------------------------------------------------
-respuestas JSON */
-
 function respuestaOk(array $datos = []): void {
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['ok' => true] + $datos, JSON_UNESCAPED_UNICODE);
+    echo json_encode(array_merge(['ok' => true], $datos), JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -78,9 +75,6 @@ function respuestaError(string $mensaje, int $codigo = 400): void {
     echo json_encode(['ok' => false, 'error' => $mensaje], JSON_UNESCAPED_UNICODE);
     exit;
 }
-
-/*--------------------------------------------------------------------------------------------
-validaciones */
 
 function validarEmail(string $email): bool {
     return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
@@ -98,9 +92,6 @@ function soloNumerico(mixed $valor): bool {
     return filter_var($valor, FILTER_VALIDATE_INT) !== false;
 }
 
-/*--------------------------------------------------------------------------------------------
-CSRF */
-
 function generarTokenCSRF(): string {
     iniciarSesionSegura();
     if (empty($_SESSION['csrf_token'])) {
@@ -111,21 +102,14 @@ function generarTokenCSRF(): string {
 
 function verificarTokenCSRF(string $token): bool {
     iniciarSesionSegura();
-    return isset($_SESSION['csrf_token'])
-        && hash_equals($_SESSION['csrf_token'], $token);
+    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }
 
-/*--------------------------------------------------------------------------------------------
-paginación */
-
-function paginacion(int $pagina, int $porPagina = 12): array {
+function pagina(int $pagina, int $porPagina = 12): array {
     $pagina = max(1, $pagina);
     $offset = ($pagina - 1) * $porPagina;
     return ['limite' => $porPagina, 'offset' => $offset, 'pagina' => $pagina];
 }
-
-/*--------------------------------------------------------------------------------------------
-JSON input */
 
 function jsonInput(): array {
     $input = file_get_contents('php://input');
@@ -136,20 +120,20 @@ function jsonInput(): array {
     return $data ?? [];
 }
 
-/*--------------------------------------------------------------------------------------------
-Método HTTP */
-
-function metodoGetOPost(): void {
-    if ($_SERVER['REQUEST_METHOD'] !== 'GET' && $_SERVER['REQUEST_METHOD'] !== 'POST') {
-        respuestaError('Método no permitido', 405);
-    }
-}
-
-/*--------------------------------------------------------------------------------------------
-notificaciones */
-
 function crearNotificacion(int $idUsuario, string $tipo, string $mensaje, string $ruta_destino = ''): bool {
     $pdo = conectar();
     $stmt = $pdo->prepare('INSERT INTO notificaciones (idUsuario, tipo, mensaje, ruta_destino) VALUES (?, ?, ?, ?)');
     return $stmt->execute([$idUsuario, $tipo, $mensaje, $ruta_destino]);
+}
+
+function obtenerUsuarioSesion(): ?array {
+    iniciarSesionSegura();
+    if (!isset($_SESSION['idUsuario'])) return null;
+    return [
+        'idUsuario' => $_SESSION['idUsuario'],
+        'nombre' => $_SESSION['nombre'] ?? '',
+        'email' => $_SESSION['email'] ?? '',
+        'rol' => $_SESSION['rol'] ?? '',
+        'idProtectora' => $_SESSION['idProtectora'] ?? null
+    ];
 }

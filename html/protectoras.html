@@ -111,13 +111,14 @@
                 <p>Si representas una protectora o refugio de Asturias y quieres aparecer en PetFamily, escríbenos. La colaboración es gratuita y te ayudamos a dar más visibilidad a tus animales.</p>
             </div>
             <div class="cta-colabora-bots">
-                <a href="mailto:petfamilycontact@yopmail.com?subject=Contacto%20PetFamily" class="btn-cta-contactar">
-                    <i class="fa-solid fa-envelope me-1"></i> Contactar
-                </a>
+                <button class="btn-cta-contactar" onclick="abrirModalUnirse()">
+                    <i class="fa-solid fa-handshake me-1"></i> Unirse
+                </button>
                 <button class="btn-cta-apoyar" onclick="abrirModalDonarPetFamily()">
                     <i class="fa-solid fa-heart me-1"></i> Apoyar la web
                 </button>
             </div>
+    
         </div>
 
     </div><!-- /container -->
@@ -128,6 +129,62 @@
         </a>
     </div>
 </main>
+
+<!-- modal unirse protectora -->
+<div class="modal fade" id="modalUnirse" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:14px;border:none;">
+            <div class="modal-header modal-header-pf">
+                <h5 class="modal-title text-white fw-bold">
+                    <i class="fa-solid fa-handshake me-2" style="color:#F8BA56;"></i>Únete como protectora
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5em;">
+                <div class="aviso-teaming" style="margin-bottom:1em;">
+                    <i class="fa-solid fa-circle-info"></i>
+                    La colaboración es <strong>gratuita</strong>. Solo necesitas representar a una protectora o refugio de Asturias.
+                </div>
+                <div style="display:flex;flex-direction:column;gap:0.8em;margin-bottom:1.2em;">
+                    <div style="display:flex;gap:0.6em;align-items:flex-start;">
+                        <div style="background:#1B358F;color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0;">1</div>
+                        <div>
+                            <strong style="font-size:0.9rem;color:#1B358F;">Regístrate</strong>
+                            <p style="font-size:0.82rem;color:#666;margin:0.2em 0 0;">Crea tu cuenta como protectora en PetFamily con tu email.</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:0.6em;align-items:flex-start;">
+                        <div style="background:#1B358F;color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0;">2</div>
+                        <div>
+                            <strong style="font-size:0.9rem;color:#1B358F;">Completa tu perfil</strong>
+                            <p style="font-size:0.82rem;color:#666;margin:0.2em 0 0;">Añade los datos, logo, métodos de donación y redes sociales de tu protectora.</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:0.6em;align-items:flex-start;">
+                        <div style="background:#1B358F;color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0;">3</div>
+                        <div>
+                            <strong style="font-size:0.9rem;color:#1B358F;">Publica tus animales</strong>
+                            <p style="font-size:0.82rem;color:#666;margin:0.2em 0 0;">Sube las fichas de los animales disponibles para adopción, acogida o apadrinamiento.</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:0.6em;align-items:flex-start;">
+                        <div style="background:#F8BA56;color:#1B358F;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0;">4</div>
+                        <div>
+                            <strong style="font-size:0.9rem;color:#1B358F;">¡Empieza a recibir solicitudes!</strong>
+                            <p style="font-size:0.82rem;color:#666;margin:0.2em 0 0;">Gestiona las solicitudes de adopción y acogida desde tu panel de control.</p>
+                        </div>
+                    </div>
+                </div>
+                <a href="register.html" class="btn-azul w-100 text-center" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:0.5em;">
+                    <i class="fa-solid fa-user-plus"></i> Registrarse ahora
+                </a>
+                <p style="font-size:0.8rem;color:#999;text-align:center;margin-top:0.8em;margin-bottom:0;">
+                    ¿Problemas? Escríbenos a <a href="mailto:petfamilycontact@yopmail.com?subject=Problema%20registro%20protectora">petfamilycontact@yopmail.com</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- modal donar protectora -->
 <div class="modal fade" id="modalDonarProt" tabindex="-1" aria-hidden="true">
@@ -196,7 +253,10 @@
 <script src="https://code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
 
 <script>
-    /* Reemplazado por script.js para mantener estilos originales */
+    function abrirModalUnirse() {
+        var modal = document.getElementById('modalUnirse');
+        if (modal) new bootstrap.Modal(modal).show();
+    }
 </script>
 
 </body>

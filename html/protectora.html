@@ -421,7 +421,7 @@
 
 <!-- Modal Acoger -->
 <div class="modal fade" id="modalAcoger" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content" style="border-radius:14px;border:none;overflow:hidden;">
             <div class="modal-header modal-header-pf" style="background:linear-gradient(135deg, #F8BA56 0%, #e5a840 100%);">
                 <h5 class="modal-title text-white fw-bold">
@@ -432,62 +432,118 @@
             <div class="modal-body" style="padding:1.5em;">
                 <div class="form-error" id="errAcoger"></div>
                 <div class="form-success" id="okAcoger"></div>
+                <div id="cMascotaInfo" style="background:#fff8e6;padding:0.8em;border-radius:8px;margin-bottom:1em;font-size:0.9rem;"></div>
                 <form class="form-solicitud" id="formAcoger" onsubmit="enviarAcogida(event)">
-                    <input type="hidden" id="cIdMascota">
-                    <div id="cMascotaInfo" style="background:#fff8e6;padding:0.8em;border-radius:8px;margin-bottom:1em;font-size:0.9rem;">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Nombre completo <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="cNombre" required maxlength="120">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email <span class="text-danger">*</span></label>
-                        <input type="email" class="form-control" id="cEmail" required maxlength="120">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Teléfono <span class="text-danger">*</span></label>
-                        <input type="tel" class="form-control" id="cTelefono" required maxlength="9" pattern="[0-9]{9}" placeholder="9 dígitos">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Tipo de vivienda <span class="text-danger">*</span></label>
-                        <select class="form-select" id="cVivienda" required>
-                            <option value="">Selecciona...</option>
-                            <option value="piso">Piso</option>
-                            <option value="casa_con_jardin">Casa con jardín</option>
-                            <option value="casa_sin_jardin">Casa sin jardín</option>
-                            <option value="finca">Finca / terreno amplio</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">¿Tienes experiencia con animales?</label>
-                        <textarea class="form-control" id="cExperiencia" maxlength="500" placeholder="Cuéntanos tu experiencia..."></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">¿Cuánto tiempo podrías dedicar al animal?</label>
-                        <select class="form-select" id="cTiempo">
-                            <option value="">Selecciona...</option>
-                            <option value="menos_de_2h">Menos de 2 horas al día</option>
-                            <option value="2_a_4h">2 a 4 horas al día</option>
-                            <option value="mas_de_4h">Más de 4 horas al día</option>
-                            <option value="disponibilidad_completa">Disponibilidad completa</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Mensaje adicional</label>
-                        <textarea class="form-control" id="cMensaje" maxlength="500"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="cTerminos" required>
-                            <label class="form-check-label" for="cTerminos" style="font-size:0.85rem;">
-                                Acepto que mis datos serán tratados por la protectora para gestionar esta solicitud.
-                            </label>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nombre completo <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="cNombre" required maxlength="120">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">DNI <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="cDni" required maxlength="20">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha de nacimiento <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="cFechaNac" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="cEmail" required maxlength="120">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Teléfono <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" id="cTelefono" required maxlength="9" pattern="[0-9]{9}" placeholder="9 dígitos">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Dirección completa <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="cDireccion" required maxlength="255">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Tipo de vivienda <span class="text-danger">*</span></label>
+                            <select class="form-select" id="cTipoVivienda" required>
+                                <option value="">Selecciona...</option>
+                                <option value="piso">Piso</option>
+                                <option value="casa">Casa</option>
+                                <option value="finca">Finca</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">¿Vivienda en propiedad? <span class="text-danger">*</span></label>
+                            <select class="form-select" id="cViviendaProp" required onchange="togglePermisoAcogidaProt()">
+                                <option value="">Selecciona...</option>
+                                <option value="si">Sí</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6" id="divPermisoAcogidaProt" style="display:none;">
+                            <label class="form-label">Permiso del propietario (PDF) <span class="text-danger">*</span></label>
+                            <input type="file" class="form-control" id="cPermiso" accept=".pdf">
+                            <div class="form-text">Máximo 5MB</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Experiencia en acogida <span class="text-danger">*</span> <span class="text-muted" style="font-size:0.8rem;">(mín. 20 caracteres)</span></label>
+                            <textarea class="form-control" id="cExperiencia" required maxlength="1000" style="resize:vertical;min-height:80px;"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Disponibilidad de tiempo <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="cDisponibilidad" required maxlength="500" placeholder="Ej: fines de semana, tardes..." style="resize:vertical;min-height:60px;"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Tiempo fuera de casa (horas/día) <span class="text-danger">*</span></label>
+                            <select class="form-select" id="cTiempoFuera" required>
+                                <option value="">Selecciona...</option>
+                                <option value="menos_2h">Menos de 2 horas</option>
+                                <option value="2_4h">2 a 4 horas</option>
+                                <option value="mas_4h">Más de 4 horas</option>
+                                <option value="todo_el_dia">Todo el día</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">¿Hay animales en el hogar? <span class="text-danger">*</span></label>
+                            <select class="form-select" id="cAnimalesHogar" required onchange="toggleDescAnimalesAcogidaProt()">
+                                <option value="">Selecciona...</option>
+                                <option value="si">Sí</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6" id="divDescAnimalesAcogidaProt" style="display:none;">
+                            <label class="form-label">Descripción de los animales</label>
+                            <textarea class="form-control" id="cDescAnimales" maxlength="500" style="resize:vertical;min-height:60px;"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">¿Poses capacidad económica para gastos? <span class="text-danger">*</span></label>
+                            <select class="form-select" id="cPosibilidadGastos" required>
+                                <option value="">Selecciona...</option>
+                                <option value="si">Sí</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Motivo de la acogida <span class="text-danger">*</span> <span class="text-muted" style="font-size:0.8rem;">(mín. 20 caracteres)</span></label>
+                            <textarea class="form-control" id="cMotivo" required maxlength="1000" style="resize:vertical;min-height:80px;"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="cAceptaPolitica" required>
+                                <label class="form-check-label" for="cAceptaPolitica" style="font-size:0.85rem;">
+                                    Acepto la <a href="privacidad.html" target="_blank">política de privacidad</a> y el tratamiento de mis datos.
+                                </label>
+                            </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn-solicitud acoger w-100">
+                    <button type="submit" class="btn-solicitud acoger w-100 mt-3">
                         <i class="fa-solid fa-paper-plane me-1"></i> Enviar solicitud
                     </button>
                 </form>
+                <div class="mt-3" style="border-top:1px solid #eee;padding-top:1em;">
+                    <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#acogContactoProt" style="font-size:0.85rem;color:#1B358F;text-decoration:none;font-weight:500;">
+                        <i class="fa-solid fa-circle-info me-1"></i> ¿Dudas? Contacta directamente con la protectora
+                    </button>
+                    <div class="collapse" id="acogContactoProt">
+                        <div id="acogContactoDatosProt" class="mt-2" style="font-size:0.88rem;"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -495,7 +551,7 @@
 
 <!-- Modal Apadrinar -->
 <div class="modal fade" id="modalApadrinar" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content" style="border-radius:14px;border:none;overflow:hidden;">
             <div class="modal-header modal-header-pf" style="background:linear-gradient(135deg, #27ae60 0%, #1e8e4e 100%);">
                 <h5 class="modal-title text-white fw-bold">
@@ -506,60 +562,79 @@
             <div class="modal-body" style="padding:1.5em;">
                 <div class="form-error" id="errApadrinar"></div>
                 <div class="form-success" id="okApadrinar"></div>
+                <div id="pMascotaInfo" style="background:#f0fff4;padding:0.8em;border-radius:8px;margin-bottom:1em;font-size:0.9rem;"></div>
                 <form class="form-solicitud" id="formApadrinar" onsubmit="enviarApadrinamiento(event)">
-                    <input type="hidden" id="pIdMascota">
-                    <div id="pMascotaInfo" style="background:#f0fff4;padding:0.8em;border-radius:8px;margin-bottom:1em;font-size:0.9rem;">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Cuota mensual <span class="text-danger">*</span></label>
-                        <div class="cuota-grid" id="cuotaGrid">
-                            <div class="cuota-option" data-cuota="3" onclick="selectCuota(this)">
-                                <div class="precio">3 €</div>
-                                <div class="label">Básica</div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Cuota mensual <span class="text-danger">*</span></label>
+                            <div class="cuota-grid" id="cuotaGrid">
+                                <div class="cuota-option" data-cuota="3" onclick="selectCuota(this)">
+                                    <div class="precio">3 €</div>
+                                    <div class="label">Básica</div>
+                                </div>
+                                <div class="cuota-option" data-cuota="5" onclick="selectCuota(this)">
+                                    <div class="precio">5 €</div>
+                                    <div class="label">Estándar</div>
+                                </div>
+                                <div class="cuota-option" data-cuota="8" onclick="selectCuota(this)">
+                                    <div class="precio">8 €</div>
+                                    <div class="label">Premium</div>
+                                </div>
+                                <div class="cuota-option" data-cuota="10" onclick="selectCuota(this)">
+                                    <div class="precio">10 €</div>
+                                    <div class="label">Oro</div>
+                                </div>
                             </div>
-                            <div class="cuota-option" data-cuota="5" onclick="selectCuota(this)">
-                                <div class="precio">5 €</div>
-                                <div class="label">Estándar</div>
+                            <input type="hidden" id="pCuota" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Método de pago (ficticio) <span class="text-danger">*</span></label>
+                            <select class="form-select" id="pMetodoPago" required>
+                                <option value="">Selecciona...</option>
+                                <option value="tarjeta">Tarjeta</option>
+                                <option value="transferencia">Transferencia</option>
+                                <option value="bizum">Bizum</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nombre completo <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="pNombre" required maxlength="120">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="pEmail" required maxlength="120">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="pTelefono" maxlength="9" pattern="[0-9]{9}" placeholder="9 dígitos">
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="pAceptaTerminos" required>
+                                <label class="form-check-label" for="pAceptaTerminos" style="font-size:0.85rem;">
+                                    Acepto los <a href="terminos.html" target="_blank">términos y condiciones</a> de apadrinamiento.
+                                </label>
                             </div>
-                            <div class="cuota-option" data-cuota="8" onclick="selectCuota(this)">
-                                <div class="precio">8 €</div>
-                                <div class="label">Premium</div>
-                            </div>
-                            <div class="cuota-option" data-cuota="10" onclick="selectCuota(this)">
-                                <div class="precio">10 €</div>
-                                <div class="label">Oro</div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="pAceptaPolitica" required>
+                                <label class="form-check-label" for="pAceptaPolitica" style="font-size:0.85rem;">
+                                    Acepto la <a href="privacidad.html" target="_blank">política de privacidad</a> y el tratamiento de mis datos.
+                                </label>
                             </div>
                         </div>
-                        <input type="hidden" id="pCuota" required>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Nombre del padrino/madrina <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="pNombre" required maxlength="120">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email <span class="text-danger">*</span></label>
-                        <input type="email" class="form-control" id="pEmail" required maxlength="120">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Teléfono</label>
-                        <input type="tel" class="form-control" id="pTelefono" maxlength="9" pattern="[0-9]{9}" placeholder="9 dígitos">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Mensaje (opcional)</label>
-                        <textarea class="form-control" id="pMensaje" maxlength="300"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="pTerminos" required>
-                            <label class="form-check-label" for="pTerminos" style="font-size:0.85rem;">
-                                Acepto que mis datos serán tratados por la protectora para gestionar este apadrinamiento.
-                            </label>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn-solicitud apadrinar w-100">
+                    <button type="submit" class="btn-solicitud apadrinar w-100 mt-3">
                         <i class="fa-solid fa-paper-plane me-1"></i> Confirmar apadrinamiento
                     </button>
                 </form>
+                <div class="mt-3" style="border-top:1px solid #eee;padding-top:1em;">
+                    <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#apadrinaContactoProt" style="font-size:0.85rem;color:#27ae60;text-decoration:none;font-weight:500;">
+                        <i class="fa-solid fa-circle-info me-1"></i> ¿Dudas? Contacta directamente con la protectora
+                    </button>
+                    <div class="collapse" id="apadrinaContactoProt">
+                        <div id="apadrinaContactoDatosProt" class="mt-2" style="font-size:0.88rem;"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -636,7 +711,7 @@ function renderProtectora(p) {
     var contacto = document.getElementById('protContacto');
     var html = '';
     if (p.email) html += '<a href="mailto:' + p.email + '"><i class="fa-solid fa-envelope"></i> Email</a>';
-    if (p.telefono) html += '<a href="tel:' + p.telefono + '"><i class="fa-solid fa-phone"></i> ' + p.telefono + '</a>';
+    if (p.telefono) { var telNum = p.telefono.replace(/\s/g, ''); html += '<a href="tel:' + telNum + '"><i class="fa-solid fa-phone"></i> ' + p.telefono + '</a>'; }
     if (p.web) {
         var label = p.tipo_pagina === 'red_social' ? 'Red social' : p.tipo_pagina === 'otra' ? 'Otra página' : 'Web';
         html += '<a href="' + p.web + '" target="_blank" rel="noopener"><i class="fa-solid fa-globe"></i> ' + label + '</a>';
@@ -730,6 +805,18 @@ function toggleDescOtrosProt() {
     document.getElementById('aDescOtros').required = otros === 'si';
 }
 
+function togglePermisoAcogidaProt() {
+    var prop = document.getElementById('cViviendaProp').value;
+    document.getElementById('divPermisoAcogidaProt').style.display = prop === 'no' ? 'block' : 'none';
+    document.getElementById('cPermiso').required = prop === 'no';
+}
+
+function toggleDescAnimalesAcogidaProt() {
+    var animales = document.getElementById('cAnimalesHogar').value;
+    document.getElementById('divDescAnimalesAcogidaProt').style.display = animales === 'si' ? 'block' : 'none';
+    document.getElementById('cDescAnimales').required = animales === 'si';
+}
+
 function abrirAdoptar(idMascota) {
     var m = getMascota(idMascota);
     if (!m) return;
@@ -767,13 +854,24 @@ function abrirAcoger(idMascota) {
     document.getElementById('cIdMascota').value = m.idMascota;
     document.getElementById('cMascotaInfo').innerHTML = '<strong>' + m.nombre + '</strong> — ' + (m.raza || 'Mestizo') + ' · ' + capitalize(m.sexo || '');
     document.getElementById('cNombre').value = '';
+    document.getElementById('cDni').value = '';
+    document.getElementById('cFechaNac').value = '';
     document.getElementById('cEmail').value = '';
     document.getElementById('cTelefono').value = '';
-    document.getElementById('cVivienda').value = '';
+    document.getElementById('cDireccion').value = '';
+    document.getElementById('cTipoVivienda').value = '';
+    document.getElementById('cViviendaProp').value = '';
+    document.getElementById('cPermiso').value = '';
+    document.getElementById('divPermisoAcogidaProt').style.display = 'none';
     document.getElementById('cExperiencia').value = '';
-    document.getElementById('cTiempo').value = '';
-    document.getElementById('cMensaje').value = '';
-    document.getElementById('cTerminos').checked = false;
+    document.getElementById('cDisponibilidad').value = '';
+    document.getElementById('cTiempoFuera').value = '';
+    document.getElementById('cAnimalesHogar').value = '';
+    document.getElementById('cDescAnimales').value = '';
+    document.getElementById('divDescAnimalesAcogidaProt').style.display = 'none';
+    document.getElementById('cPosibilidadGastos').value = '';
+    document.getElementById('cMotivo').value = '';
+    document.getElementById('cAceptaPolitica').checked = false;
     document.getElementById('errAcoger').style.display = 'none';
     document.getElementById('okAcoger').style.display = 'none';
     new bootstrap.Modal(document.getElementById('modalAcoger')).show();
@@ -787,9 +885,10 @@ function abrirApadrinar(idMascota) {
     document.getElementById('pNombre').value = '';
     document.getElementById('pEmail').value = '';
     document.getElementById('pTelefono').value = '';
-    document.getElementById('pMensaje').value = '';
     document.getElementById('pCuota').value = '';
-    document.getElementById('pTerminos').checked = false;
+    document.getElementById('pMetodoPago').value = '';
+    document.getElementById('pAceptaTerminos').checked = false;
+    document.getElementById('pAceptaPolitica').checked = false;
     document.querySelectorAll('.cuota-option').forEach(function(o) { o.classList.remove('selected'); });
     document.getElementById('errApadrinar').style.display = 'none';
     document.getElementById('okApadrinar').style.display = 'none';
@@ -910,22 +1009,67 @@ function enviarAcogida(e) {
 
     var idMascota = parseInt(document.getElementById('cIdMascota').value);
     var nombre = document.getElementById('cNombre').value.trim();
+    var dni = document.getElementById('cDni').value.trim();
+    var fechaNac = document.getElementById('cFechaNac').value;
     var email = document.getElementById('cEmail').value.trim();
     var telefono = document.getElementById('cTelefono').value.trim();
-    var vivienda = document.getElementById('cVivienda').value;
+    var direccion = document.getElementById('cDireccion').value.trim();
+    var tipoVivienda = document.getElementById('cTipoVivienda').value;
+    var viviendaProp = document.getElementById('cViviendaProp').value;
     var experiencia = document.getElementById('cExperiencia').value.trim();
-    var tiempo = document.getElementById('cTiempo').value;
-    var mensaje = document.getElementById('cMensaje').value.trim();
+    var disponibilidad = document.getElementById('cDisponibilidad').value.trim();
+    var tiempoFuera = document.getElementById('cTiempoFuera').value;
+    var animalesHogar = document.getElementById('cAnimalesHogar').value;
+    var descAnimales = document.getElementById('cDescAnimales').value.trim();
+    var posibilidadGastos = document.getElementById('cPosibilidadGastos').value;
+    var motivo = document.getElementById('cMotivo').value.trim();
+    var aceptaPolitica = document.getElementById('cAceptaPolitica').checked;
 
     if (!nombre) { err.textContent = 'El nombre es obligatorio.'; err.style.display = 'block'; return; }
+    if (!dni || !/^[0-9XYZ][0-9]{7}[A-Z]$/i.test(dni)) { err.textContent = 'DNI no válido.'; err.style.display = 'block'; return; }
+    if (!fechaNac) { err.textContent = 'La fecha de nacimiento es obligatoria.'; err.style.display = 'block'; return; }
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Introduce un email válido.'; err.style.display = 'block'; return; }
     if (!/^\d{9}$/.test(telefono)) { err.textContent = 'El teléfono debe tener exactamente 9 dígitos.'; err.style.display = 'block'; return; }
-    if (!vivienda) { err.textContent = 'Selecciona un tipo de vivienda.'; err.style.display = 'block'; return; }
+    if (!direccion) { err.textContent = 'La dirección es obligatoria.'; err.style.display = 'block'; return; }
+    if (!tipoVivienda) { err.textContent = 'Selecciona un tipo de vivienda.'; err.style.display = 'block'; return; }
+    if (!viviendaProp) { err.textContent = 'Indica si la vivienda es en propiedad.'; err.style.display = 'block'; return; }
+    if (viviendaProp === 'no' && !document.getElementById('cPermiso').value) { err.textContent = 'Debes subir el permiso del propietario (PDF).'; err.style.display = 'block'; return; }
+    if (!experiencia || experiencia.length < 20) { err.textContent = 'La experiencia debe tener al menos 20 caracteres.'; err.style.display = 'block'; return; }
+    if (!disponibilidad) { err.textContent = 'La disponibilidad de tiempo es obligatoria.'; err.style.display = 'block'; return; }
+    if (!tiempoFuera) { err.textContent = 'Selecciona el tiempo fuera de casa.'; err.style.display = 'block'; return; }
+    if (!animalesHogar) { err.textContent = 'Indica si hay animales en el hogar.'; err.style.display = 'block'; return; }
+    if (animalesHogar === 'si' && !descAnimales) { err.textContent = 'Describe los animales en el hogar.'; err.style.display = 'block'; return; }
+    if (!posibilidadGastos) { err.textContent = 'Indica si tienes capacidad económica para gastos.'; err.style.display = 'block'; return; }
+    if (!motivo || motivo.length < 20) { err.textContent = 'El motivo debe tener al menos 20 caracteres.'; err.style.display = 'block'; return; }
+    if (!aceptaPolitica) { err.textContent = 'Debes aceptar la política de privacidad.'; err.style.display = 'block'; return; }
+
+    var formData = new FormData();
+    formData.append('idMascota', idMascota);
+    formData.append('nombre', nombre);
+    formData.append('dni', dni);
+    formData.append('fecha_nacimiento', fechaNac);
+    formData.append('email', email);
+    formData.append('telefono', telefono);
+    formData.append('direccion', direccion);
+    formData.append('tipo_vivienda', tipoVivienda);
+    formData.append('vivienda_en_propiedad', viviendaProp);
+    formData.append('experiencia_acogida', experiencia);
+    formData.append('disponibilidad_tiempo', disponibilidad);
+    formData.append('tiempo_fuera_casa', tiempoFuera);
+    formData.append('animales_en_hogar', animalesHogar);
+    formData.append('descripcion_animales', descAnimales);
+    formData.append('posibilidad_gastos', posibilidadGastos);
+    formData.append('motivo_acogida', motivo);
+    formData.append('acepta_politica_privacidad', aceptaPolitica ? '1' : '0');
+
+    var permisoInput = document.getElementById('cPermiso');
+    if (permisoInput.files.length > 0) {
+        formData.append('permiso_propietario', permisoInput.files[0]);
+    }
 
     fetch('../backend/adopcion/solicitud_acogida.php', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idMascota: idMascota, nombre: nombre, email: email, telefono: telefono, vivienda: vivienda, experiencia: experiencia, tiempo: tiempo, mensaje: mensaje })
+        body: formData
     })
     .then(function(r) { return r.json(); })
     .then(function(data) {
@@ -937,6 +1081,8 @@ function enviarAcogida(e) {
         ok.textContent = '¡Solicitud de acogida enviada! La protectora se pondrá en contacto contigo.';
         ok.style.display = 'block';
         document.getElementById('formAcoger').reset();
+        document.getElementById('divPermisoAcogidaProt').style.display = 'none';
+        document.getElementById('divDescAnimalesAcogidaProt').style.display = 'none';
         setTimeout(function() { bootstrap.Modal.getInstance(document.getElementById('modalAcoger')).hide(); }, 2500);
     })
     .catch(function() {
@@ -954,20 +1100,34 @@ function enviarApadrinamiento(e) {
 
     var idMascota = parseInt(document.getElementById('pIdMascota').value);
     var cuota = document.getElementById('pCuota').value;
+    var metodoPago = document.getElementById('pMetodoPago').value;
     var nombre = document.getElementById('pNombre').value.trim();
     var email = document.getElementById('pEmail').value.trim();
     var telefono = document.getElementById('pTelefono').value.trim();
-    var mensaje = document.getElementById('pMensaje').value.trim();
+    var aceptaTerminos = document.getElementById('pAceptaTerminos').checked;
+    var aceptaPolitica = document.getElementById('pAceptaPolitica').checked;
 
     if (!cuota || ['3','5','8','10'].indexOf(cuota) === -1) { err.textContent = 'Selecciona una cuota válida.'; err.style.display = 'block'; return; }
+    if (!metodoPago || ['tarjeta','transferencia','bizum'].indexOf(metodoPago) === -1) { err.textContent = 'Selecciona un método de pago.'; err.style.display = 'block'; return; }
     if (!nombre) { err.textContent = 'El nombre es obligatorio.'; err.style.display = 'block'; return; }
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Introduce un email válido.'; err.style.display = 'block'; return; }
     if (telefono && !/^\d{9}$/.test(telefono)) { err.textContent = 'El teléfono debe tener exactamente 9 dígitos.'; err.style.display = 'block'; return; }
+    if (!aceptaTerminos) { err.textContent = 'Debes aceptar los términos y condiciones.'; err.style.display = 'block'; return; }
+    if (!aceptaPolitica) { err.textContent = 'Debes aceptar la política de privacidad.'; err.style.display = 'block'; return; }
+
+    var formData = new FormData();
+    formData.append('idMascota', idMascota);
+    formData.append('cantidad_mensual', cuota);
+    formData.append('metodo_pago', metodoPago);
+    formData.append('nombre_completo', nombre);
+    formData.append('email', email);
+    formData.append('telefono', telefono);
+    formData.append('aceptar_terminos', aceptaTerminos ? '1' : '0');
+    formData.append('aceptar_politica_privacidad', aceptaPolitica ? '1' : '0');
 
     fetch('../backend/apadrinamiento/apadrinar.php', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idMascota: idMascota, cuota: parseFloat(cuota).toFixed(2), nombre_pagador: nombre, email_pagador: email, telefono: telefono, mensaje: mensaje })
+        body: formData
     })
     .then(function(r) { return r.json(); })
     .then(function(data) {
@@ -976,7 +1136,7 @@ function enviarApadrinamiento(e) {
             err.style.display = 'block';
             return;
         }
-        ok.textContent = '¡Apadrinamiento registrado! Gracias por tu apoyo.';
+        ok.textContent = 'Tu apadrinamiento ha sido registrado correctamente (simulación).';
         ok.style.display = 'block';
         document.getElementById('formApadrinar').reset();
         document.querySelectorAll('.cuota-option').forEach(function(o) { o.classList.remove('selected'); });

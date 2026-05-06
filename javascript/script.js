@@ -776,9 +776,13 @@ document.addEventListener('DOMContentLoaded', function() {
         var alertaRegistro       = document.getElementById('alertaRegistro');
 
         /* Preview foto de perfil */
-        document.querySelector('.reg-foto-label').addEventListener('click', function() {
-            inputFoto.click();
-        });
+        var labelFoto = document.querySelector('.reg-foto-label');
+        if (labelFoto) {
+            labelFoto.addEventListener('click', function(e) {
+                e.preventDefault();
+                inputFoto.click();
+            });
+        }
 
         inputFoto.addEventListener('change', function() {
             var archivo = this.files[0];
@@ -797,7 +801,7 @@ document.addEventListener('DOMContentLoaded', function() {
             reader.readAsDataURL(archivo);
         });
 
-        /* Mostrar/ocultar contrasenas */
+        /* Mostrar/ocultar contraseñas */
         document.getElementById('togglePwdReg').addEventListener('click', function() {
             var tipo = inputPasswordR.type === 'password' ? 'text' : 'password';
             inputPasswordR.type = tipo;
@@ -849,6 +853,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var val = inputNombre.value.trim();
             if (!val)           return mostrarErrorR(inputNombre, document.getElementById('errorNombre'), 'El nombre es obligatorio.'), false;
             if (val.length < 2) return mostrarErrorR(inputNombre, document.getElementById('errorNombre'), 'Al menos 2 caracteres.'), false;
+            if (/[^A-Za-zÀ-ÿ\s]/.test(val)) return mostrarErrorR(inputNombre, document.getElementById('errorNombre'), 'Solo letras y espacios.'), false;
             limpiarErrorR(inputNombre, document.getElementById('errorNombre'));
             return true;
         }
@@ -898,7 +903,7 @@ document.addEventListener('DOMContentLoaded', function() {
         function validarPasswordConfirm() {
             var val = inputPasswordConfirm.value;
             if (!val)                         return mostrarErrorR(inputPasswordConfirm, document.getElementById('errorPasswordConfirm'), 'Repite la contrasena.'), false;
-            if (val !== inputPasswordR.value) return mostrarErrorR(inputPasswordConfirm, document.getElementById('errorPasswordConfirm'), 'Las contrasenas no coinciden.'), false;
+            if (val !== inputPasswordR.value) return mostrarErrorR(inputPasswordConfirm, document.getElementById('errorPasswordConfirm'), 'Las contraseñas no coinciden.'), false;
             limpiarErrorR(inputPasswordConfirm, document.getElementById('errorPasswordConfirm'));
             return true;
         }
@@ -948,11 +953,33 @@ document.addEventListener('DOMContentLoaded', function() {
             btnRegistro.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Creando cuenta...';
             alertaRegistro.classList.add('d-none');
 
-            setTimeout(function() {
+            var fd = new FormData(formRegistro);
+            if (inputFoto && inputFoto.files[0]) {
+                fd.append('foto_perfil', inputFoto.files[0]);
+            }
+
+            fetch('../backend/api/auth/registro.php', {
+                method: 'POST',
+                body: fd,
+                credentials: 'include'
+            })
+            .then(r => r.json())
+            .then(function(data) {
                 btnRegistro.disabled = false;
                 btnRegistro.innerHTML = '<i class="fa-solid fa-user-plus me-2"></i>Crear cuenta gratis';
+                if (data.ok) {
+                    window.location.href = data.redirigir || 'index.html';
+                } else {
+                    alertaRegistroMsg.textContent = data.error || 'Error al crear cuenta.';
+                    alertaRegistro.classList.remove('d-none');
+                }
+            })
+            .catch(function() {
+                btnRegistro.disabled = false;
+                btnRegistro.innerHTML = '<i class="fa-solid fa-user-plus me-2"></i>Crear cuenta gratis';
+                alertaRegistroMsg.textContent = 'Error de conexión.';
                 alertaRegistro.classList.remove('d-none');
-            }, 1200);
+            });
         });
     }
 

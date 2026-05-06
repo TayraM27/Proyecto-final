@@ -89,23 +89,26 @@
 
         <!-- tabs -->
         <div style="display:flex;gap:0.5em;flex-wrap:wrap;margin-bottom:1.5em;border-bottom:2px solid #e9ecef;padding-bottom:0.5em;">
-            <button class="tab-btn activo" data-tab="favoritos" onclick="cambiarTab(this)">
+            <button class="tab-btn" data-tab="favoritos" onclick="cambiarTab(this)">
                 <i class="fa-solid fa-heart me-2"></i>Favoritos
             </button>
-            <button class="tab-btn" data-tab="apadrinamientos" onclick="cambiarTab(this)">
+            <button class="tab-btn activo" data-tab="apadrinamientos" onclick="cambiarTab(this)">
                 <i class="fa-solid fa-star me-2"></i>Apadrinamientos
             </button>
-            <button class="tab-btn" data-tab="tests" onclick="cambiarTab(this)">
-                <i class="fa-solid fa-circle-question me-2"></i>Tests
+            <button class="tab-btn" data-tab="actualizaciones" onclick="cambiarTab(this)">
+                <i class="fa-solid fa-bullhorn me-2"></i>Actualizaciones
+            </button>
+            <button class="tab-btn" data-tab="panel-protectora" onclick="cambiarTab(this)" id="tabProtectora" style="display:none;">
+                <i class="fa-solid fa-shield-halved me-2"></i>Panel Protectora
             </button>
             <button class="tab-btn" data-tab="notificaciones" onclick="cambiarTab(this)">
                 <i class="fa-solid fa-bell me-2"></i>Notificaciones
             </button>
-            <button class="tab-btn" data-tab="datos" onclick="cambiarTab(this)">
-                <i class="fa-solid fa-id-card me-2"></i>Mis datos
+            <button class="tab-btn" data-tab="perfil" onclick="cambiarTab(this)">
+                <i class="fa-solid fa-user me-2"></i>Mi perfil
             </button>
-            <button class="tab-btn" data-tab="solicitud-protectora" onclick="cambiarTab(this)">
-                <i class="fa-solid fa-clipboard-check me-2"></i>Solicitud Protectora
+            <button class="tab-btn" data-tab="solicitud-protectora" onclick="cambiarTab(this)" id="tabSolicitudProtectora" style="display:none;">
+                <i class="fa-solid fa-building-shield me-2"></i>Solicitar Protectora
             </button>
         </div>
 
@@ -129,6 +132,28 @@
             </div>
         </div>
 
+        <!-- tab: actualizaciones -->
+        <!-- tab: actualizaciones -->
+        <div id="tab-actualizaciones" class="tab-contenido d-none">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1em;margin-bottom:1.5em;">
+                <h3 style="margin:0;font-weight:700;font-size:1.1rem;color:#1B358F;">
+                    <i class="fa-solid fa-bullhorn me-2"></i>Actualizaciones
+                </h3>
+                <div class="d-flex gap-2 flex-wrap">
+                    <select id="filtroAnimal" class="form-select" style="width:auto;font-size:0.88rem;">
+                        <option value="0">Todos los animales</option>
+                    </select>
+                    <select id="filtroLeido" class="form-select" style="width:auto;font-size:0.88rem;">
+                        <option value="todas">Todas</option>
+                        <option value="no_leidas">No leídas</option>
+                        <option value="leidas">Leídas</option>
+                    </select>
+                </div>
+            </div>
+            <div id="listaActualizaciones"></div>
+            <div class="text-center py-3" id="paginacionActualizaciones"></div>
+        </div>
+
         <!-- tab: tests -->
         <div id="tab-tests" class="tab-contenido d-none">
             <h3 style="font-size:1.1rem;font-weight:700;color:#1B358F;margin-bottom:1em;">
@@ -149,12 +174,27 @@
             </div>
         </div>
 
-        <!-- tab: datos -->
-        <div id="tab-datos" class="tab-contenido d-none">
+        <!-- tab: perfil -->
+        <div id="tab-perfil" class="tab-contenido d-none">
             <h3 style="font-size:1.1rem;font-weight:700;color:#1B358F;margin-bottom:1em;">
                 <i class="fa-solid fa-id-card me-2"></i>Mis datos
             </h3>
             <div id="listaDatos"></div>
+        </div>
+
+        <!-- tab: panel-protectora -->
+        <div id="tab-panel-protectora" class="tab-contenido d-none">
+            <h3 style="font-size:1.1rem;font-weight:700;color:#1B358F;margin-bottom:1em;">
+                <i class="fa-solid fa-shield-halved me-2"></i>Panel Protectora
+            </h3>
+            <div class="mb-3">
+                <button class="btn btn-primary" onclick="cargarPanelProtectora()">
+                    <i class="fa-solid fa-rotate-right me-2"></i>Actualizar
+                </button>
+            </div>
+            <div id="listaPanelProtectora">
+                <div class="text-center py-4"><div class="spinner-border" style="color:#1B358F;"></div></div>
+            </div>
         </div>
 
         <!-- tab: solicitud protectora -->
@@ -356,9 +396,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('tab-' + tabParam).classList.remove('d-none');
                     if (tabParam === 'favoritos')       cargarFavoritos();
                     if (tabParam === 'apadrinamientos') cargarApadrinamientos();
+                    if (tabParam === 'actualizaciones') cargarActualizaciones(1);
                     if (tabParam === 'tests')           cargarTests();
                     if (tabParam === 'notificaciones')  cargarNotificaciones();
-                    if (tabParam === 'datos')           cargarDatos();
+                    if (tabParam === 'perfil')          cargarDatos();
                     if (tabParam === 'solicitud-protectora') cargarSolicitudProtectora();
                     return;
                 }
@@ -396,20 +437,32 @@ function mostrarDatosUsuario(u) {
     document.getElementById('editEmail').value     = u.email     || '';
     document.getElementById('editLocalidad').value = u.localidad || '';
     document.getElementById('editTelefono').value  = u.telefono  || '';
+
+    if (u.rol === 'usuario') {
+        var tabSol = document.getElementById('tabSolicitudProtectora');
+        if (tabSol) tabSol.style.display = '';
+    }
+    if (u.rol === 'protectora') {
+        var tabProt = document.getElementById('tabProtectora');
+        if (tabProt) tabProt.style.display = '';
+    }
 }
 
 /*--------------------------------------------------------------------------------------------
-tabs */
+ tabs */
 function cambiarTab(btn) {
     document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('activo'); });
     btn.classList.add('activo');
     var tab = btn.dataset.tab;
     document.querySelectorAll('.tab-contenido').forEach(function(t) { t.classList.add('d-none'); });
     document.getElementById('tab-' + tab).classList.remove('d-none');
-    if (tab === 'apadrinamientos') cargarApadrinamientos();
-    if (tab === 'tests')           cargarTests();
-    if (tab === 'notificaciones')  cargarNotificaciones();
-    if (tab === 'datos')           cargarDatos();
+    if (tab === 'favoritos')       cargarFavoritos();
+    if (tab === 'apadrinamientos')  cargarApadrinamientos();
+    if (tab === 'actualizaciones')  cargarActualizaciones(1);
+    if (tab === 'tests')              cargarTests();
+    if (tab === 'notificaciones')   cargarNotificaciones();
+    if (tab === 'perfil')           cargarDatos();
+    if (tab === 'panel-protectora') cargarPanelProtectora();
     if (tab === 'solicitud-protectora') cargarSolicitudProtectora();
 }
 
@@ -588,7 +641,7 @@ function cargarNotificaciones() {
                 var mensaje = n.mensaje || '';
                 var link = 'href="perfil.html?tab=notificaciones"';
                 if (n.ruta_destino) {
-                    link = 'href="../' + n.ruta_destino + '"';
+                    link = 'href="' + n.ruta_destino + '"';
                 } else if (n.idPublicacion) {
                     link = 'href="foro.html?post=' + n.idPublicacion + '"';
                 }
@@ -1101,7 +1154,175 @@ function formatFecha(f) {
     if (!f) return '';
     return new Date(f).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
 }
+
+/* Cargar actualizaciones */
+function cargarActualizaciones(pagina) {
+    var filtroAnimal = document.getElementById('filtroAnimal') ? document.getElementById('filtroAnimal').value : '0';
+    var filtroLeido  = document.getElementById('filtroLeido')  ? document.getElementById('filtroLeido').value  : 'todas';
+    var cont    = document.getElementById('listaActualizaciones');
+    var pagCont = document.getElementById('paginacionActualizaciones');
+
+    var params = new URLSearchParams({
+        pagina: pagina || 1,
+        porPagina: 10,
+        filtro: filtroLeido
+    });
+    if (filtroAnimal !== '0') params.append('idMascota', filtroAnimal);
+
+    fetch('../backend/actualizaciones/listar.php?' + params.toString(), { credentials: 'include' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (!data.ok) { cont.innerHTML = '<p class="text-danger">Error al cargar.</p>'; return; }
+
+        if (!data.actualizaciones || data.actualizaciones.length === 0) {
+            cont.innerHTML = vacio('fa-bullhorn', 'Sin actualizaciones', 'Cuando apadrines un animal recibirás aquí las novedades sobre él.', 'apadrina.html', 'Ver animales para apadrinar');
+            pagCont.innerHTML = '';
+            return;
+        }
+
+        var html = '';
+        data.actualizaciones.forEach(function(a) {
+            var nuevo = a.leido == 0 ? '<span class="badge bg-danger ms-2" style="font-size:0.7rem;">NUEVO</span>' : '';
+            html += '<div class="d-flex gap-3 align-items-start p-3 border-bottom" style="cursor:pointer;" onclick="verDetalleActualizacion(' + a.idSeguimiento + ')">'
+                + '<img src="../img/mascotas/' + (a.foto || 'default.jpg') + '" onerror="this.src=\'../img/mascotas/default.jpg\'" style="width:60px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;">'
+                + '<div style="flex:1;min-width:0;">'
+                + '<strong>' + (a.animalNombre || '') + '</strong>' + nuevo
+                + '<p class="text-muted mb-1" style="font-size:0.85rem;">' + (a.mensaje || '').substring(0, 100) + '...</p>'
+                + '<small class="text-muted">' + formatFecha(a.fecha) + '</small>'
+                + '</div>'
+                + '</div>';
+        });
+        cont.innerHTML = html;
+
+        if (data.totalPaginas > 1) {
+            var pagHtml = '';
+            for (var i = 1; i <= data.totalPaginas; i++) {
+                pagHtml += '<button class="btn btn-sm ' + (i === data.pagina ? 'btn-primary' : 'btn-outline-primary') + '" onclick="cargarActualizaciones(' + i + ')">' + i + '</button> ';
+            }
+            pagCont.innerHTML = pagHtml;
+        } else { pagCont.innerHTML = ''; }
+    })
+    .catch(function() {
+        cont.innerHTML = '<p class="text-danger">Error de conexión.</p>';
+    });
+}
+
+/* Cargar opciones de filtro */
+function cargarFiltroAnimales() {
+    fetch('../backend/actualizaciones/listar.php?pagina=1&porPagina=1', { credentials: 'include' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (!data.ok || !data.mascotas) return;
+        var select = document.getElementById('filtroAnimal');
+        data.mascotas.forEach(function(m) {
+            var opt = document.createElement('option');
+            opt.value       = m.idMascota;
+            opt.textContent = m.nombre;
+            select.appendChild(opt);
+        });
+    });
+}
+
+/* Ver detalle */
+function verDetalleActualizacion(id) {
+    fetch('../backend/actualizaciones/detalle.php?idActualizacion=' + id, { credentials: 'include' })
+    .then(r => r.json())
+    .then(function(data) {
+        if (!data.ok) { alert(data.error); return; }
+        var a = data.actualizacion;
+        var respuestas = data.respuestas || [];
+        
+        var fotosHtml = '';
+        if (a.fotos) {
+            try {
+                var fotos = JSON.parse(a.fotos);
+                fotos.forEach(function(f) {
+                    fotosHtml += '<img src="../uploads/actualizaciones/' + f + '" style="max-width:200px;max-height:150px;object-fit:cover;border-radius:8px;">';
+                });
+            } catch(e) {}
+        }
+        
+        var videoHtml = a.video_url ? '<a href="' + a.video_url + '" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-video me-1"></i>Ver video</a>' : '';
+        
+        var respuestasHtml = '';
+        respuestas.forEach(function(r) {
+            respuestasHtml += '<div class="border-top pt-2 mt-2">' +
+                '<strong>' + (r.usuarioNombre || 'Usuario') + '</strong> <small class="text-muted">' + formatFecha(r.fecha) + '</small>' +
+                '<p class="mb-1">' + r.mensaje + '</p>' +
+            '</div>';
+        });
+        
+        var modalBody = document.getElementById('modalActualizacionBody');
+        modalBody.innerHTML = 
+            '<h5>' + (a.animalNombre || '') + '</h5>' +
+            '<p>' + (a.mensaje || '') + '</p>' +
+            '<div class="d-flex gap-2 flex-wrap my-3">' + fotosHtml + '</div>' +
+            videoHtml +
+            '<p class="text-muted"><i class="fa-regular fa-clock me-1"></i>' + formatFecha(a.fecha) + '</p>' +
+            '<hr>' +
+            '<h6>Respuestas:</h6>' +
+            (respuestasHtml || '<p class="text-muted">No hay respuestas.</p>') +
+            '<hr>' +
+            '<div class="d-flex gap-2">' +
+                '<button class="btn btn-sm btn-outline-primary" onclick="responderActualizacion(' + id + ')"><i class="fa-solid fa-reply me-1"></i>Responder</button>' +
+                '<button class="btn btn-sm btn-outline-secondary" onclick="marcarLeido(' + id + ')"><i class="fa-solid fa-check me-1"></i>Marcar como leído</button>' +
+            '</div>';
+        
+        new bootstrap.Modal(document.getElementById('modalActualizacion')).show();
+    });
+}
+
+function responderActualizacion(id) {
+    var mensaje = prompt('Escribe tu respuesta:');
+    if (!mensaje) return;
+    
+    fetch('../backend/actualizaciones/responder.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idActualizacion: id, respuesta: mensaje }),
+        credentials: 'include'
+    })
+    .then(r => r.json())
+    .then(function(data) {
+        if (data.ok) { alert('Respuesta enviada.'); verDetalleActualizacion(id); }
+        else alert(data.error || 'Error.');
+    });
+}
+
+function marcarLeido(id) {
+    fetch('../backend/actualizaciones/marcar_leido.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idActualizacion: id }),
+        credentials: 'include'
+    })
+    .then(r => r.json())
+    .then(function(data) {
+        if (data.ok) { bootstrap.Modal.getInstance(document.getElementById('modalActualizacion')).hide(); cargarActualizaciones(1); }
+    });
+}
+
+/* Eventos filtros */
+if (document.getElementById('filtroAnimal')) {
+    document.getElementById('filtroAnimal').addEventListener('change', function() { cargarActualizaciones(1); });
+}
+if (document.getElementById('filtroLeido')) {
+    document.getElementById('filtroLeido').addEventListener('change', function() { cargarActualizaciones(1); });
+}
 </script>
+
+<!-- Modal detalle actualización -->
+<div class="modal fade" id="modalActualizacion" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa-solid fa-bullhorn me-2"></i>Detalle actualización</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalActualizacionBody"></div>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

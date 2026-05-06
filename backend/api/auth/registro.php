@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /*--------------------------------------------------------------------------------------------
 
 Recibe: POST multipart/form-data o JSON
@@ -139,5 +139,5 @@ respuestaOk([
         'username'  => $username,
         'rol'       => 'usuario',
     ],
-    'redirigir' => 'index.html',
+    'redirigir' => '../html/perfil.html',
 ]);

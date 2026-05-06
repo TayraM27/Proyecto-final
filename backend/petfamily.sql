@@ -34,10 +34,17 @@ CREATE TABLE `apadrinamientos` (
   `cuota` decimal(6,2) NOT NULL,
   `fecha_inicio` date NOT NULL,
   `fecha_fin` date DEFAULT NULL,
-  `estado` enum('activo','cancelado','pausado') NOT NULL DEFAULT 'activo',
-  `nombre_pagador` varchar(120) DEFAULT NULL,
-  `email_pagador` varchar(120) DEFAULT NULL,
-  `referencia_pago` varchar(100) DEFAULT NULL
+  `estado` enum('pendiente','en_revision','aceptada','rechazada','cancelada') NOT NULL DEFAULT 'pendiente',
+  `fecha_solicitud` timestamp NOT NULL DEFAULT current_timestamp(),
+  `fecha_gestion` timestamp NULL DEFAULT NULL,
+  `deleted` tinyint(1) NOT NULL DEFAULT 0,
+  `deleted_at` datetime DEFAULT NULL,
+  `nombre_completo` varchar(120) DEFAULT NULL,
+  `email` varchar(120) DEFAULT NULL,
+  `telefono` varchar(20) DEFAULT NULL,
+  `metodo_pago` varchar(50) DEFAULT NULL,
+  `cantidad_mensual` decimal(6,2) DEFAULT NULL,
+  `mensaje` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -492,9 +499,12 @@ CREATE TABLE `solicitudes_adopcion` (
   `compromiso_visitas` tinyint(1) DEFAULT 0,
   `aceptar_politica_privacidad` tinyint(1) NOT NULL DEFAULT 0,
   `mensaje` text DEFAULT NULL,
-  `estado` enum('pendiente','en_revision','aprobada','rechazada') NOT NULL DEFAULT 'pendiente',
+  `mensaje_protectora` text DEFAULT NULL,
+  `estado` enum('pendiente','en_revision','aceptada','rechazada','cancelada') NOT NULL DEFAULT 'pendiente',
   `fecha_envio` timestamp NOT NULL DEFAULT current_timestamp(),
-  `fecha_gestion` timestamp NULL DEFAULT NULL
+  `fecha_gestion` timestamp NULL DEFAULT NULL,
+  `deleted` tinyint(1) NOT NULL DEFAULT 0,
+  `deleted_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -980,8 +990,24 @@ ALTER TABLE `test_opciones`
 -- Filtros para la tabla `test_resultados`
 --
 ALTER TABLE `test_resultados`
-  ADD CONSTRAINT `fk_res_usuario` FOREIGN KEY (`idUsuario`) REFERENCES `usuarios` (`idUsuario`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_res_usuario` FOREIGN KEY (`idUsuario`) REFERENCES `usuarios` (`idUsuario`) ON DELETE CASCADE;
 COMMIT;
+
+--
+-- Estructura de tabla para la tabla `activity_logs`
+--
+
+CREATE TABLE `activity_logs` (
+  `idLog` int(10) UNSIGNED NOT NULL,
+  `idUsuario` int(10) UNSIGNED DEFAULT NULL,
+  `idAdmin` int(10) UNSIGNED DEFAULT NULL,
+  `accion` varchar(100) NOT NULL,
+  `tabla_afectada` varchar(50) DEFAULT NULL,
+  `id_registro` int(10) UNSIGNED DEFAULT NULL,
+  `detalles` text DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `fecha` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

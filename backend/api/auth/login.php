@@ -1,27 +1,27 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/../../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    respuestaError('Método no permitido.', 405);
+    respuestaError('MÃ©todo no permitido.', 405);
 }
 
 $datos = json_decode(file_get_contents('php://input'), true);
 
 if (!$datos) {
-    respuestaError('Datos inválidos.');
+    respuestaError('Datos invÃ¡lidos.');
 }
 
 $email    = limpiar($datos['email']    ?? '');
 $password = trim($datos['password']   ?? '');
 
 if (!$email || !$password) {
-    respuestaError('Email y contraseña son obligatorios.');
+    respuestaError('Email y contraseÃ±a son obligatorios.');
 }
 
 if (!validarEmail($email)) {
-    respuestaError('Email no válido.');
+    respuestaError('Email no vÃ¡lido.');
 }
 
 $pdo  = conectar();
@@ -35,11 +35,11 @@ $stmt->execute([$email]);
 $usuario = $stmt->fetch();
 
 if (!$usuario || !password_verify($password, $usuario['password_hash'])) {
-    respuestaError('Email o contraseña incorrectos.');
+    respuestaError('Email o contraseÃ±a incorrectos.');
 }
 
 if (!$usuario['activo']) {
-    respuestaError('Tu cuenta está desactivada. Contacta con el administrador.');
+    respuestaError('Tu cuenta estÃ¡ desactivada. Contacta con el administrador.');
 }
 
 $pdo->prepare('UPDATE usuarios SET ultimo_login = NOW() WHERE idUsuario = ?')
@@ -55,7 +55,7 @@ $_SESSION['foto_perfil']  = $usuario['foto_perfil'];
 $_SESSION['idProtectora'] = $usuario['idProtectora'] ? $usuario['idProtectora'] : null;
 
 $rol = $usuario['rol'];
-$redir = '../html/index.html';
+$redir = 'perfil.html';
 
 if ($rol === 'admin') {
     $redir = '../admin/dashboard.html';

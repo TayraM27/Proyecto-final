@@ -1,8 +1,14 @@
 <?php
 /*--------------------------------------------------------------------------------------------
 POST — guarda una solicitud de acogida
-No requiere login (visitantes tambien pueden solicitarla)
-Recibe: { idMascota, nombre, email, telefono, vivienda, experiencia, tiempo, mensaje } */
+Recibe FormData con campos:
+ idMascota, nombre, dni, fecha_nacimiento, email, telefono,
+ direccion_completa, tipo_vivienda, vivienda_en_propiedad,
+ permiso_propietario (PDF si no es propietario),
+ experiencia_acogida, disponibilidad_tiempo, tiempo_fuera_casa,
+ animales_en_hogar, descripcion_animales, posibilidad_gastos,
+ motivo_acogida, aceptar_politica_privacidad, mensaje
+No requiere login (visitantes tambien pueden solicitarla) */
 
 require_once __DIR__ . '/../includes/funciones.php';
 
@@ -12,37 +18,60 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     respuestaError('Metodo no permitido.', 405);
 }
 
-$datos       = json_decode(file_get_contents('php://input'), true) ?? [];
-$idMascota   = (int)($datos['idMascota']   ?? 0);
-$nombre      = limpiar($datos['nombre']    ?? '');
-$email       = trim($datos['email']        ?? '');
-$telefono    = limpiar($datos['telefono']  ?? '');
-$vivienda    = limpiar($datos['vivienda']  ?? '');
-$experiencia = limpiar($datos['experiencia'] ?? '');
-$tiempo      = limpiar($datos['tiempo']    ?? '');
-$mensaje     = limpiar($datos['mensaje']   ?? '');
+$contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+$esJson = strpos($contentType, 'application/json') !== false;
 
-if (!$idMascota || !$nombre || !$email || !$vivienda) {
-    respuestaError('Faltan campos obligatorios: mascota, nombre, email y tipo de vivienda.');
+if ($esJson) {
+    $datos = json_decode(file_get_contents('php://input'), true) ?? [];
+    $post = $datos;
+    $files = [];
+} else {
+    $post = $_POST;
+    $files = $_FILES;
 }
 
+$idMascota = (int)($post['idMascota'] ?? 0);
+$nombre    = limpiar($post['nombre'] ?? '');
+$dni       = limpiar($post['dni'] ?? '');
+$fecha_nac = $post['fecha_nacimiento'] ?? '';
+$email     = trim($post['email'] ?? '');
+$telefono  = limpiar($post['telefono'] ?? '');
+$direccion = limpiar($post['direccion_completa'] ?? '');
+$tipo_vivienda = $post['tipo_vivienda'] ?? '';
+$vivienda_prop = $post['vivienda_en_propiedad'] ?? '';
+$experiencia = limpiar($post['experiencia_acogida'] ?? '');
+$disponibilidad = limpiar($post['disponibilidad_tiempo'] ?? '');
+$tiempo_fuera = limpiar($post['tiempo_fuera_casa'] ?? '');
+$animales_hogar = $post['animales_en_hogar'] ?? '';
+$desc_animales = limpiar($post['descripcion_animales'] ?? '');
+$posibilidad_gastos = $post['posibilidad_gastos'] ?? '';
+$motivo = limpiar($post['motivo_acogida'] ?? '');
+$acepta_politica = isset($post['aceptar_politica_privacidad']) ? 1 : 0;
+$mensaje = limpiar($post['mensaje'] ?? '');
+
+/* Validaciones basicas */
+if (!$idMascota || !$nombre || !$email) {
+    respuestaError('Faltan campos obligatorios: mascota, nombre y email.');
+}
 if (!validarEmail($email)) {
     respuestaError('Email no valido.');
 }
-
 if ($telefono && !preg_match('/^\d{9}$/', $telefono)) {
     respuestaError('El telefono debe tener exactamente 9 digitos.');
 }
-
-$viviendas_validas = ['piso', 'casa_con_jardin', 'casa_sin_jardin', 'finca'];
-if (!in_array($vivienda, $viviendas_validas, true)) {
-    respuestaError('Tipo de vivienda no valido.');
+if ($dni && !preg_match('/^[XYZ]?[0-9]{7,8}[A-Z]$/i', $dni)) {
+    respuestaError('DNI no valido.');
 }
-
-if ($tiempo) {
-    $tiempos_validos = ['menos_de_2h', '2_a_4h', 'mas_de_4h', 'disponibilidad_completa'];
-    if (!in_array($tiempo, $tiempos_validos, true)) {
-        respuestaError('Valor de tiempo no valido.');
+if ($vivienda_prop === 'no' && empty($files['permiso_propietario']['name'])) {
+    respuestaError('Si la vivienda no es en propiedad, debes subir el permiso del propietario (PDF).');
+}
+if (!$acepta_politica) {
+    respuestaError('Debes aceptar la politica de privacidad.');
+}
+/* Validar texto minimo 20 caracteres */
+foreach ([$experiencia, $motivo] as $texto) {
+    if ($texto !== '' && strlen($texto) < 20) {
+        respuestaError('Los campos de texto deben tener al menos 20 caracteres.');
     }
 }
 
@@ -70,24 +99,64 @@ if ($stmt->fetch()) {
     respuestaError('Ya tienes una solicitud de acogida activa para esta mascota.');
 }
 
+// Subir archivo si existe
+$permisoPath = null;
+if (!empty($files['permiso_propietario']['name'])) {
+    $file = $files['permiso_propietario'];
+    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    if ($ext !== 'pdf') {
+        respuestaError('El permiso del propietario debe ser un archivo PDF.');
+    }
+    if ($file['size'] > 5 * 1024 * 1024) {
+        respuestaError('El archivo PDF no debe superar los 5MB.');
+    }
+    $uploadDir = __DIR__ . '/../../uploads/permisos/';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+    $fileName = 'permiso_acogida_' . $idMascota . '_' . time() . '.pdf';
+    $destino = $uploadDir . $fileName;
+    if (!move_uploaded_file($file['tmp_name'], $destino)) {
+        respuestaError('Error al subir el archivo.');
+    }
+    $permisoPath = 'uploads/permisos/' . $fileName;
+}
+
 // Obtener idUsuario si esta logueado
 iniciarSesionSegura();
 $idUsuario = usuarioLogueado() ? (int)$_SESSION['idUsuario'] : null;
 
-$stmt = $pdo->prepare(
-    'INSERT INTO solicitudes_acogida (idUsuario, idMascota, nombre, email, telefono, vivienda, experiencia, tiempo, mensaje)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
-);
+// Insertar solicitud (tabla debe tener las columnas adecuadas)
+$sql = 'INSERT INTO solicitudes_acogida
+        (idUsuario, idMascota, nombre, dni, fecha_nacimiento, email, telefono,
+         direccion_completa, tipo_vivienda, vivienda_en_propiedad, permiso_propietario,
+         experiencia_acogida, disponibilidad_tiempo, tiempo_fuera_casa,
+         animales_en_hogar, descripcion_animales, posibilidad_gastos,
+         motivo_acogida, aceptar_politica_privacidad, mensaje)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+
+$stmt = $pdo->prepare($sql);
 $stmt->execute([
     $idUsuario,
     $idMascota,
     $nombre,
+    $dni === '' ? null : $dni,
+    $fecha_nac === '' ? null : $fecha_nac,
     $email,
-    $telefono ?: null,
-    $vivienda,
-    $experiencia ?: null,
-    $tiempo ?: null,
-    $mensaje ?: null
+    $telefono === '' ? null : $telefono,
+    $direccion === '' ? null : $direccion,
+    $tipo_vivienda === '' ? null : $tipo_vivienda,
+    $vivienda_prop === '' ? null : $vivienda_prop,
+    $permisoPath,
+    $experiencia === '' ? null : $experiencia,
+    $disponibilidad === '' ? null : $disponibilidad,
+    $tiempo_fuera === '' ? null : $tiempo_fuera,
+    $animales_hogar === '' ? null : $animales_hogar,
+    $desc_animales === '' ? null : $desc_animales,
+    $posibilidad_gastos === '' ? null : $posibilidad_gastos,
+    $motivo === '' ? null : $motivo,
+    $acepta_politica,
+    $mensaje === '' ? null : $mensaje
 ]);
 
-respuestaOk(['mensaje' => 'Solicitud de acogida enviada correctamente. La protectora se pondra en contacto contigo.']);
+respuestaOk(['mensaje' => 'Solicitud de acogida enviada correctamente. La protectora se pondra en contacto contigo por email.']);

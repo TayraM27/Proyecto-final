@@ -19,6 +19,25 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     respuestaError('Metodo no permitido.', 405);
 }
 
+/* Rate limiting: maximo 3 solicitudes por IP cada 15 minutos */
+$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+$rateKey = 'rate_solicitud_' . md5($ip);
+$rateData = json_decode(apcu_fetch($rateKey) ?? '{"count":0,"time":0}', true);
+if (time() - $rateData['time'] > 900) {
+    $rateData = ['count' => 0, 'time' => time()];
+}
+$rateData['count']++;
+if ($rateData['count'] > 3) {
+    respuestaError('Demasiados intentos. Espera 15 minutos.', 429);
+}
+apcu_store($rateKey, json_encode($rateData), 900);
+
+/* CSRF token (opcional para formularios JSON) */
+$csrfHeader = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+if ($csrfHeader && $csrfHeader !== 'PetFamily2026') {
+    respuestaError('Token de seguridad invalido.', 403);
+}
+
 $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
 $esJson = strpos($contentType, 'application/json') !== false;
 
