@@ -5,8 +5,8 @@ CRUD — Banners */
 require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
-metodoGetOPost();
 
+iniciarSesionSegura();
 requerirAdmin();
 session_write_close();
 
