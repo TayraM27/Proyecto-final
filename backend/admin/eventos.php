@@ -63,37 +63,38 @@ switch ($accion) {
         $data = jsonInput();
 
         if ($esAdmin) {
-            /* Admin crea eventos globales (idProtectora = NULL) */
             $stmt = $pdo->prepare(
-                "INSERT INTO eventos (idProtectora, titulo, descripcion, fecha_evento, hora, lugar, localidad, url_info, precio, activa)
-                 VALUES (NULL, :titulo, :descripcion, :fecha_evento, :hora, :lugar, :localidad, :url_info, :precio, 1)"
+                "INSERT INTO eventos (idProtectora, titulo, descripcion, fecha_evento, hora, lugar, localidad, url_info, precio, activa, sponsorizable)
+                 VALUES (NULL, :titulo, :descripcion, :fecha_evento, :hora, :lugar, :localidad, :url_info, :precio, 1, :sponsorizable)"
             );
             $stmt->execute([
-                ':titulo'       => $data['titulo'],
-                ':descripcion'  => $data['descripcion']  ?? null,
-                ':fecha_evento' => $data['fecha_evento'],
-                ':hora'         => $data['hora']         ?? null,
-                ':lugar'        => $data['lugar']        ?? null,
-                ':localidad'    => $data['localidad']    ?? null,
-                ':url_info'     => $data['url_info']     ?? null,
-                ':precio'       => $data['precio']       ?? 'Gratis',
+                ':titulo'        => $data['titulo'],
+                ':descripcion'   => $data['descripcion']   ?? null,
+                ':fecha_evento'  => $data['fecha_evento'],
+                ':hora'          => $data['hora']          ?? null,
+                ':lugar'         => $data['lugar']         ?? null,
+                ':localidad'     => $data['localidad']     ?? null,
+                ':url_info'      => $data['url_info']      ?? null,
+                ':precio'        => $data['precio']        ?? 'Gratis',
+                ':sponsorizable' => !empty($data['sponsorizable']) ? 1 : 0,
             ]);
         } else {
             if (!$idProtectoraUsuario) respuestaError('No tienes una protectora asignada.');
             $stmt = $pdo->prepare(
-                "INSERT INTO eventos (idProtectora, titulo, descripcion, fecha_evento, hora, lugar, localidad, url_info, precio, activa)
-                 VALUES (:idProtectora, :titulo, :descripcion, :fecha_evento, :hora, :lugar, :localidad, :url_info, :precio, 1)"
+                "INSERT INTO eventos (idProtectora, titulo, descripcion, fecha_evento, hora, lugar, localidad, url_info, precio, activa, sponsorizable)
+                 VALUES (:idProtectora, :titulo, :descripcion, :fecha_evento, :hora, :lugar, :localidad, :url_info, :precio, 1, :sponsorizable)"
             );
             $stmt->execute([
-                ':idProtectora' => $idProtectoraUsuario,
-                ':titulo'       => $data['titulo'],
-                ':descripcion'  => $data['descripcion']  ?? null,
-                ':fecha_evento' => $data['fecha_evento'],
-                ':hora'         => $data['hora']         ?? null,
-                ':lugar'        => $data['lugar']        ?? null,
-                ':localidad'    => $data['localidad']    ?? null,
-                ':url_info'     => $data['url_info']     ?? null,
-                ':precio'       => $data['precio']       ?? 'Gratis',
+                ':idProtectora'  => $idProtectoraUsuario,
+                ':titulo'        => $data['titulo'],
+                ':descripcion'   => $data['descripcion']   ?? null,
+                ':fecha_evento'  => $data['fecha_evento'],
+                ':hora'          => $data['hora']          ?? null,
+                ':lugar'         => $data['lugar']         ?? null,
+                ':localidad'     => $data['localidad']     ?? null,
+                ':url_info'      => $data['url_info']      ?? null,
+                ':precio'        => $data['precio']        ?? 'Gratis',
+                ':sponsorizable' => !empty($data['sponsorizable']) ? 1 : 0,
             ]);
         }
 
@@ -115,40 +116,44 @@ switch ($accion) {
 
             $stmt = $pdo->prepare(
                 "UPDATE eventos SET titulo=:titulo, descripcion=:descripcion, fecha_evento=:fecha_evento,
-                 hora=:hora, lugar=:lugar, localidad=:localidad, url_info=:url_info, precio=:precio, activa=:activa
+                 hora=:hora, lugar=:lugar, localidad=:localidad, url_info=:url_info, precio=:precio,
+                 activa=:activa, sponsorizable=:sponsorizable
                  WHERE idEvento=:id AND idProtectora IS NULL"
             );
             $stmt->execute([
-                ':id'           => $id,
-                ':titulo'       => $data['titulo'],
-                ':descripcion'  => $data['descripcion']  ?? null,
-                ':fecha_evento' => $data['fecha_evento'],
-                ':hora'         => $data['hora']         ?? null,
-                ':lugar'        => $data['lugar']        ?? null,
-                ':localidad'    => $data['localidad']    ?? null,
-                ':url_info'     => $data['url_info']     ?? null,
-                ':precio'       => $data['precio']       ?? 'Gratis',
-                ':activa'       => isset($data['activa']) ? (int)$data['activa'] : 1,
+                ':id'            => $id,
+                ':titulo'        => $data['titulo'],
+                ':descripcion'   => $data['descripcion']   ?? null,
+                ':fecha_evento'  => $data['fecha_evento'],
+                ':hora'          => $data['hora']          ?? null,
+                ':lugar'         => $data['lugar']         ?? null,
+                ':localidad'     => $data['localidad']     ?? null,
+                ':url_info'      => $data['url_info']      ?? null,
+                ':precio'        => $data['precio']        ?? 'Gratis',
+                ':activa'        => isset($data['activa']) ? (int)$data['activa'] : 1,
+                ':sponsorizable' => !empty($data['sponsorizable']) ? 1 : 0,
             ]);
         } else {
             if (!$idProtectoraUsuario) respuestaError('No tienes una protectora asignada.');
             $stmt = $pdo->prepare(
                 "UPDATE eventos SET titulo=:titulo, descripcion=:descripcion, fecha_evento=:fecha_evento,
-                 hora=:hora, lugar=:lugar, localidad=:localidad, url_info=:url_info, precio=:precio, activa=:activa
+                 hora=:hora, lugar=:lugar, localidad=:localidad, url_info=:url_info, precio=:precio,
+                 activa=:activa, sponsorizable=:sponsorizable
                  WHERE idEvento=:id AND idProtectora=:idProtectora"
             );
             $stmt->execute([
-                ':id'           => $id,
-                ':idProtectora' => $idProtectoraUsuario,
-                ':titulo'       => $data['titulo'],
-                ':descripcion'  => $data['descripcion']  ?? null,
-                ':fecha_evento' => $data['fecha_evento'],
-                ':hora'         => $data['hora']         ?? null,
-                ':lugar'        => $data['lugar']        ?? null,
-                ':localidad'    => $data['localidad']    ?? null,
-                ':url_info'     => $data['url_info']     ?? null,
-                ':precio'       => $data['precio']       ?? 'Gratis',
-                ':activa'       => isset($data['activa']) ? (int)$data['activa'] : 1,
+                ':id'            => $id,
+                ':idProtectora'  => $idProtectoraUsuario,
+                ':titulo'        => $data['titulo'],
+                ':descripcion'   => $data['descripcion']   ?? null,
+                ':fecha_evento'  => $data['fecha_evento'],
+                ':hora'          => $data['hora']          ?? null,
+                ':lugar'         => $data['lugar']         ?? null,
+                ':localidad'     => $data['localidad']     ?? null,
+                ':url_info'      => $data['url_info']      ?? null,
+                ':precio'        => $data['precio']        ?? 'Gratis',
+                ':activa'        => isset($data['activa']) ? (int)$data['activa'] : 1,
+                ':sponsorizable' => !empty($data['sponsorizable']) ? 1 : 0,
             ]);
         }
 
@@ -156,25 +161,46 @@ switch ($accion) {
         break;
 
     /*--------------------------------------------------------------------------------------------
-    eliminar (desactivar) */
-    case 'eliminar':
+    suspender (soft delete con motivo) */
+    case 'suspender':
+        $data = jsonInput();
+        $motivo = trim($data['motivo_suspension'] ?? '');
+        if (!$motivo) respuestaError('Debes indicar un motivo de suspensión.', 400);
+
         if ($esAdmin) {
-            /* Admin solo puede desactivar eventos globales */
             $stmtCheck = $pdo->prepare('SELECT idProtectora FROM eventos WHERE idEvento = ?');
             $stmtCheck->execute([$id]);
             $evento = $stmtCheck->fetch();
             if (!$evento) respuestaError('Evento no encontrado.', 404);
-            if ($evento['idProtectora']) respuestaError('No puedes eliminar eventos de protectoras.', 403);
-            $pdo->prepare("UPDATE eventos SET activa = 0 WHERE idEvento = ? AND idProtectora IS NULL")->execute([$id]);
+            if ($evento['idProtectora']) respuestaError('No puedes suspender eventos de protectoras.', 403);
+            $pdo->prepare("UPDATE eventos SET suspendido = 1, motivo_suspension = ? WHERE idEvento = ? AND idProtectora IS NULL")->execute([$motivo, $id]);
         } else {
             if (!$idProtectoraUsuario) respuestaError('No tienes una protectora asignada.');
-            $pdo->prepare("UPDATE eventos SET activa = 0 WHERE idEvento = ? AND idProtectora = ?")->execute([$id, $idProtectoraUsuario]);
+            $pdo->prepare("UPDATE eventos SET suspendido = 1, motivo_suspension = ? WHERE idEvento = ? AND idProtectora = ?")->execute([$motivo, $id, $idProtectoraUsuario]);
         }
-        respuestaOk(['mensaje' => 'Evento desactivado.']);
+        respuestaOk(['mensaje' => 'Evento suspendido.']);
         break;
 
     /*--------------------------------------------------------------------------------------------
-    activar */
+    sponsorizar (toggle sponsorizable) */
+    case 'sponsorizar':
+        $valor = (int)($_GET['valor'] ?? 0);
+        if ($esAdmin) {
+            $stmtCheck = $pdo->prepare('SELECT idProtectora FROM eventos WHERE idEvento = ?');
+            $stmtCheck->execute([$id]);
+            $evento = $stmtCheck->fetch();
+            if (!$evento) respuestaError('Evento no encontrado.', 404);
+            if ($evento['idProtectora']) respuestaError('No puedes modificar eventos de protectoras.', 403);
+            $pdo->prepare("UPDATE eventos SET sponsorizable = ? WHERE idEvento = ? AND idProtectora IS NULL")->execute([$valor, $id]);
+        } else {
+            if (!$idProtectoraUsuario) respuestaError('No tienes una protectora asignada.');
+            $pdo->prepare("UPDATE eventos SET sponsorizable = ? WHERE idEvento = ? AND idProtectora = ?")->execute([$valor, $id, $idProtectoraUsuario]);
+        }
+        respuestaOk(['mensaje' => $valor ? 'Evento marcado como sponsorizable.' : 'Sponsorización quitada.']);
+        break;
+
+    /*--------------------------------------------------------------------------------------------
+    activar (reactivar) */
     case 'activar':
         if ($esAdmin) {
             $stmtCheck = $pdo->prepare('SELECT idProtectora FROM eventos WHERE idEvento = ?');
@@ -182,12 +208,12 @@ switch ($accion) {
             $evento = $stmtCheck->fetch();
             if (!$evento) respuestaError('Evento no encontrado.', 404);
             if ($evento['idProtectora']) respuestaError('No puedes reactivar eventos de protectoras.', 403);
-            $pdo->prepare("UPDATE eventos SET activa = 1 WHERE idEvento = ? AND idProtectora IS NULL")->execute([$id]);
+            $pdo->prepare("UPDATE eventos SET activa = 1, suspendido = 0, motivo_suspension = NULL WHERE idEvento = ? AND idProtectora IS NULL")->execute([$id]);
         } else {
             if (!$idProtectoraUsuario) respuestaError('No tienes una protectora asignada.');
-            $pdo->prepare("UPDATE eventos SET activa = 1 WHERE idEvento = ? AND idProtectora = ?")->execute([$id, $idProtectoraUsuario]);
+            $pdo->prepare("UPDATE eventos SET activa = 1, suspendido = 0, motivo_suspension = NULL WHERE idEvento = ? AND idProtectora = ?")->execute([$id, $idProtectoraUsuario]);
         }
-        respuestaOk(['mensaje' => 'Evento activado.']);
+        respuestaOk(['mensaje' => 'Evento reactivado.']);
         break;
 
     default:

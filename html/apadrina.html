@@ -171,24 +171,24 @@
             </div>
             <div class="modal-body" style="padding:1.5em;">
                 <div id="apadFormError2" class="form-error" style="display:none;background:#fff0f0;color:#c0392b;padding:0.5em 0.8em;border-radius:6px;font-size:0.85rem;margin-bottom:1em;"></div>
-                <div id="apadFormOk2" class="form-success" style="display:none;background:#f0fff4;color:#27ae60;padding:0.5em 0.8em;border-radius:6px;font-size:0.85rem;margin-bottom:1em;"></div>
-                <div id="apadMascotaInfo2" style="background:#f0fff4;padding:0.8em;border-radius:8px;margin-bottom:1em;font-size:0.9rem;"></div>
+                <div id="apadFormOk2" class="form-success" style="display:none;background:#FFF8E7;color:#1B358F;padding:0.5em 0.8em;border-radius:6px;font-size:0.85rem;margin-bottom:1em;"></div>
+                <div id="apadMascotaInfo2" style="background:#FFF8E7;padding:0.8em;border-radius:8px;margin-bottom:1em;font-size:0.9rem;"></div>
                 <form id="formApadrinamiento2" onsubmit="enviarApadrinamientoApadrina(event)">
                     <input type="hidden" id="pIdMascota2">
                     <div class="mb-3">
                         <label class="form-label" style="font-weight:500;font-size:0.9rem;">Cuota mensual <span class="text-danger">*</span></label>
                         <div id="cuotaGridApadrina" style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.5em;margin-bottom:0.5em;">
                             <div class="cuota-op" data-cuota="3" onclick="selCuotaApadrina(this)" style="border:2px solid #ddd;border-radius:8px;padding:0.6em;text-align:center;cursor:pointer;transition:all 0.2s;">
-                                <div style="font-size:1.3rem;font-weight:700;color:#27ae60;">3 €</div><div style="font-size:0.75rem;color:#666;">Básica</div>
+                                <div style="font-size:1.3rem;font-weight:700;color:#1B358F;">3 €</div>
                             </div>
                             <div class="cuota-op" data-cuota="5" onclick="selCuotaApadrina(this)" style="border:2px solid #ddd;border-radius:8px;padding:0.6em;text-align:center;cursor:pointer;transition:all 0.2s;">
-                                <div style="font-size:1.3rem;font-weight:700;color:#27ae60;">5 €</div><div style="font-size:0.75rem;color:#666;">Estándar</div>
+                                <div style="font-size:1.3rem;font-weight:700;color:#1B358F;">5 €</div>
                             </div>
                             <div class="cuota-op" data-cuota="8" onclick="selCuotaApadrina(this)" style="border:2px solid #ddd;border-radius:8px;padding:0.6em;text-align:center;cursor:pointer;transition:all 0.2s;">
-                                <div style="font-size:1.3rem;font-weight:700;color:#27ae60;">8 €</div><div style="font-size:0.75rem;color:#666;">Premium</div>
+                                <div style="font-size:1.3rem;font-weight:700;color:#1B358F;">8 €</div>
                             </div>
                             <div class="cuota-op" data-cuota="10" onclick="selCuotaApadrina(this)" style="border:2px solid #ddd;border-radius:8px;padding:0.6em;text-align:center;cursor:pointer;transition:all 0.2s;">
-                                <div style="font-size:1.3rem;font-weight:700;color:#27ae60;">10 €</div><div style="font-size:0.75rem;color:#666;">Oro</div>
+                                <div style="font-size:1.3rem;font-weight:700;color:#1B358F;">10 €</div>
                             </div>
                         </div>
                         <input type="hidden" id="pCuota2" required>
@@ -209,9 +209,9 @@
                         <label class="form-label" style="font-weight:500;font-size:0.9rem;">Método de pago <span class="text-danger">*</span></label>
                         <select class="form-select" id="pMetodoPago2" required style="border-radius:8px;">
                             <option value="">Selecciona...</option>
-                            <option value="tarjeta_simulada">Tarjeta (simulada)</option>
-                            <option value="transferencia_simulada">Transferencia automática (simulada)</option>
-                            <option value="bizum_simulado">Bizum (simulado)</option>
+                            <option value="tarjeta">Tarjeta bancaria</option>
+                            <option value="transferencia">Transferencia automática</option>
+                            <option value="bizum">Bizum</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -221,7 +221,7 @@
                     <div class="mb-2">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="pTerminos2" required>
-                            <label class="form-check-label" for="pTerminos2" style="font-size:0.85rem;">Acepto los términos y condiciones del apadrinamiento.</label>
+                            <label class="form-check-label" for="pTerminos2" style="font-size:0.85rem;">Acepto los términos y condiciones del apadrinamiento.<span class="text-danger">*</span></label>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -233,9 +233,9 @@
                         </div>
                     </div>
                     <div class="aviso-responsable mt-2" style="background:#fff8e1;padding:0.6em 0.8em;border-radius:8px;font-size:0.82rem;color:#856404;">
-                        <i class="fa-solid fa-bell me-1"></i> El pago es simulado. No se realizará ningún cobro real. La protectora revisará tu solicitud y se pondrá en contacto contigo.
+                        <i class="fa-solid fa-bell me-1"></i> Tus datos están protegidos. La protectora se pondrá en contacto contigo para confirmar el apadrinamiento.
                     </div>
-                    <button type="submit" class="btn w-100 mt-3" style="background:#F8BA56;color:#fff;border:none;cursor:pointer;padding:0.7em;border-radius:8px;font-weight:600;">
+                    <button type="submit" class="btn w-100 mt-3" style="background:#1B358F;color:#fff;border:none;cursor:pointer;padding:0.7em;border-radius:8px;font-weight:600;">
                         <i class="fa-solid fa-paper-plane me-1"></i> Confirmar apadrinamiento
                     </button>
                 </form>
@@ -342,9 +342,9 @@ function cargarAnimalesApadrina(pagina) {
                     + '<p class="animal-desc">' + desc + '</p>'
                     + '<div class="animal-tags">' + tags + '</div>'
                     + '<div class="apad-btns-wrap">'
-                     + '<button class="btn-apadrinar" style="background:#F8BA56;color:#fff;border:none;padding:0.7em 1.2em;border-radius:8px;cursor:pointer;font-weight:600;" onclick="abrirModalApadrina(\'' + dAttr + '\')">'
-                     + '<i class="fa-solid fa-heart me-2"></i>Apadrinar a ' + m.nombre
-                     + '</button>'
+                    + '<button class="btn-apadrinar" onclick="abrirModalApadrina(\'' + dAttr + '\')">'
+                    + '<i class="fa-solid fa-heart me-2"></i>Apadrinar a ' + m.nombre
+                    + '</button>'
                     + '<a href="fichaAnimal.html?id=' + m.idMascota + '" class="btn-ver-ficha">'
                     + '<i class="fa-solid fa-paw me-1"></i>Ver ficha'
                     + '</a>'
@@ -445,8 +445,8 @@ function abrirModalApadrina(qRaw) {
 
 function selCuotaApadrina(el) {
     document.querySelectorAll('#cuotaGridApadrina .cuota-op').forEach(function(o) { o.style.borderColor = '#ddd'; o.style.background = 'transparent'; });
-    el.style.borderColor = '#27ae60';
-    el.style.background = '#f0fff4';
+    el.style.borderColor = '#F8BA56';
+    el.style.background = '#FFF8E7';
     document.getElementById('pCuota2').value = el.dataset.cuota;
 }
 

@@ -168,41 +168,7 @@
 
     </div>
 
-    <!-- Banners sectoriales -->
-    <section class="banners-sectoriales">
 
-        <!-- Eventos de adopción -->
-        <div class="banner-sector-wrap container">
-            <div class="banner-sector-header">
-                <span class="banner-sector-pill"><i class="fa-solid fa-calendar-days"></i> Próximos eventos</span>
-                <p class="banner-sector-sub">Ferias y jornadas de adopción en Asturias</p>
-            </div>
-            <div class="banner-eventos-grid" id="banner-eventos-grid"></div>
-        </div>
-
-        <!-- Tiendas afiliadas -->
-        <div class="banner-tiendas-bg">
-            <div class="container banner-sector-wrap">
-                <div class="banner-sector-header">
-                    <span class="banner-sector-pill banner-sector-pill-gold"><i class="fa-solid fa-store"></i> Tiendas amigas</span>
-                    <p class="banner-sector-sub">Establecimientos de Asturias que apoyan la adopción responsable</p>
-                </div>
-<div class="banner-tiendas-grid" id="banner-tiendas-grid"></div>
-                <p class="banner-tiendas-nota">¿Tienes un negocio y quieres colaborar? <a href="mailto:petfamilycontact@yopmail.com?subject=Contacto%20PetFamily"><i class="fa-solid fa-envelope me-1"></i>Escríbenos</a> y súmate a la red.</p>
-            </div>
-        </div>
-
-        <!-- Patrocinio / apoyo institucional -->
-        <div class="container banner-sector-wrap">
-            <div class="banner-sector-header">
-                <span class="banner-sector-pill"><i class="fa-solid fa-handshake"></i> Nos apoyan</span>
-                <p class="banner-sector-sub">Entidades e iniciativas que respaldan el bienestar animal en Asturias</p>
-            </div>
-            <div class="banner-apoyo-grid" id="banner-apoyo-grid"></div>
-        </div>
-
-    </section>
-    <!-- Fin banners sectoriales -->
 
     <div class="text-center" style="padding: 2rem 0 1rem;">
         <a href="#"><img src="../img/sectionIndex/up-arrow.png" alt="Volver arriba" id="arrow" width="40px"></a>
@@ -218,79 +184,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../javascript/script.js"></script>
-<script>
-(function() {
-function renderEventos(eventos) {
-        var grid = document.getElementById('banner-eventos-grid');
-        if (!grid) return;
-        grid.innerHTML = eventos.map(function(e) {
-            var fecha = new Date(e.fecha_evento);
-            var dia = String(fecha.getDate()).padStart(2, '0');
-            var mes = fecha.toLocaleDateString('es-ES', { month: 'short' });
-            var lugar = e.lugar + (e.localidad ? ', ' + e.localidad : '');
-            return '<div class="banner-evento">'
-                + '<div class="banner-evento-fecha">'
-                + '<span class="banner-evento-dia">' + dia + '</span>'
-                + '<span class="banner-evento-mes">' + mes.charAt(0).toUpperCase() + mes.slice(1) + '</span>'
-                + '</div>'
-                + '<div class="banner-evento-info">'
-                + '<p class="banner-evento-titulo">' + e.titulo + '</p>'
-                + '<p class="banner-evento-lugar"><i class="fa-solid fa-location-dot"></i> ' + lugar + (e.hora ? ' · ' + e.hora : '') + '</p>'
-                + '<p class="banner-evento-desc">' + (e.descripcion || '') + '</p>'
-                + '</div>'
-                + '<span class="banner-evento-badge">' + (e.precio || 'Gratis') + '</span>'
-                + '</div>';
-        }).join('');
-    }
-    
-    function renderTiendas(tiendas) {
-        var gridT = document.getElementById('banner-tiendas-grid');
-        if (!gridT) return;
-        gridT.innerHTML = tiendas.map(function(t) {
-            var icon = t.tipo === 'veterinaria' ? 'fa-stethoscope' : t.tipo === 'clinica' ? 'fa-hospital' : 'fa-store';
-            var badge = t.tipo === 'veterinaria' ? 'Vet colaborador' : t.tipo === 'clinica' ? 'Clínica' : 
-                        t.descuento ? t.descuento : 'Colaborador';
-            return '<a class="banner-tienda" href="' + (t.web || '#') + '" target="_blank" rel="noopener" style="text-decoration:none;">'
-                + '<div class="banner-tienda-icono"><i class="fa-solid ' + icon + '"></i></div>'
-                + '<div class="banner-tienda-info">'
-                + '<p class="banner-tienda-nombre">' + t.nombre + '</p>'
-                + '<p class="banner-tienda-desc">' + (t.descripcion || '') + '</p>'
-                + '</div>'
-                + '<span class="banner-tienda-badge">' + badge + '</span>'
-                + '</a>';
-        }).join('');
-    }
-    
-    function renderApoyo(apoyos) {
-        var gridA = document.getElementById('banner-apoyo-grid');
-        if (!gridA) return;
-        gridA.innerHTML = apoyos.map(function(a) {
-            var icon = a.tipo === 'ong' ? 'fa-hand-holding-heart' : a.tipo === 'institucion' ? 'fa-building-columns' : 'fa-newspaper';
-            return '<a class="banner-apoyo-item" href="' + (a.web || '#') + '" target="_blank" rel="noopener" style="text-decoration:none;">'
-                + '<i class="fa-solid ' + icon + ' banner-apoyo-ico"></i>'
-                + '<p class="banner-apoyo-nombre">' + a.nombre + '</p>'
-                + '<p class="banner-apoyo-desc">' + (a.descripcion || '') + '</p>'
-                + '</a>';
-        }).join('');
-    }
-    
-    // Cargar datos dinámicos
-    fetch('../backend/api/web/datos.php')
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            if (data && data.ok && data.eventos && data.eventos.length) {
-                renderEventos(data.eventos);
-            }
-            if (data && data.ok && data.entidades && data.entidades.length) {
-                var tiendas = data.entidades.filter(function(x) { return x.tipo === 'tienda' || x.tipo === 'veterinaria' || x.tipo === 'clinica'; });
-                var apoyos = data.entidades.filter(function(x) { return x.tipo === 'ong' || x.tipo === 'institucion' || x.tipo === 'media'; });
-                if (tiendas.length) renderTiendas(tiendas);
-                if (apoyos.length) renderApoyo(apoyos);
-            }
-        })
-        .catch(function() {});
-})();
-</script>
+
 <script>
 /* Fix Tidio cierre automático */
 (function() {

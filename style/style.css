@@ -21,7 +21,7 @@ secciones index */
 #adoptArticle {
 margin: 0 auto;
 padding: 1em;
-font-size: 1.2em;
+font-size: 1rem;
 }
 
 /*--------------------------------------------------------------------------------------------
@@ -880,7 +880,17 @@ margin-bottom: 1em;
 color: #F8BA56;
 margin-right: 0.3em;
 }
-
+.prot-dato-teaming a {
+    color: #1B358F;
+    font-weight: 600;
+    text-decoration: none;
+}
+.prot-dato-teaming a:hover {
+    text-decoration: underline;
+}
+.prot-dato-teaming i {
+    color: #c87a00;
+}
 .btn-donar {
 background-color: #F8BA56;
 color: #1B358F;
@@ -1548,7 +1558,7 @@ position: relative;
 
 /*imagenes secciones index*/
 .img-section {
-width: 80%;
+width: 70%;
 max-width: 480px;
 height: auto;
 object-fit: contain;
@@ -4542,271 +4552,7 @@ flex-direction: column;
 gap: 0.4em;
 }
 
-/*--------------------------------------------------------------------------------------------
-banners sectoriales index */
 
-.banners-sectoriales {
-margin-top: 3rem;
-}
-
-.banner-sector-wrap {
-padding: 3rem 1.5rem;
-}
-
-.banner-sector-header {
-text-align: center;
-margin-bottom: 2rem;
-}
-
-.banner-sector-pill {
-display: inline-flex;
-align-items: center;
-gap: 0.4em;
-background: #1B358F;
-color: #fff;
-border-radius: 20px;
-padding: 0.3em 1em;
-font-size: 0.82rem;
-font-weight: 600;
-letter-spacing: 0.02em;
-margin-bottom: 0.5rem;
-}
-
-.banner-sector-pill-gold {
-background: #F8BA56;
-color: #1B358F;
-}
-
-.banner-sector-sub {
-color: #6c757d;
-font-size: 0.9rem;
-margin-top: 0.4rem;
-}
-
-.banner-eventos-grid {
-display: flex;
-flex-direction: column;
-gap: 1rem;
-}
-
-.banner-evento {
-display: flex;
-align-items: flex-start;
-gap: 1.1rem;
-background: #fff;
-border-radius: 14px;
-padding: 1.1rem 1.3rem;
-box-shadow: 0 2px 12px rgba(27,53,143,0.07);
-border-left: 4px solid #1B358F;
-position: relative;
-}
-
-.banner-evento-fecha {
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-min-width: 44px;
-background: #1B358F;
-color: #fff;
-border-radius: 10px;
-padding: 0.4em 0.5em;
-line-height: 1.2;
-flex-shrink: 0;
-}
-
-.banner-evento-dia {
-font-size: 1.3rem;
-font-weight: 800;
-}
-
-.banner-evento-mes {
-font-size: 0.7rem;
-font-weight: 600;
-text-transform: uppercase;
-letter-spacing: 0.05em;
-}
-
-.banner-evento-titulo {
-font-weight: 700;
-font-size: 0.95rem;
-color: #1B358F;
-margin: 0 0 0.2em;
-}
-
-.banner-evento-lugar {
-font-size: 0.78rem;
-color: #6c757d;
-margin: 0 0 0.3em;
-}
-
-.banner-evento-desc {
-font-size: 0.83rem;
-color: #444;
-margin: 0;
-}
-
-.banner-evento-badge {
-position: absolute;
-top: 0.8rem;
-right: 0.9rem;
-background: #f0f8f0;
-color: #2e7d32;
-border: 1px solid #c8e6c9;
-border-radius: 12px;
-padding: 0.15em 0.6em;
-font-size: 0.7rem;
-font-weight: 600;
-white-space: nowrap;
-}
-
-.banner-tiendas-bg {
-background: #f8f9fb;
-border-top: 2px solid #F8BA56;
-border-bottom: 2px solid #F8BA56;
-}
-
-.banner-tiendas-grid {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-gap: 1rem;
-margin-bottom: 1rem;
-}
-
-.banner-tienda {
-background: #fff;
-border-radius: 14px;
-padding: 1.1rem;
-display: flex;
-flex-direction: column;
-gap: 0.4em;
-box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-border-top: 3px solid #F8BA56;
-}
-
-.banner-tienda-icono {
-font-size: 1.3rem;
-color: #1B358F;
-}
-
-.banner-tienda-nombre {
-font-weight: 700;
-font-size: 0.92rem;
-color: #222;
-margin: 0;
-}
-
-.banner-tienda-desc {
-font-size: 0.8rem;
-color: #555;
-margin: 0;
-line-height: 1.5;
-}
-
-.banner-tienda-badge {
-display: inline-block;
-background: #f0f4ff;
-color: #1B358F;
-border-radius: 10px;
-padding: 0.15em 0.55em;
-font-size: 0.7rem;
-font-weight: 600;
-margin-top: 0.3em;
-align-self: flex-start;
-}
-
-.banner-tiendas-nota {
-text-align: center;
-font-size: 0.83rem;
-color: #6c757d;
-}
-
-.banner-tiendas-nota a {
-color: #1B358F;
-font-weight: 600;
-text-decoration: none;
-}
-
-.banner-apoyo-grid {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-gap: 1.2rem;
-}
-
-.banner-apoyo-item {
-text-align: center;
-padding: 1.4rem 1rem;
-background: #fff;
-border-radius: 14px;
-box-shadow: 0 2px 10px rgba(27,53,143,0.06);
-transition: transform 0.2s;
-}
-
-.banner-apoyo-item:hover {
-transform: translateY(-3px);
-}
-
-.banner-apoyo-ico {
-font-size: 1.6rem;
-color: #F8BA56;
-margin-bottom: 0.6rem;
-}
-
-.banner-apoyo-nombre {
-font-weight: 700;
-font-size: 0.9rem;
-color: #1B358F;
-margin: 0 0 0.3em;
-}
-
-.banner-apoyo-desc {
-font-size: 0.78rem;
-color: #555;
-margin: 0;
-line-height: 1.5;
-}
-
-a.banner-apoyo-item {
-color: inherit;
-text-decoration: none;
-}
-
-a.banner-apoyo-item:hover {
-transform: translateY(-5px);
-box-shadow: 0 6px 20px rgba(27,53,143,0.13);
-}
-
-a.banner-tienda {
-color: inherit;
-text-decoration: none;
-}
-
-a.banner-tienda:hover {
-box-shadow: 0 4px 16px rgba(248,186,86,0.25);
-transform: translateY(-2px);
-}
-
-@media (max-width: 768px) {
-.banner-tiendas-grid {
-grid-template-columns: 1fr;
-}
-.banner-apoyo-grid {
-grid-template-columns: 1fr 1fr;
-}
-.banner-evento {
-flex-direction: column;
-}
-.banner-evento-badge {
-position: static;
-align-self: flex-start;
-}
-}
-
-@media (max-width: 480px) {
-.banner-apoyo-grid {
-grid-template-columns: 1fr;
-}
-}
 
 /* Tidio widget - evitar cierres y conflictos */
 #tidio-chat-code, iframe[src*="tidio"] {

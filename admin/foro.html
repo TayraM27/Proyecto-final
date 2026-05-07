@@ -27,7 +27,6 @@
             <p class="sidebar-seccion">Contenido global</p>
             <a href="eventos.html" class="sidebar-link"><i class="fa-solid fa-calendar-days"></i> Eventos</a>
             <a href="entidades.html" class="sidebar-link"><i class="fa-solid fa-handshake"></i> Colaboradores</a>
-            <a href="banners.html" class="sidebar-link"><i class="fa-solid fa-image"></i> Banners</a>
             <p class="sidebar-seccion">Moderación</p>
             <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
             <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
@@ -62,37 +61,13 @@
                 <option value="0">Todas (incl. eliminadas)</option>
                 <option value="1">Solo activas</option>
             </select>
-            <button class="btn btn-sm btn-primario" onclick="setVista('comentarios')" id="btnCom">Comentarios</button>
-            <button class="btn btn-sm btn-outline"  onclick="setVista('publicaciones')" id="btnPub">Publicaciones</button>
+            <button class="btn btn-sm btn-primario" onclick="setVista('publicaciones')" id="btnPub">Publicaciones</button>
+            <button class="btn btn-sm btn-outline"  onclick="setVista('comentarios')" id="btnCom">Comentarios</button>
         </div>
     </header>
 
     <main class="admin-contenido">
         <div id="contenedorPaneles">
-
-            <div class="panel" id="panelComentarios" style="margin-bottom:1.5em;">
-                <div class="panel-header">
-                    <p class="panel-titulo"><i class="fa-solid fa-comment"></i> Comentarios</p>
-                </div>
-                <div class="tabla-wrap">
-                    <table class="tabla">
-                        <thead>
-                            <tr>
-                                <th>Contenido</th>
-                                <th>Autor</th>
-                                <th>Publicación</th>
-                                <th>Likes</th>
-                                <th>Fecha</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tablaComentarios">
-                            <tr><td colspan="7" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
 
             <div class="panel" id="panelPublicaciones">
                 <div class="panel-header">
@@ -114,6 +89,30 @@
                         </thead>
                         <tbody id="tablaPublicaciones">
                             <tr><td colspan="8" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="panel" id="panelComentarios" style="margin-bottom:1.5em;">
+                <div class="panel-header">
+                    <p class="panel-titulo"><i class="fa-solid fa-comment"></i> Comentarios</p>
+                </div>
+                <div class="tabla-wrap">
+                    <table class="tabla">
+                        <thead>
+                            <tr>
+                                <th>Contenido</th>
+                                <th>Autor</th>
+                                <th>Publicación</th>
+                                <th>Likes</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaComentarios">
+                            <tr><td colspan="7" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -148,14 +147,14 @@
 <div class="toast" id="toast"></div>
 
 <script>
-var vistaActual    = 'comentarios';
+var vistaActual    = 'publicaciones';
 var paginaActual   = 1;
 var datosPubsCache = [];
 var datosComsCache = [];
 
 document.addEventListener('DOMContentLoaded', function() {
     verificarAdmin(function() {
-        setVista('comentarios');
+        setVista('publicaciones');
     });
 });
 
@@ -174,30 +173,33 @@ function verificarAdmin(cb) {
         .catch(function(){ window.location.href = '../html/login.html'; });
 }
 
+function recargarForo() {
+    if (vistaActual === 'publicaciones') cargarPublicaciones();
+    else cargarComentarios();
+}
+
 function setVista(v) {
     vistaActual  = v;
     paginaActual = 1;
 
-    document.getElementById('btnCom').className = 'btn btn-sm ' + (v === 'comentarios'   ? 'btn-primario' : 'btn-outline');
     document.getElementById('btnPub').className = 'btn btn-sm ' + (v === 'publicaciones' ? 'btn-primario' : 'btn-outline');
+    document.getElementById('btnCom').className = 'btn btn-sm ' + (v === 'comentarios'   ? 'btn-primario' : 'btn-outline');
 
-    var contenedor = document.getElementById('contenedorPaneles');
-    var panelCom   = document.getElementById('panelComentarios');
-    var panelPub   = document.getElementById('panelPublicaciones');
+    document.getElementById('panelPublicaciones').style.display = v === 'publicaciones' ? '' : 'none';
+    document.getElementById('panelComentarios').style.display   = v === 'comentarios'   ? '' : 'none';
 
-    if (v === 'comentarios') {
-        contenedor.insertBefore(panelCom, panelPub);
-        cargarComentarios();
-    } else {
-        contenedor.insertBefore(panelPub, panelCom);
+    if (v === 'publicaciones') {
         cargarPublicaciones();
+    } else {
+        cargarComentarios();
     }
 }
 
 /*--------------------------------------------------------------------------------------------
 publicaciones */
 function cargarPublicaciones() {
-    fetch('../backend/admin/foro.php?tipo=publicaciones&pagina=' + paginaActual, { credentials: 'include' })
+    var filtro = document.getElementById('filtroEstadoForo').value;
+    fetch('../backend/admin/foro.php?tipo=publicaciones&pagina=' + paginaActual + '&soloActivas=' + filtro, { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
             var tb = document.getElementById('tablaPublicaciones');
@@ -223,9 +225,7 @@ function cargarPublicaciones() {
                     : '';
 
                 var tituloCorto = p.titulo.substring(0, 50);
-                var btnVerPub = p.titulo.length > 50 || p.contenido.length > 100
-                    ? '<button class="btn btn-sm btn-icon btn-outline" onclick="verPubCompleta(' + p.idPublicacion + ')" title="Ver completa" style="display:block;margin-top:0.3em;font-size:0.72rem;"><i class="fa-solid fa-eye me-1"></i>Ver</button>'
-                    : '';
+                var btnVerPub = '<button class="btn btn-sm btn-outline" onclick="verPubCompleta(' + p.idPublicacion + ')" title="Ver completa" style="display:block;margin-top:0.3em;font-size:0.72rem;"><i class="fa-solid fa-eye me-1"></i>Ver</button>';
 
                 return '<tr>'
                     + '<td style="max-width:200px;"><strong>' + tituloCorto + (p.titulo.length > 50 ? '…' : '') + '</strong>' + fijado + mediaIcono + btnVerPub + '</td>'
@@ -254,7 +254,8 @@ function cargarPublicaciones() {
 /*--------------------------------------------------------------------------------------------
 comentarios */
 function cargarComentarios() {
-    fetch('../backend/admin/foro.php?tipo=comentarios&pagina=' + paginaActual, { credentials: 'include' })
+    var filtro = document.getElementById('filtroEstadoForo').value;
+    fetch('../backend/admin/foro.php?tipo=comentarios&pagina=' + paginaActual + '&soloActivas=' + filtro, { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
             var tb = document.getElementById('tablaComentarios');
@@ -273,9 +274,7 @@ function cargarComentarios() {
                     : '<span class="badge badge-rojo">Eliminado</span>';
 
                 var contenidoCorto = c.contenido.substring(0, 80);
-                var btnVerCom = c.contenido.length > 80
-                    ? '<button class="btn btn-sm btn-icon btn-outline" onclick="verComCompleto(' + c.idComentario + ')" title="Ver completo" style="display:block;margin-top:0.3em;font-size:0.72rem;"><i class="fa-solid fa-eye me-1"></i>Ver</button>'
-                    : '';
+                var btnVerCom = '<button class="btn btn-sm btn-outline" onclick="verComCompleto(' + c.idComentario + ')" title="Ver completo" style="display:block;margin-top:0.3em;font-size:0.72rem;"><i class="fa-solid fa-eye me-1"></i>Ver</button>';
 
                 return '<tr>'
                     + '<td style="max-width:220px;font-size:0.85rem;">' + contenidoCorto + (c.contenido.length > 80 ? '…' : '') + btnVerCom + '</td>'

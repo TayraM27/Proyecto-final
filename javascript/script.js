@@ -237,8 +237,7 @@ function renderUserArea(usuario) {
 }
 
 
-
-/* Iconos por tipo de notificación */
+/* Carga notificaciones y muestra badge en el avatar */
 var NOTIF_ICONOS = {
     like:'fa-heart', like_comentario:'fa-heart',
     comentario:'fa-comment', respuesta:'fa-reply',
@@ -252,7 +251,6 @@ var NOTIF_ICONOS = {
 function _notifRuta(n) {
     if (n.ruta_destino) return n.ruta_destino;
     if (n.idPublicacion) return 'foro.html?post=' + n.idPublicacion;
-    if (n.tipo && n.tipo.startsWith('solicitud_apadrinamiento')) return 'perfil.html?tab=apadrinamientos';
     if (n.tipo && n.tipo.startsWith('actualizacion')) return 'perfil.html?tab=actualizaciones';
     if (n.tipo && n.tipo.startsWith('protectora')) return 'perfil.html?tab=solicitud-protectora';
     return 'perfil.html?tab=notificaciones';
@@ -261,56 +259,40 @@ function _notifRuta(n) {
 function _marcarLeidaYRedirigir(idNotif, ruta) {
     fetch('../backend/foro/notificaciones.php', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ leer: true, id: idNotif }),
-    })
-    .then(function(r) { return r.json(); })
+        credentials: 'include', body: JSON.stringify({ leer: true, id: idNotif }),
+    }).then(function(r) { return r.json(); })
     .then(function(data) { _actualizarBadgesNum(data.noLeidas || 0); window.location.href = ruta; })
     .catch(function() { window.location.href = ruta; });
 }
 
 var _notifDropdownEl = null;
-var _notifCache      = [];
+var _notifCache = [];
 
 function _mostrarDropdownNotif(notifs, noLeidas) {
     if (_notifDropdownEl) { _notifDropdownEl.remove(); _notifDropdownEl = null; return; }
     var btnBell = document.getElementById('btnNotifBell');
     if (!btnBell) return;
-
     var ultimas = notifs.slice(0, 5);
     var dp = document.createElement('div');
-    dp.id  = 'notifDropdown';
-    dp.style.cssText = 'position:absolute;top:calc(100% + 8px);right:-8px;width:320px;background:#fff;'
-        + 'border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.15);z-index:10000;overflow:hidden;'
-        + 'border:1px solid #e9ecef;font-family:Poppins,sans-serif;';
-
+    dp.id = 'notifDropdown';
+    dp.style.cssText = 'position:absolute;top:calc(100% + 8px);right:-8px;width:320px;background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.15);z-index:10000;overflow:hidden;border:1px solid #e9ecef;font-family:Poppins,sans-serif;';
     var itemsHtml = ultimas.length ? ultimas.map(function(n) {
-        var icon  = NOTIF_ICONOS[n.tipo] || 'fa-bell';
+        var icon = NOTIF_ICONOS[n.tipo] || 'fa-bell';
         var leida = n.leida == 1;
-        var ruta  = _notifRuta(n);
-        return '<div onclick="_marcarLeidaYRedirigir(' + n.idNotificacion + ',\'' + ruta + '\')" '
-            + 'style="display:flex;gap:0.75em;align-items:center;padding:0.75em 1em;cursor:pointer;border-bottom:1px solid #f0f0f0;'
-            + (leida ? 'opacity:0.6;' : 'background:#f8faff;') + '">'
+        var ruta = _notifRuta(n);
+        return '<div onclick="_marcarLeidaYRedirigir(' + n.idNotificacion + ',\'' + ruta + '\')" style="display:flex;gap:0.75em;align-items:center;padding:0.75em 1em;cursor:pointer;border-bottom:1px solid #f0f0f0;' + (leida ? 'opacity:0.6;' : 'background:#f8faff;') + '">'
             + '<div style="width:34px;height:34px;border-radius:50%;background:#EEF2FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
             + '<i class="fa-solid ' + icon + '" style="color:#1B358F;font-size:0.85rem;"></i></div>'
             + '<div style="flex:1;min-width:0;">'
             + '<p style="margin:0;font-size:0.82rem;font-weight:' + (leida ? '400' : '600') + ';color:#222;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (n.mensaje || '') + '</p>'
             + '<p style="margin:0;font-size:0.72rem;color:#aaa;">' + _formatRelativo(n.fecha) + '</p>'
-            + '</div>'
-            + (leida ? '' : '<span style="width:8px;height:8px;border-radius:50%;background:#1B358F;flex-shrink:0;"></span>')
-            + '</div>';
+            + '</div>' + (leida ? '' : '<span style="width:8px;height:8px;border-radius:50%;background:#1B358F;flex-shrink:0;"></span>') + '</div>';
     }).join('') : '<p style="text-align:center;color:#aaa;padding:1.5em;font-size:0.85rem;margin:0;">Sin notificaciones</p>';
-
-    dp.innerHTML =
-        '<div style="padding:0.75em 1em;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center;">'
+    dp.innerHTML = '<div style="padding:0.75em 1em;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center;">'
         + '<strong style="font-size:0.9rem;color:#1B358F;">Notificaciones' + (noLeidas > 0 ? ' <span style="background:#e74c3c;color:#fff;border-radius:50px;font-size:0.65rem;padding:1px 6px;">' + noLeidas + '</span>' : '') + '</strong>'
         + (noLeidas > 0 ? '<button onclick="_marcarTodasDropdown()" style="border:none;background:none;font-size:0.75rem;color:#1B358F;cursor:pointer;">Marcar leídas</button>' : '')
-        + '</div>'
-        + itemsHtml
-        + '<div style="padding:0.6em 1em;text-align:center;">'
-        + '<a href="perfil.html?tab=notificaciones" style="font-size:0.82rem;color:#1B358F;text-decoration:none;font-weight:600;">Ver todas →</a>'
-        + '</div>';
-
+        + '</div>' + itemsHtml
+        + '<div style="padding:0.6em 1em;text-align:center;"><a href="perfil.html?tab=notificaciones" style="font-size:0.82rem;color:#1B358F;text-decoration:none;font-weight:600;">Ver todas →</a></div>';
     btnBell.style.position = 'relative';
     btnBell.appendChild(dp);
     _notifDropdownEl = dp;
@@ -325,10 +307,8 @@ function _cerrarDropdownNotif(e) {
 }
 
 function _marcarTodasDropdown() {
-    fetch('../backend/foro/notificaciones.php', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', body: JSON.stringify({ leerTodos: true }),
-    }).then(function() { _actualizarBadgesNum(0); if (_notifDropdownEl) { _notifDropdownEl.remove(); _notifDropdownEl = null; } document.removeEventListener('click', _cerrarDropdownNotif); });
+    fetch('../backend/foro/notificaciones.php', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body:JSON.stringify({leerTodos:true}) })
+    .then(function() { _actualizarBadgesNum(0); if (_notifDropdownEl) { _notifDropdownEl.remove(); _notifDropdownEl = null; } document.removeEventListener('click', _cerrarDropdownNotif); });
 }
 
 function _formatRelativo(fechaStr) {
@@ -345,25 +325,18 @@ var _noLeidasGlobal = 0;
 function _actualizarBadgesNum(noLeidas) {
     _noLeidasGlobal = noLeidas;
     var texto = noLeidas > 9 ? '9+' : String(noLeidas);
-
-    ['user-notif-badge', 'user-notif-badge-b'].forEach(function(id) {
+    ['user-notif-badge','user-notif-badge-b'].forEach(function(id) {
         var el = document.getElementById(id);
         if (!el) return;
         if (noLeidas > 0) { el.textContent = texto; el.removeAttribute('hidden'); el.style.display = 'flex'; }
-        else { el.textContent = ''; el.setAttribute('hidden', ''); el.style.display = 'none'; }
+        else { el.textContent = ''; el.setAttribute('hidden',''); el.style.display = 'none'; }
     });
-
     var bellBadge = document.getElementById('badgeNotif');
     if (!bellBadge) {
         var btnBell = document.getElementById('btnNotifBell');
-        if (btnBell) {
-            bellBadge = document.createElement('span');
-            bellBadge.id = 'badgeNotif'; bellBadge.className = 'notif-badge'; bellBadge.style.display = 'none';
-            btnBell.appendChild(bellBadge);
-        }
+        if (btnBell) { bellBadge = document.createElement('span'); bellBadge.id='badgeNotif'; bellBadge.className='notif-badge'; bellBadge.style.display='none'; btnBell.appendChild(bellBadge); }
     }
     if (bellBadge) { if (noLeidas > 0) { bellBadge.textContent = texto; bellBadge.style.display = 'block'; } else { bellBadge.style.display = 'none'; } }
-
     _aplicarBadgeMenuNotif();
 }
 
@@ -381,13 +354,10 @@ function cargarNotificaciones() {
         .then(function(data) {
             if (!data.success) return;
             var noLeidas = data.noLeidas || 0;
-            _notifCache  = data.notificaciones || [];
-
+            _notifCache = data.notificaciones || [];
             var sesion = sessionStorage.getItem('pf_session');
             if (sesion) { try { if (JSON.parse(sesion).rol === 'admin') return; } catch(e) {} }
-
             _actualizarBadgesNum(noLeidas);
-
             var btnBell = document.getElementById('btnNotifBell');
             if (btnBell && !btnBell.dataset.notifInit) {
                 btnBell.dataset.notifInit = '1';
@@ -1350,24 +1320,6 @@ function cargarProtectoras(pagina) {
                 return;
             }
             totalPaginasProtectoras = data.totalPaginas || 1;
-
-            /* Rellenar objeto protectoras para modales */
-            data.protectoras.forEach(function(p) {
-                var key = 'prot-' + p.idProtectora;
-                protectoras[key] = {
-                    nombre:   p.nombre,
-                    telefono: p.telefono || null,
-                    email:    p.email    || null,
-                    web:      p.web      || null,
-                    teaming:       p.teaming        || null,
-                    iban:          p.iban           || null,
-                    bizum:         p.bizum          || null,
-                    red_social_url: p.red_social_url || null,
-                    badges:             p.badges              || '',
-                    url_formulario_acogida: p.url_formulario_acogida || null
-                };
-            });
-
             grid.innerHTML = data.protectoras.map(function(p) {
                 var logo = p.foto_logo
                     ? '<img src="../' + p.foto_logo + '" alt="Logo ' + p.nombre.replace(/"/g, '&quot;') + '" ' +
@@ -1408,11 +1360,12 @@ function cargarProtectoras(pagina) {
                        '</div>' +
                        (p.descripcion ? '<div class="prot-desc"><p>' + p.descripcion + '</p></div>' : '') +
                        '<div class="prot-caracteristicas-wrap">' + (badgesHtml || '') + '</div>' +
-                 '<div class="prot-contacto">' +
+                       '<div class="prot-contacto">' +
                          (p.email    ? '<div class="prot-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + p.email + '">' + p.email + '</a></div>' : '') +
                          (p.telefono ? '<div class="prot-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + p.telefono.replace(/\s/g, '') + '">' + p.telefono + '</a></div>' : '') +
+                         (p.teaming  ? '<div class="prot-dato"><i class="fa-solid fa-mug-hot" style="color:#F8BA56;"></i><span style="color:#888;font-size:0.78rem;">Teaming activo · 1 €/mes</span></div>' : '') +
                          (p.iban     ? '<div class="prot-dato-iban"><i class="fa-solid fa-building-columns"></i><span class="prot-iban-num">' + ibanNum + '</span>' + (ibanBanco ? '<span class="prot-iban-banco">(' + ibanBanco + ')</span>' : '') + '<button onclick="copiarIban(this,\'' + ibanNum + '\')" title="Copiar IBAN" style="background:none;border:none;cursor:pointer;color:#1B358F;padding:0;font-size:0.9rem;margin-left:auto;"><i class="fa-regular fa-copy"></i></button></div>' : '') +
-                        '</div>' +
+                       '</div>' +
                        '<div class="prot-acciones">' +
                        '<button class="btn-prot-donar" onclick="abrirModalDonarProtDinamica(' + p.idProtectora + ')">' +
                        '<i class="fa-solid fa-hand-holding-heart me-1"></i> Donar</button>' +
@@ -1463,53 +1416,6 @@ function generarPaginacionProtectoras(totalPag, pagAct) {
     cont.innerHTML = html;
 }
 
-/* Funciones de filtrado para protectoras.html */
-var filtroProtectorasActual = 'todas';
-
-function setFiltro(btn, filtro) {
-    filtroProtectorasActual = filtro;
-    document.querySelectorAll('.filtro-prot-btn').forEach(function(b) {
-        b.classList.toggle('activo', b.dataset.filtro === filtro);
-    });
-    if (typeof filtrarProtectoras === 'function') filtrarProtectoras();
-}
-
-function filtrarProtectoras() {
-    var buscador = document.getElementById('buscadorProt');
-    var busqueda = buscador ? buscador.value.toLowerCase() : '';
-    var items = document.querySelectorAll('.prot-item');
-    var hayResultados = false;
-
-    items.forEach(function(item) {
-        var nombre = (item.dataset.nombre || '').toLowerCase();
-        var localidad = (item.dataset.localidad || '').toLowerCase();
-        var especie = item.dataset.especie || '';
-        var teaming = item.dataset.teaming || 'no';
-
-        var coincideBusqueda = !busqueda || nombre.includes(busqueda) || localidad.includes(busqueda);
-        var coincideFiltro = filtroProtectorasActual === 'todas'
-            || (filtroProtectorasActual === 'perros' && especie.includes('perros'))
-            || (filtroProtectorasActual === 'gatos' && especie.includes('gatos'))
-            || (filtroProtectorasActual === 'teaming' && teaming === 'si');
-
-        var mostrar = coincideBusqueda && coincideFiltro;
-        item.style.display = mostrar ? '' : 'none';
-        if (mostrar) hayResultados = true;
-    });
-
-    var noResultados = document.getElementById('noResultados');
-    if (noResultados) {
-        noResultados.style.display = hayResultados ? 'none' : 'flex';
-    }
-}
-
-function resetFiltros() {
-    var buscador = document.getElementById('buscadorProt');
-    if (buscador) buscador.value = '';
-    var btnTodas = document.querySelector('.filtro-prot-btn[data-filtro="todas"]');
-    if (btnTodas) setFiltro(btnTodas, 'todas');
-}
-
 /* Modal donar para protectoras dinámicas en protectoras.html */
 function abrirModalDonarProtDinamica(idProtectora) {
     var key = 'prot-' + idProtectora;
@@ -1551,69 +1457,93 @@ function copiarIban(btn, iban) {
 function buildDatosProt(p) {
     var html = '<div class="modal-prot-bloque">';
 
-    html += '<div style="display:flex;align-items:center;gap:0.5em;'
-          + 'margin-bottom:0.7em;padding-bottom:0.7em;border-bottom:2px solid #1B358F;">'
-          + '<i class="fa-solid fa-building-shield" style="color:#1B358F;"></i>'
-          + '<strong style="font-size:0.97rem;color:#1B358F;letter-spacing:0.01em;">' + p.nombre + '</strong>'
+    html += '<div style="display:flex;align-items:center;gap:0.5em;margin-bottom:1em;padding-bottom:0.8em;border-bottom:2px solid #1B358F;">'
+          + '<i class="fa-solid fa-building-shield" style="color:#1B358F;font-size:1.1rem;"></i>'
+          + '<strong style="font-size:1rem;color:#1B358F;">' + p.nombre + '</strong>'
           + '</div>';
 
-    /* Aviso si no tiene pagina ni teaming */
-    if (!p.web && !p.teaming) {
-        html += '<div class="aviso-teaming" style="margin-bottom:0.8em;">'
-              + '<i class="fa-solid fa-circle-info"></i> '
-              + 'Esta protectora no dispone de página oficial de donaciones. '
-              + 'Puedes contactarles directamente por teléfono o email.'
+    html += '<div style="background:#EEF2FF;border-radius:8px;padding:0.6em 0.9em;font-size:0.82rem;color:#1B358F;margin-bottom:1em;display:flex;gap:0.5em;align-items:flex-start;">'
+          + '<i class="fa-solid fa-circle-info" style="margin-top:0.15em;flex-shrink:0;"></i>'
+          + '<span>Tu donación va <strong>directamente a la protectora</strong>. PetFamily no gestiona ni retiene ningún importe.</span>'
+          + '</div>';
+
+    if (!p.web && !p.teaming && !p.iban && !p.bizum) {
+        html += '<div style="background:#fff8e1;border-radius:8px;padding:0.7em 0.9em;font-size:0.85rem;color:#856404;margin-bottom:0.8em;">'
+              + '<i class="fa-solid fa-triangle-exclamation me-2"></i>'
+              + 'Esta protectora no tiene medios de donación configurados. Contacta directamente con ellos.'
               + '</div>';
     }
 
     if (p.email) {
         html += '<div class="modal-dato">'
               + '<i class="fa-solid fa-envelope"></i>'
-              + '<a href="mailto:' + p.email + '?subject=%C2%BFC%C3%B3mo%20puedo%20ayudar%3F">'
-              + p.email + '</a></div>';
+              + '<a href="mailto:' + p.email + '?subject=Donaci%C3%B3n">' + p.email + '</a>'
+              + '</div>';
     }
+
     if (p.bizum) {
         var bL = p.bizum.replace(/\s/g, '');
-        html += '<div class="modal-dato">'
-              + '<i class="fa-solid fa-mobile-screen-button"></i>'
-              + '<span>Bizum: <strong>' + p.bizum + '</strong></span>'
-              + '<button onclick="copiarTexto(this,\'' + bL + '\')" title="Copiar Bizum" '
-              + 'style="background:none;border:none;cursor:pointer;color:#1B358F;padding:0 0 0 0.5em;font-size:0.9rem;">'
-              + '<i class="fa-regular fa-copy"></i></button></div>';
-    }
-
-    if (p.teaming) {
-        /* Aviso siempre encima del btn teaming */
-        var avisoTeaming = !p.web
-            ? 'Esta protectora no dispone de página oficial de donaciones, pero puedes apoyarles con <strong>1 €/mes</strong> a través de <strong>Teaming</strong>.'
-            : 'También puedes colaborar con <strong>1 €/mes</strong> a través de Teaming.';
-        html += '<div class="aviso-teaming" style="margin-top:0.8em;">'
-              + '<i class="fa-solid fa-mug-hot" style="color:#1B358F;margin-right:0.3em;"></i>'
-              + avisoTeaming
+        html += '<div style="background:#f8f9fa;border-radius:10px;padding:0.8em 1em;margin-bottom:0.7em;">'
+              + '<div style="display:flex;align-items:center;gap:0.5em;margin-bottom:0.4em;">'
+              + '<i class="fa-solid fa-mobile-screen-button" style="color:#1B358F;"></i>'
+              + '<strong style="font-size:0.9rem;">Bizum</strong>'
+              + '</div>'
+              + '<div style="display:flex;align-items:center;gap:0.5em;">'
+              + '<span style="font-size:1.1rem;font-weight:700;letter-spacing:0.05em;color:#1B358F;">' + p.bizum + '</span>'
+              + '<button onclick="copiarTexto(this,\'' + bL + '\')" title="Copiar número" '
+              + 'style="background:#1B358F;border:none;cursor:pointer;color:#fff;padding:0.25em 0.6em;border-radius:6px;font-size:0.78rem;display:flex;align-items:center;gap:0.3em;">'
+              + '<i class="fa-regular fa-copy"></i> Copiar</button>'
+              + '</div>'
+              + '<p style="font-size:0.75rem;color:#888;margin:0.4em 0 0;">Abre tu app bancaria → Bizum → Enviar → introduce este número.</p>'
               + '</div>';
-        html += '<a href="' + p.teaming + '" target="_blank" rel="noopener" class="btn-ir-web btn-ir-web-teaming" style="margin-top:0.4em;">'
-              + '<i class="fa-solid fa-mug-hot me-2"></i>Colaborar con 1 €/mes en Teaming'
-              + '</a>';
-    }
-
-    if (p.web) {
-        html += '<a href="' + p.web + '" target="_blank" rel="noopener" class="btn-ir-web" style="margin-top:0.6em;">'
-              + '<i class="fa-solid fa-arrow-up-right-from-square me-2"></i>Ir a la página de donaciones'
-              + '</a>';
     }
 
     if (p.iban) {
         var ibanL = p.iban.replace(/\s*\([^)]*\)/, '').trim();
         var ibanB = (p.iban.match(/\(([^)]+)\)/) || [])[1] || '';
-        html += '<div class="prot-dato-iban" style="margin-top:0.8em;">'
-              + '<i class="fa-solid fa-building-columns"></i>'
-              + '<span class="prot-iban-num">' + ibanL + '</span>'
-              + (ibanB ? '<span class="prot-iban-banco">(' + ibanB + ')</span>' : '')
+        html += '<div style="background:#f8f9fa;border-radius:10px;padding:0.8em 1em;margin-bottom:0.7em;">'
+              + '<div style="display:flex;align-items:center;gap:0.5em;margin-bottom:0.5em;">'
+              + '<i class="fa-solid fa-building-columns" style="color:#1B358F;"></i>'
+              + '<strong style="font-size:0.9rem;">Transferencia bancaria</strong>'
+              + (ibanB ? '<span style="font-size:0.75rem;color:#888;margin-left:0.3em;">· ' + ibanB + '</span>' : '')
+              + '</div>'
+              + '<div style="display:flex;align-items:center;gap:0.5em;margin-bottom:0.4em;">'
+              + '<span style="font-size:0.88rem;font-weight:700;font-family:monospace;letter-spacing:0.04em;color:#222;word-break:break-all;">' + ibanL + '</span>'
               + '<button onclick="copiarIban(this,\'' + ibanL + '\')" title="Copiar IBAN" '
-              + 'style="background:none;border:none;cursor:pointer;color:#1B358F;padding:0;font-size:0.9rem;margin-left:auto;">'
-              + '<i class="fa-regular fa-copy"></i></button></div>';
+              + 'style="background:#1B358F;border:none;cursor:pointer;color:#fff;padding:0.25em 0.6em;border-radius:6px;font-size:0.78rem;flex-shrink:0;display:flex;align-items:center;gap:0.3em;">'
+              + '<i class="fa-regular fa-copy"></i> Copiar</button>'
+              + '</div>'
+              + '<div style="font-size:0.75rem;color:#888;">'
+              + '<i class="fa-solid fa-tag" style="color:#F8BA56;margin-right:0.3em;"></i>'
+              + '<strong>Concepto recomendado:</strong> "Donación ' + p.nombre + '"'
+              + '</div>'
+              + '</div>';
     }
 
+    if (p.teaming) {
+        html += '<div style="background:#fff8e1;border-radius:10px;padding:0.8em 1em;margin-bottom:0.7em;">'
+              + '<div style="display:flex;align-items:center;gap:0.5em;margin-bottom:0.4em;">'
+              + '<i class="fa-solid fa-mug-hot" style="color:#F8BA56;"></i>'
+              + '<strong style="font-size:0.9rem;">Teaming</strong>'
+              + '<span style="font-size:0.78rem;background:#F8BA56;color:#fff;border-radius:50px;padding:0.1em 0.5em;font-weight:600;">1 €/mes</span>'
+              + '</div>'
+              + '<p style="font-size:0.8rem;color:#666;margin:0 0 0.5em;">'
+              + 'Con Teaming aportas <strong>solo 1 € al mes</strong> de forma automática. '
+              + 'Un microaporte que sumado al de otras personas marca la diferencia.'
+              + '</p>'
+              + '<a href="' + p.teaming + '" target="_blank" rel="noopener" class="btn-ir-web btn-ir-web-teaming" style="margin-top:0.2em;">'
+              + '<i class="fa-solid fa-mug-hot me-2"></i>Unirse al grupo en Teaming'
+              + '</a>'
+              + '</div>';
+    }
+
+    if (p.web && p.tipo_pagina !== 'sin_pagina') {
+        var tipoMap = { web: 'página oficial', red_social: 'red social', portal: 'portal', otra: 'página' };
+        var tipoLabel = tipoMap[p.tipo_pagina] || 'página';
+        html += '<a href="' + p.web + '" target="_blank" rel="noopener" class="btn-ir-web" style="margin-top:0.3em;">'
+              + '<i class="fa-solid fa-arrow-up-right-from-square me-2"></i>Visitar la ' + tipoLabel + ' de ' + p.nombre
+              + '</a>';
+    }
 
     html += '</div>';
     return html;
@@ -1683,56 +1613,4 @@ function compartirAnimal(id, nombre) {
             url: url
         }).catch(function() {});
     }
-}
-
-/*--------------------------------------------------------------------------------------------
-modal adopción en fichaAnimal.html */
-function mostrarModalAdopcion() {
-    if (!_mascotaActual) return;
-    var m = _mascotaActual;
-    var info = document.getElementById('adoptMascotaInfo');
-    if (info) info.innerHTML = '<strong>' + m.nombre + '</strong> (ID: ' + m.idMascota + ')';
-    var contacto = document.getElementById('adoptContacto');
-    if (contacto) {
-        var html = '';
-        if (m.email_protectora) html += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + m.email_protectora + '">' + m.email_protectora + '</a></div>';
-        if (m.telefono_protectora) html += '<div class="modal-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + m.telefono_protectora.replace(/\s/g, '') + '">' + m.telefono_protectora + '</a></div>';
-        contacto.innerHTML = html;
-    }
-    var modal = document.getElementById('modalAdopcion');
-    if (modal) new bootstrap.Modal(modal).show();
-}
-
-function mostrarModalApadrina() {
-    if (!_mascotaActual) return;
-    var m = _mascotaActual;
-    var info = document.getElementById('apadMascotaInfo');
-    if (info) info.innerHTML = '<strong>' + m.nombre + '</strong> (ID: ' + m.idMascota + ')';
-    var contacto = document.getElementById('apadContactoDatos');
-    if (contacto) {
-        var html = '';
-        if (m.email_protectora) html += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + m.email_protectora + '">' + m.email_protectora + '</a></div>';
-        if (m.telefono_protectora) html += '<div class="modal-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + m.telefono_protectora.replace(/\s/g, '') + '">' + m.telefono_protectora + '</a></div>';
-        contacto.innerHTML = html;
-    }
-    var modal = document.getElementById('modalApadrina');
-    if (modal) new bootstrap.Modal(modal).show();
-}
-
-function mostrarModalAcoger() {
-    if (!_mascotaActual) return;
-    var m = _mascotaActual;
-    var title = document.getElementById('modal-acoge-nombre');
-    if (title) title.textContent = m.nombre;
-    var idInput = document.getElementById('acoge-idMascota');
-    if (idInput) idInput.value = m.idMascota;
-    var contacto = document.getElementById('acoge-contacto-extra');
-    if (contacto) {
-        var html = '';
-        if (m.email_protectora) html += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + m.email_protectora + '">' + m.email_protectora + '</a></div>';
-        if (m.telefono_protectora) html += '<div class="modal-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + m.telefono_protectora.replace(/\s/g, '') + '">' + m.telefono_protectora + '</a></div>';
-        contacto.innerHTML = html;
-    }
-    var modal = document.getElementById('modalAcoge');
-    if (modal) new bootstrap.Modal(modal).show();
 }

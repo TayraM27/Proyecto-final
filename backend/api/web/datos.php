@@ -9,7 +9,7 @@ header('Content-Type: application/json; charset=utf-8');
 $pdo = conectar();
 
 $eventos = $pdo->query(
-    "SELECT * FROM eventos WHERE activa=1 ORDER BY fecha_evento ASC LIMIT 10"
+    "SELECT * FROM eventos WHERE activa=1 AND suspendido=0 ORDER BY fecha_evento ASC LIMIT 10"
 )->fetchAll();
 
 $entidades = $pdo->query(

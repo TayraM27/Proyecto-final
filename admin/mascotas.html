@@ -215,7 +215,7 @@ function verificarAdmin(cb) {
 }
 
 function cargarUrgentes() {
-    fetch('../backend/admin/get_prioritarias.php', { credentials: 'include' })
+    fetch('../backend/api/web/get_prioritarias.php', { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
             var tbody = document.getElementById('tablaUrgentes');

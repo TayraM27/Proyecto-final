@@ -416,6 +416,7 @@ respuestas - misma profundidad, diferenciadas por borde */
 .foro-comentario-respuesta .foro-comentario-burbuja {
     background: #f1f3f5;
     border-left: 3px solid #1B358F;
+    margin-bottom: .15rem ;
 }
 
 .foro-com-reply-tag {

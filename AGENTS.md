@@ -11,6 +11,7 @@ Todos los agentes deben cumplir:
 
 1.2. Prohibiciones
 Los agentes NO pueden:
+- Editar archivos o cosasa que NO SE PIDIERON.
 - Inventar datos ni rutas.
 - Generar código con comentarios.
 - Dar explicaciones emocionales o motivacionales.

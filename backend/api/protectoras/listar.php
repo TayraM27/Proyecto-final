@@ -1,60 +1,35 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-Listado de protectoras. Accesible sin login para la web pública.
-Si el usuario es protectora o admin, recibe datos adicionales. */
+backend/api/protectoras/listar.php
+Endpoint público — devuelve protectoras activas paginadas para protectoras.html */
 
 require_once __DIR__ . '/../../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
-iniciarSesionSegura();
-
 $pdo       = conectar();
-$esAdmin   = esAdmin();
-$esProt    = esProtectora();
-$idProtUser = getIdProtectoraUsuario();
+$pagina    = max(1, (int)($_GET['pagina'] ?? 1));
+$porPagina = 9;
+$offset    = ($pagina - 1) * $porPagina;
 
-$q      = limpiar($_GET['q']      ?? '');
-$nombre = limpiar($_GET['nombre'] ?? '');
-$todos  = !empty($_GET['todos'])  ? 1 : 0;
+$stmtTotal = $pdo->query('SELECT COUNT(*) FROM protectoras WHERE activa = 1');
+$total     = (int)$stmtTotal->fetchColumn();
 
-$where  = $todos ? [] : ['p.activa = 1'];
-$params = [];
-
-if ($q) {
-    $where[]  = 'p.localidad LIKE ?';
-    $params[] = "%$q%";
-}
-if ($nombre) {
-    $where[]  = 'p.nombre LIKE ?';
-    $params[] = "%$nombre%";
-}
-
-$cond = $where ? 'WHERE ' . implode(' AND ', $where) : '';
-
-$sql = "SELECT p.idProtectora, p.nombre, p.descripcion, p.descripcion_dona,
-               p.direccion, p.localidad, p.telefono, p.email,
-               p.web, p.tipo_pagina, p.red_social_url, p.especie_atencion,
-               p.iban, p.bizum, p.teaming, p.badges,
-               p.foto_logo, p.latitud, p.longitud,
-               p.verificada, p.activa, p.fecha_registro,
-               COUNT(m.idMascota) AS num_animales
-        FROM protectoras p
-        LEFT JOIN mascotas m ON m.idProtectora = p.idProtectora AND m.activa = 1
-        $cond
-        GROUP BY p.idProtectora
-        ORDER BY p.nombre";
-
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
-
+$stmt = $pdo->prepare(
+    'SELECT idProtectora, nombre, descripcion, descripcion_dona, localidad, telefono,
+            email, web, tipo_pagina, iban, bizum, teaming, red_social_url,
+            foto_logo, verificada, especie_atencion, badges
+     FROM protectoras
+     WHERE activa = 1
+     ORDER BY nombre ASC
+     LIMIT ? OFFSET ?'
+);
+$stmt->execute([$porPagina, $offset]);
 $protectoras = $stmt->fetchAll();
 
-if ($esAdmin || $esProt) {
-    respuestaOk(['protectoras' => $protectoras]);
-}
-
-respuestaOk(['protectoras' => array_map(function($p) {
-    unset($p['iban'], $p['bizum'], $p['teaming'], $p['email'], $p['verificada']);
-    return $p;
-}, $protectoras)]);
+respuestaOk([
+    'protectoras'  => $protectoras,
+    'total'        => $total,
+    'pagina'       => $pagina,
+    'totalPaginas' => (int)ceil($total / $porPagina),
+]);

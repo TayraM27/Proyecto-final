@@ -12,7 +12,7 @@
 
 <div class="admin-layout">
 
-    <aside class="sidebar" id="sidebar">
+   <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo">
             <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily">
             <span>Pet<em>Family</em></span>
@@ -27,7 +27,6 @@
             <p class="sidebar-seccion">Contenido global</p>
             <a href="eventos.html" class="sidebar-link activo"><i class="fa-solid fa-calendar-days"></i> Eventos</a>
             <a href="entidades.html" class="sidebar-link"><i class="fa-solid fa-handshake"></i> Colaboradores</a>
-            <a href="banners.html" class="sidebar-link"><i class="fa-solid fa-image"></i> Banners</a>
             <p class="sidebar-seccion">Moderación</p>
             <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
             <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
@@ -57,9 +56,7 @@
             </button>
             <span class="topbar-titulo"><i class="fa-solid fa-calendar-days" style="color:var(--gold);margin-right:0.4em;"></i>Eventos</span>
         </div>
-        <button class="btn btn-gold" onclick="abrirModalNuevo()">
-            <i class="fa-solid fa-plus"></i> Nuevo evento
-        </button>
+
     </header>
 
     <main class="admin-contenido">
@@ -86,13 +83,13 @@
                             <th>Lugar</th>
                             <th>Hora</th>
                             <th>Precio</th>
-                            <th>Creador</th>
+                            <th>Sponsor</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tablaEventos">
-                        <tr><td colspan="7" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                        <tr><td colspan="8" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -151,6 +148,7 @@
             </div>
 
             <div class="form-fila">
+                <label class="form-check"><input type="checkbox" id="fSponsorizable"> Sponsorizable</label>
                 <label class="form-check"><input type="checkbox" id="fActiva" checked> Activo</label>
             </div>
 
@@ -160,6 +158,29 @@
             <button class="btn btn-outline" onclick="cerrarModalBtn()">Cancelar</button>
             <button class="btn btn-primario" onclick="guardarEvento()">
                 <i class="fa-solid fa-floppy-disk"></i> Guardar
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalSuspender" onclick="cerrarModalSuspender(event)">
+    <div class="modal">
+        <div class="modal-header">
+            <p class="modal-titulo"><i class="fa-solid fa-pause"></i> Suspender evento</p>
+            <button class="modal-cerrar" onclick="cerrarModalSuspenderBtn()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="suspenderId">
+            <div class="form-campo">
+                <label class="form-label">Motivo de la suspensión *</label>
+                <textarea class="form-textarea" id="suspenderMotivo" rows="3" placeholder="Indica el motivo..."></textarea>
+            </div>
+            <p class="form-error" id="suspenderError"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="cerrarModalSuspenderBtn()">Cancelar</button>
+            <button class="btn btn-danger" onclick="suspenderEvento()">
+                <i class="fa-solid fa-pause"></i> Suspender
             </button>
         </div>
     </div>
@@ -213,23 +234,40 @@ function renderTabla(eventos) {
         var fecha = new Date(e.fecha_evento);
         var dia = String(fecha.getDate()).padStart(2, '0');
         var mes = fecha.toLocaleDateString('es-ES', { month: 'short' });
-        var activa = e.activa == 1
-            ? '<span class="badge badge-verde">Activo</span>'
-            : '<span class="badge badge-gris">Inactivo</span>';
 
-        /* Evento global (idProtectora = null) → admin puede editar/eliminar
-           Evento de protectora → solo lectura para el admin */
+        var badgeSponsor = e.sponsorizable == 1
+            ? '<span class="badge badge-gold"><i class="fa-solid fa-star"></i> Sponsor</span>'
+            : '—';
+
+        var estado;
+        if (e.suspendido == 1) {
+            estado = '<span class="badge badge-rojo" title="' + (e.motivo_suspension || '') + '"><i class="fa-solid fa-pause"></i> Suspendido</span>';
+        } else if (e.activa == 1) {
+            estado = '<span class="badge badge-verde">Activo</span>';
+        } else {
+            estado = '<span class="badge badge-gris">Inactivo</span>';
+        }
+
         var esGlobal = !e.idProtectora;
-        var badgeCreador = esGlobal
-            ? '<span class="badge badge-azul"><i class="fa-solid fa-shield-halved"></i> Global</span>'
-            : '<span class="badge badge-gris" title="' + (e.protectora_nombre || '') + '"><i class="fa-solid fa-building-shield"></i> Protectora</span>';
+        var acciones;
+        if (!esGlobal) {
+            acciones = '<span style="font-size:0.78rem;color:var(--texto-sub);">Solo lectura</span>';
+        } else {
+            var btnSponsor = e.sponsorizable == 1
+                ? '<button class="btn btn-sm btn-outline btn-icon" onclick="quitarSponsor(' + e.idEvento + ')" title="Quitar sponsor"><i class="fa-solid fa-star" style="color:var(--gold);"></i></button>'
+                : '<button class="btn btn-sm btn-outline btn-icon" onclick="marcarSponsor(' + e.idEvento + ')" title="Marcar sponsorizable"><i class="fa-regular fa-star"></i></button>';
 
-        var acciones = esGlobal
-            ? '<button class="btn btn-sm btn-outline btn-icon" onclick="abrirEditar(' + e.idEvento + ')" title="Editar"><i class="fa-solid fa-pen"></i></button>'
-              + (e.activa == 1
-                  ? '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminarEvento(' + e.idEvento + ')" title="Desactivar"><i class="fa-solid fa-trash"></i></button>'
-                  : '<button class="btn btn-sm btn-outline btn-icon" onclick="activarEvento(' + e.idEvento + ')" title="Activar"><i class="fa-solid fa-check"></i></button>')
-            : '<span style="font-size:0.78rem;color:var(--texto-sub);">Solo lectura</span>';
+            if (e.suspendido == 1) {
+                acciones = btnSponsor
+                        + '<button class="btn btn-sm btn-outline btn-icon" onclick="activarEvento(' + e.idEvento + ')" title="Reactivar"><i class="fa-solid fa-check"></i></button>';
+            } else if (e.activa == 1) {
+                acciones = btnSponsor
+                        + '<button class="btn btn-sm btn-danger btn-icon" onclick="abrirSuspender(' + e.idEvento + ')" title="Suspender"><i class="fa-solid fa-pause"></i></button>';
+            } else {
+                acciones = btnSponsor
+                        + '<button class="btn btn-sm btn-outline btn-icon" onclick="activarEvento(' + e.idEvento + ')" title="Activar"><i class="fa-solid fa-check"></i></button>';
+            }
+        }
 
         return '<tr>'
             + '<td><div class="fecha-box"><span class="fecha-dia">' + dia + '</span><span class="fecha-mes">' + mes + '</span></div></td>'
@@ -237,8 +275,8 @@ function renderTabla(eventos) {
             + '<td style="font-size:0.85rem;">' + (e.lugar || '—') + '<br><span style="color:var(--texto-sub);">' + (e.localidad || '') + '</span></td>'
             + '<td>' + (e.hora || '—') + '</td>'
             + '<td>' + (e.precio || 'Gratis') + '</td>'
-            + '<td>' + badgeCreador + '</td>'
-            + '<td>' + activa + '</td>'
+            + '<td>' + badgeSponsor + '</td>'
+            + '<td>' + estado + '</td>'
             + '<td><div class="tabla-acciones">' + acciones + '</div></td>'
             + '</tr>';
     }).join('');
@@ -255,6 +293,7 @@ function abrirModalNuevo() {
     document.getElementById('fLocalidad').value = '';
     document.getElementById('fPrecio').value = 'Gratis';
     document.getElementById('fUrlInfo').value = '';
+    document.getElementById('fSponsorizable').checked = false;
     document.getElementById('fActiva').checked = true;
     document.getElementById('modalError').textContent = '';
     document.getElementById('modalOverlay').classList.add('abierto');
@@ -275,6 +314,7 @@ function abrirEditar(id) {
     document.getElementById('fLocalidad').value = e.localidad || '';
     document.getElementById('fPrecio').value = e.precio || 'Gratis';
     document.getElementById('fUrlInfo').value = e.url_info || '';
+    document.getElementById('fSponsorizable').checked = e.sponsorizable == 1;
     document.getElementById('fActiva').checked = e.activa == 1;
     document.getElementById('modalError').textContent = '';
     document.getElementById('modalOverlay').classList.add('abierto');
@@ -301,6 +341,7 @@ function guardarEvento() {
         localidad: document.getElementById('fLocalidad').value.trim(),
         precio: document.getElementById('fPrecio').value.trim() || 'Gratis',
         url_info: document.getElementById('fUrlInfo').value.trim(),
+        sponsorizable: document.getElementById('fSponsorizable').checked ? 1 : 0,
         activa: document.getElementById('fActiva').checked ? 1 : 0
     };
 
@@ -333,21 +374,70 @@ function guardarEvento() {
         });
 }
 
-function eliminarEvento(id) {
-    if (!confirm('¿Seguro que quieres desactivar este evento?')) return;
-    fetch('../backend/admin/eventos.php?accion=eliminar&id=' + id, { credentials: 'include' })
+function abrirSuspender(id) {
+    document.getElementById('suspenderId').value = id;
+    document.getElementById('suspenderMotivo').value = '';
+    document.getElementById('suspenderError').textContent = '';
+    document.getElementById('modalSuspender').classList.add('abierto');
+}
+
+function cerrarModalSuspender(e) {
+    if (e.target.id === 'modalSuspender') {
+        document.getElementById('modalSuspender').classList.remove('abierto');
+    }
+}
+
+function cerrarModalSuspenderBtn() {
+    document.getElementById('modalSuspender').classList.remove('abierto');
+}
+
+function suspenderEvento() {
+    var id = document.getElementById('suspenderId').value;
+    var motivo = document.getElementById('suspenderMotivo').value.trim();
+    if (!motivo) {
+        document.getElementById('suspenderError').textContent = 'El motivo es obligatorio.';
+        return;
+    }
+
+    fetch('../backend/admin/eventos.php?accion=suspender&id=' + id, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ motivo_suspension: motivo }),
+        credentials: 'include'
+    })
         .then(function(r){ return r.json(); })
         .then(function(res){
             if (res.ok) {
+                cerrarModalSuspenderBtn();
                 cargarEventos();
-                mostrarToast('Evento desactivado', 'ok');
+                mostrarToast('Evento suspendido', 'ok');
             } else {
-                mostrarToast(res.error || 'Error al eliminar', 'error');
+                document.getElementById('suspenderError').textContent = res.error || 'Error al suspender';
             }
         })
         .catch(function(){
-            mostrarToast('Error de conexión', 'error');
+            document.getElementById('suspenderError').textContent = 'Error de conexión';
         });
+}
+
+function marcarSponsor(id) {
+    fetch('../backend/admin/eventos.php?accion=sponsorizar&id=' + id + '&valor=1', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(res){
+            if (res.ok) { cargarEventos(); mostrarToast('Evento marcado como sponsorizable', 'ok'); }
+            else { mostrarToast(res.error || 'Error', 'error'); }
+        })
+        .catch(function(){ mostrarToast('Error de conexión', 'error'); });
+}
+
+function quitarSponsor(id) {
+    fetch('../backend/admin/eventos.php?accion=sponsorizar&id=' + id + '&valor=0', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(res){
+            if (res.ok) { cargarEventos(); mostrarToast('Sponsorización quitada', 'ok'); }
+            else { mostrarToast(res.error || 'Error', 'error'); }
+        })
+        .catch(function(){ mostrarToast('Error de conexión', 'error'); });
 }
 
 function activarEvento(id) {
@@ -356,7 +446,7 @@ function activarEvento(id) {
         .then(function(res){
             if (res.ok) {
                 cargarEventos();
-                mostrarToast('Evento activado', 'ok');
+                mostrarToast('Evento reactivado', 'ok');
             } else {
                 mostrarToast(res.error || 'Error al activar', 'error');
             }

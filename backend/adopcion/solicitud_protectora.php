@@ -57,6 +57,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $nombreProtectora = limpiar($datos['nombre_protectora'] ?? '');
         $cifNif           = limpiar($datos['cif_nif'] ?? '');
         $direccion        = limpiar($datos['direccion'] ?? '');
+        $localidad        = limpiar($datos['localidad'] ?? '');
         $telefono         = limpiar($datos['telefono'] ?? '');
         $webRedes         = limpiar($datos['web_redes'] ?? '');
 
@@ -76,14 +77,15 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
         $stmt = $pdo->prepare(
             'INSERT INTO solicitudes_protectora
-                (idUsuario, nombre_protectora, cif_nif, direccion, telefono, web_redes)
-             VALUES (?, ?, ?, ?, ?, ?)'
+                (idUsuario, nombre_protectora, cif_nif, direccion, localidad, telefono, web_redes)
+             VALUES (?, ?, ?, ?, ?, ?, ?)'
         );
         $stmt->execute([
             $_SESSION['idUsuario'],
             $nombreProtectora,
             $cifNif,
             $direccion,
+            $localidad,
             $telefono ?: null,
             $webRedes ?: null,
         ]);
@@ -156,12 +158,13 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
                 if (!$protectoraId) {
                     $stmt = $pdo->prepare(
-                        'INSERT INTO protectoras (nombre, direccion, telefono, email, web, red_social_url, verificada, activa, fecha_registro)
-                         VALUES (?, ?, ?, ?, ?, ?, 1, 1, NOW())'
+                        'INSERT INTO protectoras (nombre, direccion, localidad, telefono, email, web, red_social_url, verificada, activa, fecha_registro)
+                         VALUES (?, ?, ?, ?, ?, ?, ?, 1, 1, NOW())'
                     );
                     $stmt->execute([
                         $solicitud['nombre_protectora'],
                         $solicitud['direccion'],
+                        $solicitud['localidad'] ?? null,
                         $solicitud['telefono'] ?: null,
                         $solicitud['email_usuario'] ?? null,
                         $solicitud['web_redes'] ?: null,

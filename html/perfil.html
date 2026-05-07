@@ -312,6 +312,10 @@
                         <input type="text" class="form-control" id="solDireccion">
                     </div>
                     <div class="mb-3">
+                        <label class="form-label" style="font-weight:600;font-size:0.88rem;">Localidad <span style="color:#c0392b;">*</span></label>
+                        <input type="text" class="form-control" id="solLocalidad">
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label" style="font-weight:600;font-size:0.88rem;">Teléfono</label>
                         <input type="tel" class="form-control" id="solTelefono">
                     </div>
@@ -1030,6 +1034,7 @@ function cargarSolicitudProtectora() {
                 + '<div style="font-size:0.88rem;">'
                 + '<p class="mb-1"><strong>CIF/NIF:</strong> ' + s.cif_nif + '</p>'
                 + '<p class="mb-1"><strong>Direccion:</strong> ' + s.direccion + '</p>'
+                + (s.localidad ? '<p class="mb-1"><strong>Localidad:</strong> ' + s.localidad + '</p>' : '')
                 + (s.telefono ? '<p class="mb-1"><strong>Telefono:</strong> ' + s.telefono + '</p>' : '')
                 + (s.web_redes ? '<p class="mb-3"><strong>Web/Redes:</strong> ' + s.web_redes + '</p>' : '')
                 + '<p class="mb-1 text-muted" style="font-size:0.8rem;">Enviada: ' + new Date(s.fecha_solicitud).toLocaleDateString('es-ES') + '</p>'
@@ -1131,6 +1136,7 @@ function enviarSolicitudProtectora() {
     var nombre = document.getElementById('solNombreProtectora').value.trim();
     var cif    = document.getElementById('solCifNif').value.trim();
     var dir    = document.getElementById('solDireccion').value.trim();
+    var loc    = document.getElementById('solLocalidad').value.trim();
     var tel    = document.getElementById('solTelefono').value.trim();
     var web    = document.getElementById('solWebRedes').value.trim();
     var errorEl = document.getElementById('errorSolicitudProtectora');
@@ -1138,8 +1144,8 @@ function enviarSolicitudProtectora() {
 
     errorEl.style.display = 'none';
 
-    if (!nombre || !cif || !dir) {
-        errorEl.textContent = 'Nombre de la protectora, CIF/NIF y dirección son obligatorios.';
+    if (!nombre || !cif || !dir || !loc) {
+        errorEl.textContent = 'Nombre de la protectora, CIF/NIF, dirección y localidad son obligatorios.';
         errorEl.style.display = 'block';
         return;
     }
@@ -1151,7 +1157,7 @@ function enviarSolicitudProtectora() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ nombre_protectora: nombre, cif_nif: cif, direccion: dir, telefono: tel, web_redes: web }),
+        body: JSON.stringify({ nombre_protectora: nombre, cif_nif: cif, direccion: dir, localidad: loc, telefono: tel, web_redes: web }),
     })
     .then(function(r) { return r.json(); })
     .then(function(data) {
