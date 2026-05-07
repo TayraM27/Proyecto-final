@@ -27,8 +27,9 @@
             <p class="sidebar-seccion">Contenido global</p>
             <a href="eventos.html" class="sidebar-link"><i class="fa-solid fa-calendar-days"></i> Eventos</a>
             <a href="entidades.html" class="sidebar-link"><i class="fa-solid fa-handshake"></i> Colaboradores</a>
+            <a href="banners.html" class="sidebar-link"><i class="fa-solid fa-image"></i> Banners</a>
             <p class="sidebar-seccion">Moderación</p>
-            <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Animales</a>
+            <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
             <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
             <a href="apadrinamientos.html" class="sidebar-link"><i class="fa-solid fa-star"></i> Apadrinamientos</a>
             <a href="foro.html" class="sidebar-link"><i class="fa-solid fa-comments"></i> Foro</a>
@@ -179,10 +180,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function cargarDashboard() {
     fetch('../backend/admin/dashboard.php', { credentials: 'include' })
-        .then(function(r){ return r.json(); })
+        .then(function(r){
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.text().then(function(text){
+                if (!text) throw new Error('Respuesta vacía del servidor');
+                return JSON.parse(text);
+            });
+        })
         .then(function(data){
             if (!data.ok) return;
-
             var s = data.stats;
             document.getElementById('st-mascotas').textContent       = s.mascotas_disponibles;
             document.getElementById('st-protectoras').textContent    = s.total_protectoras;
@@ -191,10 +197,9 @@ function cargarDashboard() {
             document.getElementById('st-donaciones').textContent     = s.donaciones_completadas;
             document.getElementById('st-foro').textContent           = s.publicaciones_foro;
 
-            /* tabla mascotas */
             var tm = document.getElementById('tablaMascotas');
             if (!data.ultimas_mascotas || !data.ultimas_mascotas.length) {
-                tm.innerHTML = '<tr><td colspan="4"><div class="estado-vacio"><i class="fa-solid fa-paw"></i><p>Sin mascotas a\u00fan</p></div></td></tr>';
+                tm.innerHTML = '<tr><td colspan="4"><div class="estado-vacio"><i class="fa-solid fa-paw"></i><p>Sin mascotas aún</p></div></td></tr>';
             } else {
                 tm.innerHTML = data.ultimas_mascotas.map(function(m){
                     var urgBadge = m.urgencia === 'urgente'
@@ -212,10 +217,9 @@ function cargarDashboard() {
                 }).join('');
             }
 
-            /* tabla apadrinamientos */
             var ta = document.getElementById('tablaApadrinamientos');
             if (!data.ultimas_apadrinamientos || !data.ultimas_apadrinamientos.length) {
-                ta.innerHTML = '<tr><td colspan="3"><div class="estado-vacio"><i class="fa-solid fa-star"></i><p>Sin apadrinamientos a\u00fan</p></div></td></tr>';
+                ta.innerHTML = '<tr><td colspan="3"><div class="estado-vacio"><i class="fa-solid fa-star"></i><p>Sin apadrinamientos aún</p></div></td></tr>';
             } else {
                 ta.innerHTML = data.ultimas_apadrinamientos.map(function(a){
                     return '<tr>'
@@ -226,7 +230,12 @@ function cargarDashboard() {
                 }).join('');
             }
         })
-        .catch(function(){});
+        .catch(function(err){
+            var tm = document.getElementById('tablaMascotas');
+            var ta = document.getElementById('tablaApadrinamientos');
+            if (tm) tm.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2em;color:var(--error);">Error: ' + err.message + '</td></tr>';
+            if (ta) ta.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:2em;color:var(--error);">Error: ' + err.message + '</td></tr>';
+        });
 }
 
 function toggleSidebar() {

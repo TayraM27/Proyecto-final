@@ -163,7 +163,7 @@
 <div class="modal fade" id="modalApadrina" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-radius:14px;border:none;overflow:hidden;">
-            <div class="modal-header modal-header-pf" style="background:linear-gradient(135deg, #27ae60 0%, #1e8e4e 100%);">
+            <div class="modal-header modal-header-pf" style="background:linear-gradient(135deg, #F8BA56 0%, #e6a84d 100%);">
                 <h5 class="modal-title text-white fw-bold">
                     <i class="fa-solid fa-ribbon me-2"></i>Apadrinar a <span id="modal-animal-nombre">–</span>
                 </h5>
@@ -235,7 +235,7 @@
                     <div class="aviso-responsable mt-2" style="background:#fff8e1;padding:0.6em 0.8em;border-radius:8px;font-size:0.82rem;color:#856404;">
                         <i class="fa-solid fa-bell me-1"></i> El pago es simulado. No se realizará ningún cobro real. La protectora revisará tu solicitud y se pondrá en contacto contigo.
                     </div>
-                    <button type="submit" class="btn w-100 mt-3" style="background:#27ae60;color:#fff;border:none;cursor:pointer;padding:0.7em;border-radius:8px;font-weight:600;">
+                    <button type="submit" class="btn w-100 mt-3" style="background:#F8BA56;color:#fff;border:none;cursor:pointer;padding:0.7em;border-radius:8px;font-weight:600;">
                         <i class="fa-solid fa-paper-plane me-1"></i> Confirmar apadrinamiento
                     </button>
                 </form>
@@ -342,9 +342,9 @@ function cargarAnimalesApadrina(pagina) {
                     + '<p class="animal-desc">' + desc + '</p>'
                     + '<div class="animal-tags">' + tags + '</div>'
                     + '<div class="apad-btns-wrap">'
-                    + '<button class="btn-apadrinar" onclick="abrirModalApadrina(\'' + dAttr + '\')">'
-                    + '<i class="fa-solid fa-heart me-2"></i>Apadrinar a ' + m.nombre
-                    + '</button>'
+                     + '<button class="btn-apadrinar" style="background:#F8BA56;color:#fff;border:none;padding:0.7em 1.2em;border-radius:8px;cursor:pointer;font-weight:600;" onclick="abrirModalApadrina(\'' + dAttr + '\')">'
+                     + '<i class="fa-solid fa-heart me-2"></i>Apadrinar a ' + m.nombre
+                     + '</button>'
                     + '<a href="fichaAnimal.html?id=' + m.idMascota + '" class="btn-ver-ficha">'
                     + '<i class="fa-solid fa-paw me-1"></i>Ver ficha'
                     + '</a>'

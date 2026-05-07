@@ -127,7 +127,7 @@ if ($metodo === 'GET') {
     $estado = $_GET['estado']          ?? 'todos';
     $todos  = !empty($_GET['todos'])   ? 1 : 0;
     $pagina = (int)($_GET['pagina']    ?? 1);
-    $p      = paginacion($pagina, 15);
+    $p      = pagina($pagina, 15);
 
     $where  = $todos ? [] : ['m.activa = 1'];
     $params = [];
@@ -278,18 +278,38 @@ if ($metodo === 'PUT') {
         respuestaError('No tienes una protectora asignada.');
     }
     
-    $check = $pdo->prepare('SELECT idMascota FROM mascotas WHERE idMascota = ? AND idProtectora = ?');
+    $check = $pdo->prepare('SELECT idMascota, prioritaria, fecha_prioritaria FROM mascotas WHERE idMascota = ? AND idProtectora = ?');
     $check->execute([$id, $idProtectoraCheck]);
-    if (!$check->fetch()) respuestaError('No tienes permiso sobre esta mascota.', 403);
+    $estadoActualRow = $check->fetch();
+    if (!$estadoActualRow) respuestaError('No tienes permiso sobre esta mascota.', 403);
+
+    $nuevaPrioritaria = (int)($datos['prioritaria'] ?? 0);
+    $eraPrioritaria   = (int)$estadoActualRow['prioritaria'];
+
+    if ($nuevaPrioritaria === 1 && $eraPrioritaria === 0) {
+        $stmtC = $pdo->prepare('SELECT COUNT(*) FROM mascotas WHERE idProtectora = ? AND prioritaria = 1 AND activa = 1 AND idMascota != ?');
+        $stmtC->execute([$idProtectoraCheck, $id]);
+        if ((int)$stmtC->fetchColumn() >= LIMITE_PRIORITARIAS) {
+            respuestaError('Has alcanzado el límite de mascotas urgentes. Desmarca otra para continuar.', 400);
+        }
+    }
+
+    if ($nuevaPrioritaria === 1 && $eraPrioritaria === 0) {
+        $fechaPrioritaria = date('Y-m-d H:i:s');
+    } elseif ($nuevaPrioritaria === 0) {
+        $fechaPrioritaria = null;
+    } else {
+        $fechaPrioritaria = $estadoActualRow['fecha_prioritaria'];
+    }
 
     $pdo->prepare('UPDATE mascotas SET
      nombre=?, especie=?, raza=?, sexo=?, tamanyo=?, color=?,
      descripcion=?, estado_salud=?, badge_extra=?, urgencia=?, estado_adopcion=?, edad_texto=?,
      compatible_ninos=?, compatible_perros=?, compatible_gatos=?,
      apto_piso=?, vacunado=?, esterilizado=?, microchip=?, desparasitado=?,
-      disponible_apadrinamiento=?, disponible_acogida=?, prioritaria=?, descripcion_slider=?,
-      fecha_entrada=?, fecha_nacimiento=?
-      WHERE idMascota=? AND idProtectora=?'
+     disponible_apadrinamiento=?, disponible_acogida=?, prioritaria=?, fecha_prioritaria=?, descripcion_slider=?,
+     fecha_entrada=?, fecha_nacimiento=?
+     WHERE idMascota=? AND idProtectora=?'
     )->execute([
         limpiar($datos['nombre']      ?? ''),
         $datos['especie']             ?? 'perro',
@@ -313,7 +333,8 @@ if ($metodo === 'PUT') {
         (int)($datos['desparasitado']     ?? 0),
         (int)($datos['disponible_apadrinamiento'] ?? 1),
         (int)($datos['disponible_acogida']         ?? 1),
-        (int)($datos['prioritaria']        ?? 0),
+        $nuevaPrioritaria,
+        $fechaPrioritaria,
         limpiar($datos['descripcion_slider'] ?? ''),
         !empty($datos['fecha_entrada'])    ? $datos['fecha_entrada']    : null,
         !empty($datos['fecha_nacimiento']) ? $datos['fecha_nacimiento'] : null,

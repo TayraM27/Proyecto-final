@@ -924,6 +924,30 @@ function guardarPerfil() {
             sesion.telefono  = usuarioPerfil.telefono;
             if (usuarioPerfil.foto_perfil) sesion.foto_perfil = usuarioPerfil.foto_perfil;
             sessionStorage.setItem(CLAVE_SESION, JSON.stringify(sesion));
+
+            /* Actualizar avatar del header sin recargar */
+            if (usuarioPerfil.foto_perfil) {
+                var fotoSrc = usuarioPerfil.foto_perfil.startsWith('http')
+                    ? usuarioPerfil.foto_perfil
+                    : ('../backend/api/auth/' + usuarioPerfil.foto_perfil);
+                /* Imagen simple del header (páginas sin dropdown) */
+                var imgHeader = document.getElementById('imgPerfilHeader');
+                if (imgHeader) { imgHeader.src = fotoSrc; }
+                /* Avatares generados por script.js (con dropdown) */
+                document.querySelectorAll('.user-avatar:not(.user-avatar-iniciales)').forEach(function(img) {
+                    img.src = fotoSrc;
+                });
+                document.querySelectorAll('.user-avatar-iniciales').forEach(function(div) {
+                    var img = document.createElement('img');
+                    img.src = fotoSrc;
+                    img.className = 'user-avatar';
+                    img.referrerPolicy = 'no-referrer';
+                    img.style.cssText = 'width:32px;height:32px;border-radius:50%;object-fit:cover;';
+                    img.onerror = function() { this.replaceWith(div.cloneNode(true)); };
+                    div.replaceWith(img);
+                });
+            }
+
             mostrarDatosUsuario(usuarioPerfil);
             cargarDatos();
             bootstrap.Modal.getInstance(document.getElementById('modalEditarPerfil')).hide();

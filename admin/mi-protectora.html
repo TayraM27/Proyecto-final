@@ -24,6 +24,7 @@
             <a href="#" class="sidebar-link" onclick="cambiarTab('solicitudes', this); return false;"><i class="fa-solid fa-file-signature"></i> Sol. Adopción</a>
             <a href="#" class="sidebar-link" onclick="cambiarTab('acogidas', this); return false;"><i class="fa-solid fa-hand-holding-heart"></i> Sol. Acogida</a>
             <a href="#" class="sidebar-link" onclick="cambiarTab('apadrinamientos', this); return false;"><i class="fa-solid fa-star"></i> Apadrinamientos</a>
+            <a href="#" class="sidebar-link" onclick="cambiarTab('seguimientos', this); return false;"><i class="fa-solid fa-bullhorn"></i> Seguimientos</a>
             <a href="#" class="sidebar-link" onclick="cambiarTab('eventos', this); return false;"><i class="fa-solid fa-calendar-days"></i> Eventos</a>
             <p class="sidebar-seccion">Web pública</p>
             <a href="../html/index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
@@ -279,25 +280,49 @@
             </div>
         </div>
 
-        <!-- TAB PRIORITARIAS (ADMIN) -->
-        <div id="tab-prioritarias" style="display:none;">
+        <!-- TAB SEGUIMIENTOS -->
+        <div id="tab-seguimientos" style="display:none;">
+            <div class="panel mb-3">
+                <div class="panel-header">
+                    <p class="panel-titulo"><i class="fa-solid fa-bullhorn"></i> Enviar actualización a padrinos</p>
+                </div>
+                <div class="modal-body" style="padding:1.5em;">
+                    <div class="form-fila">
+                        <div class="form-campo">
+                            <label class="form-label">Mascota *</label>
+                            <select class="form-select" id="segMascota"></select>
+                        </div>
+                    </div>
+                    <div class="form-campo">
+                        <label class="form-label">Mensaje *</label>
+                        <textarea class="form-textarea" id="segMensaje" rows="3" placeholder="Escribe la actualización para los padrinos..."></textarea>
+                    </div>
+                    <div class="form-campo">
+                        <label class="form-label">Archivo adjunto (opcional)</label>
+                        <input type="file" class="form-input" id="segArchivo" accept="image/*,video/mp4,video/webm">
+                    </div>
+                    <p class="form-error" id="segError" style="display:none;color:var(--error);margin-top:0.5em;"></p>
+                    <div style="margin-top:1em;">
+                        <button class="btn btn-gold" onclick="enviarSeguimiento()"><i class="fa-solid fa-paper-plane me-2"></i>Enviar actualización</button>
+                    </div>
+                </div>
+            </div>
+
             <div class="panel">
                 <div class="panel-header">
-                    <p class="panel-titulo"><i class="fa-solid fa-star"></i> Mascotas Prioritarias (Admin)</p>
+                    <p class="panel-titulo"><i class="fa-solid fa-history"></i> Actualizaciones enviadas</p>
                 </div>
                 <div class="tabla-wrap">
                     <table class="tabla">
                         <thead>
                             <tr>
-                                <th>Foto</th>
-                                <th>Nombre</th>
-                                <th>Protectora</th>
-                                <th>Fecha Prioritaria</th>
-                                <th>Acciones</th>
+                                <th>Mascota</th>
+                                <th>Mensaje</th>
+                                <th>Fecha</th>
                             </tr>
                         </thead>
-                        <tbody id="tablaPrioritarias">
-                            <tr><td colspan="5" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                        <tbody id="tablaSegui">
+                            <tr><td colspan="3" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -653,23 +678,23 @@ var totalPag = 1;
 var usuarioSesion = null;
 
 function cambiarTab(tab, link) {
-    document.querySelectorAll('#tab-datos, #tab-mascotas, #tab-solicitudes, #tab-acogidas, #tab-apadrinamientos, #tab-eventos').forEach(function(t){ t.style.display = 'none'; });
+    document.querySelectorAll('#tab-datos, #tab-mascotas, #tab-solicitudes, #tab-acogidas, #tab-apadrinamientos, #tab-seguimientos, #tab-eventos').forEach(function(t){ t.style.display = 'none'; });
     document.getElementById('tab-' + tab).style.display = 'block';
     document.querySelectorAll('.sidebar-nav .sidebar-link').forEach(function(l){ l.classList.remove('activo'); });
     if (link) link.classList.add('activo');
 
     var btnNM = document.getElementById('btnNuevaMascota');
     var titulos = {
-        'datos': '<i class="fa-solid fa-id-card" style="color:var(--gold);margin-right:0.4em;"></i>Datos',
-        'mascotas': '<i class="fa-solid fa-paw" style="color:var(--gold);margin-right:0.4em;"></i>Mis Mascotas',
-        'solicitudes': '<i class="fa-solid fa-file-signature" style="color:var(--gold);margin-right:0.4em;"></i>Solicitudes',
-        'acogidas': '<i class="fa-solid fa-hand-holding-heart" style="color:var(--gold);margin-right:0.4em;"></i>Solicitudes de Acogida',
-        'apadrinamientos': '<i class="fa-solid fa-star" style="color:var(--gold);margin-right:0.4em;"></i>Apadrinamientos',
-        'eventos': '<i class="fa-solid fa-calendar-days" style="color:var(--gold);margin-right:0.4em;"></i>Eventos',
-        'prioritarias': '<i class="fa-solid fa-star" style="color:var(--gold);margin-right:0.4em;"></i>Prioritarias (Admin)',
+        'datos':          '<i class="fa-solid fa-id-card" style="color:var(--gold);margin-right:0.4em;"></i>Datos',
+        'mascotas':       '<i class="fa-solid fa-paw" style="color:var(--gold);margin-right:0.4em;"></i>Mis Mascotas',
+        'solicitudes':    '<i class="fa-solid fa-file-signature" style="color:var(--gold);margin-right:0.4em;"></i>Solicitudes de Adopción',
+        'acogidas':       '<i class="fa-solid fa-hand-holding-heart" style="color:var(--gold);margin-right:0.4em;"></i>Solicitudes de Acogida',
+        'apadrinamientos':'<i class="fa-solid fa-star" style="color:var(--gold);margin-right:0.4em;"></i>Apadrinamientos',
+        'seguimientos':   '<i class="fa-solid fa-bullhorn" style="color:var(--gold);margin-right:0.4em;"></i>Seguimientos',
+        'eventos':        '<i class="fa-solid fa-calendar-days" style="color:var(--gold);margin-right:0.4em;"></i>Eventos',
     };
     document.getElementById('topbarTitulo').innerHTML = titulos[tab] || '';
-    btnNM.style.display = tab === 'mascotas' || tab === 'eventos' ? '' : 'none';
+    btnNM.style.display = (tab === 'mascotas' || tab === 'eventos') ? '' : 'none';
     if (tab === 'eventos') {
         btnNM.innerHTML = '<i class="fa-solid fa-plus"></i> Nuevo evento';
         btnNM.onclick = function(){ abrirModalNuevoEvento(); };
@@ -678,55 +703,82 @@ function cambiarTab(tab, link) {
         btnNM.onclick = function(){ abrirModalNueva(); };
     }
 
-    if (tab === 'datos') cargarDatosProtectora();
-    if (tab === 'mascotas') cargarMascotas(1);
-    if (tab === 'solicitudes') cargarSolicitudes();
-    if (tab === 'acogidas') cargarAcogidas();
+    if (tab === 'datos')           cargarDatosProtectora();
+    if (tab === 'mascotas')        cargarMascotas(1);
+    if (tab === 'solicitudes')     cargarSolicitudes();
+    if (tab === 'acogidas')        cargarAcogidas();
     if (tab === 'apadrinamientos') cargarApadrinamientos();
-    if (tab === 'eventos') cargarEventos();
-    if (tab === 'prioritarias') cargarPrioritariasAdmin();
+    if (tab === 'seguimientos')    cargarSeguimientos();
+    if (tab === 'eventos')         cargarEventos();
 }
 
-function cargarPrioritariasAdmin() {
-    var tbody = document.getElementById('tablaPrioritarias');
-    if (!tbody) return;
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:3em;color:var(--texto-sub);"><div class="spinner"></div></td></tr>';
-    fetch('../backend/admin/get_prioritarias.php')
+/*--------------------------------------------------------------------------------------------
+seguimientos */
+function cargarSeguimientos() {
+    /* Cargar selector de mascotas */
+    fetch('../backend/admin/mascotas.php?q=&especie=todos&estado=todos&todos=1', { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
-            if (!data.ok) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2em;color:var(--error);">Error</td></tr>'; return; }
-            if (!data.mascotas || !data.mascotas.length) {
-                tbody.innerHTML = '<tr><td colspan="5"><div class="estado-vacio"><i class="fa-solid fa-star"></i><p>No hay mascotas prioritarias.</p></div></td></tr>';
+            var sel = document.getElementById('segMascota');
+            if (!data.ok || !data.mascotas || !data.mascotas.length) {
+                sel.innerHTML = '<option value="">Sin mascotas</option>';
                 return;
             }
-            tbody.innerHTML = data.mascotas.map(function(m){
-                var foto = m.foto_principal
-                    ? '<img src="../' + m.foto_principal + '" class="tabla-foto" alt="' + m.nombre + '">'
-                    : '<div style="width:42px;height:42px;border-radius:8px;background:var(--azul-lite);display:flex;align-items:center;justify-content:center;font-size:1.3rem;">' + (m.especie === 'perro' ? '🐕' : '🐱') + '</div>';
+            sel.innerHTML = data.mascotas.map(function(m){
+                return '<option value="' + m.idMascota + '">' + m.nombre + ' (' + m.especie + ')</option>';
+            }).join('');
+        });
+
+    /* Cargar seguimientos enviados */
+    var tbody = document.getElementById('tablaSegui');
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>';
+    fetch('../backend/admin/seguimientos.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok || !data.seguimientos || !data.seguimientos.length) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:3em;color:var(--texto-sub);">No hay actualizaciones enviadas aún.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.seguimientos.map(function(s){
                 return '<tr>'
-                    + '<td>' + foto + '</td>'
-                    + '<td><strong>' + m.nombre + '</strong></td>'
-                    + '<td>' + (m.protectora_nombre || '—') + '</td>'
-                    + '<td>' + (m.fecha_prioritaria ? new Date(m.fecha_prioritaria).toLocaleDateString('es-ES') : '—') + '</td>'
-                    + '<td><button class="btn btn-sm btn-icon btn-warning" onclick="desmarcarPrioritariaAdmin(' + m.idMascota + ')" title="Desmarcar"><i class="fa-solid fa-star"></i></button></td>'
+                    + '<td><strong>' + (s.mascota_nombre || '—') + '</strong></td>'
+                    + '<td style="font-size:0.85rem;">' + (s.contenido || '').substring(0, 80) + (s.contenido && s.contenido.length > 80 ? '…' : '') + '</td>'
+                    + '<td style="font-size:0.82rem;">' + new Date(s.fecha).toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'numeric' }) + '</td>'
                     + '</tr>';
             }).join('');
         })
-        .catch(function(){ tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2em;color:var(--error);">Error de conexión.</td></tr>'; });
+        .catch(function(){ tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:2em;color:var(--error);">Error de conexión.</td></tr>'; });
 }
 
-function desmarcarPrioritariaAdmin(id) {
-    if (!confirm('¿Desmarcar esta mascota como prioritaria?')) return;
-    fetch('../backend/admin/mascotas.php', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ accion: 'desmarcar_prioritaria_admin', idMascota: id })
-    })
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-        if (data.ok) { cargarPrioritariasAdmin(); } else { alert(data.error || 'Error al desmarcar.'); }
-    });
+function enviarSeguimiento() {
+    var idMascota = document.getElementById('segMascota').value;
+    var contenido = document.getElementById('segMensaje').value.trim();
+    var archivo   = document.getElementById('segArchivo').files[0];
+    var errorEl   = document.getElementById('segError');
+    errorEl.style.display = 'none';
+
+    if (!idMascota) { errorEl.textContent = 'Selecciona una mascota.'; errorEl.style.display = 'block'; return; }
+    if (!contenido) { errorEl.textContent = 'El mensaje no puede estar vacío.'; errorEl.style.display = 'block'; return; }
+
+    var fd = new FormData();
+    fd.append('idMascota', idMascota);
+    fd.append('contenido', contenido);
+    if (archivo) fd.append('archivo', archivo);
+
+    fetch('../backend/admin/seguimientos.php', { method: 'POST', credentials: 'include', body: fd })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (data.ok) {
+                document.getElementById('segMensaje').value = '';
+                document.getElementById('segArchivo').value = '';
+                mostrarToast('Actualización enviada a los padrinos.', 'ok');
+                cargarSeguimientos();
+            } else {
+                errorEl.textContent = data.error || 'Error al enviar.';
+                errorEl.style.display = 'block';
+            }
+        })
+        .catch(function(){ errorEl.textContent = 'Error de conexión.'; errorEl.style.display = 'block'; });
 }
 
 function verificarSesion(cb) {

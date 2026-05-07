@@ -616,12 +616,9 @@ function toggleComentarios(idPublicacion, btn) {
 
             if (data.comentarios && data.comentarios.length) {
                 bloqueComs.innerHTML = data.comentarios.map(function(c) { return renderComentario(c, false); }).join('');
-                /* Sincronizar contador con recuento real al abrir */
+                /* Sincronizar contador: solo comentarios raíz no eliminados */
                 var total = 0;
-                data.comentarios.forEach(function(c) {
-                    if (!c.deleted) total++;
-                    if (c.respuestas) c.respuestas.forEach(function(r) { if (!r.deleted) total++; });
-                });
+                data.comentarios.forEach(function(c) { if (!c.deleted) total++; });
                 var countEl = document.querySelector('#post-' + idPublicacion + ' .com-count');
                 if (countEl) countEl.textContent = total;
             } else {
@@ -697,14 +694,9 @@ function actualizarComentarios(idPublicacion, bloqueComs) {
             if (!data.comentarios) return;
             bloqueComs.innerHTML = data.comentarios.map(function(c) { return renderComentario(c, false); }).join('');
             activarEventosComentarios(bloqueComs, idPublicacion);
-            /* Contar padres activos + todas sus respuestas activas */
+            /* Contar igual que el backend: solo comentarios raíz no eliminados */
             var total = 0;
-            data.comentarios.forEach(function(c) {
-                if (!c.deleted) total++;
-                if (c.respuestas) {
-                    c.respuestas.forEach(function(r) { if (!r.deleted) total++; });
-                }
-            });
+            data.comentarios.forEach(function(c) { if (!c.deleted) total++; });
             var countEl = document.querySelector('#post-' + idPublicacion + ' .com-count');
             if (countEl) countEl.textContent = total;
         })
@@ -1070,7 +1062,6 @@ function actualizarPopulares(posts) {
     lista.innerHTML = top.map(function(p) {
         return '<li style="cursor:pointer;" onclick="document.getElementById(\'post-' + p.idPublicacion + '\') && document.getElementById(\'post-' + p.idPublicacion + '\').scrollIntoView({behavior:\'smooth\'})">'
             + '<strong>' + p.titulo.substring(0, 35) + (p.titulo.length > 35 ? '…' : '') + '</strong>'
-            + '<span class="foro-cat-count">' + (parseInt(p.num_likes) + parseInt(p.num_comentarios)) + ' pts</span>'
             + '</li>';
     }).join('');
 }

@@ -20,17 +20,18 @@
         <nav class="sidebar-nav">
             <p class="sidebar-seccion">General</p>
             <a href="dashboard.html" class="sidebar-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
-            <p class="sidebar-seccion">Gestión</p>
-            <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
+            <p class="sidebar-seccion">Plataforma</p>
             <a href="protectoras.html" class="sidebar-link"><i class="fa-solid fa-building-shield"></i> Protectoras</a>
             <a href="usuarios.html" class="sidebar-link"><i class="fa-solid fa-users"></i> Usuarios</a>
-            <a href="apadrinamientos.html" class="sidebar-link"><i class="fa-solid fa-star"></i> Apadrinamientos</a>
-            <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
             <a href="solicitudes-protectora.html" class="sidebar-link"><i class="fa-solid fa-clipboard-check"></i> Sol. Protectora</a>
-            <p class="sidebar-seccion">Contenido</p>
+            <p class="sidebar-seccion">Contenido global</p>
             <a href="eventos.html" class="sidebar-link"><i class="fa-solid fa-calendar-days"></i> Eventos</a>
-            <a href="entidades.html" class="sidebar-link activo"><i class="fa-solid fa-handshake"></i> Entidades</a>
-            <p class="sidebar-seccion">Comunidad</p>
+            <a href="entidades.html" class="sidebar-link activo"><i class="fa-solid fa-handshake"></i> Colaboradores</a>
+            <a href="banners.html" class="sidebar-link"><i class="fa-solid fa-image"></i> Banners</a>
+            <p class="sidebar-seccion">Moderación</p>
+            <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
+            <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
+            <a href="apadrinamientos.html" class="sidebar-link"><i class="fa-solid fa-star"></i> Apadrinamientos</a>
             <a href="foro.html" class="sidebar-link"><i class="fa-solid fa-comments"></i> Foro</a>
             <p class="sidebar-seccion">Web pública</p>
             <a href="../html/index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
@@ -42,14 +43,18 @@
                     <p class="sidebar-usuario-nombre" id="adminNombre">Admin</p>
                     <p class="sidebar-usuario-rol">Administrador</p>
                 </div>
-                <button class="btn-logout" onclick="cerrarSesion()"><i class="fa-solid fa-right-from-bracket"></i></button>
+                <button class="btn-logout" onclick="cerrarSesion()" title="Cerrar sesión">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
             </div>
         </div>
     </aside>
 
     <header class="topbar">
-        <div style="display:flex;align-items:center;gap:0.8em;">
-            <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+        <div class="topbar-izq">
+            <button class="sidebar-toggle" onclick="toggleSidebar()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
             <span class="topbar-titulo"><i class="fa-solid fa-handshake" style="color:var(--gold);margin-right:0.4em;"></i>Entidades Colaboradoras</span>
         </div>
         <button class="btn btn-gold" onclick="abrirModalNuevo()">

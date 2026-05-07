@@ -24,10 +24,20 @@ if ($metodo === 'GET') {
     $id = (int)($_GET['id'] ?? 0);
 
     if ($id) {
-        $sql = "SELECT * FROM protectoras WHERE idProtectora = ?";
+        $sql = "SELECT p.idProtectora, p.nombre, p.descripcion, p.descripcion_dona,
+                       p.direccion, p.localidad, p.telefono, p.email,
+                       p.web, p.tipo_pagina, p.red_social_url, p.especie_atencion,
+                       p.iban, p.bizum, p.teaming, p.badges,
+                       p.foto_logo, p.latitud, p.longitud,
+                       p.verificada, p.activa, p.fecha_registro,
+                       COUNT(m.idMascota) AS num_animales
+                FROM protectoras p
+                LEFT JOIN mascotas m ON m.idProtectora = p.idProtectora AND m.activa = 1
+                WHERE p.idProtectora = ?
+                GROUP BY p.idProtectora";
         $params = [$id];
         if (!$esAdmin && $idProtectoraUsuario) {
-            $sql .= ' AND idProtectora = ?';
+            $sql .= ' AND p.idProtectora = ?';
             $params[] = $idProtectoraUsuario;
         }
         $stmt = $pdo->prepare($sql);

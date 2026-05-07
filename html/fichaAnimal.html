@@ -574,8 +574,8 @@
     <p><a href="privacidad.html" style="color:white;">Política de Privacidad</a> | <a href="terminos.html" style="color:white;">Términos de Servicio</a></p>
 </footer>
 
-<script src="../javascript/script.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../javascript/script.js"></script>
 <script src="https://code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
 
 <script>
@@ -617,15 +617,22 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('miga-nombre').textContent = mascota.nombre;
 
         var fp = document.getElementById('foto-principal');
-        var fotoPrincipal = mascota.foto_principal
-            || (mascota.fotos && mascota.fotos.length ? mascota.fotos[0].ruta : null);
+        var fotoPrincipal = mascota.foto_principal;
+        if (!fotoPrincipal && mascota.fotos && mascota.fotos.length) {
+            var principal = mascota.fotos.find(function(f) { return f.es_principal == 1; });
+            fotoPrincipal = principal ? principal.ruta : mascota.fotos[0].ruta;
+        }
         fp.src = fotoPrincipal ? '../' + fotoPrincipal : '../img/mascotas/default.jpg';
         fp.alt = 'Foto de ' + mascota.nombre;
         fp.onerror = function() { this.src = '../img/mascotas/default.jpg'; };
 
         var minWrap = document.getElementById('contenedor-miniaturas');
         if (mascota.fotos && mascota.fotos.length > 1) {
-            mascota.fotos.forEach(function(fo, i) {
+            /* Ordenar poniendo la principal primero */
+            var fotosOrdenadas = mascota.fotos.slice().sort(function(a, b) {
+                return (b.es_principal == 1 ? 1 : 0) - (a.es_principal == 1 ? 1 : 0);
+            });
+            fotosOrdenadas.forEach(function(fo, i) {
                 var img = document.createElement('img');
                 img.src = '../' + fo.ruta;
                 img.alt = mascota.nombre + ' foto ' + (i + 1);

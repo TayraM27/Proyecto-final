@@ -20,18 +20,18 @@
         <nav class="sidebar-nav">
             <p class="sidebar-seccion">General</p>
             <a href="dashboard.html" class="sidebar-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
-            <p class="sidebar-seccion">Gestión</p>
-            <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
+            <p class="sidebar-seccion">Plataforma</p>
             <a href="protectoras.html" class="sidebar-link"><i class="fa-solid fa-building-shield"></i> Protectoras</a>
             <a href="usuarios.html" class="sidebar-link"><i class="fa-solid fa-users"></i> Usuarios</a>
-            <a href="apadrinamientos.html" class="sidebar-link"><i class="fa-solid fa-star"></i> Apadrinamientos</a>
-            <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
             <a href="solicitudes-protectora.html" class="sidebar-link"><i class="fa-solid fa-clipboard-check"></i> Sol. Protectora</a>
-            <p class="sidebar-seccion">Contenido</p>
+            <p class="sidebar-seccion">Contenido global</p>
             <a href="eventos.html" class="sidebar-link"><i class="fa-solid fa-calendar-days"></i> Eventos</a>
-            <a href="entidades.html" class="sidebar-link"><i class="fa-solid fa-handshake"></i> Entidades</a>
+            <a href="entidades.html" class="sidebar-link"><i class="fa-solid fa-handshake"></i> Colaboradores</a>
             <a href="banners.html" class="sidebar-link"><i class="fa-solid fa-image"></i> Banners</a>
-            <p class="sidebar-seccion">Comunidad</p>
+            <p class="sidebar-seccion">Moderación</p>
+            <a href="mascotas.html" class="sidebar-link"><i class="fa-solid fa-paw"></i> Mascotas</a>
+            <a href="solicitudes.html" class="sidebar-link"><i class="fa-solid fa-file-signature"></i> Solicitudes</a>
+            <a href="apadrinamientos.html" class="sidebar-link"><i class="fa-solid fa-star"></i> Apadrinamientos</a>
             <a href="foro.html" class="sidebar-link activo"><i class="fa-solid fa-comments"></i> Foro</a>
             <p class="sidebar-seccion">Web pública</p>
             <a href="../html/index.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver web</a>
@@ -43,17 +43,25 @@
                     <p class="sidebar-usuario-nombre" id="adminNombre">Admin</p>
                     <p class="sidebar-usuario-rol">Administrador</p>
                 </div>
-                <button class="btn-logout" onclick="cerrarSesion()"><i class="fa-solid fa-right-from-bracket"></i></button>
+                <button class="btn-logout" onclick="cerrarSesion()" title="Cerrar sesión">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
             </div>
         </div>
     </aside>
 
     <header class="topbar">
-        <div style="display:flex;align-items:center;gap:0.8em;">
-            <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+        <div class="topbar-izq">
+            <button class="sidebar-toggle" onclick="toggleSidebar()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
             <span class="topbar-titulo"><i class="fa-solid fa-comments" style="color:var(--gold);margin-right:0.4em;"></i>Moderación del foro</span>
         </div>
-        <div style="display:flex;gap:0.6em;">
+        <div style="display:flex;gap:0.6em;align-items:center;">
+            <select id="filtroEstadoForo" onchange="recargarForo()" style="border:1px solid var(--borde);border-radius:8px;padding:0.3em 0.6em;font-family:Poppins,sans-serif;font-size:0.82rem;outline:none;background:var(--bg-card);color:var(--texto);cursor:pointer;">
+                <option value="0">Todas (incl. eliminadas)</option>
+                <option value="1">Solo activas</option>
+            </select>
             <button class="btn btn-sm btn-primario" onclick="setVista('comentarios')" id="btnCom">Comentarios</button>
             <button class="btn btn-sm btn-outline"  onclick="setVista('publicaciones')" id="btnPub">Publicaciones</button>
         </div>
@@ -115,11 +123,35 @@
     </main>
 </div>
 
+<!-- modal publicacion completa -->
+<div class="modal-overlay" id="modalPubAdmin" onclick="if(event&&event.target===event.currentTarget)cerrarModalPubAdmin()">
+    <div class="modal" style="max-width:650px;">
+        <div class="modal-header">
+            <p class="modal-titulo"><i class="fa-solid fa-newspaper" style="color:var(--gold);margin-right:0.4em;"></i>Publicación completa</p>
+            <button class="modal-cerrar" onclick="cerrarModalPubAdmin()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body" id="modalPubAdminCuerpo"></div>
+    </div>
+</div>
+
+<!-- modal comentario completo -->
+<div class="modal-overlay" id="modalComAdmin" onclick="if(event&&event.target===event.currentTarget)cerrarModalComAdmin()">
+    <div class="modal" style="max-width:600px;">
+        <div class="modal-header">
+            <p class="modal-titulo"><i class="fa-solid fa-comment" style="color:var(--gold);margin-right:0.4em;"></i>Comentario completo</p>
+            <button class="modal-cerrar" onclick="cerrarModalComAdmin()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body" id="modalComAdminCuerpo"></div>
+    </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-var vistaActual  = 'comentarios';
-var paginaActual = 1;
+var vistaActual    = 'comentarios';
+var paginaActual   = 1;
+var datosPubsCache = [];
+var datosComsCache = [];
 
 document.addEventListener('DOMContentLoaded', function() {
     verificarAdmin(function() {
@@ -177,6 +209,7 @@ function cargarPublicaciones() {
                 tb.innerHTML = '<tr><td colspan="8"><div class="estado-vacio"><i class="fa-solid fa-comments"></i><p>Sin publicaciones</p></div></td></tr>';
                 return;
             }
+            datosPubsCache = data.publicaciones;
             tb.innerHTML = data.publicaciones.map(function(p) {
                 var badgeCat = '<span class="badge badge-azul">' + p.categoria + '</span>';
                 var badgeEst = p.activa
@@ -189,8 +222,13 @@ function cargarPublicaciones() {
                     ? ' <i class="fa-solid fa-image" style="color:#0277bd;font-size:0.78rem;" title="Tiene imagen"></i>'
                     : '';
 
+                var tituloCorto = p.titulo.substring(0, 50);
+                var btnVerPub = p.titulo.length > 50 || p.contenido.length > 100
+                    ? '<button class="btn btn-sm btn-icon btn-outline" onclick="verPubCompleta(' + p.idPublicacion + ')" title="Ver completa" style="display:block;margin-top:0.3em;font-size:0.72rem;"><i class="fa-solid fa-eye me-1"></i>Ver</button>'
+                    : '';
+
                 return '<tr>'
-                    + '<td style="max-width:200px;"><strong>' + p.titulo.substring(0, 50) + (p.titulo.length > 50 ? '…' : '') + '</strong>' + fijado + mediaIcono + '</td>'
+                    + '<td style="max-width:200px;"><strong>' + tituloCorto + (p.titulo.length > 50 ? '…' : '') + '</strong>' + fijado + mediaIcono + btnVerPub + '</td>'
                     + '<td style="font-size:0.82rem;">' + p.autor_nombre + '<br><span style="color:var(--texto-sub);">@' + p.autor_username + '</span></td>'
                     + '<td>' + badgeCat + '</td>'
                     + '<td>' + p.num_likes + '</td>'
@@ -228,13 +266,19 @@ function cargarComentarios() {
                 tb.innerHTML = '<tr><td colspan="7"><div class="estado-vacio"><i class="fa-solid fa-comment"></i><p>Sin comentarios</p></div></td></tr>';
                 return;
             }
+            datosComsCache = data.comentarios;
             tb.innerHTML = data.comentarios.map(function(c) {
                 var badgeEst = c.activo
                     ? '<span class="badge badge-verde">Activo</span>'
                     : '<span class="badge badge-rojo">Eliminado</span>';
 
+                var contenidoCorto = c.contenido.substring(0, 80);
+                var btnVerCom = c.contenido.length > 80
+                    ? '<button class="btn btn-sm btn-icon btn-outline" onclick="verComCompleto(' + c.idComentario + ')" title="Ver completo" style="display:block;margin-top:0.3em;font-size:0.72rem;"><i class="fa-solid fa-eye me-1"></i>Ver</button>'
+                    : '';
+
                 return '<tr>'
-                    + '<td style="max-width:220px;font-size:0.85rem;">' + c.contenido.substring(0, 80) + (c.contenido.length > 80 ? '…' : '') + '</td>'
+                    + '<td style="max-width:220px;font-size:0.85rem;">' + contenidoCorto + (c.contenido.length > 80 ? '…' : '') + btnVerCom + '</td>'
                     + '<td style="font-size:0.82rem;">' + c.autor_nombre + '</td>'
                     + '<td style="font-size:0.82rem;max-width:160px;">' + c.publicacion_titulo.substring(0, 50) + (c.publicacion_titulo.length > 50 ? '…' : '') + '</td>'
                     + '<td>' + c.num_likes + '</td>'
@@ -317,6 +361,66 @@ function eliminarCom(e, id) {
         if (data.ok && fila) fila.remove();
     })
     .catch(function(){ mostrarToast('Error de conexión.', 'error'); });
+}
+
+/*--------------------------------------------------------------------------------------------
+ver completo */
+function verPubCompleta(id) {
+    var p = datosPubsCache.filter(function(x){ return x.idPublicacion === id; })[0];
+    if (!p) return;
+    var catNombre = { adopcion:'Adopción', cuidados:'Cuidados', acogida:'Acogida', salud:'Salud', informacion:'Información' };
+    var cuerpo = '<div style="margin-bottom:1em;">'
+        + '<p style="margin:0 0 0.3em;"><strong>Autor:</strong> ' + p.autor_nombre + ' (@' + p.autor_username + ')</p>'
+        + '<p style="margin:0 0 0.3em;"><strong>Categoría:</strong> ' + (catNombre[p.categoria] || p.categoria) + '</p>'
+        + '<p style="margin:0 0 0.3em;"><strong>Estado:</strong> ' + (p.activa ? '<span class="badge badge-verde">Activa</span>' : '<span class="badge badge-rojo">Eliminada</span>') + '</p>'
+        + '<p style="margin:0 0 0.3em;"><strong>Fecha:</strong> ' + formatFechaCompleta(p.fecha) + '</p>'
+        + '<p style="margin:0 0 0.3em;"><strong>Likes:</strong> ' + p.num_likes + ' | <strong>Comentarios:</strong> ' + p.num_comentarios + '</p>'
+        + (p.fijada ? '<p style="margin:0 0 0.3em;"><span class="badge badge-gold"><i class="fa-solid fa-thumbtack me-1"></i>Fijada</span></p>' : '')
+        + '</div>';
+    cuerpo += '<div style="background:#f8f9fa;border-radius:8px;padding:1em;line-height:1.7;white-space:pre-wrap;word-break:break-word;">' + escapeHtml(p.contenido) + '</div>';
+    if (p.imagen) {
+        cuerpo += '<img src="../' + p.imagen + '" style="max-width:100%;border-radius:8px;margin-top:1em;" onerror="this.remove()">';
+    }
+    document.getElementById('modalPubAdminCuerpo').innerHTML = cuerpo;
+    document.getElementById('modalPubAdmin').classList.add('activo');
+}
+
+function verComCompleto(id) {
+    var c = datosComsCache.filter(function(x){ return x.idComentario === id; })[0];
+    if (!c) return;
+    var cuerpo = '<div style="margin-bottom:1em;">'
+        + '<p style="margin:0 0 0.3em;"><strong>Autor:</strong> ' + c.autor_nombre + '</p>'
+        + '<p style="margin:0 0 0.3em;"><strong>Publicación:</strong> ' + c.publicacion_titulo + '</p>'
+        + '<p style="margin:0 0 0.3em;"><strong>Estado:</strong> ' + (c.activo ? '<span class="badge badge-verde">Activo</span>' : '<span class="badge badge-rojo">Eliminado</span>') + '</p>'
+        + '<p style="margin:0 0 0.3em;"><strong>Fecha:</strong> ' + formatFechaCompleta(c.fecha) + '</p>'
+        + '<p style="margin:0 0 0.3em;"><strong>Likes:</strong> ' + c.num_likes + '</p>'
+        + '</div>';
+    if (!c.activo) {
+        cuerpo += '<p style="color:var(--error);font-style:italic;margin-bottom:0.8em;"><i class="fa-solid fa-ban me-1"></i>Este comentario ha sido eliminado.</p>';
+    }
+    cuerpo += '<div style="background:#f8f9fa;border-radius:8px;padding:1em;line-height:1.7;white-space:pre-wrap;word-break:break-word;">' + escapeHtml(c.contenido) + '</div>';
+    document.getElementById('modalComAdminCuerpo').innerHTML = cuerpo;
+    document.getElementById('modalComAdmin').classList.add('activo');
+}
+
+function cerrarModalPubAdmin() {
+    document.getElementById('modalPubAdmin').classList.remove('activo');
+}
+
+function cerrarModalComAdmin() {
+    document.getElementById('modalComAdmin').classList.remove('activo');
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    var div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function formatFechaCompleta(f) {
+    if (!f) return '—';
+    return new Date(f).toLocaleString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
 }
 
 /*--------------------------------------------------------------------------------------------

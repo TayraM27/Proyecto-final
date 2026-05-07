@@ -77,7 +77,8 @@ if ($metodo === 'GET') {
                 (SELECT COUNT(*)
                  FROM comentarios c
                  WHERE c.idPublicacion = pub.idPublicacion
-                   AND c.deleted = 0) AS num_comentarios,
+                   AND c.deleted = 0
+                   AND c.parent_id IS NULL) AS num_comentarios,
                 $yoLike
             FROM publicaciones pub
             LEFT JOIN usuarios    u    ON pub.idUsuario    = u.idUsuario

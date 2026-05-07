@@ -22,7 +22,7 @@ GET */
 if ($metodo === 'GET') {
     $tipo        = $_GET['tipo']        ?? 'publicaciones';
     $pagina      = max(1, (int)($_GET['pagina'] ?? 1));
-    $soloActivas = isset($_GET['soloActivas']) ? (int)$_GET['soloActivas'] : 1;
+    $soloActivas = isset($_GET['soloActivas']) ? (int)$_GET['soloActivas'] : 0;
     $p           = pagina($pagina, 20);
 
     /*--------------------------------------------------------------------------------------------
@@ -33,6 +33,7 @@ if ($metodo === 'GET') {
         $stmt = $pdo->prepare(
             "SELECT
                 c.idComentario, c.contenido, c.num_likes, c.deleted, c.deleted_at, c.fecha,
+                (c.deleted = 0) AS activo,
                 COALESCE(u.nombre,   prot.nombre,  'Desconocido') AS autor_nombre,
                 COALESCE(u.username, prot.nombre,  '')            AS autor_username,
                 pub.titulo AS publicacion_titulo, pub.idPublicacion
@@ -55,7 +56,7 @@ if ($metodo === 'GET') {
     $where = $soloActivas ? 'WHERE pub.activa = 1' : '';
 
     $stmt = $pdo->prepare(
-        "SELECT pub.idPublicacion, pub.titulo, pub.categoria, pub.num_likes,
+        "SELECT pub.idPublicacion, pub.titulo, pub.contenido, pub.categoria, pub.num_likes,
                 pub.num_vistas, pub.fijada, pub.activa, pub.fecha,
                 COALESCE(u.nombre,   prot.nombre,  'Desconocido') AS autor_nombre,
                 COALESCE(u.username, prot.nombre,  '')            AS autor_username,

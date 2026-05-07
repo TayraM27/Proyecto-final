@@ -139,5 +139,5 @@ respuestaOk([
         'username'  => $username,
         'rol'       => 'usuario',
     ],
-    'redirigir' => '../html/perfil.html',
+    'redirigir' => 'perfil.html',
 ]);

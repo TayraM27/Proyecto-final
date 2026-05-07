@@ -60,6 +60,30 @@
     <!-- contenido -->
     <main class="admin-contenido">
 
+        <!-- Panel mascotas urgentes — admin puede ver y desmarcar abusos -->
+        <div class="panel mb-3">
+            <div class="panel-header">
+                <p class="panel-titulo"><i class="fa-solid fa-star" style="color:#F8BA56;"></i> Mascotas prioritarias activas <span id="totalUrgentes" style="font-size:0.8rem;color:var(--texto-sub);font-weight:400;margin-left:0.5em;"></span></p>
+                <span style="font-size:0.78rem;color:var(--texto-sub);"><i class="fa-solid fa-circle-info me-1"></i>El admin solo puede desmarcar urgencias abusivas.</span>
+            </div>
+            <div class="tabla-wrap">
+                <table class="tabla">
+                    <thead>
+                        <tr>
+                            <th>Foto</th>
+                            <th>Nombre</th>
+                            <th>Protectora</th>
+                            <th>Urgente desde</th>
+                            <th>Moderación</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaUrgentes">
+                        <tr><td colspan="5" style="text-align:center;padding:2em;color:var(--texto-sub);">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <div class="panel">
             <div class="panel-header">
                 <div class="toolbar" style="flex:1;">
@@ -171,6 +195,7 @@ var modMascotaId  = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     verificarAdmin(function() {
+        cargarUrgentes();
         cargarMascotas();
     });
 });
@@ -186,8 +211,55 @@ function verificarAdmin(cb) {
             document.getElementById('adminNombre').textContent = data.usuario.nombre;
             document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
             if (cb) cb();
+        });
+}
+
+function cargarUrgentes() {
+    fetch('../backend/admin/get_prioritarias.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            var tbody = document.getElementById('tablaUrgentes');
+            var totalEl = document.getElementById('totalUrgentes');
+            if (!data.ok || !data.mascotas || !data.mascotas.length) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1.5em;color:var(--texto-sub);">Sin mascotas prioritarias actualmente.</td></tr>';
+                if (totalEl) totalEl.textContent = '(0)';
+                return;
+            }
+            if (totalEl) totalEl.textContent = '(' + data.mascotas.length + ' / 10)';
+            tbody.innerHTML = data.mascotas.map(function(m){
+                var foto = m.foto_principal
+                    ? '<img src="../' + m.foto_principal + '" style="width:42px;height:42px;border-radius:8px;object-fit:cover;" alt="' + m.nombre + '">'
+                    : '<div style="width:42px;height:42px;border-radius:8px;background:var(--azul-lite);display:flex;align-items:center;justify-content:center;font-size:1.3rem;">' + (m.especie==='perro'?'🐕':'🐱') + '</div>';
+                var fecha = m.fecha_prioritaria
+                    ? new Date(m.fecha_prioritaria).toLocaleDateString('es-ES', {day:'2-digit',month:'short',year:'numeric'})
+                    : '—';
+                return '<tr>'
+                    + '<td>' + foto + '</td>'
+                    + '<td><strong>' + m.nombre + '</strong></td>'
+                    + '<td style="font-size:0.85rem;">' + (m.protectora_nombre||'—') + '</td>'
+                    + '<td style="font-size:0.82rem;">' + fecha + '</td>'
+                    + '<td><button class="btn btn-sm btn-danger btn-icon" onclick="desmarcarUrgente(' + m.idMascota + ',\'' + m.nombre.replace(/'/g,'') + '\')" title="Desmarcar urgencia"><i class="fa-solid fa-star-half-stroke"></i> Desmarcar</button></td>'
+                    + '</tr>';
+            }).join('');
         })
-        .catch(function(){ window.location.href = '../html/login.html'; });
+        .catch(function(){
+            document.getElementById('tablaUrgentes').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1.5em;color:var(--error);">Error de conexión.</td></tr>';
+        });
+}
+
+function desmarcarUrgente(id, nombre) {
+    if (!confirm('¿Desmarcar a ' + nombre + ' como prioritaria? Esta acción es de moderación.')) return;
+    fetch('../backend/admin/mascotas.php', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ accion: 'desmarcar_prioritaria_admin', idMascota: id }),
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        mostrarToast(data.ok ? 'Urgencia desmarcada.' : (data.error || 'Error'), data.ok ? 'ok' : 'error');
+        if (data.ok) cargarUrgentes();
+    });
 }
 
 function cargarMascotas() {
@@ -208,9 +280,6 @@ function cargarMascotas() {
             totalPaginas = data.totalPaginas || 1;
             renderTabla(data.mascotas);
             renderPaginacion();
-        })
-        .catch(function(){
-            document.getElementById('tablaMascotas').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:3em;color:var(--error);">Error de conexión.</td></tr>';
         });
 }
 
@@ -290,9 +359,6 @@ function verDetalle(id) {
                 return;
             }
             renderDetalle(data.mascota);
-        })
-        .catch(function(){
-            document.getElementById('detalleBody').innerHTML = '<p style="color:var(--error);text-align:center;">Error de conexión.</p>';
         });
 }
 
@@ -495,3 +561,4 @@ function calcEdadAdmin(fechaNac) {
 </script>
 
 </body>
+</html>

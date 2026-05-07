@@ -3,7 +3,7 @@
 Listado de protectoras. Accesible sin login para la web pública.
 Si el usuario es protectora o admin, recibe datos adicionales. */
 
-require_once __DIR__ . '/../includes/funciones.php';
+require_once __DIR__ . '/../../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 

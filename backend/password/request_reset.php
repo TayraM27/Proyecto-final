@@ -1,7 +1,4 @@
 <?php
-/*--------------------------------------------------------------------------------------------
-backend/password/request_reset.php */
-
 require_once __DIR__ . '/../includes/funciones.php';
 require_once __DIR__ . '/../includes/PHPmailer/PHPMailer.php';
 require_once __DIR__ . '/../includes/PHPmailer/SMTP.php';
@@ -12,18 +9,6 @@ use PHPMailer\PHPMailer\Exception;
 
 header('Content-Type: application/json; charset=utf-8');
 
-/*--------------------------------------------------------------------------------------------
-configuracion SMTP Outlook/Hotmail
-La contrasena de aplicacion va SIN guiones */
-define('SMTP_HOST',  'smtp-mail.outlook.com');
-define('SMTP_USER',  'tayrarodio@hotmail.com');
-define('SMTP_PASS',  'rdgeocwklfolkutf');
-define('SMTP_PORT',  587);
-define('FROM_EMAIL', 'tayrarodio@hotmail.com');
-define('FROM_NAME',  'PetFamily');
-
-/*--------------------------------------------------------------------------------------------
-validacion metodo */
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     respuestaError('Metodo no permitido.', 405);
 }
@@ -40,6 +25,7 @@ $stmt = $pdo->prepare('SELECT idUsuario FROM usuarios WHERE email = ? AND activo
 $stmt->execute([$email]);
 $usuario = $stmt->fetch();
 
+/* Respuesta siempre igual para no revelar si el email existe */
 if (!$usuario) {
     respuestaOk(['mensaje' => 'Si el email esta registrado recibiras un enlace en breve.']);
 }
@@ -64,20 +50,18 @@ $host      = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $enlace    = $protocolo . '://' . $host . '/ProyectoCat/backend/password/reset.php?token=' . $token;
 
 /*--------------------------------------------------------------------------------------------
-enviar email */
+enviar email via Mailtrap sandbox */
 $mail = new PHPMailer(true);
 try {
-    $mail->SMTPDebug  = 0;
     $mail->isSMTP();
-    $mail->Host       = SMTP_HOST;
+    $mail->Host       = 'sandbox.smtp.mailtrap.io';
     $mail->SMTPAuth   = true;
-    $mail->Username   = SMTP_USER;
-    $mail->Password   = SMTP_PASS;
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Port       = SMTP_PORT;
+    $mail->Username   = 'fa679f6a046324';
+    $mail->Password   = '61d8b14693f68b';
+    $mail->Port       = 2525;
     $mail->CharSet    = 'UTF-8';
 
-    $mail->setFrom(FROM_EMAIL, FROM_NAME);
+    $mail->setFrom('noreply@petfamily.local', 'PetFamily');
     $mail->addAddress($email);
     $mail->isHTML(true);
     $mail->Subject = 'Recuperar contrasena - PetFamily';
@@ -106,6 +90,5 @@ try {
 
 } catch (Exception $e) {
     error_log('[PetFamily] PHPMailer error: ' . $mail->ErrorInfo);
-    /* Temporal para depurar — quitar en produccion */
-    respuestaError('Error SMTP: ' . $mail->ErrorInfo);
+    respuestaError('Error al enviar el email: ' . $mail->ErrorInfo);
 }

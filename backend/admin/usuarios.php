@@ -21,7 +21,7 @@ if ($metodo === 'GET') {
     $estado = $_GET['estado']        ?? 'todos';
     $rol    = $_GET['rol']           ?? 'todos';
     $pagina = (int)($_GET['pagina']  ?? 1);
-    $p      = paginacion($pagina, 20);
+    $p      = pagina($pagina, 20);
 
     $where  = ['1'];
     $params = [];
@@ -32,10 +32,11 @@ if ($metodo === 'GET') {
         $params[] = "%$q%";
         $params[] = "%$q%";
     }
-    if ($estado === 'activo')    { $where[] = 'activo = 1'; }
-    if ($estado === 'bloqueado') { $where[] = 'activo = 0'; }
-    if ($rol === 'admin')        { $where[] = "rol = 'admin'"; }
-    if ($rol === 'usuario')      { $where[] = "rol = 'usuario'"; }
+    if ($estado === 'activo')      { $where[] = 'activo = 1'; }
+    if ($estado === 'bloqueado')   { $where[] = 'activo = 0'; }
+    if ($rol === 'admin')          { $where[] = "rol = 'admin'"; }
+    if ($rol === 'usuario')        { $where[] = "rol = 'usuario'"; }
+    if ($rol === 'protectora')     { $where[] = "rol = 'protectora'"; }
 
     $cond = implode(' AND ', $where);
 
@@ -64,7 +65,7 @@ if ($metodo === 'GET') {
 }
 
 /*--------------------------------------------------------------------------------------------
-PUT — bloquear / desbloquear / hacer_admin / quitar_admin */
+PUT — bloquear / desbloquear (el admin no puede modificar roles) */
 if ($metodo === 'PUT') {
     $datos  = json_decode(file_get_contents('php://input'), true) ?? [];
     $id     = (int)($datos['idUsuario'] ?? 0);
@@ -79,25 +80,7 @@ if ($metodo === 'PUT') {
         $pdo->prepare('UPDATE usuarios SET activo = 1 WHERE idUsuario = ?')->execute([$id]);
         respuestaOk(['mensaje' => 'Usuario desbloqueado.']);
     }
-    if ($accion === 'hacer_admin') {
-        $pdo->prepare("UPDATE usuarios SET rol = 'admin' WHERE idUsuario = ?")->execute([$id]);
-        respuestaOk(['mensaje' => 'Usuario promovido a administrador.']);
-    }
-    if ($accion === 'quitar_admin') {
-        $pdo->prepare("UPDATE usuarios SET rol = 'usuario' WHERE idUsuario = ?")->execute([$id]);
-        respuestaOk(['mensaje' => 'Permisos de administrador retirados.']);
-    }
-    respuestaError('Acción no válida.');
-}
-
-/*--------------------------------------------------------------------------------------------
-DELETE */
-if ($metodo === 'DELETE') {
-    $datos = json_decode(file_get_contents('php://input'), true) ?? [];
-    $id    = (int)($datos['idUsuario'] ?? 0);
-    if (!$id) respuestaError('idUsuario requerido.');
-    $pdo->prepare('UPDATE usuarios SET activo = 0 WHERE idUsuario = ?')->execute([$id]);
-    respuestaOk(['mensaje' => 'Usuario eliminado.']);
+    respuestaError('Acción no permitida. El admin solo puede bloquear o desbloquear usuarios.', 403);
 }
 
 respuestaError('Método no permitido.', 405);

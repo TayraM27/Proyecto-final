@@ -21,7 +21,7 @@ GET */
 if ($metodo === 'GET') {
     $estado = $_GET['estado'] ?? 'todos';
     $pagina = (int)($_GET['pagina'] ?? 1);
-    $p      = paginacion($pagina, 15);
+    $p      = pagina($pagina, 15);
 
     $where  = [];
     $params = [];

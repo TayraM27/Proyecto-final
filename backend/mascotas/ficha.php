@@ -65,7 +65,7 @@ $stmtFotos = $pdo->prepare(
     'SELECT ruta, es_principal
      FROM mascotas_fotos
      WHERE idMascota = ?
-     ORDER BY orden ASC'
+     ORDER BY es_principal DESC, orden ASC'
 );
 $stmtFotos->execute([$id]);
 $mascota['fotos'] = $stmtFotos->fetchAll();

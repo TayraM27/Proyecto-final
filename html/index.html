@@ -378,7 +378,7 @@ function renderEventos(eventos) {
 <script>
 (function(){
     function cargarPrioritarias() {
-        fetch('../backend/admin/get_prioritarias.php')
+        fetch('../backend/api/web/get_prioritarias.php')
             .then(function(r){ return r.json(); })
             .then(function(data){
                 if (!data.ok || !data.mascotas || !data.mascotas.length) return;
