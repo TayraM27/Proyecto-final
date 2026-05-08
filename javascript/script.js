@@ -13,7 +13,6 @@ function cargarTidio() {
 }
 
 function aplicarConsentimiento(valor) {
-    /* valor: 'todas' | 'necesarias' */
     localStorage.setItem(CLAVE_COOKIES, valor);
     var banner = document.getElementById('cookie-banner');
     if (banner) banner.remove();
@@ -26,9 +25,9 @@ function mostrarBannerCookies() {
     banner.id  = 'cookie-banner';
     banner.innerHTML =
         '<p><i class="fa-solid fa-cookie-bite me-2" style="color:#F8BA56;"></i>'
-      + 'Usamos cookies propias para el inicio de sesión y cookies de terceros (Tidio) para el chat de soporte. '
+      + 'Usamos cookies propias para el inicio de sesiÃ³n y cookies de terceros (Tidio) para el chat de soporte. '
       + 'Puedes aceptarlas todas o usar solo las necesarias. '
-      + '<a href="privacidad.html">Más información</a></p>'
+      + '<a href="privacidad.html">MÃ¡s informaciÃ³n</a></p>'
       + '<div class="cookie-btns">'
       + '<button class="btn-cookie-necesarias" onclick="aplicarConsentimiento(\'necesarias\')">Solo necesarias</button>'
       + '<button class="btn-cookie-aceptar" onclick="aplicarConsentimiento(\'todas\')">Aceptar todas</button>'
@@ -39,7 +38,6 @@ function mostrarBannerCookies() {
 function inicializarCookies() {
     var consent = localStorage.getItem(CLAVE_COOKIES);
     if (!consent) {
-        /* Primera visita — mostrar banner */
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', mostrarBannerCookies);
         } else {
@@ -48,7 +46,6 @@ function inicializarCookies() {
     } else if (consent === 'todas') {
         cargarTidio();
     }
-    /* 'necesarias' → no cargar Tidio, no mostrar banner */
 }
 
 inicializarCookies();
