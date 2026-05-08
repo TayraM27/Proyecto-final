@@ -44,11 +44,13 @@ if ($metodo === 'GET') {
     $stmtC->execute($params);
     $total = (int)$stmtC->fetchColumn();
 
-    $sql = "SELECT idUsuario, nombre, username, email, localidad, rol, activo,
-                   fecha_registro, ultimo_login
-            FROM usuarios
+    $sql = "SELECT u.idUsuario, u.nombre, u.username, u.email,
+                   CASE WHEN u.rol = 'protectora' THEN p.localidad ELSE u.localidad END AS localidad, u.rol, u.activo,
+                   u.fecha_registro, u.ultimo_login
+            FROM usuarios u
+            LEFT JOIN protectoras p ON p.idUsuario = u.idUsuario
             WHERE $cond
-            ORDER BY rol DESC, fecha_registro DESC
+            ORDER BY u.rol DESC, u.fecha_registro DESC
             LIMIT ? OFFSET ?";
 
     $params[] = $p['limite'];

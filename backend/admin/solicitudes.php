@@ -23,43 +23,66 @@ if ($metodo === 'GET') {
     $pagina = (int)($_GET['pagina'] ?? 1);
     $p      = pagina($pagina, 15);
 
-    $where  = [];
-    $params = [];
+    $condParts = [];
+    $params    = [];
 
     if (!$esAdmin && $idProtectoraUsuario) {
-        $where[] = 'm.idProtectora = ?';
-        $params[] = $idProtectoraUsuario;
+        $condParts[] = 'c.idProtectora = ?';
+        $params[]    = $idProtectoraUsuario;
     }
 
-    $estadosValidos = ['pendiente','en_revision','aprobada','rechazada'];
-    if ($estado !== 'todos' && in_array($estado, $estadosValidos)) {
-        $where[]  = 's.estado = ?';
-        $params[] = $estado;
+    if ($estado !== 'todos') {
+        $condParts[] = 'c.estado = ?';
+        $params[]    = $estado;
     }
 
-    $cond = $where ? implode(' AND ', $where) : '1';
+    $cond = $condParts ? 'WHERE ' . implode(' AND ', $condParts) : '';
 
-    $stmtC = $pdo->prepare("SELECT COUNT(*) FROM solicitudes_adopcion s JOIN mascotas m ON s.idMascota = m.idMascota WHERE $cond");
+    $unionSql = "SELECT
+                    s.idSolicitud,
+                    s.nombre,
+                    s.email,
+                    s.telefono,
+                    s.mensaje,
+                    s.estado,
+                    s.fecha_envio,
+                    m.nombre          AS mascota,
+                    m.especie         AS mascota_especie,
+                    p.nombre          AS protectora,
+                    m.idProtectora,
+                    'adopcion'        AS tipo,
+                    NULL              AS cuota,
+                    NULL              AS metodo_pago
+                FROM solicitudes_adopcion s
+                JOIN mascotas    m ON s.idMascota    = m.idMascota
+                JOIN protectoras p ON m.idProtectora = p.idProtectora
+
+                UNION ALL
+
+                SELECT
+                    a.idApadrinamiento AS idSolicitud,
+                    a.nombre_pagador   AS nombre,
+                    a.email_pagador    AS email,
+                    a.telefono,
+                    a.mensaje,
+                    a.estado,
+                    a.fecha_inicio     AS fecha_envio,
+                    m.nombre           AS mascota,
+                    m.especie          AS mascota_especie,
+                    p.nombre           AS protectora,
+                    m.idProtectora,
+                    'apadrinamiento'   AS tipo,
+                    a.cuota,
+                    a.metodo_pago
+                FROM apadrinamientos a
+                JOIN mascotas    m ON a.idMascota    = m.idMascota
+                JOIN protectoras p ON m.idProtectora = p.idProtectora";
+
+    $stmtC = $pdo->prepare("SELECT COUNT(*) FROM ($unionSql) c $cond");
     $stmtC->execute($params);
     $total = (int)$stmtC->fetchColumn();
 
-    $sql = "SELECT
-                s.idSolicitud,
-                s.nombre,
-                s.email,
-                s.telefono,
-                s.mensaje,
-                s.estado,
-                s.fecha_envio,
-                m.nombre   AS mascota,
-                m.especie  AS mascota_especie,
-                p.nombre   AS protectora
-            FROM solicitudes_adopcion s
-            JOIN mascotas    m ON s.idMascota    = m.idMascota
-            JOIN protectoras p ON m.idProtectora = p.idProtectora
-            WHERE $cond
-            ORDER BY s.fecha_envio DESC
-            LIMIT ? OFFSET ?";
+    $sql = "SELECT * FROM ($unionSql) c $cond ORDER BY c.fecha_envio DESC LIMIT ? OFFSET ?";
 
     $params[] = $p['limite'];
     $params[] = $p['offset'];

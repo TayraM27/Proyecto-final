@@ -14,8 +14,10 @@
 
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo">
-            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily">
-            <span>Pet<em>Family</em></span>
+            <a href="../html/index.html" class="sidebar-link" target="_blank">
+                <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily">
+                <span>Pet<em>Family</em></span>
+            </a>
         </div>
         <nav class="sidebar-nav">
             <p class="sidebar-seccion">General</p>
@@ -54,11 +56,8 @@
             <button class="sidebar-toggle" onclick="toggleSidebar()">
                 <i class="fa-solid fa-bars"></i>
             </button>
-            <span class="topbar-titulo"><i class="fa-solid fa-star" style="color:var(--gold);margin-right:0.4em;"></i>Apadrinamientos</span>
+            <span class="topbar-titulo"><i class="fa-solid fa-star" style="color:var(--gold);margin-right:0.4em;"></i>Apadrinamientos <span style="font-size:0.75rem;color:var(--texto-sub);font-weight:400;margin-left:0.5em;"><i class="fa-solid fa-circle-info me-1"></i>Solo lectura</span></span>
         </div>
-        <button class="btn btn-primario btn-sm" onclick="abrirModalNuevo()">
-            <i class="fa-solid fa-plus"></i> Nuevo apadrinamiento
-        </button>
     </header>
 
     <main class="admin-contenido">
@@ -87,53 +86,6 @@
     </main>
 </div>
 
-<!-- modal nuevo apadrinamiento -->
-<div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
-    <div class="modal">
-        <div class="modal-header">
-            <p class="modal-titulo"><i class="fa-solid fa-star"></i> Nuevo apadrinamiento</p>
-            <button class="modal-cerrar" onclick="cerrarModalBtn()"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="modal-body">
-            <div class="form-campo">
-                <label class="form-label">Mascota *</label>
-                <select class="form-select" id="fMascota"></select>
-            </div>
-            <div class="form-campo">
-                <label class="form-label">Usuario (padrino/madrina) *</label>
-                <select class="form-select" id="fUsuario"></select>
-            </div>
-            <div class="form-fila">
-                <div class="form-campo">
-                    <label class="form-label">Cuota mensual (€) *</label>
-                    <input type="number" class="form-input" id="fCuota" min="1" step="0.50" placeholder="Ej: 15">
-                </div>
-                <div class="form-campo">
-                    <label class="form-label">Fecha de inicio *</label>
-                    <input type="date" class="form-input" id="fFechaInicio">
-                </div>
-            </div>
-            <div class="form-campo">
-                <label class="form-label">Estado</label>
-                <select class="form-select" id="fEstado">
-                    <option value="pendiente">Pendiente</option>
-                    <option value="en_revision">En revisión</option>
-                    <option value="aceptada">Aceptada</option>
-                    <option value="rechazada">Rechazada</option>
-                    <option value="cancelada">Cancelada</option>
-                </select>
-            </div>
-            <p class="form-error" id="modalError"></p>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-outline" onclick="cerrarModalBtn()">Cancelar</button>
-            <button class="btn btn-primario" onclick="guardarApadrinamiento()">
-                <i class="fa-solid fa-floppy-disk"></i> Guardar
-            </button>
-        </div>
-    </div>
-</div>
-
 <!-- modal seguimientos -->
 <div class="modal-overlay" id="modalSeguimientos" onclick="cerrarModalSeg(event)">
     <div class="modal" style="max-width:600px;">
@@ -142,33 +94,12 @@
             <button class="modal-cerrar" onclick="cerrarModalSegBtn()"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="modal-body">
-            <div id="listaSeguimientos" style="max-height:300px;overflow-y:auto;margin-bottom:1.2em;">
+            <div id="listaSeguimientos" style="max-height:400px;overflow-y:auto;">
                 <p class="form-nota">Cargando...</p>
             </div>
-            <hr style="border:none;border-top:1px solid var(--borde);margin:1em 0;">
-            <p class="form-label" style="font-weight:600;margin-bottom:0.5em;">Añadir actualización</p>
-            <div class="form-campo">
-                <textarea class="form-textarea" id="fContenido" rows="3" placeholder="Escribe la actualización sobre el animal..."></textarea>
-            </div>
-            <div class="form-campo">
-                <label class="form-label">Tipo</label>
-                <select class="form-select" id="fTipoArchivo">
-                    <option value="texto">Texto</option>
-                    <option value="foto">Foto (adjunta ruta)</option>
-                    <option value="video">Vídeo (adjunta ruta)</option>
-                </select>
-            </div>
-            <div class="form-campo" id="campoRuta" style="display:none;">
-                <label class="form-label">Ruta del archivo</label>
-                <input type="text" class="form-input" id="fRutaArchivo" placeholder="Ej: img/mascotas/bosque3-protectora-de-asturias.jpg">
-            </div>
-            <p class="form-error" id="segError"></p>
         </div>
         <div class="modal-footer">
             <button class="btn btn-outline" onclick="cerrarModalSegBtn()">Cerrar</button>
-            <button class="btn btn-primario" onclick="guardarSeguimiento()">
-                <i class="fa-solid fa-plus"></i> Añadir
-            </button>
         </div>
     </div>
 </div>
@@ -193,7 +124,7 @@ function verificarAdmin(cb) {
                 window.location.href = '../html/login.html'; return;
             }
             document.getElementById('adminNombre').textContent = data.usuario.nombre;
-            document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
+            var nom = data.usuario.nombre.trim().split(' '); document.getElementById('avatarInicial').textContent = (nom.length >= 2 ? nom[0][0] + nom[1][0] : data.usuario.nombre.substring(0, 2)).toUpperCase();
             if (cb) cb();
         })
         .catch(function(){ window.location.href = '../html/login.html'; });
@@ -229,9 +160,7 @@ function cargarApadrinamientos() {
                     + '<td style="font-size:0.82rem;">' + formatFecha(a.fecha_inicio) + '</td>'
                     + '<td>' + badgeEst + '</td>'
                     + '<td><div class="tabla-acciones">'
-                    + '<button class="btn btn-sm btn-outline btn-icon" onclick="verSeguimientos(' + a.idApadrinamiento + ',\'' + a.mascota.replace(/'/g, '') + '\')" title="Seguimientos"><i class="fa-solid fa-clock-rotate-left"></i></button>'
-                    + '<button class="btn btn-sm btn-outline btn-icon" onclick="cambiarEstado(' + a.idApadrinamiento + ',\'' + a.estado + '\')" title="Cambiar estado"><i class="fa-solid fa-arrows-rotate"></i></button>'
-                    + '<button class="btn btn-sm btn-danger btn-icon" onclick="eliminarApadrinamiento(' + a.idApadrinamiento + ')" title="Eliminar"><i class="fa-solid fa-trash"></i></button>'
+                    + '<button class="btn btn-sm btn-outline btn-icon" onclick="verSeguimientos(' + a.idApadrinamiento + ',\'' + a.mascota.replace(/'/g, '') + '\')" title="Ver seguimientos"><i class="fa-solid fa-eye"></i></button>'
                     + '</div></td>'
                     + '</tr>';
             }).join('');
@@ -242,138 +171,11 @@ function cargarApadrinamientos() {
 }
 
 /*--------------------------------------------------------------------------------------------
-modal nuevo */
-
-function abrirModalNuevo() {
-    document.getElementById('modalError').textContent = '';
-    document.getElementById('fCuota').value = '';
-    document.getElementById('fFechaInicio').value = new Date().toISOString().split('T')[0];
-    document.getElementById('fEstado').value = 'pendiente';
-    cargarSelects();
-    document.getElementById('modalOverlay').classList.add('abierto');
-}
-
-function cargarSelects() {
-    fetch('../backend/admin/mascotas.php?especie=todos&estado=todos&pagina=1', { credentials: 'include' })
-        .then(function(r){ return r.json(); })
-        .then(function(data){
-            var sel = document.getElementById('fMascota');
-            sel.innerHTML = '';
-            if (!data.ok) return;
-            data.mascotas.forEach(function(m){
-                var opt = document.createElement('option');
-                opt.value = m.idMascota;
-                opt.textContent = (m.especie === 'perro' ? '🐕' : '🐱') + ' ' + m.nombre + ' — ' + m.protectora_nombre;
-                sel.appendChild(opt);
-            });
-        })
-        .catch(function(){});
-
-    fetch('../backend/admin/usuarios.php?pagina=1', { credentials: 'include' })
-        .then(function(r){ return r.json(); })
-        .then(function(data){
-            var sel = document.getElementById('fUsuario');
-            sel.innerHTML = '';
-            if (!data.ok) return;
-            data.usuarios.forEach(function(u){
-                var opt = document.createElement('option');
-                opt.value = u.idUsuario;
-                opt.textContent = u.nombre + ' (' + u.email + ')';
-                sel.appendChild(opt);
-            });
-        })
-        .catch(function(){});
-}
-
-function guardarApadrinamiento() {
-    var idMascota = document.getElementById('fMascota').value;
-    var idUsuario = document.getElementById('fUsuario').value;
-    var cuota     = parseFloat(document.getElementById('fCuota').value);
-    var fecha     = document.getElementById('fFechaInicio').value;
-
-    if (!idMascota || !idUsuario) {
-        document.getElementById('modalError').textContent = 'Selecciona una mascota y un usuario.';
-        return;
-    }
-    if (!cuota || cuota <= 0) {
-        document.getElementById('modalError').textContent = 'Introduce una cuota válida.';
-        return;
-    }
-    if (!fecha) {
-        document.getElementById('modalError').textContent = 'La fecha de inicio es obligatoria.';
-        return;
-    }
-
-    fetch('../backend/admin/apadrinamientos.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            idMascota:  parseInt(idMascota),
-            idUsuario:  parseInt(idUsuario),
-            cuota:      cuota,
-            fecha_inicio: fecha,
-            estado:     document.getElementById('fEstado').value,
-        }),
-        credentials: 'include',
-    })
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-        if (!data.ok) {
-            document.getElementById('modalError').textContent = data.error || 'Error al guardar.';
-            return;
-        }
-        cerrarModalBtn();
-        mostrarToast(data.mensaje, 'ok');
-        cargarApadrinamientos();
-    })
-    .catch(function(){ document.getElementById('modalError').textContent = 'Error de conexión.'; });
-}
-
-function cambiarEstado(id, estadoActual) {
-    var estados  = ['pendiente', 'en_revision', 'aceptada', 'rechazada', 'cancelada'];
-    var siguiente = estados[(estados.indexOf(estadoActual) + 1) % estados.length];
-    if (!confirm('Cambiar estado a "' + siguiente + '"?')) return;
-    fetch('../backend/admin/apadrinamientos.php', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idApadrinamiento: id, estado: siguiente }),
-        credentials: 'include',
-    })
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-        mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
-        if (data.ok) cargarApadrinamientos();
-    })
-    .catch(function(){ mostrarToast('Error de conexión.', 'error'); });
-}
-
-function eliminarApadrinamiento(id) {
-    if (!confirm('¿Eliminar este apadrinamiento y todos sus seguimientos?')) return;
-    fetch('../backend/admin/apadrinamientos.php', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idApadrinamiento: id }),
-        credentials: 'include',
-    })
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-        mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
-        if (data.ok) cargarApadrinamientos();
-    })
-    .catch(function(){ mostrarToast('Error de conexión.', 'error'); });
-}
-
-/*--------------------------------------------------------------------------------------------
 modal seguimientos */
 
 function verSeguimientos(id, nombreMascota) {
     apadIdActual = id;
     document.getElementById('tituloSeguimientos').innerHTML = '<i class="fa-solid fa-clock-rotate-left"></i> Seguimientos de ' + nombreMascota;
-    document.getElementById('segError').textContent = '';
-    document.getElementById('fContenido').value = '';
-    document.getElementById('fTipoArchivo').value = 'texto';
-    document.getElementById('campoRuta').style.display = 'none';
-    document.getElementById('fRutaArchivo').value = '';
     cargarSeguimientos(id);
     document.getElementById('modalSeguimientos').classList.add('abierto');
 }
@@ -400,7 +202,6 @@ function cargarSeguimientos(id) {
 
                 return '<div class="seguimiento-item">'
                     + '<div class="seguimiento-meta">' + icono + ' ' + formatFechaHora(s.fecha)
-                    + ' <button class="btn btn-sm btn-danger btn-icon" style="margin-left:auto;" onclick="eliminarSeguimiento(' + s.idSeguimiento + ')" title="Eliminar"><i class="fa-solid fa-trash"></i></button>'
                     + '</div>'
                     + '<p style="margin:0.3em 0 0;font-size:0.88rem;">' + s.contenido + '</p>'
                     + media
@@ -410,57 +211,7 @@ function cargarSeguimientos(id) {
         .catch(function(){ lista.innerHTML = '<p class="form-nota" style="color:var(--error);">Error de conexión.</p>'; });
 }
 
-function guardarSeguimiento() {
-    var contenido = document.getElementById('fContenido').value.trim();
-    if (!contenido) {
-        document.getElementById('segError').textContent = 'El contenido es obligatorio.';
-        return;
-    }
-    fetch('../backend/admin/seguimientos.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            idApadrinamiento: apadIdActual,
-            contenido:        contenido,
-            tipo_archivo:     document.getElementById('fTipoArchivo').value,
-            ruta_archivo:     document.getElementById('fRutaArchivo').value.trim() || null,
-        }),
-        credentials: 'include',
-    })
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-        if (!data.ok) {
-            document.getElementById('segError').textContent = data.error || 'Error al guardar.';
-            return;
-        }
-        document.getElementById('fContenido').value = '';
-        document.getElementById('fRutaArchivo').value = '';
-        document.getElementById('segError').textContent = '';
-        mostrarToast(data.mensaje, 'ok');
-        cargarSeguimientos(apadIdActual);
-    })
-    .catch(function(){ document.getElementById('segError').textContent = 'Error de conexión.'; });
-}
 
-function eliminarSeguimiento(id) {
-    if (!confirm('¿Eliminar esta actualización?')) return;
-    fetch('../backend/admin/seguimientos.php', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idSeguimiento: id }),
-        credentials: 'include',
-    })
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-        mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
-        if (data.ok) cargarSeguimientos(apadIdActual);
-    })
-    .catch(function(){ mostrarToast('Error de conexión.', 'error'); });
-}
-
-document.getElementById('fTipoArchivo').addEventListener('change', function() {
-    document.getElementById('campoRuta').style.display = (this.value !== 'texto') ? '' : 'none';
-});
 
 /*--------------------------------------------------------------------------------------------
 utilidades */
@@ -473,14 +224,6 @@ function formatFecha(f) {
 function formatFechaHora(f) {
     if (!f) return '—';
     return new Date(f).toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
-}
-
-function cerrarModal(e) {
-    if (e.target === document.getElementById('modalOverlay')) cerrarModalBtn();
-}
-
-function cerrarModalBtn() {
-    document.getElementById('modalOverlay').classList.remove('abierto');
 }
 
 function cerrarModalSeg(e) {

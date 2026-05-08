@@ -357,7 +357,12 @@ function cargarNotificaciones() {
             _notifCache = data.notificaciones || [];
             var sesion = sessionStorage.getItem('pf_session');
             if (sesion) { try { if (JSON.parse(sesion).rol === 'admin') return; } catch(e) {} }
-            _actualizarBadgesNum(noLeidas);
+            /* Si el badge aún no está en el DOM (header no construido), reintentar */
+            if (!document.getElementById('user-notif-badge')) {
+                setTimeout(function() { _actualizarBadgesNum(noLeidas); }, 800);
+            } else {
+                _actualizarBadgesNum(noLeidas);
+            }
             var btnBell = document.getElementById('btnNotifBell');
             if (btnBell && !btnBell.dataset.notifInit) {
                 btnBell.dataset.notifInit = '1';
@@ -1256,46 +1261,48 @@ function cargarProtectorasDinamicasEnDona() {
             var nuevas = data.protectoras;
             if (!nuevas.length) return;
 
-            /* Registrar en objeto protectoras */
+            /* Registrar datos completos en el objeto global */
             nuevas.forEach(function(p) {
                 var key = 'prot-' + p.idProtectora;
                 protectoras[key] = {
-                    nombre:   p.nombre,
-                    telefono: p.telefono || null,
-                    email:    p.email    || null,
-                    web:      p.web      || null,
-                    teaming:       p.teaming        || null,
-                    iban:          p.iban           || null,
-                    bizum:         p.bizum          || null,
+                    nombre:     p.nombre,
+                    telefono:   p.telefono   || null,
+                    email:      p.email      || null,
+                    web:        p.web        || null,
+                    tipo_pagina:p.tipo_pagina|| 'sin_pagina',
+                    teaming:    p.teaming    || null,
+                    iban:       p.iban       || null,
+                    bizum:      p.bizum      || null,
                     red_social_url: p.red_social_url || null,
-                    badges:             p.badges              || '',
-                    url_formulario_acogida: p.url_formulario_acogida || null
+                    badges:     p.badges     || '',
+                    url_formulario_acogida: p.url_formulario_acogida || null,
                 };
             });
 
             /* Inyectar cards en dona.html */
             var cont = document.getElementById('containerProtDinamicasDona');
-            if (cont) {
-                cont.innerHTML = nuevas.map(function(p) {
-                    var id = 'prot-' + p.idProtectora;
+            if (!cont) return;
 
-                    var logo = p.foto_logo
-                        ? '<img class="logo-protectora" src="../' + p.foto_logo + '" ' +
-                          'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" ' +
-                          'alt="Logo ' + p.nombre.replace(/"/g, '&quot;') + '">'
-                        : '';
+            cont.innerHTML = nuevas.map(function(p) {
+                var logo = p.foto_logo
+                    ? '<img class="logo-protectora" src="../' + p.foto_logo + '" '
+                      + 'onerror="this.style.display=\'none\'" '
+                      + 'alt="Logo ' + p.nombre.replace(/"/g,'&quot;') + '">'
+                    : '<span style="font-size:1.8rem;">🐾</span>';
 
-                    return '<label class="card-protectora" id="' + id + '" onclick="toggleProtectora(\'' + id + '\')">' +
-                           '<input type="checkbox" name="protectora" value="' + id + '">' +
-                           logo +
-                           '<div class="icono-prot-fb">🐾</div>' +
-                           '<div style="flex:1;">' +
-                           '<p class="protectora-nombre">' + p.nombre + '</p>' +
-                           (p.localidad ? '<p class="protectora-lugar"><i class="fa-solid fa-location-dot"></i> ' + p.localidad + '</p>' : '') +
-                           ((p.descripcion_dona || p.descripcion) ? '<p class="descripcion-protectora">' + (p.descripcion_dona || p.descripcion) + '</p>' : '') +
-                           '</div></label>';
-                }).join('');
-            }
+                var desc = p.descripcion_dona || p.descripcion || '';
+
+                return '<div class="dona-card-prot">'
+                    + '<div class="dona-card-logo">' + logo + '</div>'
+                    + '<div style="flex:1;min-width:0;">'
+                    + '<p class="dona-card-nombre">' + p.nombre + '</p>'
+                    + (p.localidad ? '<p class="dona-card-lugar"><i class="fa-solid fa-location-dot me-1"></i>' + p.localidad + '</p>' : '')
+                    + (desc ? '<p class="dona-card-desc">' + desc + '</p>' : '')
+                    + '</div>'
+                    + '<button class="btn-prot-donar" onclick="abrirModalDonarProtDinamica(' + p.idProtectora + ')">'
+                    + '<i class="fa-solid fa-hand-holding-heart me-1"></i> Donar</button>'
+                    + '</div>';
+            }).join('');
         })
         .catch(function(){});
 }
@@ -1471,13 +1478,6 @@ function buildDatosProt(p) {
         html += '<div style="background:#fff8e1;border-radius:8px;padding:0.7em 0.9em;font-size:0.85rem;color:#856404;margin-bottom:0.8em;">'
               + '<i class="fa-solid fa-triangle-exclamation me-2"></i>'
               + 'Esta protectora no tiene medios de donación configurados. Contacta directamente con ellos.'
-              + '</div>';
-    }
-
-    if (p.email) {
-        html += '<div class="modal-dato">'
-              + '<i class="fa-solid fa-envelope"></i>'
-              + '<a href="mailto:' + p.email + '?subject=Donaci%C3%B3n">' + p.email + '</a>'
               + '</div>';
     }
 

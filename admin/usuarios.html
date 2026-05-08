@@ -14,8 +14,10 @@
 
      <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo">
-            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily">
-            <span>Pet<em>Family</em></span>
+            <a href="../html/index.html" class="sidebar-link" target="_blank">
+                <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily">
+                <span>Pet<em>Family</em></span>
+            </a>
         </div>
         <nav class="sidebar-nav">
             <p class="sidebar-seccion">General</p>
@@ -124,7 +126,7 @@ function verificarAdmin(cb) {
             }
             idAdminActual = data.usuario.idUsuario;
             document.getElementById('adminNombre').textContent = data.usuario.nombre;
-            document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
+            var nom = data.usuario.nombre.trim().split(' '); document.getElementById('avatarInicial').textContent = (nom.length >= 2 ? nom[0][0] + nom[1][0] : data.usuario.nombre.substring(0, 2)).toUpperCase();
             if (cb) cb();
         });
 }

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PetFamily – Protectora</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../style/header.css">
+    <link rel="stylesheet" href="../style/header.css?v=2">
     <link rel="stylesheet" href="../style/footer.css">
     <link rel="stylesheet" href="../style/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -585,12 +585,29 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Método de pago (ficticio) <span class="text-danger">*</span></label>
-                            <select class="form-select" id="pMetodoPago" required>
+                            <select class="form-select" id="pMetodoPago" required onchange="mostrarCamposPagoProt(this.value)">
                                 <option value="">Selecciona...</option>
                                 <option value="tarjeta">Tarjeta</option>
-                                <option value="transferencia">Transferencia</option>
                                 <option value="bizum">Bizum</option>
                             </select>
+                        </div>
+                        <!-- Tarjeta -->
+                        <div id="divTarjetaProt" style="display:none;" class="col-12">
+                            <div class="row g-2">
+                                <div class="col-12">
+                                    <input type="text" class="form-control" id="pNumTarjeta" placeholder="Número de tarjeta (16 dígitos)" maxlength="19" style="border-radius:8px;" oninput="this.value=this.value.replace(/\D/g,'').replace(/(.{4})/g,'$1 ').trim()">
+                                </div>
+                                <div class="col-6">
+                                    <input type="text" class="form-control" id="pCaducidad" placeholder="MM/AA" maxlength="5" style="border-radius:8px;" oninput="formatCaducidadProt(this)">
+                                </div>
+                                <div class="col-6">
+                                    <input type="text" class="form-control" id="pCvv" placeholder="CVV" maxlength="3" style="border-radius:8px;" oninput="this.value=this.value.replace(/\D/g,'')">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Bizum -->
+                        <div id="divBizumProt" style="display:none;" class="col-12">
+                            <input type="text" class="form-control" id="pBizumTel" placeholder="Teléfono Bizum (9 dígitos)" maxlength="9" style="border-radius:8px;" oninput="this.value=this.value.replace(/\D/g,'')">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Nombre completo <span class="text-danger">*</span></label>
@@ -888,6 +905,8 @@ function abrirApadrinar(idMascota) {
     document.querySelectorAll('.cuota-option').forEach(function(o) { o.classList.remove('selected'); });
     document.getElementById('errApadrinar').style.display = 'none';
     document.getElementById('okApadrinar').style.display = 'none';
+    document.getElementById('divTarjetaProt').style.display = 'none';
+    document.getElementById('divBizumProt').style.display = 'none';
     new bootstrap.Modal(document.getElementById('modalApadrinar')).show();
 }
 
@@ -1087,6 +1106,17 @@ function enviarAcogida(e) {
     });
 }
 
+function mostrarCamposPagoProt(metodo) {
+    document.getElementById('divTarjetaProt').style.display = metodo === 'tarjeta' ? '' : 'none';
+    document.getElementById('divBizumProt').style.display   = metodo === 'bizum'   ? '' : 'none';
+}
+
+function formatCaducidadProt(el) {
+    var v = el.value.replace(/\D/g, '').substring(0, 4);
+    if (v.length >= 3) v = v.substring(0, 2) + '/' + v.substring(2);
+    el.value = v;
+}
+
 function enviarApadrinamiento(e) {
     e.preventDefault();
     var err = document.getElementById('errApadrinar');
@@ -1104,7 +1134,21 @@ function enviarApadrinamiento(e) {
     var aceptaPolitica = document.getElementById('pAceptaPolitica').checked;
 
     if (!cuota || ['3','5','8','10'].indexOf(cuota) === -1) { err.textContent = 'Selecciona una cuota válida.'; err.style.display = 'block'; return; }
-    if (!metodoPago || ['tarjeta','transferencia','bizum'].indexOf(metodoPago) === -1) { err.textContent = 'Selecciona un método de pago.'; err.style.display = 'block'; return; }
+    if (!metodoPago || ['tarjeta','bizum'].indexOf(metodoPago) === -1) { err.textContent = 'Selecciona un método de pago.'; err.style.display = 'block'; return; }
+
+    if (metodoPago === 'tarjeta') {
+        var numTarjeta = (document.getElementById('pNumTarjeta').value || '').replace(/\s/g, '');
+        var caducidad  = document.getElementById('pCaducidad').value || '';
+        var cvv        = document.getElementById('pCvv').value || '';
+        if (!/^\d{16}$/.test(numTarjeta)) { err.textContent = 'Número de tarjeta no válido (16 dígitos).'; err.style.display = 'block'; return; }
+        if (!/^\d{2}\/\d{2}$/.test(caducidad)) { err.textContent = 'Fecha de caducidad no válida (MM/AA).'; err.style.display = 'block'; return; }
+        if (!/^\d{3}$/.test(cvv)) { err.textContent = 'CVV no válido (3 dígitos).'; err.style.display = 'block'; return; }
+    }
+    if (metodoPago === 'bizum') {
+        var bizumTel = document.getElementById('pBizumTel').value || '';
+        if (!/^\d{9}$/.test(bizumTel)) { err.textContent = 'Teléfono Bizum no válido (9 dígitos).'; err.style.display = 'block'; return; }
+    }
+
     if (!nombre) { err.textContent = 'El nombre es obligatorio.'; err.style.display = 'block'; return; }
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Introduce un email válido.'; err.style.display = 'block'; return; }
     if (telefono && !/^\d{9}$/.test(telefono)) { err.textContent = 'El teléfono debe tener exactamente 9 dígitos.'; err.style.display = 'block'; return; }
@@ -1136,6 +1180,8 @@ function enviarApadrinamiento(e) {
         ok.style.display = 'block';
         document.getElementById('formApadrinar').reset();
         document.querySelectorAll('.cuota-option').forEach(function(o) { o.classList.remove('selected'); });
+        document.getElementById('divTarjetaProt').style.display = 'none';
+        document.getElementById('divBizumProt').style.display = 'none';
         setTimeout(function() { bootstrap.Modal.getInstance(document.getElementById('modalApadrinar')).hide(); }, 2500);
     })
     .catch(function() {

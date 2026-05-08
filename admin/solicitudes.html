@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetFamily – Registro de contactos</title>
+    <title>PetFamily – Solicitudes</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="admin.css">
@@ -14,8 +14,10 @@
 
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo">
-            <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily">
-            <span>Pet<em>Family</em></span>
+            <a href="../html/index.html" class="sidebar-link" target="_blank">
+                <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily">
+                <span>Pet<em>Family</em></span>
+            </a>
         </div>
         <nav class="sidebar-nav">
             <p class="sidebar-seccion">General</p>
@@ -54,7 +56,7 @@
             <button class="sidebar-toggle" onclick="toggleSidebar()">
                 <i class="fa-solid fa-bars"></i>
             </button>
-            <span class="topbar-titulo"><i class="fa-solid fa-file-signature" style="color:var(--gold);margin-right:0.4em;"></i>Registro de contactos</span>
+            <span class="topbar-titulo"><i class="fa-solid fa-file-signature" style="color:var(--gold);margin-right:0.4em;"></i>Solicitudes de adopción y apadrinamiento</span>
         </div>
     </header>
 
@@ -76,13 +78,13 @@
                 <table class="tabla">
                     <thead>
                         <tr>
+                            <th>Tipo</th>
                             <th>Solicitante</th>
                             <th>Mascota</th>
                             <th>Protectora</th>
-                            <th>Mensaje</th>
+                            <th>Detalle</th>
                             <th>Fecha</th>
                             <th>Estado</th>
-                            <th>Gestión</th>
                         </tr>
                     </thead>
                     <tbody id="tablaSolicitudes">
@@ -112,7 +114,7 @@ function verificarAdmin(cb) {
         .then(function(data){
             if (!data.logueado || data.usuario.rol !== 'admin') { if (data.logueado && data.usuario.rol === 'protectora') { window.location.href = 'mi-protectora.html'; return; } window.location.href = '../html/login.html'; return; }
             document.getElementById('adminNombre').textContent = data.usuario.nombre;
-            document.getElementById('avatarInicial').textContent = data.usuario.nombre.charAt(0).toUpperCase();
+            var nom = data.usuario.nombre.trim().split(' '); document.getElementById('avatarInicial').textContent = (nom.length >= 2 ? nom[0][0] + nom[1][0] : data.usuario.nombre.substring(0, 2)).toUpperCase();
             if (cb) cb();
         })
         .catch(function(){ window.location.href = '../html/login.html'; });
@@ -147,6 +149,9 @@ function renderTabla(solicitudes) {
         en_revision: 'badge-azul',
         aprobada:    'badge-verde',
         rechazada:   'badge-rojo',
+        activo:      'badge-azul',
+        aceptada:    'badge-verde',
+        cancelado:   'badge-rojo',
     };
 
     var etiquetas = {
@@ -154,45 +159,37 @@ function renderTabla(solicitudes) {
         en_revision: 'En revisión',
         aprobada:    'Gestionado',
         rechazada:   'Descartado',
+        activo:      'Activo',
+        aceptada:    'Aceptado',
+        cancelado:   'Cancelado',
     };
+
+    var tipoLabel = { adopcion: 'Adopción', apadrinamiento: 'Apadrinamiento' };
+    var tipoIcon  = { adopcion: 'fa-paw', apadrinamiento: 'fa-star' };
 
     tb.innerHTML = solicitudes.map(function(s) {
         var badgeEst = '<span class="badge ' + (colores[s.estado] || 'badge-gris') + '">' + (etiquetas[s.estado] || s.estado) + '</span>';
+        var badgeTipo = '<span style="display:inline-flex;align-items:center;gap:0.3em;background:#f0f4ff;color:#1B358F;border-radius:20px;padding:0.2em 0.6em;font-size:0.75rem;font-weight:600;white-space:nowrap;"><i class="fa-solid ' + (tipoIcon[s.tipo] || 'fa-file') + '"></i>' + (tipoLabel[s.tipo] || s.tipo) + '</span>';
 
-        var selectEstado = '<select class="toolbar-select" style="font-size:0.78rem;padding:0.35em 0.6em;" onchange="cambiarEstado(' + s.idSolicitud + ', this.value)">'
-            + ['pendiente','en_revision','aprobada','rechazada'].map(function(e){
-                return '<option value="' + e + '"' + (e === s.estado ? ' selected' : '') + '>' + ((etiquetas[e] || e)) + '</option>';
-            }).join('')
-            + '</select>';
+        var detalle = s.tipo === 'apadrinamiento'
+            ? '<span style="font-size:0.78rem;color:var(--texto-sub);">Cuota: <strong>' + s.cuota + ' €/mes</strong></span>'
+                + (s.metodo_pago ? '<br><span style="font-size:0.75rem;color:var(--texto-sub);text-transform:capitalize;">' + s.metodo_pago + '</span>' : '')
+                + (s.mensaje ? '<br><span style="font-size:0.75rem;color:#888;" title="' + s.mensaje + '">' + s.mensaje.substring(0,40) + (s.mensaje.length > 40 ? '…' : '') + '</span>' : '')
+            : (s.mensaje ? '<span style="font-size:0.78rem;color:#666;" title="' + s.mensaje + '">' + s.mensaje.substring(0,60) + (s.mensaje.length > 60 ? '…' : '') + '</span>' : '<span style="color:var(--texto-sub);font-size:0.78rem;">—</span>');
 
         return '<tr>'
+            + '<td>' + badgeTipo + '</td>'
             + '<td><strong>' + s.nombre + '</strong><br>'
             + '<a href="mailto:' + s.email + '" style="font-size:0.78rem;color:var(--azul);">' + s.email + '</a>'
             + (s.telefono ? '<br><span style="font-size:0.78rem;color:var(--texto-sub);">' + s.telefono + '</span>' : '')
             + '</td>'
             + '<td><strong>' + s.mascota + '</strong><br><span style="font-size:0.78rem;color:var(--texto-sub);">' + (s.mascota_especie === 'perro' ? '🐕' : '🐱') + '</span></td>'
             + '<td style="font-size:0.82rem;">' + s.protectora + '</td>'
-            + '<td style="font-size:0.8rem;max-width:180px;">' + (s.mensaje ? '<span title="' + s.mensaje + '">' + s.mensaje.substring(0,60) + (s.mensaje.length > 60 ? '…' : '') + '</span>' : '—') + '</td>'
+            + '<td style="font-size:0.8rem;max-width:200px;">' + detalle + '</td>'
             + '<td style="font-size:0.78rem;">' + formatFecha(s.fecha_envio) + '</td>'
             + '<td>' + badgeEst + '</td>'
-            + '<td>' + selectEstado + '</td>'
             + '</tr>';
     }).join('');
-}
-
-function cambiarEstado(id, nuevoEstado) {
-    fetch('../backend/admin/solicitudes.php', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idSolicitud: id, estado: nuevoEstado }),
-        credentials: 'include',
-    })
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-        mostrarToast(data.ok ? data.mensaje : data.error, data.ok ? 'ok' : 'error');
-        if (data.ok) cargarSolicitudes();
-    })
-    .catch(function(){ mostrarToast('Error de conexión.', 'error'); });
 }
 
 function renderPaginacion() {

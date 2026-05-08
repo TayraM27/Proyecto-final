@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PetFamily - Foro Comunidad</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../style/header.css">
+    <link rel="stylesheet" href="../style/header.css?v=2">
     <link rel="stylesheet" href="../style/footer.css">
     <link rel="stylesheet" href="../style/style.css">
     <link rel="stylesheet" href="../style/foro-mapa.css">
@@ -46,7 +46,7 @@
                 </ul>
             </li>
             <li><a href="protectoras.html">Protectoras</a></li>
-            <li><a href="foro.html">Foro</a></li>
+            <li><a href="foro.html" class="active">Foro</a></li>
             <li><a href="mapa.html">Mapa</a></li>
             <li><a href="test.html">Tests</a></li>
         </ul>
@@ -91,7 +91,7 @@
 
                 <div class="foro-publicar-caja mb-4" id="cajaConSesion">
                     <div class="foro-publicar-top">
-                        <div class="foro-avatar foro-avatar-azul foro-avatar-lg" id="avatarPub">
+                        <div class="foro-avatar foro-avatar-gold foro-avatar-lg" id="avatarPub">
                             <i class="fa-solid fa-user"></i>
                         </div>
                         <div style="flex:1;">
@@ -249,7 +249,7 @@ var todosLosPosts   = [];
 var _intervaloComs  = {};
 var _ultimosComsEnviados = {};
 
-var COLORES = ['#1B358F','#2e7d32','#c0392b','#8e24aa','#c87a00','#0277bd'];
+
 
 /*--------------------------------------------------------------------------------------------
 init */
@@ -384,8 +384,8 @@ function activarFormPub(usuario) {
             + ' style="width:48px;height:48px;border-radius:50%;object-fit:cover;"'
             + ' onerror="this.parentElement.textContent=\'' + usuario.nombre.charAt(0).toUpperCase() + '\'">';
     } else {
+        avatar.className = 'foro-avatar foro-avatar-gold foro-avatar-lg';
         avatar.textContent  = usuario.nombre.charAt(0).toUpperCase();
-        avatar.style.background = COLORES[usuario.idUsuario % COLORES.length];
     }
 
     var pendiente = sessionStorage.getItem('foroTextoPendiente');
@@ -443,7 +443,6 @@ function renderPosts(posts) {
 }
 
 function renderPost(p) {
-    var color   = COLORES[p.autor_nombre.charCodeAt(0) % COLORES.length];
     var partes  = p.autor_nombre.split(' ');
     var inicial = partes[0].charAt(0).toUpperCase() + (partes[1] ? partes[1].charAt(0).toUpperCase() : '');
 
@@ -452,9 +451,9 @@ function renderPost(p) {
         var fotoSrc = p.autor_foto.startsWith('http') ? p.autor_foto : ('../backend/api/auth/' + p.autor_foto);
         avatarHtml = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer"'
             + ' style="width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;"'
-            + ' onerror="this.outerHTML=\'<div style=&quot;width:42px;height:42px;border-radius:50%;background:' + color + ';display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.88rem;flex-shrink:0;&quot;>' + inicial + '</div>\'">';
+            + ' onerror="this.outerHTML=\'<div class=&quot;foro-avatar foro-avatar-gold&quot;>' + inicial + '</div>\'">';
     } else {
-        avatarHtml = '<div class="foro-avatar" style="background:' + color + ';width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.88rem;flex-shrink:0;">' + inicial + '</div>';
+        avatarHtml = '<div class="foro-avatar foro-avatar-gold">' + inicial + '</div>';
     }
 
     var badgeRol = p.autor_rol === 'admin'
@@ -637,14 +636,13 @@ function toggleComentarios(idPublicacion, btn) {
             inputWrap.className = 'foro-comentario-input input-com-wrap mt-1';
 
             if (sesionForo) {
-                var color   = COLORES[sesionForo.idUsuario % COLORES.length];
                 var inicial = sesionForo.nombre.charAt(0).toUpperCase();
                 var avatarHtml;
                 if (sesionForo.foto_perfil) {
                     var fotoSrc = sesionForo.foto_perfil.startsWith('http') ? sesionForo.foto_perfil : ('../backend/api/auth/' + sesionForo.foto_perfil);
                     avatarHtml = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.style.display=\'none\'">';
                 } else {
-                    avatarHtml = '<div class="foro-avatar foro-avatar-sm" style="background:' + color + ';flex-shrink:0;">' + inicial + '</div>';
+                    avatarHtml = '<div class="foro-avatar foro-avatar-gold foro-avatar-sm">' + inicial + '</div>';
                 }
                 inputWrap.innerHTML =
                     avatarHtml
@@ -654,7 +652,7 @@ function toggleComentarios(idPublicacion, btn) {
                     + '<i class="fa-solid fa-paper-plane"></i></button>';
             } else {
                 inputWrap.innerHTML =
-                    '<div class="foro-avatar foro-avatar-gris foro-avatar-sm"><i class="fa-solid fa-user foro-avatar-icon"></i></div>'
+                    '<div class="foro-avatar foro-avatar-gold foro-avatar-sm"><i class="fa-solid fa-user foro-avatar-icon"></i></div>'
                     + '<input type="text" class="foro-input-com" placeholder="Inicia sesión para comentar..." readonly onclick="document.getElementById(\'avisoLogin\').classList.remove(\'d-none\')">';
             }
             seccion.appendChild(inputWrap);
@@ -710,7 +708,6 @@ function renderComentario(c, esRespuesta) {
     }
 
     var autor   = c.autor_nombre || c.prot_nombre || 'Usuario';
-    var color   = COLORES[autor.charCodeAt(0) % COLORES.length];
     var partes  = autor.split(' ');
     var inicial = partes[0].charAt(0).toUpperCase() + (partes[1] ? partes[1].charAt(0).toUpperCase() : '');
 
@@ -719,9 +716,9 @@ function renderComentario(c, esRespuesta) {
         var fotoSrc = c.autor_foto.startsWith('http') ? c.autor_foto : ('../backend/api/auth/' + c.autor_foto);
         avatarHtml = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer"'
             + ' style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;"'
-            + ' onerror="this.outerHTML=\'<div class=&quot;foro-avatar foro-avatar-sm&quot; style=&quot;background:' + color + ';flex-shrink:0;&quot;>' + inicial + '</div>\'">';
+            + ' onerror="this.outerHTML=\'<div class=&quot;foro-avatar foro-avatar-gold foro-avatar-sm&quot;>' + inicial + '</div>\'">';
     } else {
-        avatarHtml = '<div class="foro-avatar foro-avatar-sm" style="background:' + color + ';flex-shrink:0;">' + inicial + '</div>';
+        avatarHtml = '<div class="foro-avatar foro-avatar-gold foro-avatar-sm">' + inicial + '</div>';
     }
 
     var badgeRol = c.autor_rol === 'admin'
@@ -938,7 +935,6 @@ function enviarComentario(idPublicacion) {
         }
     }
 
-    var color   = COLORES[sesionForo.nombre.charCodeAt(0) % COLORES.length];
     var partes  = sesionForo.nombre.split(' ');
     var inicial = partes[0].charAt(0).toUpperCase() + (partes[1] ? partes[1].charAt(0).toUpperCase() : '');
     var avatarHtml;
@@ -946,9 +942,9 @@ function enviarComentario(idPublicacion) {
         var fotoSrc = sesionForo.foto_perfil.startsWith('http') ? sesionForo.foto_perfil : ('../backend/api/auth/' + sesionForo.foto_perfil);
         avatarHtml = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer"'
             + ' style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;"'
-            + ' onerror="this.outerHTML=\'<div class=&quot;foro-avatar foro-avatar-sm&quot; style=&quot;background:' + color + ';flex-shrink:0;&quot;>' + inicial + '</div>\'">';
+            + ' onerror="this.outerHTML=\'<div class=&quot;foro-avatar foro-avatar-gold foro-avatar-sm&quot;>' + inicial + '</div>\'">';
     } else {
-        avatarHtml = '<div class="foro-avatar foro-avatar-sm" style="background:' + color + ';flex-shrink:0;">' + inicial + '</div>';
+        avatarHtml = '<div class="foro-avatar foro-avatar-gold foro-avatar-sm">' + inicial + '</div>';
     }
 
     var fechaHoy  = new Date().toLocaleDateString('es-ES', { day:'2-digit', month:'short' });

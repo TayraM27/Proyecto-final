@@ -472,38 +472,41 @@
     }
 
     function generarPaginacion(totalPag, pagAct) {
-        var grid = document.getElementById('gridAnimales');
-        var cont = document.getElementById('paginacionAdopta');
+    var cont = document.getElementById('paginacionAdopta');
+    var grid = document.getElementById('gridAnimales');
 
-        if (!cont) {
-            if (!grid) return;
-            cont = document.createElement('div');
-            cont.id = 'paginacionAdopta';
-            cont.className = 'paginacion-container mt-4 mb-4 text-center';
-            grid.parentNode.appendChild(cont);
-        }
-
-        if (totalPag <= 1) {
-            cont.innerHTML = '';
-            return;
-        }
-
-        var html = '';
-
-        if (pagAct > 1) {
-            html += '<button class="btn-pag" onclick="cargarAnimales(' + (pagAct - 1) + ')"><i class="fa-solid fa-chevron-left"></i></button>';
-        }
-
-        for (var i = 1; i <= totalPag; i++) {
-            html += '<button class="btn-pag ' + (i === pagAct ? 'activo' : '') + '" onclick="cargarAnimales(' + i + ')">' + i + '</button>';
-        }
-
-        if (pagAct < totalPag) {
-            html += '<button class="btn-pag" onclick="cargarAnimales(' + (pagAct + 1) + ')"><i class="fa-solid fa-chevron-right"></i></button>';
-        }
-
-        cont.innerHTML = html;
+    if (!cont) {
+        if (!grid) return;
+        cont = document.createElement('div');
+        cont.id = 'paginacionAdopta';
+        cont.className = 'paginacion-container mt-4 mb-4 text-center';
+        grid.parentNode.appendChild(cont);
     }
+
+    if (totalPag <= 1) {
+        cont.innerHTML = '';
+        return;
+    }
+
+    var html = '';
+
+    if (pagAct > 1) {
+        html += '<button class="btn-pag" onclick="cargarAnimales(' + (pagAct - 1) + ')"><i class="fa-solid fa-chevron-left"></i></button>';
+    }
+
+    for (var i = 1; i <= totalPag; i++) {
+        html += '<button class="btn-pag ' + (i === pagAct ? 'activo' : '') + '" onclick="cargarAnimales(' + i + ')">' + i + '</button>';
+    }
+
+    if (pagAct < totalPag) {
+        html += '<button class="btn-pag" onclick="cargarAnimales(' + (pagAct + 1) + ')"><i class="fa-solid fa-chevron-right"></i></button>';
+    }
+
+    cont.innerHTML = html;
+}
+
+
+    
 
     document.addEventListener('DOMContentLoaded', function() {
         cargarAnimales(1);
