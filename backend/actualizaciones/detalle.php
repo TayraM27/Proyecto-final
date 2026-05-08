@@ -18,13 +18,15 @@ if (!$idActualizacion) {
 
 $pdo = conectar();
 
-$stmt = $pdo->prepare('SELECT a.idActualizacion, a.mensaje, a.fotos, a.video_url, a.fecha, a.idAnimal, an.nombre as animalNombre, ap.leido
+$stmt = $pdo->prepare('SELECT a.idActualizacion, a.mensaje, a.fotos, a.video_url, a.fecha, a.idMascota, m.nombre as animalNombre, ap.leido,
+            a.respondida_protectora,
+            (SELECT COUNT(*) FROM respuestas_actualizacion WHERE idActualizacion = a.idActualizacion AND idUsuario = ? AND activo = 1) as yaRespondio
         FROM actualizaciones a
         INNER JOIN actualizacion_padrinos ap ON a.idActualizacion = ap.idActualizacion
-        INNER JOIN animales an ON a.idAnimal = an.idAnimal
+        INNER JOIN mascotas m ON a.idMascota = m.idMascota
         WHERE a.idActualizacion = ? AND ap.idUsuario = ? AND a.activo = 1
         LIMIT 1');
-$stmt->execute([$idActualizacion, $idUsuario]);
+$stmt->execute([$idUsuario, $idActualizacion, $idUsuario]);
 $actualizacion = $stmt->fetch();
 
 if (!$actualizacion) {
@@ -36,7 +38,7 @@ if ($actualizacion['leido'] == 0) {
     $actualizacion['leido'] = 1;
 }
 
-$stmt = $pdo->prepare('SELECT r.idRespuesta, r.respuesta, r.fecha, u.nombre as usuarioNombre
+$stmt = $pdo->prepare('SELECT r.idRespuesta, r.respuesta, r.fecha, u.nombre as usuarioNombre, u.idUsuario
         FROM respuestas_actualizacion r
         INNER JOIN usuarios u ON r.idUsuario = u.idUsuario
         WHERE r.idActualizacion = ? AND r.activo = 1

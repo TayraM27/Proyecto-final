@@ -27,11 +27,12 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $stmt = $pdo->prepare(
             'SELECT a.idApadrinamiento, a.cuota, a.fecha_inicio, a.fecha_fin, a.estado,
                     a.nombre_pagador, a.email_pagador,
+                    a.telefono, a.metodo_pago, a.mensaje,
                     m.nombre AS mascota, m.especie, m.idProtectora,
                     u.nombre AS padrino, u.email AS padrino_email
              FROM apadrinamientos a
              JOIN mascotas m ON a.idMascota = m.idMascota
-             JOIN usuarios u ON a.idUsuario = u.idUsuario
+             LEFT JOIN usuarios u ON a.idUsuario = u.idUsuario
              ' . $cond . '
              ORDER BY a.idApadrinamiento DESC'
         );

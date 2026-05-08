@@ -74,7 +74,7 @@
                 <i class="fa-solid fa-circle-xmark"></i> Rechazadas
             </button>
             <button class="btn btn-sm btn-outline filtro-btn" data-filtro="info_adicional" onclick="filtrarSol(this)">
-                <i class="fa-solid fa-circle-info me-1"></i> Info adicional
+                <i class="fa-solid fa-circle-info me-2"></i> Info adicional
             </button>
         </div>
 
@@ -122,7 +122,7 @@
             <div style="display:flex;gap:0.5em;flex-wrap:wrap;">
                 <button class="btn btn-verde" onclick="revisarSol('aprobada')"><i class="fa-solid fa-circle-check me-1"></i>Aprobar</button>
                 <button class="btn btn-rojo" onclick="revisarSol('rechazada')"><i class="fa-solid fa-circle-xmark me-1"></i>Rechazar</button>
-                <button class="btn btn-outline" onclick="revisarSol('info_adicional')"><i class="fa-solid fa-circle-info me-1"></i>Pedir info</button>
+                <button class="btn btn-outline" onclick="revisarSol('info_adicional')"><i class="fa-solid fa-circle-info me-2"></i>Pedir info</button>
                 <button class="btn btn-ghost" onclick="cerrarModalRevision()" style="margin-left:auto;">Cancelar</button>
             </div>
         </div>
@@ -153,9 +153,24 @@ function abrirModalRevision(id) {
         + (solSeleccionada.web_redes ? '<p style="margin:0 0 0.5em;"><strong>Web/Redes:</strong> ' + solSeleccionada.web_redes + '</p>' : '');
 
     if (solSeleccionada.respuesta_usuario) {
+        var archivosHtml = '';
+        if (solSeleccionada.archivos_respuesta) {
+            try {
+                var archivos = JSON.parse(solSeleccionada.archivos_respuesta);
+                archivos.forEach(function(f) {
+                    var isImg = f.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+                    if (isImg) {
+                        archivosHtml += '<a href="../' + f + '" target="_blank"><img src="../' + f + '" style="max-width:120px;max-height:120px;object-fit:cover;border-radius:6px;margin:0.3em 0.3em 0 0;"></a>';
+                    } else {
+                        archivosHtml += '<a href="../' + f + '" target="_blank" class="btn btn-sm btn-outline-secondary" style="margin:0.3em 0.3em 0 0;"><i class="fa-solid fa-file"></i> ' + f.split('/').pop() + '</a>';
+                    }
+                });
+            } catch(e) {}
+        }
         detalle += '<div style="margin-top:0.8em;padding:0.8em;background:#e8f5e9;border-radius:6px;border-left:3px solid #28a745;">'
             + '<p style="margin:0;font-weight:600;font-size:0.82rem;color:#155724;"><i class="fa-solid fa-reply me-1"></i>Respuesta del usuario:</p>'
             + '<p style="margin:0.3em 0 0;font-size:0.88rem;color:#155724;">' + solSeleccionada.respuesta_usuario + '</p>'
+            + (archivosHtml ? '<div style="margin-top:0.5em;">' + archivosHtml + '</div>' : '')
             + (solSeleccionada.fecha_respuesta_usuario ? '<p style="margin:0.3em 0 0;font-size:0.75rem;color:#6c757d;">' + new Date(solSeleccionada.fecha_respuesta_usuario).toLocaleString('es-ES') + '</p>' : '')
             + '</div>';
     }

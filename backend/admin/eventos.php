@@ -200,6 +200,22 @@ switch ($accion) {
         break;
 
     /*--------------------------------------------------------------------------------------------
+    eliminar (desactivar) */
+    case 'eliminar':
+        if ($esAdmin) {
+            $stmtCheck = $pdo->prepare('SELECT idProtectora FROM eventos WHERE idEvento = ?');
+            $stmtCheck->execute([$id]);
+            $evento = $stmtCheck->fetch();
+            if (!$evento) respuestaError('Evento no encontrado.', 404);
+            $pdo->prepare("UPDATE eventos SET activa = 0 WHERE idEvento = ?")->execute([$id]);
+        } else {
+            if (!$idProtectoraUsuario) respuestaError('No tienes una protectora asignada.');
+            $pdo->prepare("UPDATE eventos SET activa = 0 WHERE idEvento = ? AND idProtectora = ?")->execute([$id, $idProtectoraUsuario]);
+        }
+        respuestaOk(['mensaje' => 'Evento desactivado.']);
+        break;
+
+    /*--------------------------------------------------------------------------------------------
     activar (reactivar) */
     case 'activar':
         if ($esAdmin) {

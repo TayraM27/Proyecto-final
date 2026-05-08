@@ -16,9 +16,9 @@ $pdo = conectar();
 $idActualizacion = intval($_GET['idActualizacion'] ?? 0);
 
 if ($idActualizacion) {
-    $stmt = $pdo->prepare('SELECT a.idActualizacion, a.mensaje, a.fotos, a.video_url, a.fecha, a.idAnimal, an.nombre as animalNombre
+    $stmt = $pdo->prepare('SELECT a.idActualizacion, a.mensaje, a.fotos, a.video_url, a.fecha, a.idMascota, a.respondida_protectora, m.nombre as animalNombre
         FROM actualizaciones a
-        INNER JOIN animales an ON a.idAnimal = an.idAnimal
+        INNER JOIN mascotas m ON a.idMascota = m.idMascota
         WHERE a.idActualizacion = ? AND a.idProtectora = ? AND a.activo = 1
         LIMIT 1');
     $stmt->execute([$idActualizacion, $idProtectora]);
@@ -26,7 +26,7 @@ if ($idActualizacion) {
     if (!$actualizacion) {
         respuestaError('Actualización no encontrada.', 404);
     }
-    $stmt = $pdo->prepare('SELECT r.idRespuesta, r.respuesta, r.fecha, u.nombre as usuarioNombre
+    $stmt = $pdo->prepare('SELECT r.idRespuesta, r.respuesta, r.fecha, u.nombre as usuarioNombre, u.idUsuario
         FROM respuestas_actualizacion r
         INNER JOIN usuarios u ON r.idUsuario = u.idUsuario
         WHERE r.idActualizacion = ? AND r.activo = 1
@@ -35,11 +35,11 @@ if ($idActualizacion) {
     $respuestas = $stmt->fetchAll();
     respuestaOk(['actualizacion' => $actualizacion, 'respuestas' => $respuestas]);
 } else {
-    $stmt = $pdo->prepare('SELECT a.idActualizacion, a.mensaje, a.fecha, a.idAnimal, an.nombre as animalNombre,
+    $stmt = $pdo->prepare('SELECT a.idActualizacion, a.mensaje, a.fecha, a.idMascota, m.nombre as animalNombre,
             (SELECT COUNT(*) FROM actualizacion_padrinos ap WHERE ap.idActualizacion = a.idActualizacion) as totalPadrinos,
             (SELECT COUNT(*) FROM actualizacion_padrinos ap WHERE ap.idActualizacion = a.idActualizacion AND ap.leido = 1) as leidos
         FROM actualizaciones a
-        INNER JOIN animales an ON a.idAnimal = an.idAnimal
+        INNER JOIN mascotas m ON a.idMascota = m.idMascota
         WHERE a.idProtectora = ? AND a.activo = 1
         ORDER BY a.fecha DESC');
     $stmt->execute([$idProtectora]);

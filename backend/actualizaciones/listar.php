@@ -14,7 +14,7 @@ $idUsuario = $usuario['idUsuario'];
 $pagina = intval($_GET['pagina'] ?? 1);
 $porPagina = intval($_GET['porPagina'] ?? 10);
 $filtro = $_GET['filtro'] ?? 'todas';
-$idAnimalFiltro = intval($_GET['idAnimal'] ?? 0);
+$idMascotaFiltro = intval($_GET['idMascota'] ?? 0);
 $offset = ($pagina - 1) * $porPagina;
 
 $pdo = conectar();
@@ -27,18 +27,20 @@ if ($filtro === 'no_leidas') {
 }
 
 $params = [$idUsuario, $porPagina, $offset];
-$whereAnimal = '';
-if ($idAnimalFiltro > 0) {
-    $whereAnimal = 'AND a.idAnimal = ?';
-    $params = [$idUsuario, $idAnimalFiltro, $porPagina, $offset];
+$whereMascota = '';
+if ($idMascotaFiltro > 0) {
+    $whereMascota = 'AND a.idMascota = ?';
+    $params = [$idUsuario, $idMascotaFiltro, $porPagina, $offset];
 }
 
-$sql = "SELECT a.idActualizacion, a.mensaje, a.fotos, a.video_url, a.fecha, a.idAnimal, 
-               an.nombre as animalNombre, an.foto_principal as foto, ap.leido
+$sql = "SELECT a.idActualizacion, a.mensaje, a.fotos, a.video_url, a.fecha, a.idMascota,
+               m.nombre AS animalNombre,
+               (SELECT mf.ruta FROM mascotas_fotos mf WHERE mf.idMascota = m.idMascota AND mf.es_principal = 1 LIMIT 1) AS foto,
+               ap.leido
         FROM actualizaciones a
         INNER JOIN actualizacion_padrinos ap ON a.idActualizacion = ap.idActualizacion
-        INNER JOIN animales an ON a.idAnimal = an.idAnimal
-        WHERE ap.idUsuario = ? $whereAnimal $condicionFiltro
+        INNER JOIN mascotas m ON a.idMascota = m.idMascota
+        WHERE ap.idUsuario = ? $whereMascota $condicionFiltro
         ORDER BY a.fecha DESC
         LIMIT ? OFFSET ?";
 
@@ -48,13 +50,13 @@ $actualizaciones = $stmt->fetchAll();
 
 $countParams = [$idUsuario];
 $whereCount = '';
-if ($idAnimalFiltro > 0) {
-    $whereCount = 'AND a.idAnimal = ?';
-    $countParams = [$idUsuario, $idAnimalFiltro];
+if ($idMascotaFiltro > 0) {
+    $whereCount = 'AND a.idMascota = ?';
+    $countParams = [$idUsuario, $idMascotaFiltro];
 }
 
-$stmt = $pdo->prepare("SELECT COUNT(*) as total FROM actualizaciones a 
-                        INNER JOIN actualizacion_padrinos ap ON a.idActualizacion = ap.idActualizacion 
+$stmt = $pdo->prepare("SELECT COUNT(*) as total FROM actualizaciones a
+                        INNER JOIN actualizacion_padrinos ap ON a.idActualizacion = ap.idActualizacion
                         WHERE ap.idUsuario = ? $whereCount $condicionFiltro");
 $stmt->execute($countParams);
 $total = $stmt->fetch()['total'];

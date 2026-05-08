@@ -17,15 +17,15 @@ $idProtectora = $usuario['idProtectora'];
 
 $pdo = conectar();
 
-$idAnimal = intval($_POST['idAnimal'] ?? 0);
+$idMascota = intval($_POST['idMascota'] ?? 0);
 $mensaje = limpiar($_POST['mensaje'] ?? '');
 
-if (!$idAnimal || !$mensaje) {
+if (!$idMascota || !$mensaje) {
     respuestaError('Faltan datos obligatorios.', 400);
 }
 
-$stmt = $pdo->prepare('SELECT idAnimal FROM animales WHERE idAnimal = ? AND idProtectora = ? LIMIT 1');
-$stmt->execute([$idAnimal, $idProtectora]);
+$stmt = $pdo->prepare('SELECT idMascota FROM mascotas WHERE idMascota = ? AND idProtectora = ? LIMIT 1');
+$stmt->execute([$idMascota, $idProtectora]);
 if (!$stmt->fetch()) {
     respuestaError('Animal no encontrado o no autorizado.', 404);
 }
@@ -48,12 +48,12 @@ if (!empty($_FILES['fotos']['name'][0])) {
 
 $videoUrl = filter_var($_POST['video_url'] ?? '', FILTER_SANITIZE_URL) ?: null;
 
-$stmt = $pdo->prepare('INSERT INTO actualizaciones (idAnimal, idProtectora, mensaje, fotos, video_url) VALUES (?, ?, ?, ?, ?)');
-$stmt->execute([$idAnimal, $idProtectora, $mensaje, $fotos ? json_encode($fotos) : null, $videoUrl]);
+$stmt = $pdo->prepare('INSERT INTO actualizaciones (idMascota, idProtectora, mensaje, fotos, video_url) VALUES (?, ?, ?, ?, ?)');
+$stmt->execute([$idMascota, $idProtectora, $mensaje, $fotos ? json_encode($fotos) : null, $videoUrl]);
 $idActualizacion = $pdo->lastInsertId();
 
-$stmt = $pdo->prepare('SELECT idUsuario FROM apadrinamientos WHERE idAnimal = ? AND activo = 1');
-$stmt->execute([$idAnimal]);
+$stmt = $pdo->prepare('SELECT idUsuario FROM apadrinamientos WHERE idMascota = ? AND estado = "activo"');
+$stmt->execute([$idMascota]);
 $padrinos = $stmt->fetchAll();
 
 $insertPadrino = $pdo->prepare('INSERT INTO actualizacion_padrinos (idActualizacion, idUsuario, leido) VALUES (?, ?, 0)');

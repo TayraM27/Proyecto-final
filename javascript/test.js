@@ -1031,6 +1031,14 @@ function mostrarResultadoConocimiento() {
         total: total,
         pct: pct
     }));
+    if (_testLogueado) {
+        fetch('../backend/tests/resultados.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ tipo: 'conocimiento', datos: { puntos: puntos, total: total, pct: pct } })
+        }).catch(function(){});
+    }
 }
 
 // ----------------------------------------------------------------
@@ -1040,6 +1048,12 @@ function mostrarResultadoCompatibilidad() {
         document.getElementById('aviso-login-compatibilidad').classList.remove('d-none');
         return;
     }
+    fetch('../backend/tests/resultados.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ tipo: 'compatibilidad', datos: { especieFiltro: estadoTest.compatibilidad.especieFiltro } })
+    }).catch(function(){});
     /* Guardar resultado en localStorage para perfil */
     localStorage.setItem('pf_test_compatibilidad_' + _pfUserId(), JSON.stringify({
         fecha: new Date().toISOString(),

@@ -89,10 +89,10 @@
 
         <!-- tabs -->
         <div style="display:flex;gap:0.5em;flex-wrap:wrap;margin-bottom:1.5em;border-bottom:2px solid #e9ecef;padding-bottom:0.5em;">
-            <button class="tab-btn" data-tab="favoritos" onclick="cambiarTab(this)">
+            <button class="tab-btn activo" data-tab="favoritos" onclick="cambiarTab(this)">
                 <i class="fa-solid fa-heart me-2"></i>Favoritos
             </button>
-            <button class="tab-btn activo" data-tab="apadrinamientos" onclick="cambiarTab(this)">
+            <button class="tab-btn" data-tab="apadrinamientos" onclick="cambiarTab(this)">
                 <i class="fa-solid fa-star me-2"></i>Apadrinamientos
             </button>
             <button class="tab-btn" data-tab="actualizaciones" onclick="cambiarTab(this)">
@@ -100,6 +100,9 @@
             </button>
             <button class="tab-btn" data-tab="panel-protectora" onclick="cambiarTab(this)" id="tabProtectora" style="display:none;">
                 <i class="fa-solid fa-shield-halved me-2"></i>Panel Protectora
+            </button>
+            <button class="tab-btn" data-tab="tests" onclick="cambiarTab(this)">
+                <i class="fa-solid fa-circle-question me-2"></i>Tests
             </button>
             <button class="tab-btn" data-tab="notificaciones" onclick="cambiarTab(this)">
                 <i class="fa-solid fa-bell me-2"></i>Notificaciones
@@ -134,13 +137,19 @@
 
         <!-- tab: actualizaciones -->
         <div id="tab-actualizaciones" class="tab-contenido d-none">
-            <h3 style="font-size:1.1rem;font-weight:700;color:#1B358F;margin-bottom:1em;">
-                <i class="fa-solid fa-bullhorn me-2"></i>Actualizaciones
-            </h3>
-            <div class="alert alert-secondary d-none" id="sinActualizaciones">
-                No tienes actualizaciones.
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1em;margin-bottom:1.5em;">
+                <h3 style="margin:0;font-weight:700;color:#1B358F;"><i class="fa-solid fa-bullhorn me-2"></i>Actualizaciones</h3>
+                <div class="d-flex gap-2 flex-wrap">
+                    <select id="filtroLeido" class="form-select" style="width:auto;">
+                        <option value="todas">Todas</option>
+                        <option value="no_leidas">No leídas</option>
+                        <option value="leidas">Leídas</option>
+                    </select>
+                </div>
             </div>
-            <div id="listaActualizaciones"></div>
+            <div id="contActualizaciones">
+                <div class="text-center py-4"><div class="spinner-border" style="color:#1B358F;"></div></div>
+            </div>
             <div class="text-center py-3" id="paginacionActualizaciones"></div>
         </div>
 
@@ -345,24 +354,6 @@
         </a>
     </div>
 
-    <div id="tab-actualizaciones" class="d-none">
-        <div style="display:flex;justify-content-between;align-items:center;flex-wrap:wrap;gap:1em;margin-bottom:1.5em;">
-            <h3 style="margin:0;font-weight:700;"><i class="fa-solid fa-bullhorn me-2"></i>Actualizaciones</h3>
-            <div class="d-flex gap-2 flex-wrap">
-                <select id="filtroAnimal" class="form-select" style="width:auto;">
-                    <option value="0">Todos los animales</option>
-                </select>
-                <select id="filtroLeido" class="form-select" style="width:auto;">
-                    <option value="todas">Todas</option>
-                    <option value="no_leidas">No leídas</option>
-                    <option value="leidas">Leídas</option>
-                </select>
-            </div>
-        </div>
-        <div id="contActualizaciones"></div>
-        <div class="text-center py-3" id="paginacionActualizaciones"></div>
-    </div>
-
     <div class="text-center mt-5">
         <a href="#"><img src="../img/sectionIndex/up-arrow.png" alt="Volver arriba" id="arrow" width="40px"></a>
     </div>
@@ -424,6 +415,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
             }
+            document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('activo'); });
+            document.querySelectorAll('.tab-contenido').forEach(function(t) { t.classList.add('d-none'); });
+            var btnFav = document.querySelector('.tab-btn[data-tab="favoritos"]');
+            var tabFav = document.getElementById('tab-favoritos');
+            if (btnFav) btnFav.classList.add('activo');
+            if (tabFav) tabFav.classList.remove('d-none');
             cargarFavoritos();
             cargarNotificaciones();
         })
@@ -485,6 +482,10 @@ function cambiarTab(btn) {
     if (tab === 'perfil')                cargarDatos();
     if (tab === 'panel-protectora')      cargarPanelProtectora();
     if (tab === 'solicitud-protectora')  cargarSolicitudProtectora();
+}
+
+function verActualizacionesMascota(idMascota) {
+    verDetalleApadrinado(idMascota);
 }
 
 /*--------------------------------------------------------------------------------------------
@@ -562,68 +563,173 @@ function quitarFavoritoPerfil(e, idMascota) {
 
 /*--------------------------------------------------------------------------------------------
 apadrinamientos */
+function verDetalleApadrinado(idMascota) {
+    var modal = new bootstrap.Modal(document.getElementById('modalActualizacion'));
+    document.getElementById('modalActualizacionBody').innerHTML = '<div class="text-center py-4"><div class="spinner-border" style="color:#1B358F;"></div></div>';
+    document.querySelector('#modalActualizacion .modal-title').innerHTML = '<i class="fa-solid fa-star me-2"></i>Cargando...';
+    modal.show();
+    fetch('../backend/apadrinamiento/seguimientos.php?idMascota=' + idMascota, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            var body = document.getElementById('modalActualizacionBody');
+            if (!data.ok) {
+                body.innerHTML = '<p class="text-danger text-center py-4">' + (data.error || 'Error al cargar.') + '</p>';
+                return;
+            }
+            var seguimientos = data.seguimientos || [];
+            document.querySelector('#modalActualizacion .modal-title').innerHTML = '<i class="fa-solid fa-star me-2"></i>' + (data.mascota_nombre || 'Actualizaciones');
+            var html = '';
+            if (!seguimientos.length) {
+                html = '<div style="text-align:center;padding:2em;"><i class="fa-solid fa-bullhorn" style="font-size:2.5rem;color:#dee2e6;display:block;margin-bottom:0.5em;"></i><p style="color:#6c757d;">No hay actualizaciones para este animal.</p></div>';
+            } else {
+                seguimientos.forEach(function(s){
+                    var archivoHtml = '';
+                    if (s.ruta_archivo) {
+                        if (s.tipo_archivo === 'foto') {
+                            archivoHtml = '<div style="margin-top:0.5em;"><img src="../' + s.ruta_archivo + '" style="max-width:100%;max-height:250px;border-radius:8px;object-fit:cover;"></div>';
+                        } else if (s.tipo_archivo === 'video') {
+                            archivoHtml = '<div style="margin-top:0.5em;"><video controls style="max-width:100%;max-height:250px;border-radius:8px;"><source src="../' + s.ruta_archivo + '"></video></div>';
+                        } else {
+                            archivoHtml = '<div style="margin-top:0.5em;"><a href="../' + s.ruta_archivo + '" target="_blank" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-download"></i> Descargar</a></div>';
+                        }
+                    }
+                    var fecha = s.fecha ? new Date(s.fecha).toLocaleDateString('es-ES', { day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '';
+                    html += '<div style="padding:1em 0;border-bottom:1px solid #f0f0f0;">'
+                        + '<div style="display:flex;justify-content:space-between;align-items:flex-start;">'
+                        + '<p style="white-space:pre-wrap;margin:0 0 0.5em 0;line-height:1.6;">' + (s.contenido || '') + '</p>'
+                        + '</div>'
+                        + archivoHtml
+                        + '<small class="text-muted">' + fecha + '</small>'
+                        + '</div>';
+                });
+            }
+            body.innerHTML = html;
+        })
+        .catch(function(){
+            document.getElementById('modalActualizacionBody').innerHTML = '<p class="text-danger text-center py-4">Error de conexión.</p>';
+        });
+}
+
 function cargarApadrinamientos() {
     var cont = document.getElementById('listaApadrinamientos');
     if (cont.dataset.cargado) return;
     cont.dataset.cargado = '1';
-    cont.innerHTML = vacio('fa-star', 'Aún no apadrinas ningún animal.', 'Apadrinando contribuyes a sus cuidados y recibes fotos y vídeos de su evolución.', 'apadrina.html', 'Ver animales para apadrinar');
+    cont.innerHTML = '<div class="text-center py-4"><div class="spinner-border" style="color:#1B358F;"></div></div>';
+    fetch('../backend/apadrinamiento/listar_usuario.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok || !data.apadrinamientos || !data.apadrinamientos.length) {
+                cont.innerHTML = vacio('fa-star', 'Aún no apadrinas ningún animal.', 'Apadrinando contribuyes a sus cuidados y recibes fotos y vídeos de su evolución.', 'apadrina.html', 'Ver animales para apadrinar');
+                return;
+            }
+            var html = '';
+            data.apadrinamientos.forEach(function(a){
+                var badgeColor = a.estado === 'activo' ? '#2e7d32' : a.estado === 'pausado' ? '#c87a00' : '#c0392b';
+                var fotoUrl = a.foto_principal ? '../' + a.foto_principal : '../img/mascotas/default.jpg';
+                html += '<div class="d-flex gap-3 align-items-start p-3 border-bottom" style="cursor:pointer;" onclick="verDetalleApadrinado(' + a.idMascota + ')">'
+                    + '<img src="' + fotoUrl + '" onerror="this.src=\'../img/mascotas/default.jpg\'" style="width:70px;height:70px;object-fit:cover;border-radius:10px;flex-shrink:0;">'
+                    + '<div style="flex:1;min-width:0;">'
+                    + '<strong style="font-size:1rem;">' + a.mascota_nombre + '</strong>'
+                    + '<span class="badge ms-2" style="background:' + badgeColor + ';color:#fff;font-size:0.7rem;">' + a.estado + '</span>'
+                    + '<p class="text-muted mb-1" style="font-size:0.85rem;">' + a.protectora_nombre + '</p>'
+                    + '<small class="text-muted">Cuota: ' + a.cantidad_mensual + ' €/mes · ' + (a.metodo_pago || '—') + '</small>'
+                    + '</div>'
+                    + '<div style="flex-shrink:0;display:flex;flex-direction:column;gap:0.3em;">'
+                    + '<a href="fichaAnimal.html?id=' + a.idMascota + '" class="btn btn-sm btn-outline-primary" style="font-size:0.78rem;" onclick="event.stopPropagation()"><i class="fa-solid fa-eye"></i> Ficha</a>'
+                    + '</div>'
+                    + '</div>';
+            });
+            cont.innerHTML = html || vacio('fa-star', 'Aún no apadrinas ningún animal.', 'Apadrinando contribuyes a sus cuidados y recibes fotos y vídeos de su evolución.', 'apadrina.html', 'Ver animales para apadrinar');
+        })
+        .catch(function(){
+            cont.innerHTML = '<p class="text-danger text-center py-4">Error de conexión.</p>';
+        });
 }
 
 /*--------------------------------------------------------------------------------------------
 tests */
 function cargarTests() {
     var cont = document.getElementById('listaTests');
-    /* Sin guard de dataset.cargado — lee localStorage que puede actualizarse */
+    cont.innerHTML = '<div class="text-center py-4"><div class="spinner-border" style="color:#1B358F;"></div></div>';
+    fetch('../backend/tests/resultados.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) {
+                cont.innerHTML = '<p class="text-danger text-center py-4">Error al cargar.</p>';
+                return;
+            }
+            var resConocimiento = data.conocimiento;
+            var resCompatibilidad = data.compatibilidad;
 
-    var resConocimiento   = JSON.parse(localStorage.getItem('pf_test_conocimiento_' + _pfUserId()) || 'null');
-    var resCompatibilidad = JSON.parse(localStorage.getItem('pf_test_compatibilidad_' + _pfUserId()) || 'null');
+            if (!resConocimiento && !resCompatibilidad) {
+                var uid = _pfUserId();
+                var locConoc = JSON.parse(localStorage.getItem('pf_test_conocimiento_' + uid) || 'null');
+                var locCompat = JSON.parse(localStorage.getItem('pf_test_compatibilidad_' + uid) || 'null');
+                if (locConoc) {
+                    resConocimiento = { fecha: locConoc.fecha, puntos: locConoc.puntos, total: locConoc.total, pct: locConoc.pct, _local: true };
+                }
+                if (locCompat) {
+                    resCompatibilidad = { fecha: locCompat.fecha, especieFiltro: locCompat.especieFiltro, _local: true };
+                }
+                if (!resConocimiento && !resCompatibilidad) {
+                    cont.innerHTML = vacio('fa-circle-question', 'No has hecho ningún test todavía.', 'Descubre qué mascota encaja mejor con tu estilo de vida.', 'test.html', 'Hacer el test');
+                    return;
+                }
+            }
 
-    if (!resConocimiento && !resCompatibilidad) {
-        cont.innerHTML = vacio('fa-circle-question', 'No has hecho ningún test todavía.', 'Descubre qué mascota encaja mejor con tu estilo de vida.', 'test.html', 'Hacer el test');
-        return;
-    }
+            var html = '';
 
-    var html = '';
+            if (resConocimiento) {
+                var colorPct = resConocimiento.pct >= 70 ? '#2e7d32' : resConocimiento.pct >= 40 ? '#c87a00' : '#c0392b';
+                html += '<div class="notif-item" style="margin-bottom:1em;cursor:pointer;" onclick="verResultadoTest(\'conocimiento\')">'
+                    + '<div class="notif-icono"><i class="fa-solid fa-book-open" style="color:#1B358F;"></i></div>'
+                    + '<div style="flex:1;">'
+                    + '<p class="notif-texto"><strong>Test de conocimientos</strong><br>'
+                    + '<span style="color:' + colorPct + ';font-weight:700;">' + resConocimiento.puntos + '/' + resConocimiento.total + ' (' + resConocimiento.pct + '%)</span></p>'
+                    + '<p class="notif-fecha">' + formatFecha(resConocimiento.fecha) + ' · <em>Toca para ver detalle</em></p>'
+                    + '</div>'
+                    + '<div style="display:flex;gap:0.5em;align-items:center;flex-shrink:0;" onclick="event.stopPropagation()">'
+                    + '<a href="test.html" class="btn-azul" style="white-space:nowrap;padding:0.4em 0.9em;border-radius:8px;font-size:0.82rem;text-decoration:none;">Repetir</a>'
+                    + '<button onclick="eliminarResultadoTest(\'conocimiento\', this)" title="Eliminar resultado" style="background:none;border:none;cursor:pointer;color:#c0392b;font-size:1.1rem;padding:0.2em 0.4em;"><i class="fa-solid fa-trash"></i></button>'
+                    + '</div>'
+                    + '</div>';
+            }
 
-    if (resConocimiento) {
-        var colorPct = resConocimiento.pct >= 70 ? '#2e7d32' : resConocimiento.pct >= 40 ? '#c87a00' : '#c0392b';
-        html += '<div class="notif-item" style="margin-bottom:1em;cursor:pointer;" onclick="verResultadoTest(\'conocimiento\')">'
-            + '<div class="notif-icono"><i class="fa-solid fa-book-open" style="color:#1B358F;"></i></div>'
-            + '<div style="flex:1;">'
-            + '<p class="notif-texto"><strong>Test de conocimientos</strong><br>'
-            + '<span style="color:' + colorPct + ';font-weight:700;">' + resConocimiento.puntos + '/' + resConocimiento.total + ' (' + resConocimiento.pct + '%)</span></p>'
-            + '<p class="notif-fecha">' + formatFecha(resConocimiento.fecha) + ' · <em>Toca para ver detalle</em></p>'
-            + '</div>'
-            + '<div style="display:flex;gap:0.5em;align-items:center;flex-shrink:0;" onclick="event.stopPropagation()">'
-            + '<a href="test.html" class="btn-azul" style="white-space:nowrap;padding:0.4em 0.9em;border-radius:8px;font-size:0.82rem;text-decoration:none;">Repetir</a>'
-            + '<button onclick="eliminarResultadoTest(\'conocimiento\')" title="Eliminar resultado" style="background:none;border:none;cursor:pointer;color:#c0392b;font-size:1.1rem;padding:0.2em 0.4em;"><i class="fa-solid fa-trash"></i></button>'
-            + '</div>'
-            + '</div>';
-    }
+            if (resCompatibilidad) {
+                var labelEspecie = resCompatibilidad.especieFiltro === 'perro' ? 'Perros'
+                    : resCompatibilidad.especieFiltro === 'gato' ? 'Gatos' : 'Todos';
+                html += '<div class="notif-item" style="cursor:pointer;" onclick="verResultadoTest(\'compatibilidad\')">'
+                    + '<div class="notif-icono"><i class="fa-solid fa-heart" style="color:#1B358F;"></i></div>'
+                    + '<div style="flex:1;">'
+                    + '<p class="notif-texto"><strong>Test de compatibilidad</strong><br>'
+                    + '<span style="color:#6c757d;">Preferencia: ' + labelEspecie + '</span></p>'
+                    + '<p class="notif-fecha">' + formatFecha(resCompatibilidad.fecha) + ' · <em>Toca para ver ranking</em></p>'
+                    + '</div>'
+                    + '<div style="display:flex;gap:0.5em;align-items:center;flex-shrink:0;" onclick="event.stopPropagation()">'
+                    + '<a href="test.html" class="btn-azul" style="white-space:nowrap;padding:0.4em 0.9em;border-radius:8px;font-size:0.82rem;text-decoration:none;">Repetir</a>'
+                    + '<button onclick="eliminarResultadoTest(\'compatibilidad\', this)" title="Eliminar resultado" style="background:none;border:none;cursor:pointer;color:#c0392b;font-size:1.1rem;padding:0.2em 0.4em;"><i class="fa-solid fa-trash"></i></button>'
+                    + '</div>'
+                    + '</div>';
+            }
 
-    if (resCompatibilidad) {
-        var labelEspecie = resCompatibilidad.especieFiltro === 'perro' ? 'Perros'
-            : resCompatibilidad.especieFiltro === 'gato' ? 'Gatos' : 'Todos';
-        html += '<div class="notif-item" style="cursor:pointer;" onclick="verResultadoTest(\'compatibilidad\')">'
-            + '<div class="notif-icono"><i class="fa-solid fa-heart" style="color:#1B358F;"></i></div>'
-            + '<div style="flex:1;">'
-            + '<p class="notif-texto"><strong>Test de compatibilidad</strong><br>'
-            + '<span style="color:#6c757d;">Preferencia: ' + labelEspecie + '</span></p>'
-            + '<p class="notif-fecha">' + formatFecha(resCompatibilidad.fecha) + ' · <em>Toca para ver ranking</em></p>'
-            + '</div>'
-            + '<div style="display:flex;gap:0.5em;align-items:center;flex-shrink:0;" onclick="event.stopPropagation()">'
-            + '<a href="test.html" class="btn-azul" style="white-space:nowrap;padding:0.4em 0.9em;border-radius:8px;font-size:0.82rem;text-decoration:none;">Repetir</a>'
-            + '<button onclick="eliminarResultadoTest(\'compatibilidad\')" title="Eliminar resultado" style="background:none;border:none;cursor:pointer;color:#c0392b;font-size:1.1rem;padding:0.2em 0.4em;"><i class="fa-solid fa-trash"></i></button>'
-            + '</div>'
-            + '</div>';
-    }
-
-    cont.innerHTML = html;
+            cont.innerHTML = html;
+        })
+        .catch(function(){
+            cont.innerHTML = '<p class="text-danger text-center py-4">Error de conexión.</p>';
+        });
 }
 
-function eliminarResultadoTest(tipo) {
-    localStorage.removeItem('pf_test_' + tipo + '_' + _pfUserId());
-    cargarTests();
+function eliminarResultadoTest(tipo, btn) {
+    if (btn) btn.disabled = true;
+    var uid = _pfUserId();
+    localStorage.removeItem('pf_test_' + tipo + '_' + uid);
+    fetch('../backend/tests/resultados.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ tipo: tipo, accion: 'eliminar' }) })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            cargarTests();
+            if (btn) btn.disabled = false;
+        })
+        .catch(function(){ cargarTests(); if (btn) btn.disabled = false; });
 }
 
 /*--------------------------------------------------------------------------------------------
@@ -1067,6 +1173,10 @@ function cargarSolicitudProtectora() {
                 }
                 html += '<div class="mt-3">'
                     + '<textarea class="form-control" id="txtRespuestaSolicitud" rows="4" placeholder="Escribe aqui la informacion adicional que te piden..."></textarea>'
+                    + '<div class="mt-2">'
+                    + '<label class="form-label" style="font-size:0.85rem;font-weight:600;">Adjuntar archivos (opcional)</label>'
+                    + '<input type="file" class="form-control" id="fileRespuestaSolicitud" multiple accept="image/*,.pdf,.doc,.docx">'
+                    + '</div>'
                     + '<button class="btn btn-sm btn-primary mt-2" onclick="enviarRespuestaSolicitud(' + s.idSolicitud + ')">'
                     + '<i class="fa-solid fa-paper-plane me-1"></i>Enviar respuesta</button>'
                     + '<p id="errorRespuestaSol" style="color:#dc3545;font-size:0.82rem;margin-top:0.5em;display:none;"></p>'
@@ -1087,6 +1197,7 @@ function enviarRespuestaSolicitud(idSolicitud) {
     var err = document.getElementById('errorRespuestaSol');
     var ok = document.getElementById('okRespuestaSol');
     var respuesta = txt.value.trim();
+    var files = document.getElementById('fileRespuestaSolicitud').files;
 
     err.style.display = 'none';
     ok.style.display = 'none';
@@ -1097,11 +1208,17 @@ function enviarRespuestaSolicitud(idSolicitud) {
         return;
     }
 
+    var fd = new FormData();
+    fd.append('idSolicitud', idSolicitud);
+    fd.append('respuesta', respuesta);
+    for (var i = 0; i < files.length; i++) {
+        fd.append('archivos[]', files[i]);
+    }
+
     fetch('../backend/adopcion/solicitud_protectora.php', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ idSolicitud: idSolicitud, respuesta: respuesta })
+        body: fd
     })
     .then(function(r) { return r.json(); })
     .then(function(data) {
@@ -1187,52 +1304,41 @@ function verResultadoTest(tipo) {
     var cuerpo = document.getElementById('modalTestCuerpo');
     var titulo = document.getElementById('modalTestTitulo');
 
-    if (tipo === 'conocimiento') {
-        var res = JSON.parse(localStorage.getItem('pf_test_conocimiento_' + _pfUserId()) || 'null');
-        if (!res) return;
-        titulo.textContent = 'Test de conocimientos — resultado';
-        var colorPct = res.pct >= 70 ? '#2e7d32' : res.pct >= 40 ? '#c87a00' : '#c0392b';
-        cuerpo.innerHTML =
-            '<div style="text-align:center;padding:1em 0 1.5em;">' +
-                '<p style="font-size:2.5rem;font-weight:800;color:' + colorPct + ';margin:0;">' + res.pct + '%</p>' +
-                '<p style="color:#555;font-size:1rem;">' + res.puntos + ' de ' + res.total + ' respuestas correctas</p>' +
-                '<p style="color:#aaa;font-size:0.8rem;">' + formatFecha(res.fecha) + '</p>' +
-            '</div>';
-    } else {
-        var res = JSON.parse(localStorage.getItem('pf_test_compatibilidad_' + _pfUserId()) || 'null');
-        if (!res || !res.ranking) {
-            titulo.textContent = 'Test de compatibilidad';
-            cuerpo.innerHTML = vacio('fa-heart', 'Resultado no disponible.', 'Vuelve a hacer el test para ver el ranking.', 'test.html', 'Hacer el test');
-        } else {
-            titulo.innerHTML = '<i class="fa-solid fa-ranking-star me-2" style="color:#F8BA56;"></i>Ranking de compatibilidad';
-            var labelEspecie = res.especieFiltro === 'perro' ? 'perros'
-                : res.especieFiltro === 'gato' ? 'gatos' : 'perros y gatos';
-            var html = '<p style="color:#555;font-size:0.88rem;margin-bottom:1.2em;">Hemos ordenado los ' + labelEspecie + ' de más a menos compatibles contigo.</p>';
-            res.ranking.forEach(function(item, idx) {
-                var medalla = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : (idx + 1) + 'º';
-                var color   = item.compatibilidad >= 75 ? '#2e7d32' : item.compatibilidad >= 50 ? '#c87a00' : '#aaa';
-                var fotoHtml = item.foto
-                    ? '<img src="' + item.foto + '" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #e9ecef;" onerror="this.style.display=\'none\'">'
-                    : '<i class="fa-solid ' + item.icono + '" style="color:#1B358F;font-size:1.1rem;flex-shrink:0;"></i>';
-                html += '<div style="display:flex;align-items:center;gap:0.8em;padding:0.7em 0;border-bottom:1px solid #f0f0f0;">'
-                    + '<span style="font-size:1.2rem;flex-shrink:0;">' + medalla + '</span>'
-                    + fotoHtml
-                    + '<div style="flex:1;min-width:0;">'
-                    + '<strong style="color:#1B358F;font-size:0.9rem;">' + item.nombre + '</strong>'
-                    + ' <span style="color:#aaa;font-size:0.78rem;">' + item.especie + '</span><br>'
-                    + '<span style="color:#555;font-size:0.8rem;">' + item.raza + ' · ' + item.protectora + '</span>'
-                    + '</div>'
-                    + '<div style="text-align:right;flex-shrink:0;">'
-                    + '<span style="color:' + color + ';font-weight:700;font-size:0.95rem;">' + item.compatibilidad + '%</span><br>'
-                    + '<a href="fichaAnimal.html?id=' + item.id + '" style="color:#1B358F;font-size:0.75rem;text-decoration:none;">Ver ficha →</a>'
-                    + '</div>'
-                    + '</div>';
-            });
-            cuerpo.innerHTML = html;
-        }
-    }
+    fetch('../backend/tests/resultados.php', { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) return;
 
-    new bootstrap.Modal(document.getElementById('modalResultadoTest')).show();
+            if (tipo === 'conocimiento') {
+                var res = data.conocimiento;
+                if (!res) return;
+                titulo.textContent = 'Test de conocimientos — resultado';
+                var colorPct = res.pct >= 70 ? '#2e7d32' : res.pct >= 40 ? '#c87a00' : '#c0392b';
+                cuerpo.innerHTML =
+                    '<div style="text-align:center;padding:1em 0 1.5em;">' +
+                        '<p style="font-size:2.5rem;font-weight:800;color:' + colorPct + ';margin:0;">' + res.pct + '%</p>' +
+                        '<p style="color:#555;font-size:1rem;">' + res.puntos + ' de ' + res.total + ' respuestas correctas</p>' +
+                        '<p style="color:#aaa;font-size:0.8rem;">' + formatFecha(res.fecha) + '</p>' +
+                    '</div>';
+            } else if (tipo === 'compatibilidad') {
+                var res = data.compatibilidad;
+                if (!res) {
+                    titulo.textContent = 'Test de compatibilidad';
+                    cuerpo.innerHTML = vacio('fa-heart', 'Resultado no disponible.', 'Vuelve a hacer el test para ver el ranking.', 'test.html', 'Hacer el test');
+                    new bootstrap.Modal(document.getElementById('modalResultadoTest')).show();
+                    return;
+                }
+                titulo.innerHTML = '<i class="fa-solid fa-ranking-star me-2" style="color:#F8BA56;"></i>Test de compatibilidad';
+                var labelEspecie = res.especieFiltro === 'perro' ? 'perros' : res.especieFiltro === 'gato' ? 'gatos' : 'perros y gatos';
+                cuerpo.innerHTML = '<div style="text-align:center;padding:1em 0 1.5em;">'
+                    + '<i class="fa-solid fa-heart" style="font-size:3rem;color:#F8BA56;margin-bottom:0.5em;"></i>'
+                    + '<p style="color:#555;">Preferencia: <strong>' + labelEspecie + '</strong></p>'
+                    + '<p style="color:#aaa;font-size:0.8rem;">' + formatFecha(res.fecha) + '</p>'
+                    + '<a href="test.html" class="btn-azul" style="display:inline-block;margin-top:1em;padding:0.5em 1.3em;border-radius:8px;text-decoration:none;">Ver ranking completo</a>'
+                    + '</div>';
+            }
+            new bootstrap.Modal(document.getElementById('modalResultadoTest')).show();
+        });
 }
 function vacio(icono, titulo, texto, href, btnTexto) {
     return '<div style="text-align:center;padding:3em 1em;">'
@@ -1250,7 +1356,6 @@ function formatFecha(f) {
 
 /* Cargar actualizaciones */
 function cargarActualizaciones(pagina) {
-    var filtroAnimal = document.getElementById('filtroAnimal').value;
     var filtroLeido = document.getElementById('filtroLeido').value;
     var cont = document.getElementById('contActualizaciones');
     var pagCont = document.getElementById('paginacionActualizaciones');
@@ -1260,7 +1365,6 @@ function cargarActualizaciones(pagina) {
         porPagina: 10,
         filtro: filtroLeido
     });
-    if (filtroAnimal !== '0') params.append('idMascota', filtroAnimal);
     
     fetch('../backend/actualizaciones/listar.php?' + params.toString(), { credentials: 'include' })
     .then(r => r.json())
@@ -1277,7 +1381,7 @@ function cargarActualizaciones(pagina) {
         data.actualizaciones.forEach(function(a) {
             var nuevo = a.leido == 0 ? '<span class="badge bg-danger ms-2" style="font-size:0.7rem;">NUEVO</span>' : '';
             html += '<div class="d-flex gap-3 align-items-start p-3 border-bottom" style="cursor:pointer;" onclick="verDetalleActualizacion(' + a.idActualizacion + ')">' +
-                '<img src="../img/mascotas/' + (a.foto || 'default.jpg') + '" onerror="this.src=\'../img/mascotas/default.jpg\'" style="width:60px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;">' +
+                '<img src="../' + (a.foto || 'img/mascotas/default.jpg') + '" onerror="this.src=\'../img/mascotas/default.jpg\'" style="width:60px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;">' +
                 '<div class="flex:1;min-width:0;">' +
                     '<strong>' + (a.animalNombre || '') + '</strong>' + nuevo +
                     '<p class="text-muted mb-1" style="font-size:0.85rem;">' + (a.mensaje || '').substring(0, 100) + '...</p>' +
@@ -1301,32 +1405,10 @@ function cargarActualizaciones(pagina) {
     });
 }
 
-/* Cargar opciones de filtro */
-function cargarFiltroAnimales() {
-    fetch('../backend/actualizaciones/listar.php?pagina=1&porPagina=100', { credentials: 'include' })
-    .then(r => r.json())
-    .then(function(data) {
-        if (!data.ok) return;
-        var select = document.getElementById('filtroAnimal');
-        var animales = {};
-        data.actualizaciones.forEach(function(a) {
-            if (!animales[a.idAnimal]) {
-                animales[a.idAnimal] = a.animalNombre;
-            }
-        });
-        for (var id in animales) {
-            var opt = document.createElement('option');
-            opt.value = id;
-            opt.textContent = animales[id];
-            select.appendChild(opt);
-        }
-    });
-}
-
 /* Ver detalle */
 function verDetalleActualizacion(id) {
     fetch('../backend/actualizaciones/detalle.php?idActualizacion=' + id, { credentials: 'include' })
-    .then(r => r.json())
+    .then(function(r){ return r.json(); })
     .then(function(data) {
         if (!data.ok) { alert(data.error); return; }
         var a = data.actualizacion;
@@ -1337,7 +1419,7 @@ function verDetalleActualizacion(id) {
             try {
                 var fotos = JSON.parse(a.fotos);
                 fotos.forEach(function(f) {
-                    fotosHtml += '<img src="../uploads/actualizaciones/' + f + '" style="max-width:200px;max-height:150px;object-fit:cover;border-radius:8px;">';
+                    fotosHtml += '<img src="../' + f + '" style="max-width:200px;max-height:150px;object-fit:cover;border-radius:8px;">';
                 });
             } catch(e) {}
         }
@@ -1346,11 +1428,27 @@ function verDetalleActualizacion(id) {
         
         var respuestasHtml = '';
         respuestas.forEach(function(r) {
+            var sesionId = _pfUserId();
+            var badge = r.idUsuario == sesionId ? ' <span class="badge bg-secondary" style="font-size:0.65rem;">TÚ</span>' : '';
             respuestasHtml += '<div class="border-top pt-2 mt-2">' +
-                '<strong>' + (r.usuarioNombre || 'Usuario') + '</strong> <small class="text-muted">' + formatFecha(r.fecha) + '</small>' +
-                '<p class="mb-1">' + r.mensaje + '</p>' +
+                '<strong>' + (r.usuarioNombre || 'Usuario') + '</strong>' + badge + ' <small class="text-muted">' + formatFecha(r.fecha) + '</small>' +
+                '<p class="mb-1">' + r.respuesta + '</p>' +
             '</div>';
         });
+        
+        var puedeResponder = !parseInt(a.yaRespondio) && !parseInt(a.respondida_protectora);
+        var hiloCerrado = parseInt(a.respondida_protectora);
+        var yaRespondiste = parseInt(a.yaRespondio);
+        
+        var botonesHtml = '<div class="d-flex gap-2">';
+        if (puedeResponder) {
+            botonesHtml += '<button class="btn btn-sm btn-outline-primary" onclick="responderActualizacion(' + id + ')"><i class="fa-solid fa-reply me-1"></i>Responder</button>';
+        } else if (yaRespondiste) {
+            botonesHtml += '<span class="text-muted" style="font-size:0.85rem;padding:0.3em 0;"><i class="fa-solid fa-check-circle me-1" style="color:#2e7d32;"></i>Ya respondiste</span>';
+        } else if (hiloCerrado) {
+            botonesHtml += '<span class="text-muted" style="font-size:0.85rem;padding:0.3em 0;"><i class="fa-solid fa-lock me-1"></i>Hilo cerrado</span>';
+        }
+        botonesHtml += '<button class="btn btn-sm btn-outline-secondary" onclick="marcarLeido(' + id + ')"><i class="fa-solid fa-check me-1"></i>Marcar como leído</button></div>';
         
         var modalBody = document.getElementById('modalActualizacionBody');
         modalBody.innerHTML = 
@@ -1363,10 +1461,7 @@ function verDetalleActualizacion(id) {
             '<h6>Respuestas:</h6>' +
             (respuestasHtml || '<p class="text-muted">No hay respuestas.</p>') +
             '<hr>' +
-            '<div class="d-flex gap-2">' +
-                '<button class="btn btn-sm btn-outline-primary" onclick="responderActualizacion(' + id + ')"><i class="fa-solid fa-reply me-1"></i>Responder</button>' +
-                '<button class="btn btn-sm btn-outline-secondary" onclick="marcarLeido(' + id + ')"><i class="fa-solid fa-check me-1"></i>Marcar como leído</button>' +
-            '</div>';
+            botonesHtml;
         
         new bootstrap.Modal(document.getElementById('modalActualizacion')).show();
     });
@@ -1384,8 +1479,8 @@ function responderActualizacion(id) {
     })
     .then(r => r.json())
     .then(function(data) {
-        if (data.ok) { alert('Respuesta enviada.'); verDetalleActualizacion(id); }
-        else alert(data.error || 'Error.');
+        if (data.ok) { mostrarToast('Respuesta enviada.', 'ok'); verDetalleActualizacion(id); }
+        else mostrarToast(data.error || 'Error.', 'error');
     });
 }
 
@@ -1398,14 +1493,12 @@ function marcarLeido(id) {
     })
     .then(r => r.json())
     .then(function(data) {
-        if (data.ok) { bootstrap.Modal.getInstance(document.getElementById('modalActualizacion')).hide(); cargarActualizaciones(1); }
+        if (data.ok) { mostrarToast('Marcado como leído.', 'ok'); bootstrap.Modal.getInstance(document.getElementById('modalActualizacion')).hide(); cargarActualizaciones(1); }
+        else mostrarToast(data.error || 'Error.', 'error');
     });
 }
 
 /* Eventos filtros */
-if (document.getElementById('filtroAnimal')) {
-    document.getElementById('filtroAnimal').addEventListener('change', function() { cargarActualizaciones(1); });
-}
 if (document.getElementById('filtroLeido')) {
     document.getElementById('filtroLeido').addEventListener('change', function() { cargarActualizaciones(1); });
 }

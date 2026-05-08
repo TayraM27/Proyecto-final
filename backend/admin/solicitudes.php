@@ -1,7 +1,7 @@
-<?php
+﻿<?php
 /*--------------------------------------------------------------------------------------------
-GET — lista solicitudes con filtro de estado y paginación
-PUT — cambia estado de una solicitud */
+GET â€” lista solicitudes con filtro de estado y paginaciÃ³n
+PUT â€” cambia estado de una solicitud */
 
 require_once __DIR__ . '/../includes/funciones.php';
 
@@ -23,66 +23,47 @@ if ($metodo === 'GET') {
     $pagina = (int)($_GET['pagina'] ?? 1);
     $p      = pagina($pagina, 15);
 
-    $condParts = [];
-    $params    = [];
+    $where  = [];
+    $params = [];
 
     if (!$esAdmin && $idProtectoraUsuario) {
-        $condParts[] = 'c.idProtectora = ?';
-        $params[]    = $idProtectoraUsuario;
+        $where[] = 'm.idProtectora = ?';
+        $params[] = $idProtectoraUsuario;
     }
 
-    if ($estado !== 'todos') {
-        $condParts[] = 'c.estado = ?';
-        $params[]    = $estado;
+    $estadosValidos = ['pendiente','en_revision','aprobada','rechazada'];
+    if ($estado !== 'todos' && in_array($estado, $estadosValidos)) {
+        $where[]  = 's.estado = ?';
+        $params[] = $estado;
     }
 
-    $cond = $condParts ? 'WHERE ' . implode(' AND ', $condParts) : '';
+    $cond = $where ? implode(' AND ', $where) : '1';
 
-    $unionSql = "SELECT
-                    s.idSolicitud,
-                    s.nombre,
-                    s.email,
-                    s.telefono,
-                    s.mensaje,
-                    s.estado,
-                    s.fecha_envio,
-                    m.nombre          AS mascota,
-                    m.especie         AS mascota_especie,
-                    p.nombre          AS protectora,
-                    m.idProtectora,
-                    'adopcion'        AS tipo,
-                    NULL              AS cuota,
-                    NULL              AS metodo_pago
-                FROM solicitudes_adopcion s
-                JOIN mascotas    m ON s.idMascota    = m.idMascota
-                JOIN protectoras p ON m.idProtectora = p.idProtectora
-
-                UNION ALL
-
-                SELECT
-                    a.idApadrinamiento AS idSolicitud,
-                    a.nombre_pagador   AS nombre,
-                    a.email_pagador    AS email,
-                    a.telefono,
-                    a.mensaje,
-                    a.estado,
-                    a.fecha_inicio     AS fecha_envio,
-                    m.nombre           AS mascota,
-                    m.especie          AS mascota_especie,
-                    p.nombre           AS protectora,
-                    m.idProtectora,
-                    'apadrinamiento'   AS tipo,
-                    a.cuota,
-                    a.metodo_pago
-                FROM apadrinamientos a
-                JOIN mascotas    m ON a.idMascota    = m.idMascota
-                JOIN protectoras p ON m.idProtectora = p.idProtectora";
-
-    $stmtC = $pdo->prepare("SELECT COUNT(*) FROM ($unionSql) c $cond");
+    $stmtC = $pdo->prepare("SELECT COUNT(*) FROM solicitudes_adopcion s JOIN mascotas m ON s.idMascota = m.idMascota WHERE $cond");
     $stmtC->execute($params);
     $total = (int)$stmtC->fetchColumn();
 
-    $sql = "SELECT * FROM ($unionSql) c $cond ORDER BY c.fecha_envio DESC LIMIT ? OFFSET ?";
+    $sql = "SELECT
+                s.idSolicitud,
+                s.nombre, s.email, s.telefono,
+                s.dni, s.fecha_nacimiento,
+                s.direccion_completa,
+                s.localidad,
+                s.tipo_vivienda, s.vivienda_en_propiedad, s.permiso_propietario,
+                s.personas_en_hogar, s.ninos_en_hogar,
+                s.otros_animales, s.descripcion_otros_animales,
+                s.experiencia_animales, s.tiempo_fuera_casa,
+                s.motivo_adopcion, s.mensaje, s.mensaje_protectora,
+                s.estado, s.fecha_envio, s.fecha_gestion,
+                m.nombre   AS mascota,
+                m.especie  AS mascota_especie,
+                p.nombre   AS protectora
+            FROM solicitudes_adopcion s
+            JOIN mascotas    m ON s.idMascota    = m.idMascota
+            JOIN protectoras p ON m.idProtectora = p.idProtectora
+            WHERE $cond
+            ORDER BY s.fecha_envio DESC
+            LIMIT ? OFFSET ?";
 
     $params[] = $p['limite'];
     $params[] = $p['offset'];
@@ -98,10 +79,10 @@ if ($metodo === 'GET') {
 }
 
 /*--------------------------------------------------------------------------------------------
-PUT — cambiar estado (SOLO PROTECTORA sobre solicitudes de sus mascotas, admin NO puede) */
+PUT â€” cambiar estado (SOLO PROTECTORA sobre solicitudes de sus mascotas, admin NO puede) */
 if ($metodo === 'PUT') {
     if ($esAdmin) {
-        respuestaError('Los administradores no pueden gestionar solicitudes. Esta acción corresponde a la protectora.', 403);
+        respuestaError('Los administradores no pueden gestionar solicitudes. Esta acciÃ³n corresponde a la protectora.', 403);
     }
 
     if (!$idProtectoraUsuario) respuestaError('No tienes una protectora asignada.');
@@ -109,11 +90,12 @@ if ($metodo === 'PUT') {
     $datos       = json_decode(file_get_contents('php://input'), true) ?? [];
     $id          = (int)($datos['idSolicitud'] ?? 0);
     $nuevoEstado = limpiar($datos['estado'] ?? '');
+    $mensajeProt = limpiar($datos['mensaje_protectora'] ?? '');
 
     if (!$id) respuestaError('idSolicitud requerido.');
 
     $estadosValidos = ['pendiente','en_revision','aprobada','rechazada'];
-    if (!in_array($nuevoEstado, $estadosValidos)) respuestaError('Estado no válido.');
+    if (!in_array($nuevoEstado, $estadosValidos)) respuestaError('Estado no vÃ¡lido.');
 
     // Verificar que la solicitud pertenece a una mascota de esta protectora
     $stmt = $pdo->prepare(
@@ -124,8 +106,13 @@ if ($metodo === 'PUT') {
     $stmt->execute([$id, $idProtectoraUsuario]);
     if (!$stmt->fetch()) respuestaError('No puedes gestionar esta solicitud.', 403);
 
-    $pdo->prepare('UPDATE solicitudes_adopcion SET estado = ? WHERE idSolicitud = ?')
-        ->execute([$nuevoEstado, $id]);
+    if ($mensajeProt) {
+        $pdo->prepare('UPDATE solicitudes_adopcion SET estado = ?, mensaje_protectora = ?, fecha_gestion = NOW() WHERE idSolicitud = ?')
+            ->execute([$nuevoEstado, $mensajeProt, $id]);
+    } else {
+        $pdo->prepare('UPDATE solicitudes_adopcion SET estado = ?, fecha_gestion = NOW() WHERE idSolicitud = ?')
+            ->execute([$nuevoEstado, $id]);
+    }
 
     /* Si se aprueba, marcar mascota en proceso */
     if ($nuevoEstado === 'aprobada') {
@@ -141,4 +128,5 @@ if ($metodo === 'PUT') {
     respuestaOk(['mensaje' => 'Estado actualizado correctamente.']);
 }
 
-respuestaError('Método no permitido.', 405);
+respuestaError('MÃ©todo no permitido.', 405);
+

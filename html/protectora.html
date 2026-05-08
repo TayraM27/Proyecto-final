@@ -1008,6 +1008,7 @@ function enviarAdopcion(e) {
         document.getElementById('divPermisoProt').style.display = 'none';
         document.getElementById('divDescOtrosProt').style.display = 'none';
         setTimeout(function() { bootstrap.Modal.getInstance(document.getElementById('modalAdoptar')).hide(); }, 2500);
+        mostrarToast('Solicitud enviada correctamente.', 'ok');
     })
     .catch(function() {
         err.textContent = 'Error de conexión. Inténtalo de nuevo.';
@@ -1099,6 +1100,7 @@ function enviarAcogida(e) {
         document.getElementById('divPermisoAcogidaProt').style.display = 'none';
         document.getElementById('divDescAnimalesAcogidaProt').style.display = 'none';
         setTimeout(function() { bootstrap.Modal.getInstance(document.getElementById('modalAcoger')).hide(); }, 2500);
+        mostrarToast('Solicitud de acogida enviada correctamente.', 'ok');
     })
     .catch(function() {
         err.textContent = 'Error de conexión. Inténtalo de nuevo.';
@@ -1183,6 +1185,7 @@ function enviarApadrinamiento(e) {
         document.getElementById('divTarjetaProt').style.display = 'none';
         document.getElementById('divBizumProt').style.display = 'none';
         setTimeout(function() { bootstrap.Modal.getInstance(document.getElementById('modalApadrinar')).hide(); }, 2500);
+        mostrarToast('Apadrinamiento registrado correctamente.', 'ok');
     })
     .catch(function() {
         err.textContent = 'Error de conexión. Inténtalo de nuevo.';

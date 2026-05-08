@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -502,9 +502,10 @@ function abrirModalAcoge(idMascota) {
 
     var contacto = '';
     if (m.protectora_nombre) contacto += '<p class="protectora-nombre mb-2">' + m.protectora_nombre + '</p>';
+    contacto += '<hr><p class="modal-intro">Si prefieres, contacta directamente con la protectora:</p>';
     if (m.telefono_protectora) contacto += '<div class="modal-dato"><i class="fa-solid fa-phone"></i><a href="tel:' + m.telefono_protectora.replace(/\s/g, '') + '">' + m.telefono_protectora + '</a></div>';
     if (m.email_protectora) contacto += '<div class="modal-dato"><i class="fa-solid fa-envelope"></i><a href="mailto:' + m.email_protectora + '">' + m.email_protectora + '</a></div>';
-    contacto += '<hr><p class="modal-intro">Si prefieres, contacta directamente con la protectora:</p>';
+    
     contacto += '<a href="fichaAnimal.html?id=' + m.idMascota + '" class="btn-azul d-block text-center mt-2" style="text-decoration:none;">'
           + '<i class="fa-solid fa-paw me-2"></i>Ver ficha completa</a>';
     document.getElementById('acoge-contacto').innerHTML = contacto;
@@ -610,6 +611,7 @@ function abrirModalAcoge(idMascota) {
                 var modal = bootstrap.Modal.getInstance(document.getElementById('modalAcoge'));
                 if (modal) modal.hide();
             }, 2500);
+            mostrarToast('Solicitud de acogida enviada correctamente.', 'ok');
         })
         .catch(function() {
             btn.disabled = false;

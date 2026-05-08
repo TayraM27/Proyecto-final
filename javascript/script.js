@@ -1,3 +1,58 @@
+﻿/* ------------------------------------------------------------------ */
+/* Cookies — consentimiento                                            */
+/* ------------------------------------------------------------------ */
+var TIDIO_SRC = 'https://code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js';
+var CLAVE_COOKIES = 'pf_cookies_consent';
+
+function cargarTidio() {
+    if (document.querySelector('script[src*="tidio"]')) return;
+    var s = document.createElement('script');
+    s.src   = TIDIO_SRC;
+    s.async = true;
+    document.body.appendChild(s);
+}
+
+function aplicarConsentimiento(valor) {
+    /* valor: 'todas' | 'necesarias' */
+    localStorage.setItem(CLAVE_COOKIES, valor);
+    var banner = document.getElementById('cookie-banner');
+    if (banner) banner.remove();
+    if (valor === 'todas') cargarTidio();
+}
+
+function mostrarBannerCookies() {
+    if (document.getElementById('cookie-banner')) return;
+    var banner = document.createElement('div');
+    banner.id  = 'cookie-banner';
+    banner.innerHTML =
+        '<p><i class="fa-solid fa-cookie-bite me-2" style="color:#F8BA56;"></i>'
+      + 'Usamos cookies propias para el inicio de sesión y cookies de terceros (Tidio) para el chat de soporte. '
+      + 'Puedes aceptarlas todas o usar solo las necesarias. '
+      + '<a href="privacidad.html">Más información</a></p>'
+      + '<div class="cookie-btns">'
+      + '<button class="btn-cookie-necesarias" onclick="aplicarConsentimiento(\'necesarias\')">Solo necesarias</button>'
+      + '<button class="btn-cookie-aceptar" onclick="aplicarConsentimiento(\'todas\')">Aceptar todas</button>'
+      + '</div>';
+    document.body.appendChild(banner);
+}
+
+function inicializarCookies() {
+    var consent = localStorage.getItem(CLAVE_COOKIES);
+    if (!consent) {
+        /* Primera visita — mostrar banner */
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', mostrarBannerCookies);
+        } else {
+            mostrarBannerCookies();
+        }
+    } else if (consent === 'todas') {
+        cargarTidio();
+    }
+    /* 'necesarias' → no cargar Tidio, no mostrar banner */
+}
+
+inicializarCookies();
+
 /* ------------------------------------------------------------------ */
 /* Contador de vistas — global (llamado desde onclick en adopta.html) */
 /* ------------------------------------------------------------------ */
@@ -977,7 +1032,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var val = inputNombre.value.trim();
             if (!val)           return mostrarErrorR(inputNombre, document.getElementById('errorNombre'), 'El nombre es obligatorio.'), false;
             if (val.length < 2) return mostrarErrorR(inputNombre, document.getElementById('errorNombre'), 'Al menos 2 caracteres.'), false;
-            if (/[^A-Za-zÀ-ÿ\s]/.test(val)) return mostrarErrorR(inputNombre, document.getElementById('errorNombre'), 'Solo letras y espacios.'), false;
+            if (/[^A-Za-z\u00C0-\u00FF\s]/.test(val)) return mostrarErrorR(inputNombre, document.getElementById('errorNombre'), 'Solo letras y espacios.'), false;
             limpiarErrorR(inputNombre, document.getElementById('errorNombre'));
             return true;
         }
@@ -1117,6 +1172,25 @@ function mostrarModalLoginFav() {
     var modal = document.getElementById('modalLoginFav');
     if (!modal) return;
     new bootstrap.Modal(modal).show();
+}
+
+function mostrarToast(msg, tipo) {
+    var t = document.getElementById('pf-toast');
+    if (!t) {
+        t = document.createElement('div');
+        t.id = 'pf-toast';
+        t.style.cssText = 'position:fixed;bottom:1.5em;left:50%;transform:translateX(-50%);'
+            + 'padding:0.65em 1.4em;border-radius:30px;'
+            + 'font-family:Poppins,sans-serif;font-size:0.85rem;font-weight:600;'
+            + 'box-shadow:0 4px 14px rgba(0,0,0,0.2);z-index:99999;transition:opacity 0.3s;';
+        document.body.appendChild(t);
+    }
+    t.style.background = (tipo === 'error' || tipo === 'err') ? '#c0392b' : '#2e7d32';
+    t.style.color = '#fff';
+    t.style.opacity = '1';
+    t.textContent = msg;
+    clearTimeout(t._t);
+    t._t = setTimeout(function() { t.style.opacity = '0'; }, 3000);
 }
 
 function mostrarToastFav(msg, color) {
@@ -1261,7 +1335,7 @@ function cargarProtectorasDinamicasEnDona() {
             var nuevas = data.protectoras;
             if (!nuevas.length) return;
 
-            /* Registrar datos completos en el objeto global */
+            /* Registrar en objeto protectoras */
             nuevas.forEach(function(p) {
                 var key = 'prot-' + p.idProtectora;
                 protectoras[key] = {
@@ -1275,7 +1349,6 @@ function cargarProtectorasDinamicasEnDona() {
                     bizum:      p.bizum      || null,
                     red_social_url: p.red_social_url || null,
                     badges:     p.badges     || '',
-                    url_formulario_acogida: p.url_formulario_acogida || null,
                 };
             });
 
@@ -1299,7 +1372,8 @@ function cargarProtectorasDinamicasEnDona() {
                     + (p.localidad ? '<p class="dona-card-lugar"><i class="fa-solid fa-location-dot me-1"></i>' + p.localidad + '</p>' : '')
                     + (desc ? '<p class="dona-card-desc">' + desc + '</p>' : '')
                     + '</div>'
-                    + '<button class="btn-prot-donar" onclick="abrirModalDonarProtDinamica(' + p.idProtectora + ')">'
+                    + '<button class="btn-prot-donar" style="flex:0 0 auto;width:auto;padding:0.55em 1em;white-space:nowrap;" '
+                    + 'onclick="abrirModalDonarProtDinamica(' + p.idProtectora + ')">'
                     + '<i class="fa-solid fa-hand-holding-heart me-1"></i> Donar</button>'
                     + '</div>';
             }).join('');
@@ -1374,7 +1448,7 @@ function cargarProtectoras(pagina) {
                          (p.iban     ? '<div class="prot-dato-iban"><i class="fa-solid fa-building-columns"></i><span class="prot-iban-num">' + ibanNum + '</span>' + (ibanBanco ? '<span class="prot-iban-banco">(' + ibanBanco + ')</span>' : '') + '<button onclick="copiarIban(this,\'' + ibanNum + '\')" title="Copiar IBAN" style="background:none;border:none;cursor:pointer;color:#1B358F;padding:0;font-size:0.9rem;margin-left:auto;"><i class="fa-regular fa-copy"></i></button></div>' : '') +
                        '</div>' +
                        '<div class="prot-acciones">' +
-                       '<button class="btn-prot-donar" onclick="abrirModalDonarProtDinamica(' + p.idProtectora + ')">' +
+                       '<button class="btn-prot-donar" style="flex:0 0 auto;width:auto;padding:0.55em 1em;white-space:nowrap;" onclick="abrirModalDonarProtDinamica(' + p.idProtectora + ')">' +
                        '<i class="fa-solid fa-hand-holding-heart me-1"></i> Donar</button>' +
                        (p.web && p.tipo_pagina !== 'sin_pagina' ? '<a href="' + p.web + '" target="_blank" rel="noopener" class="btn-prot-ext"><i class="fa-solid fa-arrow-up-right-from-square me-1"></i> ' + tipoLabel + '</a>' : '') +
                        '</div>' +
@@ -1543,6 +1617,17 @@ function buildDatosProt(p) {
         html += '<a href="' + p.web + '" target="_blank" rel="noopener" class="btn-ir-web" style="margin-top:0.3em;">'
               + '<i class="fa-solid fa-arrow-up-right-from-square me-2"></i>Visitar la ' + tipoLabel + ' de ' + p.nombre
               + '</a>';
+    }
+
+    if (p.email) {
+        html += '<div style="margin-top:1em;padding-top:0.8em;border-top:1px solid #eee;font-size:0.8rem;color:#888;">'
+              + '<i class="fa-solid fa-circle-info me-1" style="color:#1B358F;"></i>'
+              + '¿Prefieres preguntar antes de donar? Escríbeles directamente:'
+              + '</div>'
+              + '<div class="modal-dato" style="margin-top:0.4em;">'
+              + '<i class="fa-solid fa-envelope" style="color:#1B358F;"></i>'
+              + '<a href="mailto:' + p.email + '?subject=Consulta%20sobre%20donaci%C3%B3n" style="color:#1B358F;">' + p.email + '</a>'
+              + '</div>';
     }
 
     html += '</div>';

@@ -45,6 +45,8 @@
         </div>
     </aside>
 
+    <div class="toast" id="toast"></div>
+
     <header class="topbar">
         <div style="display:flex;align-items:center;gap:0.8em;">
             <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
@@ -321,10 +323,11 @@
                                 <th>Mascota</th>
                                 <th>Mensaje</th>
                                 <th>Fecha</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody id="tablaSegui">
-                            <tr><td colspan="3" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                            <tr><td colspan="4" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -733,23 +736,95 @@ function cargarSeguimientos() {
 
     /* Cargar seguimientos enviados */
     var tbody = document.getElementById('tablaSegui');
-    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>';
     fetch('../backend/admin/seguimientos.php', { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
             if (!data.ok || !data.seguimientos || !data.seguimientos.length) {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:3em;color:var(--texto-sub);">No hay actualizaciones enviadas aún.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:3em;color:var(--texto-sub);">No hay actualizaciones enviadas aún.</td></tr>';
                 return;
             }
-            tbody.innerHTML = data.seguimientos.map(function(s){
+            _seguimientosCache = data.seguimientos || [];
+            tbody.innerHTML = _seguimientosCache.map(function(s){
                 return '<tr>'
                     + '<td><strong>' + (s.mascota_nombre || '—') + '</strong></td>'
                     + '<td style="font-size:0.85rem;">' + (s.contenido || '').substring(0, 80) + (s.contenido && s.contenido.length > 80 ? '…' : '') + '</td>'
                     + '<td style="font-size:0.82rem;">' + new Date(s.fecha).toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'numeric' }) + '</td>'
+                    + '<td style="text-align:center;"><button class="btn btn-sm btn-icon btn-azul-lite" onclick="verDetalleSegui(' + s.idSeguimiento + ')" title="Ver detalle"><i class="fa-solid fa-eye"></i></button></td>'
                     + '</tr>';
             }).join('');
         })
-        .catch(function(){ tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:2em;color:var(--error);">Error de conexión.</td></tr>'; });
+        .catch(function(){ tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2em;color:var(--error);">Error de conexión.</td></tr>'; });
+}
+
+var _seguimientosCache = [];
+
+function verDetalleSegui(id) {
+    var s = _seguimientosCache.find(function(x) { return x.idSeguimiento == id; });
+    if (!s) return;
+    var archivoHtml = '';
+    if (s.ruta_archivo) {
+        if (s.tipo_archivo === 'foto') {
+            archivoHtml = '<div style="margin-top:0.5em;"><img src="../' + s.ruta_archivo + '" style="max-width:100%;max-height:300px;border-radius:8px;object-fit:cover;"></div>';
+        } else if (s.tipo_archivo === 'video') {
+            archivoHtml = '<div style="margin-top:0.5em;"><video controls style="max-width:100%;max-height:300px;border-radius:8px;"><source src="../' + s.ruta_archivo + '"></video></div>';
+        } else {
+            archivoHtml = '<div style="margin-top:0.5em;"><a href="../' + s.ruta_archivo + '" target="_blank" class="btn btn-sm btn-outline"><i class="fa-solid fa-download"></i> Descargar archivo</a></div>';
+        }
+    }
+    var html = '<div class="modal-detalle-grid">'
+        + '<div class="detalle-seccion" style="grid-column:1/-1;"><h4>Mascota</h4>'
+        + campoDetalle('Nombre', s.mascota_nombre)
+        + '</div>'
+        + '<div class="detalle-seccion" style="grid-column:1/-1;"><h4>Contenido</h4>'
+        + '<p style="white-space:pre-wrap;line-height:1.6;">' + (s.contenido || '') + '</p>'
+        + archivoHtml
+        + '</div>'
+        + '<div class="detalle-seccion"><h4>Fecha</h4>'
+        + campoDetalle('Enviado', s.fecha ? new Date(s.fecha).toLocaleDateString('es-ES', { day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' }) : null)
+        + '</div>'
+        + '<div class="detalle-seccion" style="grid-column:1/-1;" id="segResponsesWrap">'
+        + '<h4>Respuestas de padrinos</h4>'
+        + '<div id="segResponses"><p style="color:var(--texto-sub);font-size:0.85rem;">Cargando...</p></div>'
+        + '</div>'
+        + '</div>';
+    document.getElementById('detalleTitulo').textContent = 'Seguimiento - ' + (s.mascota_nombre || '');
+    document.getElementById('detalleContenido').innerHTML = html;
+    document.getElementById('modalOverlayDetalle').classList.add('activo');
+
+    if (s.idActualizacion) {
+        fetch('../backend/actualizaciones/panel_protectora.php?idActualizacion=' + s.idActualizacion, { credentials: 'include' })
+            .then(function(r){ return r.json(); })
+            .then(function(data){
+                if (!data.ok) { document.getElementById('segResponses').innerHTML = '<p style="color:var(--error);font-size:0.85rem;">Error al cargar.</p>'; return; }
+                var a = data.actualizacion;
+                var respuestas = data.respuestas || [];
+                var rHtml = '';
+                if (respuestas.length === 0) {
+                    rHtml = '<p style="color:var(--texto-sub);font-size:0.85rem;">Aún no hay respuestas de padrinos.</p>';
+                } else {
+                    respuestas.forEach(function(r){
+                        rHtml += '<div style="border-bottom:1px solid var(--borde);padding:0.6em 0;">'
+                            + '<strong style="font-size:0.88rem;">' + (r.usuarioNombre || 'Padrino') + '</strong> '
+                            + '<span style="font-size:0.78rem;color:var(--texto-sub);">' + new Date(r.fecha).toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) + '</span>'
+                            + '<p style="margin:0.3em 0 0;font-size:0.85rem;">' + r.respuesta + '</p>'
+                            + '</div>';
+                    });
+                }
+                if (!parseInt(a.respondida_protectora)) {
+                    rHtml += '<div style="margin-top:0.8em;"><button class="btn btn-sm btn-azul" onclick="responderHilo(' + s.idActualizacion + ')"><i class="fa-solid fa-reply me-1"></i>Responder</button></div>';
+                } else {
+                    rHtml += '<p style="color:var(--texto-sub);font-size:0.82rem;margin-top:0.5em;"><i class="fa-solid fa-lock me-1"></i>Hilo cerrado — ya respondiste</p>';
+                }
+                document.getElementById('segResponses').innerHTML = rHtml;
+            })
+            .catch(function(){
+                document.getElementById('segResponses').innerHTML = '<p style="color:var(--error);font-size:0.85rem;">Error de conexión.</p>';
+            });
+    } else {
+        document.getElementById('segResponses').innerHTML = '<p style="color:var(--texto-sub);font-size:0.85rem;">No disponible.</p>';
+        document.getElementById('segResponsesWrap').style.display = 'none';
+    }
 }
 
 function enviarSeguimiento() {
@@ -781,6 +856,36 @@ function enviarSeguimiento() {
             }
         })
         .catch(function(){ errorEl.textContent = 'Error de conexión.'; errorEl.style.display = 'block'; });
+}
+
+function responderHilo(idActualizacion) {
+    var mensaje = prompt('Escribe tu respuesta como protectora:');
+    if (!mensaje) return;
+    fetch('../backend/actualizaciones/responder.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idActualizacion: idActualizacion, respuesta: mensaje }),
+        credentials: 'include'
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        if (data.ok) {
+            mostrarToast('Respuesta enviada. Hilo cerrado.', 'ok');
+            /* Re-open detail to reflect closed state */
+            var s = _seguimientosCache.find(function(x){ return x.idActualizacion == idActualizacion; });
+            if (s) verDetalleSegui(s.idSeguimiento);
+        } else {
+            mostrarToast(data.error || 'Error.', 'error');
+        }
+    });
+}
+
+function mostrarToast(msg, tipo) {
+    var t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.className = 'toast visible toast-' + (tipo || 'ok');
+    setTimeout(function(){ t.className = 'toast'; }, 3000);
 }
 
 function verificarSesion(cb) {
@@ -1201,6 +1306,7 @@ function setPrincipal(idFoto) {
     .then(function(r){ return r.json(); })
     .then(function(data){
         if (data.ok) {
+            mostrarToast('Foto principal actualizada.', 'ok');
             var id = document.getElementById('modalId').value;
             editar(parseInt(id));
         }
@@ -1218,6 +1324,7 @@ function eliminarFoto(idFoto) {
     .then(function(r){ return r.json(); })
     .then(function(data){
         if (data.ok) {
+            mostrarToast('Foto eliminada.', 'ok');
             var id = document.getElementById('modalId').value;
             editar(parseInt(id));
         }
@@ -1296,7 +1403,7 @@ function guardarMascota() {
         .then(function(data){
             btn.disabled = false;
             btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
-            if (data.ok) { cerrarModalBtn(); cargarMascotas(paginaActual); }
+            if (data.ok) { cerrarModalBtn(); mostrarToast('Mascota actualizada correctamente.', 'ok'); cargarMascotas(paginaActual); }
             else { document.getElementById('modalError').textContent = data.error || 'Error al guardar.'; }
         })
         .catch(function(){ btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar'; document.getElementById('modalError').textContent = 'Error de conexión.'; });
@@ -1306,7 +1413,7 @@ function guardarMascota() {
             .then(function(data){
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
-                if (data.ok) { cerrarModalBtn(); cargarMascotas(paginaActual); }
+                if (data.ok) { cerrarModalBtn(); mostrarToast('Mascota añadida correctamente.', 'ok'); cargarMascotas(paginaActual); }
                 else { document.getElementById('modalError').textContent = data.error || 'Error al guardar.'; }
             })
             .catch(function(){ btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar'; document.getElementById('modalError').textContent = 'Error de conexión.'; });
@@ -1317,7 +1424,7 @@ function eliminar(id) {
     if (!confirm('¿Eliminar esta mascota?')) return;
     fetch('../backend/admin/mascotas.php', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ idMascota: id }) })
         .then(function(r){ return r.json(); })
-        .then(function(data){ if (data.ok) cargarMascotas(paginaActual); });
+        .then(function(data){ if (data.ok) { mostrarToast('Mascota eliminada.', 'ok'); cargarMascotas(paginaActual); } });
 }
 
 function cargarSolicitudes() {
@@ -1327,7 +1434,8 @@ function cargarSolicitudes() {
         .then(function(r){ return r.json(); })
         .then(function(data){
             if (!data.ok) return;
-            renderSolicitudes(data.solicitudes);
+            _solicitudesCache = data.solicitudes || [];
+            renderSolicitudes(_solicitudesCache);
         });
 }
 
@@ -1342,25 +1450,85 @@ function renderSolicitudes(sols) {
             + '<td>' + s.mascota + '</td>'
             + '<td>' + s.fecha_envio.substring(0, 10) + '</td>'
             + '<td><span class="badge-estado ' + s.estado + '">' + s.estado + '</span></td>'
-            + '<td><div class="tabla-acciones"><button class="btn btn-sm btn-icon btn-verde" onclick="cambiarEstadoSol(' + s.idSolicitud + ', \'aprobada\')" title="Aprobar"><i class="fa-solid fa-check"></i></button><button class="btn btn-sm btn-icon btn-danger" onclick="cambiarEstadoSol(' + s.idSolicitud + ', \'rechazada\')" title="Rechazar"><i class="fa-solid fa-xmark"></i></button></div></td>'
+            + '<td><div class="tabla-acciones"><button class="btn btn-sm btn-icon btn-azul-lite" onclick="verDetalleSol(' + s.idSolicitud + ')" title="Ver detalle"><i class="fa-solid fa-eye"></i></button></div></td>'
             + '</tr>';
     }).join('');
 }
 
-function cambiarEstadoSol(id, estado) {
-    if (!confirm('¿Cambiar estado a ' + estado + '?')) return;
-    fetch('../backend/admin/solicitudes.php', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ idSolicitud: id, estado: estado }) })
-        .then(function(r){ return r.json(); })
-        .then(function(data){ if (data.ok) cargarSolicitudes(); });
-}
-
-function cargarApadrinamientos() {
-    fetch('../backend/admin/apadrinamientos.php', { credentials: 'include' })
+function cambiarEstadoSol(id, estado, mensaje) {
+    var body = { idSolicitud: id, estado: estado };
+    if (mensaje) body.mensaje_protectora = mensaje;
+    fetch('../backend/admin/solicitudes.php', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(body) })
         .then(function(r){ return r.json(); })
         .then(function(data){
-            if (!data.ok) return;
-            renderApadrinamientos(data.apadrinamientos);
+            if (data.ok) { cerrarModalDetalle(); mostrarToast('Solicitud ' + estado + '.', 'ok'); cargarSolicitudes(); }
         });
+}
+
+var _solicitudesCache = [];
+
+function verDetalleSol(id) {
+    var s = _solicitudesCache.find(function(x) { return x.idSolicitud == id; });
+    if (!s) return;
+    var html = '<div class="modal-detalle-grid">'
+        + '<div class="detalle-seccion"><h4>Información personal</h4>'
+        + campoDetalle('Nombre', s.nombre)
+        + campoDetalle('Email', s.email)
+        + campoDetalle('Teléfono', s.telefono)
+        + campoDetalle('DNI', s.dni)
+        + campoDetalle('Fecha de nacimiento', s.fecha_nacimiento)
+        + campoDetalle('Dirección', s.direccion_completa)
+        + campoDetalle('Localidad', s.localidad)
+        + '</div>'
+        + '<div class="detalle-seccion"><h4>Vivienda</h4>'
+        + campoDetalle('Tipo', s.tipo_vivienda)
+        + campoDetalle('En propiedad', s.vivienda_en_propiedad)
+        + campoDetalle('Permiso propietario', s.permiso_propietario ? 'Adjuntado' : null)
+        + campoDetalle('Personas en hogar', s.personas_en_hogar)
+        + campoDetalle('Niños', s.ninos_en_hogar)
+        + '</div>'
+        + '<div class="detalle-seccion"><h4>Experiencia y motivación</h4>'
+        + campoDetalle('Otros animales', s.otros_animales)
+        + campoDetalle('Descripción otros animales', s.descripcion_otros_animales)
+        + campoDetalle('Experiencia con animales', s.experiencia_animales)
+        + campoDetalle('Tiempo fuera de casa', s.tiempo_fuera_casa)
+        + campoDetalle('Motivo de adopción', s.motivo_adopcion)
+        + campoDetalle('Mensaje', s.mensaje)
+        + '</div>'
+        + '<div class="detalle-seccion"><h4>Mascota solicitada</h4>'
+        + campoDetalle('Mascota', s.mascota)
+        + campoDetalle('Especie', s.mascota_especie)
+        + campoDetalle('Protectora', s.protectora)
+        + '</div>'
+        + '<div class="detalle-seccion"><h4>Gestión</h4>'
+        + campoDetalle('Estado', s.estado)
+        + campoDetalle('Fecha de envío', s.fecha_envio ? s.fecha_envio.substring(0, 10) : null)
+        + campoDetalle('Fecha de gestión', s.fecha_gestion ? s.fecha_gestion.substring(0, 10) : null)
+        + (s.mensaje_protectora ? campoDetalle('Mensaje de la protectora', s.mensaje_protectora) : '')
+        + '</div>'
+        + '</div>'
+        + '<div class="detalle-acciones">'
+        + '<button class="btn btn-verde" onclick="cambiarEstadoSol(' + s.idSolicitud + ', \'aprobada\')"><i class="fa-solid fa-check"></i> Aprobar</button>'
+        + '<button class="btn btn-gold" onclick="pedirInfoSol(' + s.idSolicitud + ')"><i class="fa-solid fa-circle-info"></i> Pedir más información</button>'
+        + '<button class="btn btn-danger" onclick="cambiarEstadoSol(' + s.idSolicitud + ', \'rechazada\')"><i class="fa-solid fa-xmark"></i> Rechazar</button>'
+        + '</div>';
+    document.getElementById('detalleTitulo').textContent = 'Solicitud de adopción - ' + s.nombre;
+    document.getElementById('detalleContenido').innerHTML = html;
+    document.getElementById('modalOverlayDetalle').classList.add('activo');
+}
+
+function campoDetalle(label, valor) {
+    if (!valor) return '';
+    return '<p><strong>' + label + ':</strong> ' + valor + '</p>';
+}
+
+function pedirInfoSol(id) {
+    var msg = prompt('Escribe un mensaje para el solicitante (opcional):');
+    cambiarEstadoSol(id, 'en_revision', msg || '');
+}
+
+function cerrarModalDetalle() {
+    document.getElementById('modalOverlayDetalle').classList.remove('activo');
 }
 
 function renderApadrinamientos(apads) {
@@ -1369,12 +1537,14 @@ function renderApadrinamientos(apads) {
         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:3em;color:var(--texto-sub);">No hay apadrinamientos.</td></tr>'; return;
     }
     tbody.innerHTML = apads.map(function(a){
+        var padrino = a.padrino || a.nombre_pagador || a.nombre_completo || '—';
+        var email = a.email_pagador || a.email || a.padrino_email || '—';
         return '<tr>'
             + '<td><strong>' + a.mascota + '</strong><br><small>' + a.especie + '</small></td>'
-            + '<td>' + (a.padrino || a.nombre_pagador || '—') + '</td>'
+            + '<td>' + padrino + '<br><small>' + email + '</small></td>'
             + '<td>' + a.cuota + ' €/mes</td>'
             + '<td><span class="badge-estado ' + a.estado + '">' + a.estado + '</span></td>'
-            + '<td><div class="tabla-acciones"><button class="btn btn-sm btn-icon btn-danger" onclick="cambiarEstadoApad(' + a.idApadrinamiento + ', \'finalizado\')" title="Finalizar"><i class="fa-solid fa-flag-checkered"></i></button><button class="btn btn-sm btn-icon btn-danger" onclick="eliminarApad(' + a.idApadrinamiento + ')" title="Eliminar"><i class="fa-solid fa-trash"></i></button></div></td>'
+            + '<td><div class="tabla-acciones"><button class="btn btn-sm btn-icon btn-azul-lite" onclick="verDetalleApad(' + a.idApadrinamiento + ')" title="Ver detalle"><i class="fa-solid fa-eye"></i></button></div></td>'
             + '</tr>';
     }).join('');
 }
@@ -1383,25 +1553,63 @@ function cambiarEstadoApad(id, estado) {
     if (!confirm('¿Finalizar este apadrinamiento?')) return;
     fetch('../backend/admin/apadrinamientos.php', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ idApadrinamiento: id, estado: estado, fecha_fin: new Date().toISOString().substring(0,10) }) })
         .then(function(r){ return r.json(); })
-        .then(function(data){ if (data.ok) cargarApadrinamientos(); });
+        .then(function(data){ if (data.ok) { cerrarModalDetalle(); mostrarToast('Apadrinamiento finalizado.', 'ok'); cargarApadrinamientos(); } });
 }
 
 function eliminarApad(id) {
     if (!confirm('¿Eliminar este apadrinamiento?')) return;
     fetch('../backend/admin/apadrinamientos.php', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ idApadrinamiento: id }) })
         .then(function(r){ return r.json(); })
-        .then(function(data){ if (data.ok) cargarApadrinamientos(); });
+        .then(function(data){ if (data.ok) { cerrarModalDetalle(); mostrarToast('Apadrinamiento eliminado.', 'ok'); cargarApadrinamientos(); } });
 }
 
-function cargarAcogidas() {
-    var estado = document.getElementById('filtroEstadoAcogida').value;
-    var url = '../backend/admin/solicitudes_acogida.php?estado=' + estado;
-    fetch(url, { credentials: 'include' })
+var _apadrinamientosCache = [];
+
+function cargarApadrinamientos() {
+    fetch('../backend/admin/apadrinamientos.php', { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
             if (!data.ok) return;
-            renderAcogidas(data.solicitudes);
+            _apadrinamientosCache = data.apadrinamientos || [];
+            renderApadrinamientos(_apadrinamientosCache);
         });
+}
+
+function verDetalleApad(id) {
+    var a = _apadrinamientosCache.find(function(x) { return x.idApadrinamiento == id; });
+    if (!a) return;
+    var padrino = a.padrino || a.nombre_pagador || a.nombre_completo || '—';
+    var email = a.email_pagador || a.email || a.padrino_email || '—';
+    var html = '<div class="modal-detalle-grid">'
+        + '<div class="detalle-seccion"><h4>Padrino</h4>'
+        + campoDetalle('Nombre', padrino)
+        + campoDetalle('Email', email)
+        + campoDetalle('Teléfono', a.telefono)
+        + '</div>'
+        + '<div class="detalle-seccion"><h4>Económico</h4>'
+        + campoDetalle('Cuota', a.cuota + ' €/mes')
+        + campoDetalle('Cantidad mensual', a.cantidad_mensual ? a.cantidad_mensual + ' €' : null)
+        + campoDetalle('Método de pago', a.metodo_pago)
+        + '</div>'
+        + '<div class="detalle-seccion"><h4>Mascota</h4>'
+        + campoDetalle('Nombre', a.mascota)
+        + campoDetalle('Especie', a.especie)
+        + '</div>'
+        + '<div class="detalle-seccion"><h4>Gestión</h4>'
+        + campoDetalle('Estado', a.estado)
+        + campoDetalle('Inicio', a.fecha_inicio ? a.fecha_inicio.substring(0, 10) : null)
+        + campoDetalle('Fin', a.fecha_fin ? a.fecha_fin.substring(0, 10) : null)
+        + '</div>'
+        + (a.mensaje ? '<div class="detalle-seccion" style="grid-column:1/-1;"><h4>Mensaje del padrino</h4>' + campoDetalle('Mensaje', a.mensaje) + '</div>' : '')
+        + '</div>'
+        + '<div class="detalle-acciones">'
+        + '<button class="btn btn-verde" onclick="cambiarEstadoApad(' + a.idApadrinamiento + ', \'aceptada\')"><i class="fa-solid fa-check"></i> Aceptar</button>'
+        + '<button class="btn btn-gold" onclick="cambiarEstadoApad(' + a.idApadrinamiento + ', \'finalizado\')"><i class="fa-solid fa-flag-checkered"></i> Finalizar</button>'
+        + '<button class="btn btn-danger" onclick="eliminarApad(' + a.idApadrinamiento + ')"><i class="fa-solid fa-trash"></i> Eliminar</button>'
+        + '</div>';
+    document.getElementById('detalleTitulo').textContent = 'Apadrinamiento - ' + a.mascota;
+    document.getElementById('detalleContenido').innerHTML = html;
+    document.getElementById('modalOverlayDetalle').classList.add('activo');
 }
 
 function renderAcogidas(sols) {
@@ -1417,16 +1625,66 @@ function renderAcogidas(sols) {
             + '<td>' + vivienda + '</td>'
             + '<td>' + s.fecha_envio.substring(0, 10) + '</td>'
             + '<td><span class="badge-estado ' + s.estado + '">' + s.estado + '</span></td>'
-            + '<td><div class="tabla-acciones"><button class="btn btn-sm btn-icon btn-verde" onclick="cambiarEstadoAcogida(' + s.idSolicitud + ', \'aprobada\')" title="Aprobar"><i class="fa-solid fa-check"></i></button><button class="btn btn-sm btn-icon btn-danger" onclick="cambiarEstadoAcogida(' + s.idSolicitud + ', \'rechazada\')" title="Rechazar"><i class="fa-solid fa-xmark"></i></button></div></td>'
+            + '<td><div class="tabla-acciones"><button class="btn btn-sm btn-icon btn-azul-lite" onclick="verDetalleAcogida(' + s.idSolicitud + ')" title="Ver detalle"><i class="fa-solid fa-eye"></i></button></div></td>'
             + '</tr>';
     }).join('');
 }
 
 function cambiarEstadoAcogida(id, estado) {
-    if (!confirm('¿Cambiar estado a ' + estado + '?')) return;
     fetch('../backend/admin/solicitudes_acogida.php', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ idSolicitud: id, estado: estado }) })
         .then(function(r){ return r.json(); })
-        .then(function(data){ if (data.ok) cargarAcogidas(); });
+        .then(function(data){ if (data.ok) { cerrarModalDetalle(); mostrarToast('Solicitud de acogida ' + estado + '.', 'ok'); cargarAcogidas(); } });
+}
+
+var _acogidasCache = [];
+
+function cargarAcogidas() {
+    var estado = document.getElementById('filtroEstadoAcogida').value;
+    var url = '../backend/admin/solicitudes_acogida.php?estado=' + estado;
+    fetch(url, { credentials: 'include' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if (!data.ok) return;
+            _acogidasCache = data.solicitudes || [];
+            renderAcogidas(_acogidasCache);
+        });
+}
+
+function verDetalleAcogida(id) {
+    var s = _acogidasCache.find(function(x) { return x.idSolicitud == id; });
+    if (!s) return;
+    var vivienda = s.vivienda ? s.vivienda.replace(/_/g, ' ').replace('casa con jardin', 'casa con jardín').replace('casa sin jardin', 'casa sin jardín') : '';
+    var tiempo = s.tiempo ? s.tiempo.replace(/_/g, ' ') : '';
+    var html = '<div class="modal-detalle-grid">'
+        + '<div class="detalle-seccion"><h4>Información personal</h4>'
+        + campoDetalle('Nombre', s.nombre)
+        + campoDetalle('Email', s.email)
+        + campoDetalle('Teléfono', s.telefono)
+        + '</div>'
+        + '<div class="detalle-seccion"><h4>Vivienda y disponibilidad</h4>'
+        + campoDetalle('Tipo de vivienda', vivienda)
+        + campoDetalle('Tiempo en casa', tiempo)
+        + campoDetalle('Experiencia', s.experiencia)
+        + '</div>'
+        + '<div class="detalle-seccion"><h4>Mensaje</h4>'
+        + campoDetalle('Mensaje', s.mensaje)
+        + '</div>'
+        + '<div class="detalle-seccion"><h4>Mascota solicitada</h4>'
+        + campoDetalle('Mascota', s.mascota)
+        + '</div>'
+        + '<div class="detalle-seccion"><h4>Gestión</h4>'
+        + campoDetalle('Estado', s.estado)
+        + campoDetalle('Fecha de envío', s.fecha_envio ? s.fecha_envio.substring(0, 10) : null)
+        + '</div>'
+        + '</div>'
+        + '<div class="detalle-acciones">'
+        + '<button class="btn btn-verde" onclick="cambiarEstadoAcogida(' + s.idSolicitud + ', \'aprobada\')"><i class="fa-solid fa-check"></i> Aprobar</button>'
+        + '<button class="btn btn-gold" onclick="cambiarEstadoAcogida(' + s.idSolicitud + ', \'en_revision\')"><i class="fa-solid fa-circle-info"></i> En revisión</button>'
+        + '<button class="btn btn-danger" onclick="cambiarEstadoAcogida(' + s.idSolicitud + ', \'rechazada\')"><i class="fa-solid fa-xmark"></i> Rechazar</button>'
+        + '</div>';
+    document.getElementById('detalleTitulo').textContent = 'Solicitud de acogida - ' + s.nombre;
+    document.getElementById('detalleContenido').innerHTML = html;
+    document.getElementById('modalOverlayDetalle').classList.add('activo');
 }
 
 function cargarEventos() {
@@ -1526,7 +1784,7 @@ function guardarEvento() {
     fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(data) })
         .then(function(r){ return r.json(); })
         .then(function(res){
-            if (res.ok) { cerrarModalEvento(); cargarEventos(); }
+            if (res.ok) { var msg = id ? 'Evento actualizado.' : 'Evento creado.'; cerrarModalEvento(); mostrarToast(msg, 'ok'); cargarEventos(); }
             else { document.getElementById('evModalError').textContent = res.error; document.getElementById('evModalError').style.display = 'block'; }
         });
 }
@@ -1535,13 +1793,13 @@ function eliminarEvento(id) {
     if (!confirm('¿Desactivar este evento?')) return;
     fetch('../backend/admin/eventos.php?accion=eliminar&id=' + id, { credentials: 'include' })
         .then(function(r){ return r.json(); })
-        .then(function(res){ if (res.ok) cargarEventos(); });
+        .then(function(res){ if (res.ok) { mostrarToast('Evento desactivado.', 'ok'); cargarEventos(); } });
 }
 
 function activarEvento(id) {
     fetch('../backend/admin/eventos.php?accion=activar&id=' + id, { credentials: 'include' })
         .then(function(r){ return r.json(); })
-        .then(function(res){ if (res.ok) cargarEventos(); });
+        .then(function(res){ if (res.ok) { mostrarToast('Evento reactivado.', 'ok'); cargarEventos(); } });
 }
 
 function cerrarModal(e) { if (e && e.target === e.currentTarget) cerrarModalBtn(); }
@@ -1773,6 +2031,7 @@ function guardarDatosProtectora() {
             return;
         }
         cerrarModalDatos();
+        mostrarToast('Datos de protectora guardados.', 'ok');
         cargarDatosProtectora();
     });
 }
@@ -1837,6 +2096,65 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 });
 </script>
+
+<!-- MODAL DETALLE SOLICITUDES -->
+<div class="modal-overlay" id="modalOverlayDetalle" onclick="if(event.target===this)cerrarModalDetalle()">
+    <div class="modal modal-lg">
+        <div class="modal-header">
+            <p class="modal-titulo"><i class="fa-solid fa-file-lines"></i> <span id="detalleTitulo">Detalle</span></p>
+            <button class="modal-cerrar" onclick="cerrarModalDetalle()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body" id="detalleContenido">
+            <div class="text-center py-4"><div class="spinner-border" style="color:var(--azul);"></div></div>
+        </div>
+    </div>
+</div>
+
+<style>
+.modal-detalle-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1em 2em;
+}
+.detalle-seccion {
+    break-inside: avoid;
+}
+.detalle-seccion h4 {
+    font-size: 0.85rem;
+    color: var(--texto-sub);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 0.5em 0;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--gris-borde);
+}
+.detalle-seccion p {
+    font-size: 0.88rem;
+    margin: 0.2em 0;
+    line-height: 1.5;
+}
+.detalle-seccion p strong {
+    font-weight: 600;
+    color: var(--texto);
+}
+.detalle-acciones {
+    display: flex;
+    gap: 0.8em;
+    justify-content: center;
+    margin-top: 1.5em;
+    padding-top: 1em;
+    border-top: 1px solid var(--gris-borde);
+}
+#modalOverlayDetalle .modal {
+    max-width: 800px;
+}
+@media (max-width: 600px) {
+    .modal-detalle-grid { grid-template-columns: 1fr; }
+    .detalle-acciones { flex-direction: column; }
+    .detalle-acciones .btn { width: 100%; }
+}
+</style>
 
 </body>
 </html>

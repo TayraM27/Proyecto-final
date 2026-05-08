@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetFamily – Ficha de mascota</title>
+    <title>PetFamily â€“ Ficha de mascota</title>
     <link rel="stylesheet" href="../style/header.css?v=2">
     <link rel="stylesheet" href="../style/footer.css">
     <link rel="stylesheet" href="../style/style.css">
@@ -94,7 +94,7 @@
 
                 <div class="tarjeta">
                     <p class="tarjeta-titulo">
-                        <i class="fa-solid fa-list-check"></i> Características
+                        <i class="fa-solid fa-list-check"></i> CaracterÃ­sticas
                     </p>
                     <ul class="caracteristicas" id="animal-caracteristicas"></ul>
                 </div>
@@ -135,8 +135,8 @@
                     <div id="animal-tags" class="animal-tags mt-3"></div>
                     <div class="aviso-responsable mt-3">
                         <i class="fa-solid fa-circle-info"></i>
-                        <strong>Adopción responsable:</strong> antes de adoptar, la protectora realizará
-                        una entrevista para asegurarse de que la convivencia será adecuada para el animal
+                        <strong>AdopciÃ³n responsable:</strong> antes de adoptar, la protectora realizarÃ¡
+                        una entrevista para asegurarse de que la convivencia serÃ¡ adecuada para el animal
                         y para ti. Es un proceso pensado para el bienestar de todos.
                     </div>
                 </div>
@@ -160,7 +160,7 @@
         </div>
 
         <div class="seccion-mas">
-            <h4><i class="fa-solid fa-paw" style="color:#F8BA56;"></i> Otros animales en adopción</h4>
+            <h4><i class="fa-solid fa-paw" style="color:#F8BA56;"></i> Otros animales en adopciÃ³n</h4>
             <div class="row g-3" id="otros-animales"></div>
         </div>
 
@@ -171,13 +171,13 @@
     </div>
 </main>
 
-<!-- modal adopción -->
+<!-- modal adopciÃ³n -->
 <div class="modal fade" id="modalAdopcion" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content" style="border-radius:14px;border:none;overflow:hidden;">
             <div class="modal-header modal-header-pf">
                 <h5 class="modal-title text-white fw-bold">
-                    <i class="fa-solid fa-house-chimney me-2" style="color:#F8BA56;"></i>Solicitud de adopción
+                    <i class="fa-solid fa-house-chimney me-2" style="color:#F8BA56;"></i>Solicitud de adopciÃ³n
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -207,12 +207,12 @@
                             <div class="invalid-feedback" id="aEmailError"></div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Teléfono <span class="text-danger">*</span></label>
-                            <input type="tel" class="form-control" id="aTelefono" required maxlength="9" pattern="[0-9]{9}" placeholder="9 dígitos" style="border-radius:8px;">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">TelÃ©fono <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" id="aTelefono" required maxlength="9" pattern="[0-9]{9}" placeholder="9 dÃ­gitos" style="border-radius:8px;">
                             <div class="invalid-feedback" id="aTelefonoError"></div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Dirección completa <span class="text-danger">*</span></label>
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">DirecciÃ³n completa <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="aDireccion" required maxlength="255" style="border-radius:8px;">
                         </div>
                         <div class="col-md-6">
@@ -229,59 +229,59 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">¿Vivienda en propiedad? <span class="text-danger">*</span></label>
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Â¿Vivienda en propiedad? <span class="text-danger">*</span></label>
                             <select class="form-select" id="aViviendaProp" required style="border-radius:8px;" onchange="togglePermiso()">
                                 <option value="">Selecciona...</option>
-                                <option value="si">Sí</option>
+                                <option value="si">SÃ­</option>
                                 <option value="no">No</option>
                             </select>
                         </div>
                         <div class="col-md-6" id="divPermiso" style="display:none;">
                             <label class="form-label" style="font-weight:500;font-size:0.9rem;">Permiso del propietario (PDF) <span class="text-danger">*</span></label>
                             <input type="file" class="form-control" id="aPermiso" accept=".pdf" style="border-radius:8px;">
-                            <div class="form-text">Máximo 5MB</div>
+                            <div class="form-text">MÃ¡ximo 5MB</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" style="font-weight:500;font-size:0.9rem;">Personas en el hogar <span class="text-danger">*</span></label>
                             <input type="number" class="form-control" id="aPersonas" required min="1" max="20" style="border-radius:8px;">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">¿Hay niños en el hogar? <span class="text-danger">*</span></label>
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Â¿Hay niÃ±os en el hogar? <span class="text-danger">*</span></label>
                             <select class="form-select" id="aNinos" required style="border-radius:8px;">
                                 <option value="">Selecciona...</option>
-                                <option value="si">Sí</option>
+                                <option value="si">SÃ­</option>
                                 <option value="no">No</option>
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">¿Tenéis otros animales? <span class="text-danger">*</span></label>
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Â¿TenÃ©is otros animales? <span class="text-danger">*</span></label>
                             <select class="form-select" id="aOtrosAnimales" required style="border-radius:8px;" onchange="toggleDescOtros()">
                                 <option value="">Selecciona...</option>
-                                <option value="si">Sí</option>
+                                <option value="si">SÃ­</option>
                                 <option value="no">No</option>
                             </select>
                         </div>
                         <div class="col-md-6" id="divDescOtros" style="display:none;">
-                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Descripción de otros animales</label>
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">DescripciÃ³n de otros animales</label>
                             <textarea class="form-control" id="aDescOtros" maxlength="500" style="border-radius:8px;resize:vertical;min-height:60px;"></textarea>
                         </div>
                         <div class="col-12">
-                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Experiencia con animales <span class="text-danger">*</span> <span class="text-muted" style="font-size:0.8rem;">(mín. 20 caracteres)</span></label>
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Experiencia con animales <span class="text-danger">*</span> <span class="text-muted" style="font-size:0.8rem;">(mÃ­n. 20 caracteres)</span></label>
                             <textarea class="form-control" id="aExperiencia" required maxlength="1000" style="border-radius:8px;resize:vertical;min-height:80px;"></textarea>
                             <div class="invalid-feedback" id="aExperienciaError"></div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Tiempo fuera de casa (horas/día) <span class="text-danger">*</span></label>
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Tiempo fuera de casa (horas/dÃ­a) <span class="text-danger">*</span></label>
                             <select class="form-select" id="aTiempoFuera" required style="border-radius:8px;">
                                 <option value="">Selecciona...</option>
                                 <option value="menos_2h">Menos de 2 horas</option>
                                 <option value="2_4h">2 a 4 horas</option>
-                                <option value="mas_4h">Más de 4 horas</option>
-                                <option value="todo_el_dia">Todo el día</option>
+                                <option value="mas_4h">MÃ¡s de 4 horas</option>
+                                <option value="todo_el_dia">Todo el dÃ­a</option>
                             </select>
                         </div>
                         <div class="col-12">
-                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Motivo de la adopción <span class="text-danger">*</span> <span class="text-muted" style="font-size:0.8rem;">(mín. 20 caracteres)</span></label>
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Motivo de la adopciÃ³n <span class="text-danger">*</span> <span class="text-muted" style="font-size:0.8rem;">(mÃ­n. 20 caracteres)</span></label>
                             <textarea class="form-control" id="aMotivo" required maxlength="1000" style="border-radius:8px;resize:vertical;min-height:80px;"></textarea>
                             <div class="invalid-feedback" id="aMotivoError"></div>
                         </div>
@@ -295,12 +295,12 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="aAceptaPolitica" required>
                                 <label class="form-check-label" for="aAceptaPolitica" style="font-size:0.85rem;">
-                                    Acepto la <a href="privacidad.html" target="_blank">política de privacidad</a> y el tratamiento de mis datos. <span class="text-danger">*</span>
+                                    Acepto la <a href="privacidad.html" target="_blank">polÃ­tica de privacidad</a> y el tratamiento de mis datos. <span class="text-danger">*</span>
                                 </label>
                             </div>
                         </div>
                         <div class="aviso-responsable mt-2" style="background:#fff8e1;padding:0.6em 0.8em;border-radius:8px;font-size:0.82rem;color:#856404;">
-                            <i class="fa-solid fa-bell me-1"></i> Tras enviar la solicitud, la protectora revisará tus datos y se pondrá en contacto contigo por email o teléfono.
+                            <i class="fa-solid fa-bell me-1"></i> Tras enviar la solicitud, la protectora revisarÃ¡ tus datos y se pondrÃ¡ en contacto contigo por email o telÃ©fono.
                         </div>
                     </div>
                     <button type="submit" class="btn-adoptar w-100 mt-3" style="border:none;cursor:pointer;padding:0.7em;border-radius:8px;font-weight:600;">
@@ -309,7 +309,7 @@
                 </form>
                 <div class="mt-3" style="border-top:1px solid #eee;padding-top:1em;">
                     <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#adoptContacto" style="font-size:0.85rem;color:#1B358F;text-decoration:none;font-weight:500;">
-                        <i class="fa-solid fa-circle-info me-1"></i> ¿Dudas? Contacta directamente con la protectora
+                        <i class="fa-solid fa-circle-info me-1"></i> Â¿Dudas? Contacta directamente con la protectora
                     </button>
                     <div class="collapse" id="adoptContacto">
                         <div id="adoptContactoDatos" class="mt-2" style="font-size:0.88rem;"></div>
@@ -339,16 +339,16 @@
                         <label class="form-label" style="font-weight:500;font-size:0.9rem;">Cantidad mensual <span class="text-danger">*</span></label>
                         <div id="cuotaGridFicha" style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.5em;margin-bottom:0.5em;">
                             <div class="cuota-op" data-cuota="3" onclick="selCuotaFicha(this)" style="border:2px solid #ddd;border-radius:8px;padding:0.8em;text-align:center;cursor:pointer;transition:all 0.2s;">
-                                <div style="font-size:1.5rem;font-weight:700;color:#F8BA56;">3 €</div>
+                                <div style="font-size:1.5rem;font-weight:700;color:#F8BA56;">3 â‚¬</div>
                             </div>
                             <div class="cuota-op" data-cuota="5" onclick="selCuotaFicha(this)" style="border:2px solid #ddd;border-radius:8px;padding:0.8em;text-align:center;cursor:pointer;transition:all 0.2s;">
-                                <div style="font-size:1.5rem;font-weight:700;color:#F8BA56;">5 €</div>
+                                <div style="font-size:1.5rem;font-weight:700;color:#F8BA56;">5 â‚¬</div>
                             </div>
                             <div class="cuota-op" data-cuota="8" onclick="selCuotaFicha(this)" style="border:2px solid #ddd;border-radius:8px;padding:0.8em;text-align:center;cursor:pointer;transition:all 0.2s;">
-                                <div style="font-size:1.5rem;font-weight:700;color:#F8BA56;">8 €</div>
+                                <div style="font-size:1.5rem;font-weight:700;color:#F8BA56;">8 â‚¬</div>
                             </div>
                             <div class="cuota-op" data-cuota="10" onclick="selCuotaFicha(this)" style="border:2px solid #ddd;border-radius:8px;padding:0.8em;text-align:center;cursor:pointer;transition:all 0.2s;">
-                                <div style="font-size:1.5rem;font-weight:700;color:#F8BA56;">10 €</div>
+                                <div style="font-size:1.5rem;font-weight:700;color:#F8BA56;">10 â‚¬</div>
                             </div>
                         </div>
                         <input type="hidden" id="pCuota" required>
@@ -362,11 +362,11 @@
                         <input type="email" class="form-control" id="pEmail" required maxlength="120" style="border-radius:8px;">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">Teléfono <span class="text-danger">*</span></label>
-                        <input type="tel" class="form-control" id="pTelefono" required maxlength="9" pattern="[0-9]{9}" placeholder="9 dígitos" style="border-radius:8px;">
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">TelÃ©fono <span class="text-danger">*</span></label>
+                        <input type="tel" class="form-control" id="pTelefono" required maxlength="9" pattern="[0-9]{9}" placeholder="9 dÃ­gitos" style="border-radius:8px;">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">Método de pago <span class="text-danger">*</span></label>
+                        <label class="form-label" style="font-weight:500;font-size:0.9rem;">MÃ©todo de pago <span class="text-danger">*</span></label>
                         <select class="form-select" id="pMetodoPago" required style="border-radius:8px;" onchange="mostrarCamposPagoFicha(this.value)">
                             <option value="">Selecciona...</option>
                             <option value="tarjeta">Tarjeta bancaria</option>
@@ -377,7 +377,7 @@
                     <div id="divTarjetaFicha" style="display:none;" class="mb-3">
                         <div class="row g-2">
                             <div class="col-12">
-                                <input type="text" class="form-control" id="pNumTarjeta" placeholder="Número de tarjeta (16 dígitos)" maxlength="19" style="border-radius:8px;" oninput="this.value=this.value.replace(/\D/g,'').replace(/(.{4})/g,'$1 ').trim()">
+                                <input type="text" class="form-control" id="pNumTarjeta" placeholder="NÃºmero de tarjeta (16 dÃ­gitos)" maxlength="19" style="border-radius:8px;" oninput="this.value=this.value.replace(/\D/g,'').replace(/(.{4})/g,'$1 ').trim()">
                             </div>
                             <div class="col-6">
                                 <input type="text" class="form-control" id="pCaducidad" placeholder="MM/AA" maxlength="5" style="border-radius:8px;" oninput="formatCaducidadFicha(this)">
@@ -389,7 +389,7 @@
                     </div>
                     <!-- Bizum -->
                     <div id="divBizumFicha" style="display:none;" class="mb-3">
-                        <input type="text" class="form-control" id="pBizumTel" placeholder="Teléfono Bizum (9 dígitos)" maxlength="9" style="border-radius:8px;" oninput="this.value=this.value.replace(/\D/g,'')">
+                        <input type="text" class="form-control" id="pBizumTel" placeholder="TelÃ©fono Bizum (9 dÃ­gitos)" maxlength="9" style="border-radius:8px;" oninput="this.value=this.value.replace(/\D/g,'')">
                     </div>
                     <div class="mb-3">
                         <label class="form-label" style="font-weight:500;font-size:0.9rem;">Mensaje (opcional)</label>
@@ -398,19 +398,19 @@
                     <div class="mb-2">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="pTerminos" required>
-                            <label class="form-check-label" for="pTerminos" style="font-size:0.85rem;">Acepto los términos y condiciones del apadrinamiento.</label>
+                            <label class="form-check-label" for="pTerminos" style="font-size:0.85rem;">Acepto los tÃ©rminos y condiciones del apadrinamiento.</label>
                         </div>
                     </div>
                     <div class="mb-3">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="pAceptaPolitica" required>
                             <label class="form-check-label" for="pAceptaPolitica" style="font-size:0.85rem;">
-                                Acepto la <a href="privacidad.html" target="_blank">política de privacidad</a> y el tratamiento de mis datos. <span class="text-danger">*</span>
+                                Acepto la <a href="privacidad.html" target="_blank">polÃ­tica de privacidad</a> y el tratamiento de mis datos. <span class="text-danger">*</span>
                             </label>
                         </div>
                     </div>
                     <div class="aviso-responsable mt-2" style="background:#fff8e1;padding:0.6em 0.8em;border-radius:8px;font-size:0.82rem;color:#856404;">
-                        <i class="fa-solid fa-lock me-1"></i> Tus datos están protegidos. La protectora se pondrá en contacto contigo para confirmar el apadrinamiento.
+                        <i class="fa-solid fa-lock me-1"></i> Tus datos estÃ¡n protegidos. La protectora se pondrÃ¡ en contacto contigo para confirmar el apadrinamiento.
                     </div>
                     <button type="submit" class="btn w-100 mt-3" style="background:#F8BA56;color:#fff;border:none;cursor:pointer;padding:0.7em;border-radius:8px;font-weight:600;">
                         <i class="fa-solid fa-paper-plane me-1"></i> Confirmar apadrinamiento
@@ -418,7 +418,7 @@
                 </form>
                 <div class="mt-3" style="border-top:1px solid #eee;padding-top:1em;">
                     <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#apadContacto" style="font-size:0.85rem;color:#1B358F;text-decoration:none;font-weight:500;">
-                        <i class="fa-solid fa-circle-info me-1"></i> ¿Dudas? Contacta directamente con la protectora
+                        <i class="fa-solid fa-circle-info me-1"></i> Â¿Dudas? Contacta directamente con la protectora
                     </button>
                     <div class="collapse" id="apadContacto">
                         <div id="apadContactoDatos" class="mt-2" style="font-size:0.88rem;"></div>
@@ -436,7 +436,7 @@
             <div class="modal-header modal-header-pf">
                 <h5 class="modal-title text-white fw-bold">
                     <i class="fa-solid fa-house-chimney-heart me-2" style="color:#F8BA56;"></i>
-                    Solicitud de acogida: <span id="modal-acoge-nombre">–</span>
+                    Solicitud de acogida: <span id="modal-acoge-nombre">â€“</span>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -463,11 +463,11 @@
                             <input type="email" class="form-control" name="email" id="cEmail" required maxlength="120" style="border-radius:8px;">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Teléfono <span class="text-danger">*</span></label>
-                            <input type="tel" class="form-control" name="telefono" id="cTelefono" required maxlength="9" pattern="[0-9]{9}" placeholder="9 dígitos" style="border-radius:8px;">
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">TelÃ©fono <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" name="telefono" id="cTelefono" required maxlength="9" pattern="[0-9]{9}" placeholder="9 dÃ­gitos" style="border-radius:8px;">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Dirección completa <span class="text-danger">*</span></label>
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">DirecciÃ³n completa <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="direccion_completa" id="cDireccion" required maxlength="255" style="border-radius:8px;">
                         </div>
                         <div class="col-md-6">
@@ -475,26 +475,26 @@
                             <select class="form-select" name="tipo_vivienda" id="cTipoVivienda" required style="border-radius:8px;">
                                 <option value="">Selecciona...</option>
                                 <option value="piso">Piso</option>
-                                <option value="casa_con_jardin">Casa con jardín</option>
-                                <option value="casa_sin_jardin">Casa sin jardín</option>
+                                <option value="casa_con_jardin">Casa con jardÃ­n</option>
+                                <option value="casa_sin_jardin">Casa sin jardÃ­n</option>
                                 <option value="otro">Otro</option>
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">¿Vivienda en propiedad? <span class="text-danger">*</span></label>
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Â¿Vivienda en propiedad? <span class="text-danger">*</span></label>
                             <select class="form-select" name="vivienda_en_propiedad" id="cViviendaProp" required style="border-radius:8px;" onchange="togglePermisoAcogida()">
                                 <option value="">Selecciona...</option>
-                                <option value="si">Sí</option>
+                                <option value="si">SÃ­</option>
                                 <option value="no">No</option>
                             </select>
                         </div>
                         <div class="col-md-6" id="divPermisoAcogida" style="display:none;">
                             <label class="form-label" style="font-weight:500;font-size:0.9rem;">Permiso del propietario (PDF) <span class="text-danger">*</span></label>
                             <input type="file" class="form-control" name="permiso_propietario" id="cPermiso" accept=".pdf" style="border-radius:8px;">
-                            <div class="form-text">Máximo 5MB</div>
+                            <div class="form-text">MÃ¡ximo 5MB</div>
                         </div>
                         <div class="col-12">
-                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Experiencia previa en acogidas <span class="text-danger">*</span> <span class="text-muted" style="font-size:0.8rem;">(mín. 20 caracteres)</span></label>
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Experiencia previa en acogidas <span class="text-danger">*</span> <span class="text-muted" style="font-size:0.8rem;">(mÃ­n. 20 caracteres)</span></label>
                             <textarea class="form-control" name="experiencia_acogida" id="cExperiencia" required maxlength="1000" style="border-radius:8px;resize:vertical;min-height:80px;"></textarea>
                         </div>
                         <div class="col-md-6">
@@ -507,14 +507,14 @@
                                 <option value="">Selecciona...</option>
                                 <option value="menos_4h">Menos de 4h</option>
                                 <option value="4_8h">4-8 horas</option>
-                                <option value="mas_8h">Más de 8 horas</option>
+                                <option value="mas_8h">MÃ¡s de 8 horas</option>
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">¿Tenéis animales en casa?</label>
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Â¿TenÃ©is animales en casa?</label>
                             <select class="form-select" name="animales_en_hogar" id="cAnimalesHogar" style="border-radius:8px;" onchange="toggleDescAnimalesAcogida()">
                                 <option value="no">No</option>
-                                <option value="si">Sí</option>
+                                <option value="si">SÃ­</option>
                             </select>
                         </div>
                         <div class="col-md-6" id="divDescAnimalesAcogida" style="display:none;">
@@ -522,13 +522,13 @@
                             <textarea class="form-control" name="descripcion_animales" id="cDescAnimales" maxlength="500" style="border-radius:8px;resize:vertical;min-height:60px;"></textarea>
                         </div>
                         <div class="col-12">
-                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Motivo para acoger <span class="text-danger">*</span> <span class="text-muted" style="font-size:0.8rem;">(mín. 20 caracteres)</span></label>
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Motivo para acoger <span class="text-danger">*</span> <span class="text-muted" style="font-size:0.8rem;">(mÃ­n. 20 caracteres)</span></label>
                             <textarea class="form-control" name="motivo_acogida" id="cMotivo" required maxlength="1000" style="border-radius:8px;resize:vertical;min-height:80px;"></textarea>
                         </div>
                         <div class="col-12">
-                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">¿Puedes hacerte cargo de gastos veterinarios?</label>
+                            <label class="form-label" style="font-weight:500;font-size:0.9rem;">Â¿Puedes hacerte cargo de gastos veterinarios?</label>
                             <select class="form-select" name="posibilidad_gastos" id="cPosibilidadGastos" style="border-radius:8px;">
-                                <option value="si">Sí</option>
+                                <option value="si">SÃ­</option>
                                 <option value="no">No (la protectora se hace cargo)</option>
                             </select>
                         </div>
@@ -536,12 +536,12 @@
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="aceptar_politica_privacidad" id="cAceptaPolitica" required>
                                 <label class="form-check-label" for="cAceptaPolitica" style="font-size:0.85rem;">
-                                    Acepto la <a href="privacidad.html" target="_blank">política de privacidad</a> y el tratamiento de mis datos. <span class="text-danger">*</span>
+                                    Acepto la <a href="privacidad.html" target="_blank">polÃ­tica de privacidad</a> y el tratamiento de mis datos. <span class="text-danger">*</span>
                                 </label>
                             </div>
                         </div>
                         <div class="aviso-responsable mt-2" style="background:#fff8e1;padding:0.6em 0.8em;border-radius:8px;font-size:0.82rem;color:#856404;">
-                            <i class="fa-solid fa-bell me-1"></i> Tras enviar la solicitud, la protectora revisará tus datos y se pondrá en contacto contigo por email o teléfono.
+                            <i class="fa-solid fa-bell me-1"></i> Tras enviar la solicitud, la protectora revisarÃ¡ tus datos y se pondrÃ¡ en contacto contigo por email o telÃ©fono.
                         </div>
                     </div>
                     <button type="submit" class="btn-adoptar w-100 mt-3" style="border:none;cursor:pointer;padding:0.7em;border-radius:8px;font-weight:600;">
@@ -586,13 +586,23 @@
 </div>
 
 <footer>
-    <p>&#169; 2026 PetFamily. Todos los derechos reservados.</p>
-    <p><a href="privacidad.html" style="color:white;">Política de Privacidad</a> | <a href="terminos.html" style="color:white;">Términos de Servicio</a></p>
+    <div class="footer-redes">
+        <a href="https://www.instagram.com/" target="_blank" rel="noopener" class="footer-red" title="Instagram">
+            <i class="fa-brands fa-instagram"></i>
+        </a>
+        <a href="https://www.facebook.com/" target="_blank" rel="noopener" class="footer-red" title="Facebook">
+            <i class="fa-brands fa-facebook"></i>
+        </a>
+        <a href="https://www.tiktok.com/" target="_blank" rel="noopener" class="footer-red" title="TikTok">
+            <i class="fa-brands fa-tiktok"></i>
+        </a>
+    </div>
+    <p>Â© 2026 PetFamily. Todos los derechos reservados.</p>
+    <p><a href="privacidad.html" style="color:white;">PolÃ­tica de Privacidad</a> | <a href="terminos.html" style="color:white;">TÃ©rminos de Servicio</a></p>
 </footer>
 
 <script src="../javascript/script.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.tidio.co/l90vdgeb19wyo1hvbhpmzrgfojxhtmqq.js" async></script>
 
 <script>
 var _mascotaActual = null;
@@ -700,7 +710,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var anos   = hoy.getFullYear() - nac.getFullYear();
             if (hoy < cumple) anos--;
             if (anos > 0) {
-                edad = anos + ' año' + (anos > 1 ? 's' : '');
+                edad = anos + ' aÃ±o' + (anos > 1 ? 's' : '');
             } else {
                 var meses = hoy.getMonth() - nac.getMonth();
                 if (hoy.getDate() < nac.getDate()) meses--;
@@ -709,7 +719,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     edad = meses + ' mes' + (meses > 1 ? 'es' : '');
                 } else {
                     var d = Math.floor((hoy - nac) / 86400000);
-                    edad = d > 0 ? d + ' día' + (d > 1 ? 's' : '') : 'Recién nacido';
+                    edad = d > 0 ? d + ' dÃ­a' + (d > 1 ? 's' : '') : 'ReciÃ©n nacido';
                 }
             }
         } else if (mascota.edad_texto) {
@@ -717,7 +727,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         var colorVal = mascota.color || 'Sin datos';
         if (colorVal && colorVal !== 'Sin datos') {
-            var colorMap = {negro:'Negro',blanco:'Blanco',marron:'Marrón',naranja:'Naranja',gris:'Gris',dorado:'Dorado',atigrado:'Atigrado',bicolor:'Bicolor',tricolor:'Tricolor',crema:'Crema'};
+            var colorMap = {negro:'Negro',blanco:'Blanco',marron:'MarrÃ³n',naranja:'Naranja',gris:'Gris',dorado:'Dorado',atigrado:'Atigrado',bicolor:'Bicolor',tricolor:'Tricolor',crema:'Crema'};
             var colonIdx = colorVal.indexOf(':');
             var base     = colonIdx !== -1 ? colorVal.substring(0, colonIdx) : colorVal;
             var comps    = colonIdx !== -1 ? colorVal.substring(colonIdx + 1).split(',') : [];
@@ -725,9 +735,9 @@ document.addEventListener('DOMContentLoaded', function() {
             colorVal = partes.join(' + ');
         }
         var filas = [
-            { icono: 'fa-location-dot', label: 'Ubicación',      valor: mascota.ubicacion || 'Sin datos' },
+            { icono: 'fa-location-dot', label: 'UbicaciÃ³n',      valor: mascota.ubicacion || 'Sin datos' },
             { icono: 'fa-cake-candles', label: 'Edad',            valor: edad || '' },
-            { icono: 'fa-weight-scale', label: 'Tamaño',          valor: mascota.tamano ? mascota.tamano.charAt(0).toUpperCase() + mascota.tamano.slice(1) : 'Sin datos' },
+            { icono: 'fa-weight-scale', label: 'TamaÃ±o',          valor: mascota.tamano ? mascota.tamano.charAt(0).toUpperCase() + mascota.tamano.slice(1) : 'Sin datos' },
             { icono: 'fa-palette',      label: 'Color',            valor: colorVal },
             { icono: 'fa-clock',        label: 'En protectora',   valor: calcTiempoProtectora(mascota.fecha_entrada) },
             { icono: 'fa-heart-pulse',  label: 'Estado de salud', valor: mascota.estado_salud || 'Sin datos' }
@@ -779,7 +789,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('protectora-ubicacion').innerHTML = '<i class="fa-solid fa-location-dot"></i> ' + (mascota.ubicacion || 'Sin ubicaci\u00f3n');
 
         var asuntoContacto = encodeURIComponent('Consulta sobre ' + mascota.nombre);
-        var cuerpoContacto = encodeURIComponent('Hola, desde PetFamily me interesa saber más sobre ' + mascota.nombre + '.\n\nUn saludo.');
+        var cuerpoContacto = encodeURIComponent('Hola, desde PetFamily me interesa saber mÃ¡s sobre ' + mascota.nombre + '.\n\nUn saludo.');
         var mailtoLink = 'mailto:' + mascota.email_protectora + '?cc=petfamilycontact%40yopmail.com&subject=' + asuntoContacto + '&body=' + cuerpoContacto;
 
         var contactoEl = document.getElementById('protectora-contacto');
@@ -897,7 +907,7 @@ function toggleFavoritoFicha() {
         }
         localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify(favs));
         mostrarToastFav(
-            eliminado ? '💔 Eliminado de favoritos' : '❤️ Guardado en favoritos',
+            eliminado ? 'ðŸ’” Eliminado de favoritos' : 'â¤ï¸ Guardado en favoritos',
             eliminado ? '#666' : '#1B358F'
         );
     })
@@ -906,7 +916,7 @@ function toggleFavoritoFicha() {
 
 function renderContactoProtectora(m) {
     var tipos = [
-        { id: 'adopt', tipo: 'adopción',        verbo: 'adoptar a' },
+        { id: 'adopt', tipo: 'adopciÃ³n',        verbo: 'adoptar a' },
         { id: 'acog',  tipo: 'acogida',          verbo: 'acoger a' },
         { id: 'apad',  tipo: 'apadrinamiento',   verbo: 'apadrinar a' }
     ];
@@ -918,7 +928,7 @@ function renderContactoProtectora(m) {
         if (t.id === 'acog') {
             camposExtra = '\n\n  Datos adicionales:\n  - Tipo de vivienda:\n  - Disponibilidad horaria:\n  - Experiencia con animales:';
         } else if (t.id === 'apad') {
-            camposExtra = '\n\n  Datos adicionales:\n  - Cuota mensual deseada:\n  - Duración del apadrinamiento:';
+            camposExtra = '\n\n  Datos adicionales:\n  - Cuota mensual deseada:\n  - DuraciÃ³n del apadrinamiento:';
         }
         var cuerpo = encodeURIComponent('Hola, desde PetFamily me interesa ' + t.verbo + ' ' + m.nombre + '.\n\n' + infoAnimal + camposExtra + '\n\nQuedo a la espera de vuestras instrucciones.\n\nUn saludo.');
         var contacto = '';
@@ -958,7 +968,7 @@ function toggleDescAnimalesAcogida() {
 function mostrarModalAdopcion() {
     if (!_mascotaActual) return;
     const m = _mascotaActual;
-    document.getElementById('adoptMascotaInfo').innerHTML = `<strong>${m.nombre}</strong> — ${m.raza || 'Mestizo'} · ${ (m.sexo || '').charAt(0).toUpperCase() + (m.sexo || '').slice(1) }`;
+    document.getElementById('adoptMascotaInfo').innerHTML = `<strong>${m.nombre}</strong> â€” ${m.raza || 'Mestizo'} Â· ${ (m.sexo || '').charAt(0).toUpperCase() + (m.sexo || '').slice(1) }`;
     const camposTexto = ['aNombre','aDni','aFechaNac','aEmail','aTelefono','aDireccion','aLocalidad','aTipoVivienda','aViviendaProp','aPermiso','aPersonas','aNinos','aOtrosAnimales','aDescOtros','aExperiencia','aTiempoFuera','aMotivo'];
     camposTexto.forEach(id => {
         const el = document.getElementById(id);
@@ -1027,7 +1037,7 @@ function configurarValidacionTiempoReal(tipo) {
 function mostrarModalApadrina() {
     if (!_mascotaActual) return;
     var m = _mascotaActual;
-    document.getElementById('apadMascotaInfo').innerHTML = '<strong>' + m.nombre + '</strong> — ' + (m.raza || 'Mestizo') + ' · ' + (m.sexo || '').charAt(0).toUpperCase() + (m.sexo || '').slice(1);
+    document.getElementById('apadMascotaInfo').innerHTML = '<strong>' + m.nombre + '</strong> â€” ' + (m.raza || 'Mestizo') + ' Â· ' + (m.sexo || '').charAt(0).toUpperCase() + (m.sexo || '').slice(1);
     document.getElementById('pNombre').value = '';
     document.getElementById('pEmail').value = '';
     document.getElementById('pTelefono').value = '';
@@ -1113,24 +1123,24 @@ function enviarAdopcionFicha(e) {
     var aceptaPolitica= document.getElementById('aAceptaPolitica').checked;
 
     if (!nombre) { err.textContent = 'El nombre es obligatorio.'; err.style.display = 'block'; return; }
-    if (!dni || !/^[0-9XYZ][0-9]{7}[A-Z]$/i.test(dni)) { err.textContent = 'DNI no válido.'; err.style.display = 'block'; return; }
+    if (!dni || !/^[0-9XYZ][0-9]{7}[A-Z]$/i.test(dni)) { err.textContent = 'DNI no vÃ¡lido.'; err.style.display = 'block'; return; }
     if (!fechaNac) { err.textContent = 'La fecha de nacimiento es obligatoria.'; err.style.display = 'block'; return; }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Introduce un email válido.'; err.style.display = 'block'; return; }
-    if (!/^\d{9}$/.test(telefono)) { err.textContent = 'El teléfono debe tener exactamente 9 dígitos.'; err.style.display = 'block'; return; }
-    if (!direccion) { err.textContent = 'La dirección es obligatoria.'; err.style.display = 'block'; return; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Introduce un email vÃ¡lido.'; err.style.display = 'block'; return; }
+    if (!/^\d{9}$/.test(telefono)) { err.textContent = 'El telÃ©fono debe tener exactamente 9 dÃ­gitos.'; err.style.display = 'block'; return; }
+    if (!direccion) { err.textContent = 'La direcciÃ³n es obligatoria.'; err.style.display = 'block'; return; }
     if (!localidad) { err.textContent = 'La localidad es obligatoria.'; err.style.display = 'block'; return; }
     if (!tipoVivienda) { err.textContent = 'Selecciona un tipo de vivienda.'; err.style.display = 'block'; return; }
     if (!viviendaProp) { err.textContent = 'Indica si la vivienda es en propiedad.'; err.style.display = 'block'; return; }
     if (viviendaProp === 'no' && !document.getElementById('aPermiso').value) { err.textContent = 'Debes subir el permiso del propietario (PDF).'; err.style.display = 'block'; return; }
-    if (!personas || personas < 1) { err.textContent = 'Indica el número de personas en el hogar.'; err.style.display = 'block'; return; }
-    if (!ninos) { err.textContent = 'Indica si hay niños en el hogar.'; err.style.display = 'block'; return; }
-    if (!otrosAnimales) { err.textContent = 'Indica si tenéis otros animales.'; err.style.display = 'block'; return; }
+    if (!personas || personas < 1) { err.textContent = 'Indica el nÃºmero de personas en el hogar.'; err.style.display = 'block'; return; }
+    if (!ninos) { err.textContent = 'Indica si hay niÃ±os en el hogar.'; err.style.display = 'block'; return; }
+    if (!otrosAnimales) { err.textContent = 'Indica si tenÃ©is otros animales.'; err.style.display = 'block'; return; }
     if (otrosAnimales === 'si' && !descOtros) { err.textContent = 'Describe los otros animales.'; err.style.display = 'block'; return; }
     if (!experiencia || experiencia.length < 20) { err.textContent = 'La experiencia debe tener al menos 20 caracteres.'; err.style.display = 'block'; return; }
     if (!tiempoFuera) { err.textContent = 'Selecciona el tiempo fuera de casa.'; err.style.display = 'block'; return; }
     if (!motivo || motivo.length < 20) { err.textContent = 'El motivo debe tener al menos 20 caracteres.'; err.style.display = 'block'; return; }
     if (!compromiso) { err.textContent = 'Debes comprometerte a las visitas de seguimiento.'; err.style.display = 'block'; return; }
-    if (!aceptaPolitica) { err.textContent = 'Debes aceptar la política de privacidad.'; err.style.display = 'block'; return; }
+    if (!aceptaPolitica) { err.textContent = 'Debes aceptar la polÃ­tica de privacidad.'; err.style.display = 'block'; return; }
 
     var formData = new FormData();
     formData.append('idMascota', idMascota);
@@ -1160,14 +1170,15 @@ function enviarAdopcionFicha(e) {
     .then(function(r) { return r.json(); })
     .then(function(data) {
         if (!data.ok) { err.textContent = data.error || 'Error al enviar la solicitud.'; err.style.display = 'block'; return; }
-        ok.textContent = '¡Solicitud enviada! La protectora se pondrá en contacto contigo.';
+        ok.textContent = 'Â¡Solicitud enviada! La protectora se pondrÃ¡ en contacto contigo.';
         ok.style.display = 'block';
         document.getElementById('formAdopcion').reset();
         document.getElementById('divPermiso').style.display = 'none';
         document.getElementById('divDescOtros').style.display = 'none';
         setTimeout(function() { bootstrap.Modal.getInstance(document.getElementById('modalAdopcion')).hide(); }, 2500);
+        mostrarToast('Solicitud enviada correctamente.', 'ok');
     })
-    .catch(function() { err.textContent = 'Error de conexión. Inténtalo de nuevo.'; err.style.display = 'block'; });
+    .catch(function() { err.textContent = 'Error de conexiÃ³n. IntÃ©ntalo de nuevo.'; err.style.display = 'block'; });
 }
 
 function enviarAcogidaFicha(e) {
@@ -1196,11 +1207,11 @@ function enviarAcogidaFicha(e) {
     var aceptaPolitica   = document.getElementById('cAceptaPolitica').checked;
 
     if (!nombre) { err.textContent = 'El nombre es obligatorio.'; err.style.display = 'block'; return; }
-    if (!dni || !/^[XYZ]?[0-9]{7,8}[A-Z]$/i.test(dni)) { err.textContent = 'DNI no válido.'; err.style.display = 'block'; return; }
+    if (!dni || !/^[XYZ]?[0-9]{7,8}[A-Z]$/i.test(dni)) { err.textContent = 'DNI no vÃ¡lido.'; err.style.display = 'block'; return; }
     if (!fechaNac) { err.textContent = 'La fecha de nacimiento es obligatoria.'; err.style.display = 'block'; return; }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Introduce un email válido.'; err.style.display = 'block'; return; }
-    if (!/^\d{9}$/.test(telefono)) { err.textContent = 'El teléfono debe tener exactamente 9 dígitos.'; err.style.display = 'block'; return; }
-    if (!direccion) { err.textContent = 'La dirección es obligatoria.'; err.style.display = 'block'; return; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Introduce un email vÃ¡lido.'; err.style.display = 'block'; return; }
+    if (!/^\d{9}$/.test(telefono)) { err.textContent = 'El telÃ©fono debe tener exactamente 9 dÃ­gitos.'; err.style.display = 'block'; return; }
+    if (!direccion) { err.textContent = 'La direcciÃ³n es obligatoria.'; err.style.display = 'block'; return; }
     if (!tipoVivienda) { err.textContent = 'Selecciona un tipo de vivienda.'; err.style.display = 'block'; return; }
     if (!viviendaProp) { err.textContent = 'Indica si la vivienda es en propiedad.'; err.style.display = 'block'; return; }
     if (viviendaProp === 'no' && !document.getElementById('cPermiso').value) { err.textContent = 'Debes subir el permiso del propietario (PDF).'; err.style.display = 'block'; return; }
@@ -1209,9 +1220,9 @@ function enviarAcogidaFicha(e) {
     if (!tiempoFuera) { err.textContent = 'Selecciona el tiempo fuera de casa.'; err.style.display = 'block'; return; }
     if (!animalesHogar) { err.textContent = 'Indica si hay animales en el hogar.'; err.style.display = 'block'; return; }
     if (animalesHogar === 'si' && !descAnimales) { err.textContent = 'Describe los animales.'; err.style.display = 'block'; return; }
-    if (!posibilidadGastos) { err.textContent = 'Indica si tienes posibilidad económica para gastos.'; err.style.display = 'block'; return; }
+    if (!posibilidadGastos) { err.textContent = 'Indica si tienes posibilidad econÃ³mica para gastos.'; err.style.display = 'block'; return; }
     if (!motivo || motivo.length < 20) { err.textContent = 'El motivo debe tener al menos 20 caracteres.'; err.style.display = 'block'; return; }
-    if (!aceptaPolitica) { err.textContent = 'Debes aceptar la política de privacidad.'; err.style.display = 'block'; return; }
+    if (!aceptaPolitica) { err.textContent = 'Debes aceptar la polÃ­tica de privacidad.'; err.style.display = 'block'; return; }
 
     var formData = new FormData();
     formData.append('idMascota', idMascota);
@@ -1239,14 +1250,15 @@ function enviarAcogidaFicha(e) {
     .then(function(r) { return r.json(); })
     .then(function(data) {
         if (!data.ok) { err.textContent = data.error || 'Error al enviar la solicitud.'; err.style.display = 'block'; return; }
-        ok.textContent = '¡Solicitud de acogida enviada! La protectora se pondrá en contacto contigo por email.';
+        ok.textContent = 'Â¡Solicitud de acogida enviada! La protectora se pondrÃ¡ en contacto contigo por email.';
         ok.style.display = 'block';
         document.getElementById('formAcogida').reset();
         document.getElementById('divPermisoAcogida').style.display = 'none';
         document.getElementById('divDescAnimalesAcogida').style.display = 'none';
         setTimeout(function() { bootstrap.Modal.getInstance(document.getElementById('modalAcoge')).hide(); }, 2500);
+        mostrarToast('Solicitud de acogida enviada correctamente.', 'ok');
     })
-    .catch(function() { err.textContent = 'Error de conexión. Inténtalo de nuevo.'; err.style.display = 'block'; });
+    .catch(function() { err.textContent = 'Error de conexiÃ³n. IntÃ©ntalo de nuevo.'; err.style.display = 'block'; });
 }
 
 function enviarApadrinamientoFicha(e) {
@@ -1266,27 +1278,27 @@ function enviarApadrinamientoFicha(e) {
     var terminos   = document.getElementById('pTerminos').checked;
     var politica   = document.getElementById('pAceptaPolitica').checked;
 
-    if (!cuota || ['3','5','8','10'].indexOf(cuota) === -1) { err.textContent = 'Selecciona una cuota válida.'; err.style.display = 'block'; return; }
+    if (!cuota || ['3','5','8','10'].indexOf(cuota) === -1) { err.textContent = 'Selecciona una cuota vÃ¡lida.'; err.style.display = 'block'; return; }
     if (!nombre) { err.textContent = 'El nombre completo es obligatorio.'; err.style.display = 'block'; return; }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Introduce un email válido.'; err.style.display = 'block'; return; }
-    if (telefono && !/^\d{9}$/.test(telefono)) { err.textContent = 'El teléfono debe tener exactamente 9 dígitos.'; err.style.display = 'block'; return; }
-    if (!metodoPago) { err.textContent = 'Selecciona un método de pago.'; err.style.display = 'block'; return; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Introduce un email vÃ¡lido.'; err.style.display = 'block'; return; }
+    if (telefono && !/^\d{9}$/.test(telefono)) { err.textContent = 'El telÃ©fono debe tener exactamente 9 dÃ­gitos.'; err.style.display = 'block'; return; }
+    if (!metodoPago) { err.textContent = 'Selecciona un mÃ©todo de pago.'; err.style.display = 'block'; return; }
 
     if (metodoPago === 'tarjeta') {
         var numTarjeta = (document.getElementById('pNumTarjeta').value || '').replace(/\s/g, '');
         var caducidad  = document.getElementById('pCaducidad').value || '';
         var cvv        = document.getElementById('pCvv').value || '';
-        if (!/^\d{16}$/.test(numTarjeta)) { err.textContent = 'Número de tarjeta no válido (16 dígitos).'; err.style.display = 'block'; return; }
-        if (!/^\d{2}\/\d{2}$/.test(caducidad)) { err.textContent = 'Fecha de caducidad no válida (MM/AA).'; err.style.display = 'block'; return; }
-        if (!/^\d{3}$/.test(cvv)) { err.textContent = 'CVV no válido (3 dígitos).'; err.style.display = 'block'; return; }
+        if (!/^\d{16}$/.test(numTarjeta)) { err.textContent = 'NÃºmero de tarjeta no vÃ¡lido (16 dÃ­gitos).'; err.style.display = 'block'; return; }
+        if (!/^\d{2}\/\d{2}$/.test(caducidad)) { err.textContent = 'Fecha de caducidad no vÃ¡lida (MM/AA).'; err.style.display = 'block'; return; }
+        if (!/^\d{3}$/.test(cvv)) { err.textContent = 'CVV no vÃ¡lido (3 dÃ­gitos).'; err.style.display = 'block'; return; }
     }
     if (metodoPago === 'bizum') {
         var bizumTel = document.getElementById('pBizumTel').value || '';
-        if (!/^\d{9}$/.test(bizumTel)) { err.textContent = 'Teléfono Bizum no válido (9 dígitos).'; err.style.display = 'block'; return; }
+        if (!/^\d{9}$/.test(bizumTel)) { err.textContent = 'TelÃ©fono Bizum no vÃ¡lido (9 dÃ­gitos).'; err.style.display = 'block'; return; }
     }
 
-    if (!terminos) { err.textContent = 'Debes aceptar los términos y condiciones.'; err.style.display = 'block'; return; }
-    if (!politica) { err.textContent = 'Debes aceptar la política de privacidad.'; err.style.display = 'block'; return; }
+    if (!terminos) { err.textContent = 'Debes aceptar los tÃ©rminos y condiciones.'; err.style.display = 'block'; return; }
+    if (!politica) { err.textContent = 'Debes aceptar la polÃ­tica de privacidad.'; err.style.display = 'block'; return; }
 
     fetch('../backend/apadrinamiento/apadrinar.php', {
         method: 'POST',
@@ -1305,14 +1317,15 @@ function enviarApadrinamientoFicha(e) {
     .then(function(r) { return r.json(); })
     .then(function(data) {
         if (!data.ok) { err.textContent = data.error || 'Error al enviar el apadrinamiento.'; err.style.display = 'block'; return; }
-        ok.innerHTML = '<i class="fa-solid fa-check-circle me-1"></i> ¡Apadrinamiento registrado! La protectora se pondrá en contacto contigo.';
+        ok.innerHTML = '<i class="fa-solid fa-check-circle me-1"></i> Â¡Apadrinamiento registrado! La protectora se pondrÃ¡ en contacto contigo.';
         ok.style.display = 'block';
         document.getElementById('formApadrinamiento').reset();
         document.querySelectorAll('.cuota-op').forEach(function(o) { o.style.borderColor = '#ddd'; o.style.background = 'transparent'; });
         mostrarCamposPagoFicha('');
         setTimeout(function() { bootstrap.Modal.getInstance(document.getElementById('modalApadrina')).hide(); }, 2800);
+        mostrarToast('Apadrinamiento registrado correctamente.', 'ok');
     })
-    .catch(function() { err.textContent = 'Error de conexión. Inténtalo de nuevo.'; err.style.display = 'block'; });
+    .catch(function() { err.textContent = 'Error de conexiÃ³n. IntÃ©ntalo de nuevo.'; err.style.display = 'block'; });
 }
 
 function compartirAnimalFicha() {
@@ -1327,7 +1340,7 @@ function compartirAnimalFicha() {
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="fa-solid fa-bullhorn me-2"></i>Enviar actualización</h5>
+                <h5 class="modal-title"><i class="fa-solid fa-bullhorn me-2"></i>Enviar actualizaciÃ³n</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form id="formActualizacion">
@@ -1338,7 +1351,7 @@ function compartirAnimalFicha() {
                         <div class="form-error" id="errorActualizacionMensaje"></div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Fotos (múltiples)</label>
+                        <label class="form-label">Fotos (mÃºltiples)</label>
                         <input type="file" class="form-control" id="actualizacionFotos" accept="image/*" multiple>
                     </div>
                     <div class="mb-3">
@@ -1379,7 +1392,7 @@ function compartirAnimalFicha() {
         .then(r => r.json())
         .then(function(data) {
             if (data.ok) {
-                alert('Actualización enviada.');
+                alert('ActualizaciÃ³n enviada.');
                 document.getElementById('formActualizacion').reset();
                 bootstrap.Modal.getInstance(document.getElementById('modalActualizacion')).hide();
             } else {
@@ -1392,3 +1405,4 @@ function compartirAnimalFicha() {
 
 </body>
 </html>
+

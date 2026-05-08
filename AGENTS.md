@@ -11,6 +11,7 @@ Todos los agentes deben cumplir:
 
 1.2. Prohibiciones
 Los agentes NO pueden:
+- Volver archivos a estado anterior(commit)sin preguntar.
 - Editar archivos o cosasa que NO SE PIDIERON.
 - No pedir permiso al modificar varios archivos
 - Inventar datos ni rutas.

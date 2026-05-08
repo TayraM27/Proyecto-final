@@ -219,15 +219,35 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
     case 'PUT':
         if (!usuarioLogueado()) {
-            respuestaError('Debes iniciar sesion para responder.', 401);
+            respuestaError('Debes iniciar sesión.', 401);
         }
-
-        $datos = json_decode(file_get_contents('php://input'), true) ?? [];
-        $idSolicitud = (int)($datos['idSolicitud'] ?? 0);
-        $respuestaUsuario = limpiar($datos['respuesta'] ?? '');
+        $idSolicitud = (int)($_POST['idSolicitud'] ?? 0);
+        $respuestaUsuario = limpiar($_POST['respuesta'] ?? '');
 
         if (!$idSolicitud || !$respuestaUsuario) {
             respuestaError('Faltan datos obligatorios.');
+        }
+
+        $archivos = [];
+        if (!empty($_FILES['archivos'])) {
+            $archivosNombres = $_FILES['archivos']['name'];
+            $archivosTmp = $_FILES['archivos']['tmp_name'];
+            $archivosError = $_FILES['archivos']['error'];
+            $nombres = is_array($archivosNombres) ? $archivosNombres : [$archivosNombres];
+            $dir = __DIR__ . '/../../uploads/solicitudes_protectora/';
+            if (!is_dir($dir)) mkdir($dir, 0775, true);
+            foreach ($nombres as $i => $name) {
+                $error = is_array($archivosError) ? ($archivosError[$i] ?? UPLOAD_ERR_NO_FILE) : UPLOAD_ERR_NO_FILE;
+                if ($error !== UPLOAD_ERR_OK) continue;
+                $tmp = is_array($archivosTmp) ? ($archivosTmp[$i] ?? '') : '';
+                if (!$tmp) continue;
+                $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+                $permitidos = ['jpg','jpeg','png','gif','webp','pdf','doc','docx'];
+                if (!in_array($ext, $permitidos)) continue;
+                $nombre = uniqid('sol_') . '.' . $ext;
+                move_uploaded_file($tmp, $dir . $nombre);
+                $archivos[] = 'uploads/solicitudes_protectora/' . $nombre;
+            }
         }
 
         $stmt = $pdo->prepare('SELECT s.*, u.nombre AS nombre_usuario FROM solicitudes_protectora s JOIN usuarios u ON s.idUsuario = u.idUsuario WHERE s.idSolicitud = ? AND s.idUsuario = ?');
@@ -245,12 +265,13 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $pdo->beginTransaction();
 
         try {
+            $archivosJson = !empty($archivos) ? json_encode($archivos) : null;
             $stmt = $pdo->prepare(
                 'UPDATE solicitudes_protectora
-                 SET estado = "pendiente", respuesta_usuario = ?, fecha_respuesta_usuario = NOW(), fecha_respuesta = NULL, id_admin_responde = NULL
+                 SET estado = "pendiente", respuesta_usuario = ?, archivos_respuesta = ?, fecha_respuesta_usuario = NOW(), fecha_respuesta = NULL, id_admin_responde = NULL
                  WHERE idSolicitud = ?'
             );
-            $stmt->execute([$respuestaUsuario, $idSolicitud]);
+            $stmt->execute([$respuestaUsuario, $archivosJson, $idSolicitud]);
 
             $stmt = $pdo->prepare('SELECT idUsuario, nombre FROM usuarios WHERE rol = "admin" AND activo = 1');
             $stmt->execute();
