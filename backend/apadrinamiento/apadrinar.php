@@ -9,7 +9,7 @@ require_once __DIR__ . '/../includes/funciones.php';
 header('Content-Type: application/json; charset=utf-8');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    respuestaError('Metodo no permitido.', 405);
+    respuestaError('Método no permitido.', 405);
 }
 
 $datos          = json_decode(file_get_contents('php://input'), true) ?? [];
@@ -32,7 +32,7 @@ if (!in_array($cantidadMensual, $cantidadesValidas)) {
 }
 
 if (!validarEmail($email)) {
-    respuestaError('Email no valido.');
+    respuestaError('Email no válido.');
 }
 
 if ($telefono && !preg_match('/^\d{9}$/', $telefono)) {
@@ -41,7 +41,7 @@ if ($telefono && !preg_match('/^\d{9}$/', $telefono)) {
 
 $metodosValidos = ['tarjeta', 'transferencia', 'bizum'];
 if (!in_array($metodoPago, $metodosValidos)) {
-    respuestaError('Selecciona un metodo de pago valido.');
+    respuestaError('Selecciona un método de pago válido.');
 }
 
 $pdo = conectar();

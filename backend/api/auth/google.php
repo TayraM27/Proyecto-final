@@ -125,5 +125,5 @@ respuestaOk([
         'rol'         => $usuario['rol'],
         'foto_perfil' => $usuario['foto_perfil'],
     ],
-    'redirigir' => $usuario['rol'] === 'admin' ? '../admin/dashboard.html' : 'index.html',
+    'redirigir' => $usuario['rol'] === 'admin' ? '../admin/dashboard.html' : ($usuario['rol'] === 'protectora' ? '../admin/mi-protectora.html' : 'perfil.html'),
 ]);

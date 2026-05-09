@@ -37,7 +37,7 @@ if ($metodo === 'POST') {
     $idMascota = (int)($datos['idMascota'] ?? 0);
 
     if (!$idMascota) {
-        respuestaError('ID de mascota no valido.');
+        respuestaError('ID de mascota no válido.');
     }
 
     // Comprobar si existe
@@ -59,4 +59,4 @@ if ($metodo === 'POST') {
     }
 }
 
-respuestaError('Metodo no permitido.', 405);
+respuestaError('Método no permitido.', 405);

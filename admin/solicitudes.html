@@ -78,17 +78,16 @@
                 <table class="tabla">
                     <thead>
                         <tr>
-                            <th>Tipo</th>
                             <th>Solicitante</th>
                             <th>Mascota</th>
                             <th>Protectora</th>
-                            <th>Detalle</th>
                             <th>Fecha</th>
                             <th>Estado</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tablaSolicitudes">
-                        <tr><td colspan="7" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                        <tr><td colspan="6" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -98,11 +97,39 @@
     </main>
 </div>
 
+<div class="modal-overlay" id="modalDetalle" onclick="if(event&&event.target===event.currentTarget)cerrarModalDetalle()">
+    <div class="modal" style="max-width:520px;">
+        <div class="modal-header">
+            <p class="modal-titulo"><i class="fa-solid fa-file-signature"></i> Detalle de solicitud</p>
+            <button class="modal-cerrar" onclick="cerrarModalDetalle()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body" id="cuerpoDetalle"></div>
+    </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 var paginaActual = 1;
 var totalPaginas = 1;
+var _coloresSol = {
+    pendiente:   'badge-gold',
+    en_revision: 'badge-azul',
+    aprobada:    'badge-verde',
+    rechazada:   'badge-rojo',
+    activo:      'badge-azul',
+    aceptada:    'badge-verde',
+    cancelado:   'badge-rojo',
+};
+var _etiquetasSol = {
+    pendiente:   'Sin gestionar',
+    en_revision: 'En revisión',
+    aprobada:    'Gestionado',
+    rechazada:   'Descartado',
+    activo:      'Activo',
+    aceptada:    'Aceptado',
+    cancelado:   'Cancelado',
+};
 
 document.addEventListener('DOMContentLoaded', function() {
     verificarAdmin(cargarSolicitudes);
@@ -129,65 +156,37 @@ function cargarSolicitudes() {
         .then(function(data){
             if (!data.ok) return;
             totalPaginas = data.totalPaginas || 1;
+            window._solicitudesCache = data.solicitudes;
             renderTabla(data.solicitudes);
             renderPaginacion();
         })
         .catch(function(){
-            document.getElementById('tablaSolicitudes').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:3em;color:var(--error);">Error de conexión.</td></tr>';
+            document.getElementById('tablaSolicitudes').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:3em;color:var(--error);">Error de conexión.</td></tr>';
         });
 }
 
 function renderTabla(solicitudes) {
     var tb = document.getElementById('tablaSolicitudes');
     if (!solicitudes.length) {
-        tb.innerHTML = '<tr><td colspan="7"><div class="estado-vacio"><i class="fa-solid fa-file-signature"></i><p>No hay solicitudes con este estado</p></div></td></tr>';
+        tb.innerHTML = '<tr><td colspan="6"><div class="estado-vacio"><i class="fa-solid fa-file-signature"></i><p>No hay solicitudes con este estado</p></div></td></tr>';
         return;
     }
 
-    var colores = {
-        pendiente:   'badge-gold',
-        en_revision: 'badge-azul',
-        aprobada:    'badge-verde',
-        rechazada:   'badge-rojo',
-        activo:      'badge-azul',
-        aceptada:    'badge-verde',
-        cancelado:   'badge-rojo',
-    };
-
-    var etiquetas = {
-        pendiente:   'Sin gestionar',
-        en_revision: 'En revisión',
-        aprobada:    'Gestionado',
-        rechazada:   'Descartado',
-        activo:      'Activo',
-        aceptada:    'Aceptado',
-        cancelado:   'Cancelado',
-    };
-
-    var tipoLabel = { adopcion: 'Adopción', apadrinamiento: 'Apadrinamiento' };
-    var tipoIcon  = { adopcion: 'fa-paw', apadrinamiento: 'fa-star' };
-
     tb.innerHTML = solicitudes.map(function(s) {
-        var badgeEst = '<span class="badge ' + (colores[s.estado] || 'badge-gris') + '">' + (etiquetas[s.estado] || s.estado) + '</span>';
-        var badgeTipo = '<span style="display:inline-flex;align-items:center;gap:0.3em;background:#f0f4ff;color:#1B358F;border-radius:20px;padding:0.2em 0.6em;font-size:0.75rem;font-weight:600;white-space:nowrap;"><i class="fa-solid ' + (tipoIcon[s.tipo] || 'fa-file') + '"></i>' + (tipoLabel[s.tipo] || s.tipo) + '</span>';
-
-        var detalle = s.tipo === 'apadrinamiento'
-            ? '<span style="font-size:0.78rem;color:var(--texto-sub);">Cuota: <strong>' + s.cuota + ' €/mes</strong></span>'
-                + (s.metodo_pago ? '<br><span style="font-size:0.75rem;color:var(--texto-sub);text-transform:capitalize;">' + s.metodo_pago + '</span>' : '')
-                + (s.mensaje ? '<br><span style="font-size:0.75rem;color:#888;" title="' + s.mensaje + '">' + s.mensaje.substring(0,40) + (s.mensaje.length > 40 ? '…' : '') + '</span>' : '')
-            : (s.mensaje ? '<span style="font-size:0.78rem;color:#666;" title="' + s.mensaje + '">' + s.mensaje.substring(0,60) + (s.mensaje.length > 60 ? '…' : '') + '</span>' : '<span style="color:var(--texto-sub);font-size:0.78rem;">—</span>');
+        var badgeEst = '<span class="badge ' + (_coloresSol[s.estado] || 'badge-gris') + '">' + (_etiquetasSol[s.estado] || s.estado) + '</span>';
 
         return '<tr>'
-            + '<td>' + badgeTipo + '</td>'
             + '<td><strong>' + s.nombre + '</strong><br>'
             + '<a href="mailto:' + s.email + '" style="font-size:0.78rem;color:var(--azul);">' + s.email + '</a>'
             + (s.telefono ? '<br><span style="font-size:0.78rem;color:var(--texto-sub);">' + s.telefono + '</span>' : '')
             + '</td>'
             + '<td><strong>' + s.mascota + '</strong><br><span style="font-size:0.78rem;color:var(--texto-sub);">' + (s.mascota_especie === 'perro' ? '🐕' : '🐱') + '</span></td>'
             + '<td style="font-size:0.82rem;">' + s.protectora + '</td>'
-            + '<td style="font-size:0.8rem;max-width:200px;">' + detalle + '</td>'
             + '<td style="font-size:0.78rem;">' + formatFecha(s.fecha_envio) + '</td>'
             + '<td>' + badgeEst + '</td>'
+            + '<td><div class="tabla-acciones">'
+            + '<button class="btn btn-sm btn-outline btn-icon" onclick="verDetalleSolicitud(' + s.idSolicitud + ')" title="Ver detalles"><i class="fa-solid fa-eye"></i></button>'
+            + '</div></td>'
             + '</tr>';
     }).join('');
 }
@@ -214,9 +213,45 @@ function formatFecha(f) {
     return new Date(f).toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' });
 }
 
+function verDetalleSolicitud(id) {
+    var s = todasSolicitudes().find(function(x){ return x.idSolicitud === id; });
+    if (!s) return;
+    var html = '<div style="font-size:0.88rem;">'
+        + '<div class="form-campo"><label class="form-label">Solicitante</label><p><strong>' + s.nombre + '</strong> &lt;<a href="mailto:' + s.email + '" style="color:var(--azul);">' + s.email + '</a>&gt;' + (s.telefono ? ' &middot; ' + s.telefono : '') + '</p></div>'
+        + (s.dni ? '<div class="form-campo"><label class="form-label">DNI/NIF</label><p>' + s.dni + '</p></div>' : '')
+        + (s.fecha_nacimiento ? '<div class="form-campo"><label class="form-label">Fecha de nacimiento</label><p>' + formatFecha(s.fecha_nacimiento) + '</p></div>' : '')
+        + (s.direccion_completa ? '<div class="form-campo"><label class="form-label">Dirección</label><p>' + s.direccion_completa + (s.localidad ? ', ' + s.localidad : '') + '</p></div>' : '')
+        + '<div class="form-campo"><label class="form-label">Vivienda</label><p>' + (s.tipo_vivienda || '—') + (s.vivienda_en_propiedad !== null ? ' &middot; ' + (s.vivienda_en_propiedad ? 'Propia' : 'Alquilada') : '') + (s.permiso_propietario !== null ? ' &middot; Permiso: ' + (s.permiso_propietario ? 'Sí' : 'No') : '') + '</p></div>'
+        + '<div class="form-campo"><label class="form-label">Hogar</label><p>' + (s.personas_en_hogar || '—') + ' personas' + (s.ninos_en_hogar !== null ? ' &middot; ' + s.ninos_en_hogar + ' menores' : '') + '</p></div>'
+        + (s.otros_animales !== null ? '<div class="form-campo"><label class="form-label">Otros animales</label><p>' + (s.otros_animales ? (s.descripcion_otros_animales || 'Sí') : 'No') + '</p></div>' : '')
+        + (s.experiencia_animales ? '<div class="form-campo"><label class="form-label">Experiencia</label><p>' + s.experiencia_animales + '</p></div>' : '')
+        + (s.tiempo_fuera_casa ? '<div class="form-campo"><label class="form-label">Tiempo fuera de casa</label><p>' + s.tiempo_fuera_casa + '</p></div>' : '')
+        + (s.motivo_adopcion ? '<div class="form-campo"><label class="form-label">Motivo</label><p>' + s.motivo_adopcion + '</p></div>' : '')
+        + (s.mensaje ? '<div class="form-campo"><label class="form-label">Mensaje</label><p style="background:#f8f9fa;padding:0.6em;border-radius:6px;">' + s.mensaje + '</p></div>' : '')
+        + '<div class="form-campo"><label class="form-label">Mascota</label><p>' + s.mascota + ' (' + (s.mascota_especie === 'perro' ? 'Perro' : 'Gato') + ') &middot; Protectora: ' + s.protectora + '</p></div>'
+        + '<div class="form-campo"><label class="form-label">Estado</label><p><span class="badge ' + (_coloresSol[s.estado] || 'badge-gris') + '">' + (_etiquetasSol[s.estado] || s.estado) + '</span> &middot; Enviada: ' + formatFecha(s.fecha_envio) + (s.fecha_gestion ? ' &middot; Gestionada: ' + formatFecha(s.fecha_gestion) : '') + '</p></div>'
+        + '</div>';
+    document.getElementById('cuerpoDetalle').innerHTML = html;
+    document.getElementById('modalDetalle').classList.add('abierto');
+}
+
+function todasSolicitudes() {
+    return window._solicitudesCache || [];
+}
+
+function cerrarModalDetalle() {
+    document.getElementById('modalDetalle').classList.remove('abierto');
+}
+
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('abierto');
 }
+document.addEventListener('click', function(e) {
+    var s = document.getElementById('sidebar');
+    if (s.classList.contains('abierto') && !s.contains(e.target) && !e.target.closest('.sidebar-toggle')) {
+        s.classList.remove('abierto');
+    }
+});
 
 function cerrarSesion() {
     fetch('../backend/api/auth/logout.php', { credentials: 'include' })

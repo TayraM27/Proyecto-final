@@ -263,13 +263,21 @@ if ($metodo === 'POST') {
 }
 
 /*--------------------------------------------------------------------------------------------
-PUT — actualizar mascota (SOLO PROTECTORA sobre las suyas, admin NO puede editar) */
+PUT — actualizar mascota (SOLO PROTECTORA sobre las suyas, admin solo desmarcar urgencias) */
 if ($metodo === 'PUT') {
+    $datos = json_decode(file_get_contents('php://input'), true) ?? [];
+
     if ($esAdmin) {
+        $accionBody = $datos['accion'] ?? '';
+        if ($accionBody === 'desmarcar_prioritaria_admin') {
+            $id = (int)($datos['idMascota'] ?? 0);
+            if (!$id) respuestaError('idMascota requerido.');
+            $pdo->prepare('UPDATE mascotas SET prioritaria = 0, fecha_prioritaria = NULL WHERE idMascota = ?')
+                ->execute([$id]);
+            respuestaOk(['mensaje' => 'Urgencia desmarcada por moderación.', 'prioritaria' => 0]);
+        }
         respuestaError('Los administradores no pueden editar mascotas. Esta acción corresponde a la protectora.', 403);
     }
-
-    $datos = json_decode(file_get_contents('php://input'), true) ?? [];
     $id    = (int)($datos['idMascota'] ?? 0);
     if (!$id) respuestaError('idMascota requerido.');
     
@@ -422,18 +430,3 @@ if ($metodo === 'PUT' && $accion === 'toggle_prioritaria') {
     }
 }
 
-/*--------------------------------------------------------------------------------------------
-   PUT ?accion=desmarcar_prioritaria_admin — solo admin puede desmarcar abusos
-   El admin no puede marcar, solo desmarcar. */
-if ($metodo === 'PUT' && $accion === 'desmarcar_prioritaria_admin') {
-    if (!$esAdmin) {
-        respuestaError('Acción reservada al administrador.', 403);
-    }
-
-    $id = (int)($datos['idMascota'] ?? 0);
-    if (!$id) respuestaError('idMascota requerido.');
-
-    $pdo->prepare('UPDATE mascotas SET prioritaria = 0, fecha_prioritaria = NULL WHERE idMascota = ?')
-        ->execute([$id]);
-    respuestaOk(['mensaje' => 'Urgencia desmarcada por moderación.', 'prioritaria' => 0]);
-}

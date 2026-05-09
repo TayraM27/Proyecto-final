@@ -1,4 +1,4 @@
-/*--------------------------------------------------------------------------------------------
+﻿/*--------------------------------------------------------------------------------------------
 base */
 * {
 font-family: 'Poppins', sans-serif;
@@ -1266,8 +1266,14 @@ z-index: 2;
 position: static;
 width: 44px;
 height: 44px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
 background: rgba(255, 255, 255, 0.92);
 border: none;
+font-size: 1rem;
+color: #1B358F;
 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -1535,7 +1541,8 @@ transform: translateY(-4px);
 box-shadow: 0 6px 20px rgba(0, 0, 0, 0.13);
 }
 
-.card-sugerencia img {
+.card-sugerencia img,
+.card-sugerencia-img {
 height: 420px;
 object-fit: cover;
 object-position: center 20%;
@@ -4421,6 +4428,15 @@ flex: unset;
 
     .reg-fila { grid-template-columns: 1fr; }
 
+    .card-sugerencia img,
+    .card-sugerencia-img { height: 200px; }
+
+    #cuotaGridFicha { grid-template-columns: repeat(2, 1fr); }
+
+    .perfil-grid-datos { grid-template-columns: 1fr !important; }
+
+    #arrow { width: 32px !important; }
+
     /* Mejorar botones contacto acoge en mobile */
 .acoge-prot-contacto a {
 flex: 1 1 calc(50% - 0.3em);
@@ -4476,6 +4492,7 @@ main                    { padding: 1.2em 0 2em; }
     .beneficio-texto span   { font-size: 0.78rem; }
     .animal-img             { height: 180px; }
     .animal-nombre          { font-size: 1rem; }
+    #arrow                  { width: 28px !important; }
 }
 /*--------------------------------------------------------------------------------------------
 perfil — tabs */
@@ -4843,8 +4860,8 @@ cursor: pointer;
 }
 
 .btn-prot-ext:hover {
-background-color: #1B358F;
-color: #fff;
+background-color: #F8BA56;
+color: #1B358F;
 transform: translateY(-2px);
 }
 

@@ -10,14 +10,14 @@ use PHPMailer\PHPMailer\Exception;
 header('Content-Type: application/json; charset=utf-8');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    respuestaError('Metodo no permitido.', 405);
+    respuestaError('Método no permitido.', 405);
 }
 
 $datos = json_decode(file_get_contents('php://input'), true) ?? [];
 $email = trim($datos['email'] ?? '');
 
 if (!validarEmail($email)) {
-    respuestaError('Email no valido.');
+    respuestaError('Email no válido.');
 }
 
 $pdo  = conectar();
@@ -26,7 +26,7 @@ $stmt->execute([$email]);
 $usuario = $stmt->fetch();
 
 if (!$usuario) {
-    respuestaOk(['mensaje' => 'Si el email esta registrado recibiras un enlace en breve.']);
+    respuestaOk(['mensaje' => 'Si el email está registrado recibirás un enlace en breve.']);
 }
 
 $idUsuario = (int)$usuario['idUsuario'];
@@ -67,13 +67,13 @@ try {
             <div style="text-align:center;margin-bottom:1.5em;">
                 <span style="font-size:1.5rem;font-weight:700;color:#1B358F;">Pet<span style="color:#F8BA56;">Family</span></span>
             </div>
-            <h2 style="color:#1B358F;font-size:1.1rem;">Restablecer contrasena</h2>
-            <p style="color:#444;font-size:0.92rem;">Has solicitado restablecer tu contrasena. Haz clic para continuar:</p>
+            <h2 style="color:#1B358F;font-size:1.1rem;">Restablecer contraseña</h2>
+            <p style="color:#444;font-size:0.92rem;">Has solicitado restablecer tu contraseña. Haz clic para continuar:</p>
             <p style="text-align:center;margin:2em 0;">
                 <a href="' . htmlspecialchars($enlace) . '"
                    style="background:#1B358F;color:#fff;padding:0.9em 2em;border-radius:8px;
                           text-decoration:none;font-weight:700;font-size:0.95rem;display:inline-block;">
-                    Restablecer contrasena
+                    Restablecer contraseña
                 </a>
             </p>
             <p style="font-size:0.82rem;color:#888;text-align:center;">
@@ -81,12 +81,12 @@ try {
             </p>
             <p style="font-size:0.78rem;color:#bbb;text-align:center;">PetFamily &mdash; Protectoras de Asturias</p>
         </div>';
-    $mail->AltBody = "Restablece tu contrasena:\n\n" . $enlace . "\n\nCaduca en 1 hora.";
+    $mail->AltBody = "Restablece tu contraseña:\n\n" . $enlace . "\n\nCaduca en 1 hora.";
 
     $mail->send();
-    respuestaOk(['mensaje' => 'Si el email esta registrado recibiras un enlace en breve.']);
+    respuestaOk(['mensaje' => 'Si el email está registrado recibirás un enlace en breve.']);
 
 } catch (Exception $e) {
     error_log('[PetFamily] PHPMailer error: ' . $mail->ErrorInfo);
-    respuestaError('Error al enviar el correo. Intentalo de nuevo mas tarde.');
+    respuestaError('Error al enviar el correo. Inténtalo de nuevo más tarde.');
 }

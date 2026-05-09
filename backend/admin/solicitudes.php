@@ -1,7 +1,7 @@
 ﻿<?php
 /*--------------------------------------------------------------------------------------------
-GET â€” lista solicitudes con filtro de estado y paginaciÃ³n
-PUT â€” cambia estado de una solicitud */
+GET — lista solicitudes con filtro de estado y paginación
+PUT — cambia estado de una solicitud */
 
 require_once __DIR__ . '/../includes/funciones.php';
 
@@ -79,10 +79,10 @@ if ($metodo === 'GET') {
 }
 
 /*--------------------------------------------------------------------------------------------
-PUT â€” cambiar estado (SOLO PROTECTORA sobre solicitudes de sus mascotas, admin NO puede) */
+PUT — cambiar estado (SOLO PROTECTORA sobre solicitudes de sus mascotas, admin NO puede) */
 if ($metodo === 'PUT') {
     if ($esAdmin) {
-        respuestaError('Los administradores no pueden gestionar solicitudes. Esta acciÃ³n corresponde a la protectora.', 403);
+        respuestaError('Los administradores no pueden gestionar solicitudes. Esta acción corresponde a la protectora.', 403);
     }
 
     if (!$idProtectoraUsuario) respuestaError('No tienes una protectora asignada.');
@@ -95,7 +95,7 @@ if ($metodo === 'PUT') {
     if (!$id) respuestaError('idSolicitud requerido.');
 
     $estadosValidos = ['pendiente','en_revision','aprobada','rechazada'];
-    if (!in_array($nuevoEstado, $estadosValidos)) respuestaError('Estado no vÃ¡lido.');
+    if (!in_array($nuevoEstado, $estadosValidos)) respuestaError('Estado no válido.');
 
     // Verificar que la solicitud pertenece a una mascota de esta protectora
     $stmt = $pdo->prepare(
@@ -128,5 +128,4 @@ if ($metodo === 'PUT') {
     respuestaOk(['mensaje' => 'Estado actualizado correctamente.']);
 }
 
-respuestaError('MÃ©todo no permitido.', 405);
-
+respuestaError('Método no permitido.', 405);

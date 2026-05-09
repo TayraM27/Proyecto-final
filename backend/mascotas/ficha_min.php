@@ -2,7 +2,7 @@
 header('Content-Type: application/json; charset=utf-8');
 
 $id = (int)($_GET['id'] ?? 0);
-if (!$id) { echo json_encode(['ok' => false, 'error' => 'ID invalido']); exit; }
+if (!$id) { echo json_encode(['ok' => false, 'error' => 'ID inválido']); exit; }
 
 require_once __DIR__ . '/../includes/funciones.php';
 $pdo = conectar();

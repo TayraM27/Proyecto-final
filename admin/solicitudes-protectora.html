@@ -62,38 +62,42 @@
 
     <main class="admin-contenido">
 
-        <div style="display:flex;gap:0.5em;flex-wrap:wrap;margin-bottom:1.5em;">
-            <button class="btn btn-sm btn-outline filtro-btn activo" data-filtro="todas" onclick="filtrarSol(this)">Todas</button>
-            <button class="btn btn-sm btn-outline filtro-btn" data-filtro="pendiente" onclick="filtrarSol(this)">
-                <i class="fa-solid fa-clock"></i> Pendientes
-            </button>
-            <button class="btn btn-sm btn-outline filtro-btn" data-filtro="aprobada" onclick="filtrarSol(this)">
-                <i class="fa-solid fa-circle-check"></i> Aprobadas
-            </button>
-            <button class="btn btn-sm btn-outline filtro-btn" data-filtro="rechazada" onclick="filtrarSol(this)">
-                <i class="fa-solid fa-circle-xmark"></i> Rechazadas
-            </button>
-            <button class="btn btn-sm btn-outline filtro-btn" data-filtro="info_adicional" onclick="filtrarSol(this)">
-                <i class="fa-solid fa-circle-info me-2"></i> Info adicional
-            </button>
-        </div>
+        <div class="panel">
+            <div class="panel-header">
+                <div style="display:flex;gap:0.5em;flex-wrap:wrap;">
+                    <button class="btn btn-sm btn-outline filtro-btn activo" data-filtro="todas" onclick="filtrarSol(this)">Todas</button>
+                    <button class="btn btn-sm btn-outline filtro-btn" data-filtro="pendiente" onclick="filtrarSol(this)">
+                        <i class="fa-solid fa-clock"></i> Pendientes
+                    </button>
+                    <button class="btn btn-sm btn-outline filtro-btn" data-filtro="aprobada" onclick="filtrarSol(this)">
+                        <i class="fa-solid fa-circle-check"></i> Aprobadas
+                    </button>
+                    <button class="btn btn-sm btn-outline filtro-btn" data-filtro="rechazada" onclick="filtrarSol(this)">
+                        <i class="fa-solid fa-circle-xmark"></i> Rechazadas
+                    </button>
+                    <button class="btn btn-sm btn-outline filtro-btn" data-filtro="info_adicional" onclick="filtrarSol(this)">
+                        <i class="fa-solid fa-circle-info me-2"></i> Info adicional
+                    </button>
+                </div>
+            </div>
 
-        <div class="tabla-wrap">
-            <table class="tabla">
-                <thead>
-                    <tr>
-                        <th>Protectora</th>
-                        <th>Solicitante</th>
-                        <th>CIF/NIF</th>
-                        <th>Estado</th>
-                        <th>Fecha</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaSolicitudes">
-                    <tr><td colspan="6" style="text-align:center;color:var(--texto-sub);padding:2em;">Cargando...</td></tr>
-                </tbody>
-            </table>
+            <div class="tabla-wrap">
+                <table class="tabla">
+                    <thead>
+                        <tr>
+                            <th>Protectora</th>
+                            <th>Solicitante</th>
+                            <th>CIF/NIF</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaSolicitudes">
+                        <tr><td colspan="6" style="text-align:center;color:var(--texto-sub);padding:2em;">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
     </main>
@@ -316,6 +320,12 @@ function revisarSol(estado) {
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('abierto');
 }
+document.addEventListener('click', function(e) {
+    var s = document.getElementById('sidebar');
+    if (s.classList.contains('abierto') && !s.contains(e.target) && !e.target.closest('.sidebar-toggle')) {
+        s.classList.remove('abierto');
+    }
+});
 
 function cerrarSesion() {
     fetch('../backend/api/auth/logout.php', { credentials: 'include' })

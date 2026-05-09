@@ -6,7 +6,7 @@ header('Content-Type: application/json; charset=utf-8');
 $id = (int)($_GET['id'] ?? 0);
 
 if (!$id) {
-    respuestaError('ID invalido');
+    respuestaError('ID inválido');
 }
 
 $pdo = conectar();
@@ -35,6 +35,7 @@ $stmt = $pdo->prepare(
         m.microchip,
         m.desparasitado,
         m.num_vistas,
+        m.edad_texto,
         m.fecha_nacimiento,
         m.fecha_entrada,
         p.idProtectora,

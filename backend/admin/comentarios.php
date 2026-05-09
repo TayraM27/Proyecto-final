@@ -77,7 +77,7 @@ PUT ?accion=restore — restaurar comentario */
 if ($metodo === 'PUT' && $accion === 'restore') {
     $datos = jsonInput();
     $idComentario = (int)($datos['idComentario'] ?? 0);
-    if (!$idComentario) respuestaError('ID de comentario no valido.');
+    if (!$idComentario) respuestaError('ID de comentario no válido.');
 
     $stmt = $pdo->prepare('SELECT deleted FROM comentarios WHERE idComentario = ?');
     $stmt->execute([$idComentario]);
@@ -96,7 +96,7 @@ DELETE — eliminar comentario (admin) */
 if ($metodo === 'DELETE') {
     $datos = jsonInput();
     $idComentario = (int)($datos['idComentario'] ?? 0);
-    if (!$idComentario) respuestaError('ID de comentario no valido.');
+    if (!$idComentario) respuestaError('ID de comentario no válido.');
 
     $stmt = $pdo->prepare('SELECT idPublicacion, parent_id FROM comentarios WHERE idComentario = ?');
     $stmt->execute([$idComentario]);
@@ -113,4 +113,4 @@ if ($metodo === 'DELETE') {
     respuestaOk(['mensaje' => 'Comentario eliminado permanentemente.']);
 }
 
-respuestaError('Metodo no permitido.', 405);
+respuestaError('Método no permitido.', 405);

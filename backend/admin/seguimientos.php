@@ -35,7 +35,31 @@ switch ($_SERVER['REQUEST_METHOD']) {
              ORDER BY s.fecha DESC'
         );
         $stmt->execute($params);
-        respuestaOk(['seguimientos' => $stmt->fetchAll()]);
+        $seguimientos = $stmt->fetchAll();
+
+        $idsAct = array_filter(array_column($seguimientos, 'idActualizacion'));
+        $respuestasPadrino = [];
+        if ($idsAct) {
+            $placeholders = implode(',', array_fill(0, count($idsAct), '?'));
+            $stmtR = $pdo->prepare(
+                "SELECT ap.idActualizacion, ap.respuesta, ap.fecha, u.nombre AS padrino_nombre
+                 FROM actualizacion_padrinos ap
+                 JOIN usuarios u ON ap.idUsuario = u.idUsuario
+                 WHERE ap.idActualizacion IN ($placeholders) AND ap.respuesta IS NOT NULL AND ap.respuesta != ''"
+            );
+            $stmtR->execute($idsAct);
+            $rows = $stmtR->fetchAll();
+            foreach ($rows as $r) {
+                $respuestasPadrino[$r['idActualizacion']][] = $r;
+            }
+        }
+
+        foreach ($seguimientos as &$s) {
+            $s['padrino_respuestas'] = $respuestasPadrino[$s['idActualizacion']] ?? [];
+        }
+        unset($s);
+
+        respuestaOk(['seguimientos' => $seguimientos]);
         break;
 
     case 'POST':

@@ -92,13 +92,6 @@
                     <p class="stat-label">Apadrinamientos activos</p>
                 </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icono"><i class="fa-solid fa-hand-holding-heart"></i></div>
-                <div>
-                    <p class="stat-numero" id="st-donaciones">—</p>
-                    <p class="stat-label">Donaciones completadas</p>
-                </div>
-            </div>
             <div class="stat-card gold">
                 <div class="stat-icono"><i class="fa-solid fa-comments"></i></div>
                 <div>
@@ -196,7 +189,7 @@ function cargarDashboard() {
             document.getElementById('st-protectoras').textContent    = s.total_protectoras;
             document.getElementById('st-usuarios').textContent       = s.total_usuarios;
             document.getElementById('st-apadrinamientos').textContent= s.apadrinamientos_activos;
-            document.getElementById('st-donaciones').textContent     = s.donaciones_completadas;
+
             document.getElementById('st-foro').textContent           = s.publicaciones_foro;
 
             var tm = document.getElementById('tablaMascotas');
@@ -243,6 +236,12 @@ function cargarDashboard() {
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('abierto');
 }
+document.addEventListener('click', function(e) {
+    var s = document.getElementById('sidebar');
+    if (s.classList.contains('abierto') && !s.contains(e.target) && !e.target.closest('.sidebar-toggle')) {
+        s.classList.remove('abierto');
+    }
+});
 
 function cerrarSesion() {
     fetch('../backend/api/auth/logout.php', { credentials: 'include' })

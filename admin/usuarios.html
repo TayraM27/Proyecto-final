@@ -238,6 +238,12 @@ function formatFecha(f) {
 }
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('abierto'); }
+document.addEventListener('click', function(e) {
+    var s = document.getElementById('sidebar');
+    if (s.classList.contains('abierto') && !s.contains(e.target) && !e.target.closest('.sidebar-toggle')) {
+        s.classList.remove('abierto');
+    }
+});
 function cerrarSesion() {
     fetch('../backend/api/auth/logout.php', { credentials: 'include' })
         .then(function(){ window.location.href = '../html/login.html'; });

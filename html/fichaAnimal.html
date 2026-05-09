@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/093cf7cd82.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 
@@ -916,7 +916,7 @@ function cargarOtrosAnimales(idActual) {
                 d.className = 'col-12 col-sm-6 col-lg-4';
                 var foto = m.foto_principal ? '../' + m.foto_principal : '../img/mascotas/default.jpg';
                 d.innerHTML = '<div class="card-sugerencia card" onclick="window.location.href=\'fichaAnimal.html?id=' + m.idMascota + '\'" style="cursor:pointer;">' +
-                    '<img src="' + foto + '" alt="' + m.nombre + '" style="height:420px;object-fit:cover;" onerror="this.src=\'../img/mascotas/default.jpg\'">' +
+                    '<img src="' + foto + '" alt="' + m.nombre + '" class="card-sugerencia-img" onerror="this.src=\'../img/mascotas/default.jpg\'">' +
                     '<div class="card-body">' +
                     '<p class="card-title" style="font-weight:600;margin:0;">' + m.nombre + '</p>' +
                     '<p class="card-text" style="font-size:0.85rem;color:#666;margin:5px 0 0;">' + (m.raza || 'Sin especificar') + '</p>' +
@@ -1481,4 +1481,3 @@ function compartirAnimalFicha() {
 
 </body>
 </html>
-

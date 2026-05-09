@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
@@ -446,8 +446,29 @@
     if (dataSalud === 'especial') badges += '<span class="badge bg-dark">' + m.estado_salud + '</span>';
     if (m.badge_extra)            badges += '<span class="badge bg-secondary">' + m.badge_extra + '</span>';
 
-    /* edad texto */
-    var edadTexto = m.edad_texto || (m.edad_anos !== null ? m.edad_anos + ' años' : '—');
+    /* edad */
+    var edadTexto = '';
+    if (m.fecha_nacimiento) {
+        var hoy  = new Date(), nac = new Date(m.fecha_nacimiento);
+        var cumple = new Date(hoy.getFullYear(), nac.getMonth(), nac.getDate());
+        var anos = hoy.getFullYear() - nac.getFullYear();
+        if (hoy < cumple) anos--;
+        if (anos > 0) {
+            edadTexto = anos + ' año' + (anos > 1 ? 's' : '');
+        } else {
+            var meses = hoy.getMonth() - nac.getMonth();
+            if (hoy.getDate() < nac.getDate()) meses--;
+            if (meses < 0) meses += 12;
+            if (meses > 0) {
+                edadTexto = meses + ' mes' + (meses > 1 ? 'es' : '');
+            } else {
+                var d = Math.floor((hoy - nac) / 86400000);
+                edadTexto = d > 0 ? d + ' día' + (d > 1 ? 's' : '') : 'Recién nacido';
+            }
+        }
+    } else {
+        edadTexto = m.edad_texto || (m.edad_anos !== null ? m.edad_anos + ' años' : '—');
+    }
 
     /* tamaño capitalizado */
     var tamTexto = m.tamanyo ? (m.tamanyo.charAt(0).toUpperCase() + m.tamanyo.slice(1)) : '';
@@ -675,7 +696,8 @@
             if (FILTROS[clave] === 'todos' || clave === 'especie') return;
             var tag = document.createElement('span');
             tag.className = 'filtro-tag-activo';
-            tag.innerHTML = ETIQUETAS[clave][FILTROS[clave]] +
+            var label = (ETIQUETAS[clave] && ETIQUETAS[clave][FILTROS[clave]]) || FILTROS[clave].charAt(0).toUpperCase() + FILTROS[clave].slice(1);
+            tag.innerHTML = label +
                 '<button onclick="quitarFiltro(\'' + clave + '\')" title="Quitar"><i class="fa-solid fa-xmark"></i></button>';
             container.appendChild(tag);
         });
@@ -755,4 +777,3 @@
 </script>
 </body>
 </html>
-

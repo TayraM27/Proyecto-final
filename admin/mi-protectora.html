@@ -135,14 +135,13 @@
                                 <th>Nombre</th>
                                 <th>Especie</th>
                                 <th>Edad</th>
-                                <th>Tiempo en adopción</th>
                                 <th>Tiempo en protectora</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="tablaMascotas">
-                            <tr><td colspan="8" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                            <tr><td colspan="7" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -967,7 +966,6 @@ function renderTabla(mascotas) {
             + '<td><strong>' + m.nombre + '</strong><br>' + badgePri + badgeExtra + '</td>'
             + '<td>' + (m.especie === 'perro' ? '🐕 Perro' : '🐱 Gato') + '</td>'
             + '<td>' + (m.edad_texto || '—') + '</td>'
-            + '<td>' + tiempoProtectora + '</td>'
             + '<td>' + tiempoProtectora + '</td>'
             + '<td>' + badgeEst + '</td>'
             + '<td><div class="tabla-acciones"><a href="../html/fichaAnimal.html?id=' + m.idMascota + '" class="btn btn-sm btn-icon btn-ver" title="Ver ficha"><i class="fa-solid fa-eye"></i></a><button class="btn btn-sm btn-icon btn-azul-lite" onclick="editar(' + m.idMascota + ')" title="Editar"><i class="fa-solid fa-pen"></i></button><button class="btn btn-sm btn-icon btn-danger" onclick="eliminar(' + m.idMascota + ')" title="Eliminar"><i class="fa-solid fa-trash"></i></button></div></td>'
@@ -1805,6 +1803,12 @@ function activarEvento(id) {
 function cerrarModal(e) { if (e && e.target === e.currentTarget) cerrarModalBtn(); }
 function cerrarModalBtn() { document.getElementById('modalOverlay').classList.remove('activo'); }
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('abierto'); }
+document.addEventListener('click', function(e) {
+    var s = document.getElementById('sidebar');
+    if (s.classList.contains('abierto') && !s.contains(e.target) && !e.target.closest('.sidebar-toggle')) {
+        s.classList.remove('abierto');
+    }
+});
 function cerrarSesion() { fetch('../backend/api/auth/logout.php', { credentials: 'include' }).then(function(){ window.location.href = '../html/index.html'; }); }
 
 var datosProtectora = null;

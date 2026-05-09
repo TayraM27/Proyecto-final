@@ -104,6 +104,16 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="modalDetalleApad" onclick="if(event&&event.target===event.currentTarget)cerrarModalDetalleApad()">
+    <div class="modal" style="max-width:480px;">
+        <div class="modal-header">
+            <p class="modal-titulo"><i class="fa-solid fa-star"></i> Detalle del apadrinamiento</p>
+            <button class="modal-cerrar" onclick="cerrarModalDetalleApad()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body" id="cuerpoDetalleApad"></div>
+    </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -137,6 +147,7 @@ function cargarApadrinamientos() {
     fetch('../backend/admin/apadrinamientos.php', { credentials: 'include' })
         .then(function(r){ return r.json(); })
         .then(function(data){
+            window._apadrinamientosCache = data.apadrinamientos || [];
             var tb = document.getElementById('tablaApadrinamientos');
             if (!data.ok || !data.apadrinamientos.length) {
                 tb.innerHTML = '<tr><td colspan="6"><div class="estado-vacio"><i class="fa-solid fa-star"></i><p>Sin apadrinamientos registrados</p></div></td></tr>';
@@ -153,13 +164,17 @@ function cargarApadrinamientos() {
 
                 var especie = a.especie === 'perro' ? '🐕' : '🐱';
 
+                var padrino = a.padrino || a.nombre_pagador || '—';
+                var padrinoEmail = a.padrino_email || a.email_pagador || '';
+
                 return '<tr>'
                     + '<td><strong>' + especie + ' ' + a.mascota + '</strong></td>'
-                    + '<td style="font-size:0.85rem;">' + a.padrino + '<br><span style="color:var(--texto-sub);font-size:0.78rem;">' + a.padrino_email + '</span></td>'
+                    + '<td style="font-size:0.85rem;">' + padrino + (padrinoEmail ? '<br><span style="color:var(--texto-sub);font-size:0.78rem;">' + padrinoEmail + '</span>' : '') + '</td>'
                     + '<td><strong>' + parseFloat(a.cuota).toFixed(2) + ' €</strong>/mes</td>'
                     + '<td style="font-size:0.82rem;">' + formatFecha(a.fecha_inicio) + '</td>'
                     + '<td>' + badgeEst + '</td>'
                     + '<td><div class="tabla-acciones">'
+                    + '<button class="btn btn-sm btn-outline btn-icon" onclick="verDetalleApadrinamiento(' + a.idApadrinamiento + ')" title="Ver detalle"><i class="fa-solid fa-magnifying-glass"></i></button>'
                     + '<button class="btn btn-sm btn-outline btn-icon" onclick="verSeguimientos(' + a.idApadrinamiento + ',\'' + a.mascota.replace(/'/g, '') + '\')" title="Ver seguimientos"><i class="fa-solid fa-eye"></i></button>'
                     + '</div></td>'
                     + '</tr>';
@@ -200,11 +215,20 @@ function cargarSeguimientos(id) {
                     media = '<img src="../' + s.ruta_archivo + '" style="max-width:100%;border-radius:6px;margin-top:0.4em;" onerror="this.style.display=\'none\'">';
                 }
 
+                var respPadrinos = (s.padrino_respuestas || []).map(function(r){
+                    return '<div style="margin-top:0.5em;padding:0.5em 0.7em;background:#fff8e1;border-radius:6px;border-left:3px solid #F8BA56;font-size:0.82rem;">'
+                        + '<span style="font-weight:600;color:#795548;">' + r.padrino_nombre + '</span>'
+                        + ' <span style="color:var(--texto-sub);font-size:0.75rem;">' + formatFechaHora(r.fecha) + '</span>'
+                        + '<p style="margin:0.2em 0 0;color:#5d4037;">' + r.respuesta + '</p>'
+                        + '</div>';
+                }).join('');
+
                 return '<div class="seguimiento-item">'
                     + '<div class="seguimiento-meta">' + icono + ' ' + formatFechaHora(s.fecha)
                     + '</div>'
                     + '<p style="margin:0.3em 0 0;font-size:0.88rem;">' + s.contenido + '</p>'
                     + media
+                    + respPadrinos
                     + '</div>';
             }).join('');
         })
@@ -226,6 +250,38 @@ function formatFechaHora(f) {
     return new Date(f).toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
 }
 
+/*--------------------------------------------------------------------------------------------
+modal detalle apadrinamiento */
+
+function verDetalleApadrinamiento(id) {
+    var a = (window._apadrinamientosCache || []).find(function(x){ return x.idApadrinamiento === id; });
+    if (!a) return;
+    var padrino = a.padrino || a.nombre_pagador || '—';
+    var padrinoEmail = a.padrino_email || a.email_pagador || '';
+    var especie = a.especie === 'perro' ? 'Perro' : 'Gato';
+    var metodoPago = a.metodo_pago ? a.metodo_pago.charAt(0).toUpperCase() + a.metodo_pago.slice(1) : '—';
+    var badgeEst = a.estado === 'aceptada' ? '<span class="badge badge-verde">Aceptada</span>'
+        : a.estado === 'pendiente' ? '<span class="badge badge-gold">Pendiente</span>'
+        : a.estado === 'en_revision' ? '<span class="badge badge-azul">En revisión</span>'
+        : '<span class="badge badge-rojo">' + (a.estado.charAt(0).toUpperCase() + a.estado.slice(1)) + '</span>';
+
+    var html = '<div style="font-size:0.88rem;">'
+        + '<div class="form-campo"><label class="form-label">Mascota</label><p><strong>' + especie + ' - ' + a.mascota + '</strong></p></div>'
+        + '<div class="form-campo"><label class="form-label">Padrino / Madrina</label><p>' + padrino + (padrinoEmail ? '<br><span style="color:var(--texto-sub);font-size:0.8rem;">' + padrinoEmail + '</span>' : '') + '</p></div>'
+        + (a.telefono ? '<div class="form-campo"><label class="form-label">Teléfono</label><p>' + a.telefono + '</p></div>' : '')
+        + '<div class="form-campo"><label class="form-label">Cuota</label><p><strong>' + parseFloat(a.cuota).toFixed(2) + ' €</strong>/mes &middot; ' + metodoPago + '</p></div>'
+        + '<div class="form-campo"><label class="form-label">Inicio</label><p>' + formatFecha(a.fecha_inicio) + (a.fecha_fin ? ' &middot; Fin: ' + formatFecha(a.fecha_fin) : '') + '</p></div>'
+        + (a.mensaje ? '<div class="form-campo"><label class="form-label">Mensaje</label><p style="background:#f8f9fa;padding:0.6em;border-radius:6px;">' + a.mensaje + '</p></div>' : '')
+        + '<div class="form-campo"><label class="form-label">Estado</label><p>' + badgeEst + '</p></div>'
+        + '</div>';
+    document.getElementById('cuerpoDetalleApad').innerHTML = html;
+    document.getElementById('modalDetalleApad').classList.add('abierto');
+}
+
+function cerrarModalDetalleApad() {
+    document.getElementById('modalDetalleApad').classList.remove('abierto');
+}
+
 function cerrarModalSeg(e) {
     if (e.target === document.getElementById('modalSeguimientos')) cerrarModalSegBtn();
 }
@@ -237,6 +293,12 @@ function cerrarModalSegBtn() {
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('abierto');
 }
+document.addEventListener('click', function(e) {
+    var s = document.getElementById('sidebar');
+    if (s.classList.contains('abierto') && !s.contains(e.target) && !e.target.closest('.sidebar-toggle')) {
+        s.classList.remove('abierto');
+    }
+});
 
 function cerrarSesion() {
     fetch('../backend/api/auth/logout.php', { credentials: 'include' })

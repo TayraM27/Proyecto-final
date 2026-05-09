@@ -22,7 +22,6 @@ $stats['mascotas_disponibles']   = safeCount($pdo, "SELECT COUNT(*) FROM mascota
 $stats['total_protectoras']      = safeCount($pdo, "SELECT COUNT(*) FROM protectoras WHERE activa=1");
 $stats['total_usuarios']         = safeCount($pdo, "SELECT COUNT(*) FROM usuarios WHERE rol='usuario'");
 $stats['apadrinamientos_activos']= safeCount($pdo, "SELECT COUNT(*) FROM apadrinamientos WHERE estado='aceptada' AND deleted=0");
-$stats['donaciones_completadas'] = safeCount($pdo, "SELECT COUNT(*) FROM donaciones WHERE estado='completada'");
 $stats['publicaciones_foro']     = safeCount($pdo, "SELECT COUNT(*) FROM publicaciones WHERE activa=1");
 
 try {
