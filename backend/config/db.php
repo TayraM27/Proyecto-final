@@ -1,23 +1,16 @@
 <?php
-/*--------------------------------------------------------------------------------------------
-Conexión a base de datos mediante PDO */
 
-/* Variables de entorno - cambiar según tu entorno */
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'petfamily');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+
+define('DB_HOST',    getenv('DB_HOST')    ?: 'localhost');
+define('DB_NAME',    getenv('DB_NAME')    ?: 'petfamily');
+define('DB_USER',    getenv('DB_USER')    ?: 'root');
+define('DB_PASS',    getenv('DB_PASS')    ?: '');
 define('DB_CHARSET', 'utf8mb4');
 
-/*--------------------------------------------------------------------------------------------
-conectar */
-
+/*conectar */
 function conectar(): PDO {
     static $pdo = null;
-
-    if ($pdo !== null) {
-        return $pdo;
-    }
+    if ($pdo !== null) return $pdo;
 
     $dsn = 'mysql:host=' . DB_HOST
          . ';dbname=' . DB_NAME
@@ -34,7 +27,7 @@ function conectar(): PDO {
         return $pdo;
     } catch (PDOException $e) {
         http_response_code(500);
-        echo json_encode(['error' => 'Error de conexión con la base de datos.']);
+        echo json_encode(['error' => 'Error de conexion con la base de datos.']);
         exit;
     }
 }
