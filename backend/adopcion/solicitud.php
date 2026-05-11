@@ -23,25 +23,25 @@ if ($esJson) {
 }
 
 $idMascota      = (int)($post['idMascota']                  ?? 0);
-$nombre         = limpiar($post['nombre']                   ?? '');
-$dni            = limpiar($post['dni']                      ?? '');
+$nombre         = trim($post['nombre']                   ?? '');
+$dni            = trim($post['dni']                      ?? '');
 $fecha_nac      = $post['fecha_nacimiento']                 ?? '';
 $email          = trim($post['email']                       ?? '');
-$telefono       = limpiar($post['telefono']                 ?? '');
-$direccion      = limpiar($post['direccion_completa']       ?? '');
-$localidad      = limpiar($post['localidad']                ?? '');
+$telefono       = trim($post['telefono']                 ?? '');
+$direccion      = trim($post['direccion_completa']       ?? '');
+$localidad      = trim($post['localidad']                ?? '');
 $tipo_vivienda  = $post['tipo_vivienda']                    ?? '';
 $vivienda_prop  = $post['vivienda_en_propiedad']            ?? '';
 $personas       = (int)($post['personas_en_hogar']          ?? 0);
 $ninos          = $post['ninos_en_hogar']                   ?? '';
 $otros_animales = $post['otros_animales']                   ?? '';
-$desc_otros     = limpiar($post['descripcion_otros_animales']?? '');
-$exp_animales   = limpiar($post['experiencia_animales']     ?? '');
-$tiempo_fuera   = limpiar($post['tiempo_fuera_casa']        ?? '');
-$motivo         = limpiar($post['motivo_adopcion']          ?? '');
+$desc_otros     = trim($post['descripcion_otros_animales']?? '');
+$exp_animales   = trim($post['experiencia_animales']     ?? '');
+$tiempo_fuera   = trim($post['tiempo_fuera_casa']        ?? '');
+$motivo         = trim($post['motivo_adopcion']          ?? '');
 $compromiso     = (int)($post['compromiso_visitas']         ?? 0);
 $acepta_politica= !empty($post['aceptar_politica_privacidad']) ? 1 : 0;
-$mensaje        = limpiar($post['mensaje']                  ?? '');
+$mensaje        = trim($post['mensaje']                  ?? '');
 
 /* Validaciones */
 if (!$idMascota || !$nombre || !$email) {

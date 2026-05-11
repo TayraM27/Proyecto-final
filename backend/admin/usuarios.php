@@ -17,7 +17,7 @@ $metodo = $_SERVER['REQUEST_METHOD'];
 /*--------------------------------------------------------------------------------------------
 GET */
 if ($metodo === 'GET') {
-    $q      = limpiar($_GET['q']     ?? '');
+    $q      = trim($_GET['q']     ?? '');
     $estado = $_GET['estado']        ?? 'todos';
     $rol    = $_GET['rol']           ?? 'todos';
     $pagina = (int)($_GET['pagina']  ?? 1);

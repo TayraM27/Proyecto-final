@@ -141,7 +141,7 @@ if ($metodo === 'POST') {
     $datos         = jsonInput();
     $idPublicacion = (int)($datos['idPublicacion'] ?? 0);
     $parent_id     = !empty($datos['idPadre']) ? (int)$datos['idPadre'] : null;
-    $contenido     = limpiar($datos['contenido'] ?? '');
+    $contenido     = trim($datos['contenido'] ?? '');
 
     if (!$idPublicacion || !$contenido) respuestaError('Publicacion y contenido son obligatorios.');
     if (mb_strlen($contenido) > 1000)   respuestaError('Maximo 1000 caracteres.');

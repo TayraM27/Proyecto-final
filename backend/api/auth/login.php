@@ -13,7 +13,7 @@ if (!$datos) {
     respuestaError('Datos inválidos.');
 }
 
-$email    = limpiar($datos['email']    ?? '');
+$email    = trim($datos['email']    ?? '');
 $password = trim($datos['password']   ?? '');
 
 if (!$email || !$password) {

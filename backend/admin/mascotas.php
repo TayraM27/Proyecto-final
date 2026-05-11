@@ -122,7 +122,7 @@ if ($metodo === 'GET') {
         respuestaOk(['mascota' => $mascota]);
     }
 
-    $q      = limpiar($_GET['q']       ?? '');
+    $q      = trim($_GET['q']       ?? '');
     $especie= $_GET['especie']         ?? 'todos';
     $estado = $_GET['estado']          ?? 'todos';
     $todos  = !empty($_GET['todos'])   ? 1 : 0;
@@ -196,14 +196,14 @@ if ($metodo === 'POST') {
 
     $base = [
         'idProtectora'              => $idProtectoraUsuario,
-        'nombre'                    => limpiar($datos['nombre']),
+        'nombre'                    => trim($datos['nombre']),
         'especie'                   => $datos['especie']              ?? 'perro',
-        'raza'                      => limpiar($datos['raza']         ?? ''),
+        'raza'                      => trim($datos['raza']         ?? ''),
         'sexo'                      => $datos['sexo']                 ?? 'macho',
         'tamanyo'                   => $datos['tamanyo']              ?? 'mediano',
-        'color'                     => limpiar($datos['color']        ?? ''),
-        'descripcion'               => limpiar($datos['descripcion']  ?? ''),
-        'estado_salud'              => limpiar($datos['estado_salud'] ?? ''),
+        'color'                     => trim($datos['color']        ?? ''),
+        'descripcion'               => trim($datos['descripcion']  ?? ''),
+        'estado_salud'              => trim($datos['estado_salud'] ?? ''),
         'urgencia'                  => $datos['urgencia']             ?? 'normal',
         'estado_adopcion'           => $datos['estado_adopcion']      ?? 'disponible',
         'compatible_ninos'          => (int)($datos['compatible_ninos']  ?? 0),
@@ -215,11 +215,11 @@ if ($metodo === 'POST') {
         'microchip'                 => (int)($datos['microchip']         ?? 0),
         'desparasitado'             => (int)($datos['desparasitado']     ?? 0),
         'disponible_apadrinamiento' => (int)($datos['disponible_apadrinamiento'] ?? 1),
-        'edad_texto'                => limpiar($datos['edad_texto']      ?? ''),
-        'badge_extra'               => limpiar($datos['badge_extra']     ?? ''),
+        'edad_texto'                => trim($datos['edad_texto']      ?? ''),
+        'badge_extra'               => trim($datos['badge_extra']     ?? ''),
         'disponible_acogida'        => (int)($datos['disponible_acogida'] ?? 1),
         'prioritaria'               => (int)($datos['prioritaria']        ?? 0),
-        'descripcion_slider'        => limpiar($datos['descripcion_slider'] ?? ''),
+        'descripcion_slider'        => trim($datos['descripcion_slider'] ?? ''),
         'fecha_entrada'             => !empty($datos['fecha_entrada'])    ? $datos['fecha_entrada']    : null,
         'fecha_nacimiento'          => !empty($datos['fecha_nacimiento']) ? $datos['fecha_nacimiento'] : null,
     ];
@@ -320,18 +320,18 @@ if ($metodo === 'PUT') {
      fecha_entrada=?, fecha_nacimiento=?
      WHERE idMascota=? AND idProtectora=?'
     )->execute([
-        limpiar($datos['nombre']      ?? ''),
+        trim($datos['nombre']      ?? ''),
         $datos['especie']             ?? 'perro',
-        limpiar($datos['raza']        ?? ''),
+        trim($datos['raza']        ?? ''),
         $datos['sexo']                ?? 'macho',
         $datos['tamanyo']             ?? 'mediano',
-        limpiar($datos['color']       ?? ''),
-        limpiar($datos['descripcion'] ?? ''),
-        limpiar($datos['estado_salud']?? ''),
-        limpiar($datos['badge_extra']  ?? ''),
+        trim($datos['color']       ?? ''),
+        trim($datos['descripcion'] ?? ''),
+        trim($datos['estado_salud']?? ''),
+        trim($datos['badge_extra']  ?? ''),
         $datos['urgencia']            ?? 'normal',
         $datos['estado_adopcion']     ?? 'disponible',
-        limpiar($datos['edad_texto']  ?? ''),
+        trim($datos['edad_texto']  ?? ''),
         (int)($datos['compatible_ninos']  ?? 0),
         (int)($datos['compatible_perros'] ?? 0),
         (int)($datos['compatible_gatos']  ?? 0),
@@ -344,7 +344,7 @@ if ($metodo === 'PUT') {
         (int)($datos['disponible_acogida']         ?? 1),
         $nuevaPrioritaria,
         $fechaPrioritaria,
-        limpiar($datos['descripcion_slider'] ?? ''),
+        trim($datos['descripcion_slider'] ?? ''),
         !empty($datos['fecha_entrada'])    ? $datos['fecha_entrada']    : null,
         !empty($datos['fecha_nacimiento']) ? $datos['fecha_nacimiento'] : null,
         $id,
@@ -359,7 +359,7 @@ DELETE — soft delete (protectora sobre las suyas, admin con motivo y auditorí
 if ($metodo === 'DELETE') {
     $datos = json_decode(file_get_contents('php://input'), true) ?? [];
     $id    = (int)($datos['idMascota'] ?? 0);
-    $motivo = limpiar($datos['motivo'] ?? '');
+    $motivo = trim($datos['motivo'] ?? '');
 
     if (!$id) respuestaError('idMascota requerido.');
 
@@ -384,7 +384,7 @@ if ($metodo === 'DELETE') {
             'mascota',
             $id,
             $motivo,
-            json_encode(['idProtectora' => $m->idProtectora], JSON_UNESCAPED_UNICODE)
+            json_encode(['idProtectora' => $m['idProtectora']], JSON_UNESCAPED_UNICODE)
         ]);
 
         respuestaOk(['mensaje' => 'Mascota desactivada por moderación.']);

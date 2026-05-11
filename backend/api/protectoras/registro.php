@@ -19,14 +19,14 @@ if (!empty($_POST)) {
     $datos = json_decode(file_get_contents('php://input'), true) ?? [];
 }
 
-$nombre     = limpiar($datos['nombre'] ?? '');
+$nombre     = trim($datos['nombre'] ?? '');
 $email      = trim($datos['email'] ?? '');
 $password   = $datos['password'] ?? '';
 $confirm    = $datos['password_confirm'] ?? '';
-$telefono   = limpiar($datos['telefono'] ?? '');
-$localidad  = limpiar($datos['localidad'] ?? '');
-$descripcion= limpiar($datos['descripcion'] ?? '');
-$web        = limpiar($datos['web'] ?? '');
+$telefono   = trim($datos['telefono'] ?? '');
+$localidad  = trim($datos['localidad'] ?? '');
+$descripcion= trim($datos['descripcion'] ?? '');
+$web        = trim($datos['web'] ?? '');
 $terminos   = $datos['terminos'] ?? '';
 
 if (!$nombre || !$email || !$password || !$localidad) {

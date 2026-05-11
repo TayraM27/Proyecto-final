@@ -17,10 +17,10 @@ if (!empty($_FILES)) {
     $hayFoto = false;
 }
 
-$nombre    = limpiar($datos['nombre']    ?? '');
-$username  = limpiar($datos['username']  ?? '');
-$localidad = limpiar($datos['localidad'] ?? '');
-$telefono  = limpiar($datos['telefono']  ?? '');
+$nombre    = trim($datos['nombre']    ?? '');
+$username  = trim($datos['username']  ?? '');
+$localidad = trim($datos['localidad'] ?? '');
+$telefono  = trim($datos['telefono']  ?? '');
 
 if (!$nombre || strlen($nombre) < 2) {
     respuestaError('El nombre debe tener al menos 2 caracteres.');

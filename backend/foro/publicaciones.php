@@ -23,7 +23,7 @@ if ($metodo === 'GET') {
     }
 
     $categoria = $_GET['categoria'] ?? 'todas';
-    $busqueda  = limpiar($_GET['q'] ?? '');
+    $busqueda  = trim($_GET['q'] ?? '');
     $pagina    = (int)($_GET['pagina'] ?? 1);
     $p         = pagina($pagina, 15);
 
@@ -108,13 +108,13 @@ if ($metodo === 'POST') {
 
     $esMultipart = isset($_POST['titulo']) || isset($_FILES['media']);
     if ($esMultipart) {
-        $titulo    = limpiar($_POST['titulo']    ?? '');
-        $contenido = limpiar($_POST['contenido'] ?? '');
+        $titulo    = trim($_POST['titulo']    ?? '');
+        $contenido = trim($_POST['contenido'] ?? '');
         $categoria = $_POST['categoria']         ?? 'informacion';
     } else {
         $datos     = json_decode(file_get_contents('php://input'), true) ?? [];
-        $titulo    = limpiar($datos['titulo']    ?? '');
-        $contenido = limpiar($datos['contenido'] ?? '');
+        $titulo    = trim($datos['titulo']    ?? '');
+        $contenido = trim($datos['contenido'] ?? '');
         $categoria = $datos['categoria']         ?? 'informacion';
     }
 

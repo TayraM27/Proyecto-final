@@ -8,11 +8,9 @@ header('Content-Type: application/json; charset=utf-8');
 
 iniciarSesionSegura();
 requerirAdmin();
+$pdo = conectar();
 session_write_close();
 
-$pdo = conectar();
-
-$id = $_GET['id'] ?? null;
 $accion = $_GET['accion'] ?? 'listar';
 
 switch ($accion) {
@@ -65,6 +63,8 @@ switch ($accion) {
     
     case 'actualizar':
         $data = jsonInput();
+        $id = (int)($data['id'] ?? 0);
+        if (!$id) respuestaError('id requerido.');
         
         $sql = "UPDATE entidades_colaboradoras SET nombre=:nombre, descripcion=:descripcion, tipo=:tipo, 
                 web=:web, descuento=:descuento, activa=:activa
@@ -84,12 +84,18 @@ switch ($accion) {
         break;
     
     case 'eliminar':
+        $data = jsonInput();
+        $id = (int)($data['id'] ?? 0);
+        if (!$id) respuestaError('id requerido.');
         $stmt = $pdo->prepare("UPDATE entidades_colaboradoras SET activa=0 WHERE idEntidad = ?");
         $stmt->execute([$id]);
         respuestaOk(['ok' => true]);
         break;
     
     case 'activar':
+        $data = jsonInput();
+        $id = (int)($data['id'] ?? 0);
+        if (!$id) respuestaError('id requerido.');
         $stmt = $pdo->prepare("UPDATE entidades_colaboradoras SET activa=1 WHERE idEntidad = ?");
         $stmt->execute([$id]);
         respuestaOk(['ok' => true]);

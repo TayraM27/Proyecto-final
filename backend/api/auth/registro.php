@@ -20,11 +20,11 @@ if (!empty($_POST)) {
     $datos = json_decode(file_get_contents('php://input'), true) ?? [];
 }
 
-$nombre   = limpiar($datos['nombre'] ?? '');
-$username = limpiar($datos['username'] ?? '');
-$email    = limpiar($datos['email'] ?? '');
-$localidad= limpiar($datos['localidad'] ?? '');
-$telefono = limpiar($datos['telefono'] ?? '');
+$nombre   = trim($datos['nombre'] ?? '');
+$username = trim($datos['username'] ?? '');
+$email    = trim($datos['email'] ?? '');
+$localidad= trim($datos['localidad'] ?? '');
+$telefono = trim($datos['telefono'] ?? '');
 $password = $datos['password'] ?? '';
 $confirm  = $datos['password_confirm'] ?? '';
 $terminos = $datos['terminos'] ?? '';

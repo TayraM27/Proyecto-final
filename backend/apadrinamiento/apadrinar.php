@@ -15,11 +15,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $datos          = json_decode(file_get_contents('php://input'), true) ?? [];
 $idMascota      = (int)($datos['idMascota']        ?? 0);
 $cantidadMensual= trim($datos['cantidad_mensual']   ?? '');
-$nombreCompleto = limpiar($datos['nombre_completo']  ?? '');
+$nombreCompleto = trim($datos['nombre_completo']  ?? '');
 $email          = trim($datos['email']              ?? '');
-$telefono       = limpiar($datos['telefono']         ?? '');
-$metodoPago     = limpiar($datos['metodo_pago']      ?? '');
-$mensaje        = limpiar($datos['mensaje']          ?? '');
+$telefono       = trim($datos['telefono']         ?? '');
+$metodoPago     = trim($datos['metodo_pago']      ?? '');
+$mensaje        = trim($datos['mensaje']          ?? '');
 
 if (!$idMascota || !$cantidadMensual || !$nombreCompleto || !$email) {
     respuestaError('Mascota, cantidad, nombre y email son obligatorios.');
@@ -68,6 +68,7 @@ if (!$prot || !$prot['activa']) {
 
 iniciarSesionSegura();
 $idUsuario = usuarioLogueado() ? (int)$_SESSION['idUsuario'] : null;
+session_write_close();
 
 // Si esta logueado, evitar duplicados por usuario
 if ($idUsuario) {

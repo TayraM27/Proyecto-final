@@ -10,6 +10,7 @@ if (!usuarioLogueado()) {
 
 $usuario = obtenerUsuarioSesion();
 $idUsuario = $usuario['idUsuario'];
+session_write_close();
 
 $pagina = intval($_GET['pagina'] ?? 1);
 $porPagina = intval($_GET['porPagina'] ?? 10);

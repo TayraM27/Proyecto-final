@@ -20,7 +20,7 @@ session_write_close();
 /*--------------------------------------------------------------------------------------------
 GET */
 if ($metodo === 'GET') {
-    $estado = limpiar($_GET['estado'] ?? 'pendiente');
+    $estado = trim($_GET['estado'] ?? 'pendiente');
 
     $where = ['1=1'];
     $params = [];
@@ -56,7 +56,7 @@ PUT */
 if ($metodo === 'PUT') {
     $datos = json_decode(file_get_contents('php://input'), true) ?? [];
     $id = (int)($datos['idSolicitud'] ?? 0);
-    $estado = limpiar($datos['estado'] ?? '');
+    $estado = trim($datos['estado'] ?? '');
 
     if (!$id || !$estado) respuestaError('idSolicitud y estado son obligatorios.');
 

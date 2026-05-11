@@ -18,7 +18,7 @@ $idProtectora = $usuario['idProtectora'];
 $pdo = conectar();
 
 $idMascota = intval($_POST['idMascota'] ?? 0);
-$mensaje = limpiar($_POST['mensaje'] ?? '');
+$mensaje = trim($_POST['mensaje'] ?? '');
 
 if (!$idMascota || !$mensaje) {
     respuestaError('Faltan datos obligatorios.', 400);

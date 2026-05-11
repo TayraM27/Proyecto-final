@@ -16,7 +16,6 @@ $idProtectoraUsuario = getIdProtectoraUsuario();
 $idUsuario           = (int)($_SESSION['idUsuario'] ?? 0);
 session_write_close();
 
-$id     = $_GET['id'] ?? null;
 $accion = $_GET['accion'] ?? 'listar';
 
 switch ($accion) {
@@ -105,9 +104,10 @@ switch ($accion) {
     actualizar */
     case 'actualizar':
         $data = jsonInput();
+        $id = (int)($data['id'] ?? 0);
+        if (!$id) respuestaError('id requerido.');
 
         if ($esAdmin) {
-            /* Admin solo puede editar eventos globales */
             $stmtCheck = $pdo->prepare('SELECT idEvento, idProtectora FROM eventos WHERE idEvento = ?');
             $stmtCheck->execute([$id]);
             $evento = $stmtCheck->fetch();
@@ -164,6 +164,8 @@ switch ($accion) {
     suspender (soft delete con motivo) */
     case 'suspender':
         $data = jsonInput();
+        $id = (int)($data['id'] ?? 0);
+        if (!$id) respuestaError('id requerido.');
         $motivo = trim($data['motivo_suspension'] ?? '');
         if (!$motivo) respuestaError('Debes indicar un motivo de suspensión.', 400);
 
@@ -184,7 +186,10 @@ switch ($accion) {
     /*--------------------------------------------------------------------------------------------
     sponsorizar (toggle sponsorizable) */
     case 'sponsorizar':
-        $valor = (int)($_GET['valor'] ?? 0);
+        $data = jsonInput();
+        $id = (int)($data['id'] ?? 0);
+        if (!$id) respuestaError('id requerido.');
+        $valor = (int)($data['valor'] ?? 0);
         if ($esAdmin) {
             $stmtCheck = $pdo->prepare('SELECT idProtectora FROM eventos WHERE idEvento = ?');
             $stmtCheck->execute([$id]);
@@ -197,6 +202,41 @@ switch ($accion) {
             $pdo->prepare("UPDATE eventos SET sponsorizable = ? WHERE idEvento = ? AND idProtectora = ?")->execute([$valor, $id, $idProtectoraUsuario]);
         }
         respuestaOk(['mensaje' => $valor ? 'Evento marcado como sponsorizable.' : 'Sponsorización quitada.']);
+        break;
+
+    case 'eliminar':
+        $data = jsonInput();
+        $id = (int)($data['id'] ?? 0);
+        if (!$id) respuestaError('id requerido.');
+        if ($esAdmin) {
+            $stmtCheck = $pdo->prepare('SELECT idProtectora FROM eventos WHERE idEvento = ?');
+            $stmtCheck->execute([$id]);
+            $evento = $stmtCheck->fetch();
+            if (!$evento) respuestaError('Evento no encontrado.', 404);
+            $pdo->prepare("UPDATE eventos SET activa = 0 WHERE idEvento = ?")->execute([$id]);
+        } else {
+            if (!$idProtectoraUsuario) respuestaError('No tienes una protectora asignada.');
+            $pdo->prepare("UPDATE eventos SET activa = 0 WHERE idEvento = ? AND idProtectora = ?")->execute([$id, $idProtectoraUsuario]);
+        }
+        respuestaOk(['mensaje' => 'Evento desactivado.']);
+        break;
+
+    case 'activar':
+        $data = jsonInput();
+        $id = (int)($data['id'] ?? 0);
+        if (!$id) respuestaError('id requerido.');
+        if ($esAdmin) {
+            $stmtCheck = $pdo->prepare('SELECT idProtectora FROM eventos WHERE idEvento = ?');
+            $stmtCheck->execute([$id]);
+            $evento = $stmtCheck->fetch();
+            if (!$evento) respuestaError('Evento no encontrado.', 404);
+            if ($evento['idProtectora']) respuestaError('No puedes reactivar eventos de protectoras.', 403);
+            $pdo->prepare("UPDATE eventos SET activa = 1, suspendido = 0, motivo_suspension = NULL WHERE idEvento = ? AND idProtectora IS NULL")->execute([$id]);
+        } else {
+            if (!$idProtectoraUsuario) respuestaError('No tienes una protectora asignada.');
+            $pdo->prepare("UPDATE eventos SET activa = 1, suspendido = 0, motivo_suspension = NULL WHERE idEvento = ? AND idProtectora = ?")->execute([$id, $idProtectoraUsuario]);
+        }
+        respuestaOk(['mensaje' => 'Evento reactivado.']);
         break;
 
     /*--------------------------------------------------------------------------------------------

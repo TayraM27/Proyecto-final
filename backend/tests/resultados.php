@@ -9,6 +9,7 @@ if (!usuarioLogueado()) {
 }
 
 $idUsuario = (int)$_SESSION['idUsuario'];
+session_write_close();
 $pdo = conectar();
 $metodo = $_SERVER['REQUEST_METHOD'];
 

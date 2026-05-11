@@ -12,6 +12,7 @@ requerirLogin();
 $pdo      = conectar();
 $idUsuario = (int)$_SESSION['idUsuario'];
 $metodo   = $_SERVER['REQUEST_METHOD'];
+session_write_close();
 
 /*--------------------------------------------------------------------------------------------
 GET - listar favoritos */

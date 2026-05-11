@@ -391,26 +391,27 @@ document.addEventListener('DOMContentLoaded', function() {
 /*--------------------------------------------------------------------------------------------
 sesión */
 function cargarSesionForo() {
-    var sesGuardada = sessionStorage.getItem('pf_session');
-    if (sesGuardada) {
-        try {
-            var u = JSON.parse(sesGuardada);
-            sesionForo = u;
-            activarFormPub(u);
-        } catch(e) {}
-        cargarPosts(1);
-        return;
-    }
     fetch('../backend/api/auth/sesion.php', { credentials: 'include' })
         .then(function(r) { return r.json(); })
         .then(function(data) {
             if (data && data.ok && data.logueado && data.usuario) {
                 sesionForo = data.usuario;
+                sessionStorage.setItem('pf_session', JSON.stringify(data.usuario));
                 activarFormPub(data.usuario);
+            } else {
+                sessionStorage.removeItem('pf_session');
             }
             cargarPosts(1);
         })
         .catch(function() {
+            var sesGuardada = sessionStorage.getItem('pf_session');
+            if (sesGuardada) {
+                try {
+                    var u = JSON.parse(sesGuardada);
+                    sesionForo = u;
+                    activarFormPub(u);
+                } catch(e) {}
+            }
             cargarPosts(1);
         });
 }

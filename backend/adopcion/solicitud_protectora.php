@@ -54,12 +54,12 @@ switch ($_SERVER['REQUEST_METHOD']) {
         }
 
         $datos = json_decode(file_get_contents('php://input'), true) ?? [];
-        $nombreProtectora = limpiar($datos['nombre_protectora'] ?? '');
-        $cifNif           = limpiar($datos['cif_nif'] ?? '');
-        $direccion        = limpiar($datos['direccion'] ?? '');
-        $localidad        = limpiar($datos['localidad'] ?? '');
-        $telefono         = limpiar($datos['telefono'] ?? '');
-        $webRedes         = limpiar($datos['web_redes'] ?? '');
+        $nombreProtectora = trim($datos['nombre_protectora'] ?? '');
+        $cifNif           = trim($datos['cif_nif'] ?? '');
+        $direccion        = trim($datos['direccion'] ?? '');
+        $localidad        = trim($datos['localidad'] ?? '');
+        $telefono         = trim($datos['telefono'] ?? '');
+        $webRedes         = trim($datos['web_redes'] ?? '');
 
         if (!$nombreProtectora || !$cifNif || !$direccion) {
             respuestaError('Faltan campos obligatorios: nombre de la protectora, CIF/NIF y dirección.');
@@ -118,15 +118,20 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
         $datos = json_decode(file_get_contents('php://input'), true) ?? [];
         $idSolicitud    = (int)($datos['idSolicitud'] ?? 0);
-        $nuevoEstado    = limpiar($datos['estado'] ?? '');
-        $respuestaAdmin = limpiar($datos['respuesta_admin'] ?? '');
+        $nuevoEstado    = trim($datos['estado'] ?? '');
+        $respuestaAdmin = trim($datos['respuesta_admin'] ?? '');
         $idProtectora   = isset($datos['idProtectora']) ? (int)$datos['idProtectora'] : null;
 
         if (!$idSolicitud || !in_array($nuevoEstado, ['aprobada', 'rechazada', 'info_adicional'])) {
             respuestaError('Faltan datos obligatorios o el estado no es valido.');
         }
 
-        $stmt = $pdo->prepare('SELECT * FROM solicitudes_protectora WHERE idSolicitud = ?');
+        $stmt = $pdo->prepare(
+            'SELECT s.*, u.email AS email_usuario
+             FROM solicitudes_protectora s
+             JOIN usuarios u ON s.idUsuario = u.idUsuario
+             WHERE s.idSolicitud = ?'
+        );
         $stmt->execute([$idSolicitud]);
         $solicitud = $stmt->fetch();
 
@@ -222,7 +227,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             respuestaError('Debes iniciar sesión.', 401);
         }
         $idSolicitud = (int)($_POST['idSolicitud'] ?? 0);
-        $respuestaUsuario = limpiar($_POST['respuesta'] ?? '');
+        $respuestaUsuario = trim($_POST['respuesta'] ?? '');
 
         if (!$idSolicitud || !$respuestaUsuario) {
             respuestaError('Faltan datos obligatorios.');

@@ -10,6 +10,7 @@ if (!usuarioLogueado()) {
 
 $pdo = conectar();
 $idUsuario = (int)$_SESSION['idUsuario'];
+session_write_close();
 
 $stmt = $pdo->prepare(
     'SELECT

@@ -11,6 +11,7 @@ requerirAdminOProtectora();
 $pdo = conectar();
 $esAdmin = esAdmin();
 $idProtectoraUsuario = getIdProtectoraUsuario();
+session_write_close();
 
 switch ($_SERVER['REQUEST_METHOD']) {
 

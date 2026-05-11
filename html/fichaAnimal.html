@@ -820,7 +820,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var filas = [
             { icono: 'fa-location-dot', label: 'Ubicación',      valor: mascota.ubicacion || 'Sin datos' },
             { icono: 'fa-cake-candles', label: 'Edad',            valor: edad || '' },
-            { icono: 'fa-weight-scale', label: 'Tamaño',          valor: mascota.tamano ? mascota.tamano.charAt(0).toUpperCase() + mascota.tamano.slice(1) : 'Sin datos' },
+            { icono: 'fa-weight-scale', label: 'Tamaño',          valor: mascota.tamanyo ? mascota.tamanyo.charAt(0).toUpperCase() + mascota.tamanyo.slice(1) : 'Sin datos' },
             { icono: 'fa-palette',      label: 'Color',            valor: colorVal },
             { icono: 'fa-clock',        label: 'En protectora',   valor: calcTiempoProtectora(mascota.fecha_entrada) },
             { icono: 'fa-heart-pulse',  label: 'Estado de salud', valor: mascota.estado_salud || 'Sin datos' }

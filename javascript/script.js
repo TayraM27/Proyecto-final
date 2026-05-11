@@ -890,7 +890,7 @@ document.addEventListener('DOMContentLoaded', function() {
         function validarPasswordL() {
             var valor = inputPassword.value;
             if (!valor)           return mostrarErrorL(inputPassword, errorPasswordL, 'La contrasena es obligatoria.'), false;
-            if (valor.length < 6) return mostrarErrorL(inputPassword, errorPasswordL, 'Minimo 6 caracteres.'), false;
+            if (valor.length < 8) return mostrarErrorL(inputPassword, errorPasswordL, 'Minimo 8 caracteres.'), false;
             limpiarErrorL(inputPassword, errorPasswordL);
             return true;
         }
@@ -1403,10 +1403,28 @@ function cargarProtectoras(pagina) {
         .then(function(data){
             if (!data.ok || !data.protectoras || !data.protectoras.length) {
                 grid.innerHTML = '<div class="col-12 text-center py-5"><p class="text-muted">No hay protectoras disponibles en este momento.</p></div>';
-                generarPaginacionProtectoras(1, 1);
+                totalPaginasProtectoras = data.totalPaginas || 0;
+                generarPaginacionProtectoras(totalPaginasProtectoras, 1);
                 return;
             }
             totalPaginasProtectoras = data.totalPaginas || 1;
+
+            data.protectoras.forEach(function(p) {
+                var key = 'prot-' + p.idProtectora;
+                protectoras[key] = {
+                    nombre:       p.nombre,
+                    telefono:     p.telefono     || null,
+                    email:        p.email        || null,
+                    web:          p.web          || null,
+                    tipo_pagina:  p.tipo_pagina  || 'sin_pagina',
+                    teaming:      p.teaming      || null,
+                    iban:         p.iban         || null,
+                    bizum:        p.bizum        || null,
+                    red_social_url: p.red_social_url || null,
+                    badges:       p.badges       || '',
+                };
+            });
+
             grid.innerHTML = data.protectoras.map(function(p) {
                 var logo = p.foto_logo
                     ? '<img src="../' + p.foto_logo + '" alt="Logo ' + p.nombre.replace(/"/g, '&quot;') + '" ' +
@@ -1623,17 +1641,6 @@ function buildDatosProt(p) {
         html += '<a href="' + p.web + '" target="_blank" rel="noopener" class="btn-ir-web" style="margin-top:0.3em;">'
               + '<i class="fa-solid fa-arrow-up-right-from-square me-2"></i>Visitar la ' + tipoLabel + ' de ' + p.nombre
               + '</a>';
-    }
-
-    if (p.email) {
-        html += '<div style="margin-top:1em;padding-top:0.8em;border-top:1px solid #eee;font-size:0.8rem;color:#888;">'
-              + '<i class="fa-solid fa-circle-info me-1" style="color:#1B358F;"></i>'
-              + '¿Prefieres preguntar antes de donar? Escríbeles directamente:'
-              + '</div>'
-              + '<div class="modal-dato" style="margin-top:0.4em;">'
-              + '<i class="fa-solid fa-envelope" style="color:#1B358F;"></i>'
-              + '<a href="mailto:' + p.email + '?subject=Consulta%20sobre%20donaci%C3%B3n" style="color:#1B358F;">' + p.email + '</a>'
-              + '</div>';
     }
 
     if (p.email) {

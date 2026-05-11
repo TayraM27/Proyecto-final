@@ -9,6 +9,7 @@ header('Content-Type: application/json; charset=utf-8');
 $pdo = conectar();
 $esAdmin = esAdmin();
 $idProtectora = getIdProtectoraUsuario();
+session_write_close();
 
 switch ($_SERVER['REQUEST_METHOD']) {
 

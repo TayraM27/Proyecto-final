@@ -306,9 +306,9 @@ function guardarEntidad() {
     }
 
     var accion = id ? 'actualizar' : 'crear';
-    var url = '../backend/admin/entidades.php?accion=' + accion + (id ? '&id=' + id : '');
+    if (id) data.id = id;
 
-    fetch(url, {
+    fetch('../backend/admin/entidades.php?accion=' + accion, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -339,7 +339,12 @@ function guardarEntidad() {
 
 function eliminarEntidad(id) {
     if (!confirm('¿Seguro que quieres desactivar esta entidad?')) return;
-    fetch('../backend/admin/entidades.php?accion=eliminar&id=' + id, { credentials: 'include' })
+    fetch('../backend/admin/entidades.php?accion=eliminar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id }),
+        credentials: 'include'
+    })
         .then(function(r){ return r.json(); })
         .then(function(res){
             if (res.ok) {
@@ -355,7 +360,12 @@ function eliminarEntidad(id) {
 }
 
 function activarEntidad(id) {
-    fetch('../backend/admin/entidades.php?accion=activar&id=' + id, { credentials: 'include' })
+    fetch('../backend/admin/entidades.php?accion=activar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id }),
+        credentials: 'include'
+    })
         .then(function(r){ return r.json(); })
         .then(function(res){
             if (res.ok) {

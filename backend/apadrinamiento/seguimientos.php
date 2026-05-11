@@ -11,6 +11,7 @@ requerirLogin();
 
 $idMascota = (int)($_GET['idMascota'] ?? 0);
 $idUsuario = (int)$_SESSION['idUsuario'];
+session_write_close();
 
 if (!$idMascota) {
     respuestaError('ID de mascota no valido.');

@@ -356,9 +356,9 @@ function guardarEvento() {
     }
 
     var accion = id ? 'actualizar' : 'crear';
-    var url = '../backend/admin/eventos.php?accion=' + accion + (id ? '&id=' + id : '');
+    if (id) data.id = id;
 
-    fetch(url, {
+    fetch('../backend/admin/eventos.php?accion=' + accion, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -404,10 +404,10 @@ function suspenderEvento() {
         return;
     }
 
-    fetch('../backend/admin/eventos.php?accion=suspender&id=' + id, {
+    fetch('../backend/admin/eventos.php?accion=suspender', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ motivo_suspension: motivo }),
+        body: JSON.stringify({ id: id, motivo_suspension: motivo }),
         credentials: 'include'
     })
         .then(function(r){ return r.json(); })
@@ -426,7 +426,12 @@ function suspenderEvento() {
 }
 
 function marcarSponsor(id) {
-    fetch('../backend/admin/eventos.php?accion=sponsorizar&id=' + id + '&valor=1', { credentials: 'include' })
+    fetch('../backend/admin/eventos.php?accion=sponsorizar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id, valor: 1 }),
+        credentials: 'include'
+    })
         .then(function(r){ return r.json(); })
         .then(function(res){
             if (res.ok) { cargarEventos(); mostrarToast('Evento marcado como sponsorizable', 'ok'); }
@@ -436,7 +441,12 @@ function marcarSponsor(id) {
 }
 
 function quitarSponsor(id) {
-    fetch('../backend/admin/eventos.php?accion=sponsorizar&id=' + id + '&valor=0', { credentials: 'include' })
+    fetch('../backend/admin/eventos.php?accion=sponsorizar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id, valor: 0 }),
+        credentials: 'include'
+    })
         .then(function(r){ return r.json(); })
         .then(function(res){
             if (res.ok) { cargarEventos(); mostrarToast('Sponsorización quitada', 'ok'); }
@@ -446,7 +456,12 @@ function quitarSponsor(id) {
 }
 
 function activarEvento(id) {
-    fetch('../backend/admin/eventos.php?accion=activar&id=' + id, { credentials: 'include' })
+    fetch('../backend/admin/eventos.php?accion=activar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id }),
+        credentials: 'include'
+    })
         .then(function(r){ return r.json(); })
         .then(function(res){
             if (res.ok) {

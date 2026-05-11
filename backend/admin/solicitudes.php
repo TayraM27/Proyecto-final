@@ -89,8 +89,8 @@ if ($metodo === 'PUT') {
 
     $datos       = json_decode(file_get_contents('php://input'), true) ?? [];
     $id          = (int)($datos['idSolicitud'] ?? 0);
-    $nuevoEstado = limpiar($datos['estado'] ?? '');
-    $mensajeProt = limpiar($datos['mensaje_protectora'] ?? '');
+    $nuevoEstado = trim($datos['estado'] ?? '');
+    $mensajeProt = trim($datos['mensaje_protectora'] ?? '');
 
     if (!$id) respuestaError('idSolicitud requerido.');
 

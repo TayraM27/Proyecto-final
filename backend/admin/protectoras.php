@@ -47,8 +47,8 @@ if ($metodo === 'GET') {
         respuestaOk(['protectora' => $protectora]);
     }
 
-    $q      = limpiar($_GET['q']      ?? '');
-    $nombre = limpiar($_GET['nombre'] ?? '');
+    $q      = trim($_GET['q']      ?? '');
+    $nombre = trim($_GET['nombre'] ?? '');
     $todos  = !empty($_GET['todos'])  ? 1 : 0;
 
     $where  = $todos ? [] : ['p.activa = 1'];
@@ -117,7 +117,7 @@ if ($metodo === 'PUT') {
         if (!$idProtectoraUsuario) respuestaError('No tienes una protectora asignada.');
         if ($id !== $idProtectoraUsuario) respuestaError('No puedes editar otra protectora.', 403);
         if (!empty($datos['email']) && !validarEmail($datos['email'])) respuestaError('Email no válido.');
-        if (!empty($datos['telefono']) && !preg_match('/^\d{9}$/', limpiar($datos['telefono']))) respuestaError('El teléfono debe tener exactamente 9 dígitos.');
+        if (!empty($datos['telefono']) && !preg_match('/^\d{9}$/', trim($datos['telefono']))) respuestaError('El teléfono debe tener exactamente 9 dígitos.');
 
         $pdo->prepare(
             'UPDATE protectoras SET
@@ -128,19 +128,19 @@ if ($metodo === 'PUT') {
                 foto_logo=?, url_formulario_acogida=?, latitud=?, longitud=?
              WHERE idProtectora=?'
         )->execute([
-            limpiar($datos['nombre']           ?? ''),
-            limpiar($datos['descripcion']      ?? ''),
-            limpiar($datos['descripcion_dona'] ?? ''),
-            limpiar($datos['direccion']        ?? ''),
-            limpiar($datos['localidad']        ?? ''),
-            limpiar($datos['telefono']         ?? ''),
+            trim($datos['nombre']           ?? ''),
+            trim($datos['descripcion']      ?? ''),
+            trim($datos['descripcion_dona'] ?? ''),
+            trim($datos['direccion']        ?? ''),
+            trim($datos['localidad']        ?? ''),
+            trim($datos['telefono']         ?? ''),
             !empty($datos['email'])         ? $datos['email']          : null,
             !empty($datos['web'])           ? $datos['web']            : null,
             $datos['tipo_pagina']           ?? 'sin_pagina',
             !empty($datos['red_social_url'])? $datos['red_social_url'] : null,
             $datos['especie_atencion']      ?? 'ambos',
-            !empty($datos['iban'])          ? limpiar($datos['iban'])  : null,
-            !empty($datos['bizum'])         ? limpiar($datos['bizum']) : null,
+            !empty($datos['iban'])          ? trim($datos['iban'])  : null,
+            !empty($datos['bizum'])         ? trim($datos['bizum']) : null,
             !empty($datos['teaming'])       ? $datos['teaming']        : null,
             $datos['badges']               ?? '',
             !empty($datos['foto_logo'])     ? $datos['foto_logo']      : null,
@@ -159,7 +159,7 @@ DELETE — soft delete (solo admin con motivo y auditoria, protectora NO puede e
 if ($metodo === 'DELETE') {
     $datos = json_decode(file_get_contents('php://input'), true) ?? [];
     $id    = (int)($datos['idProtectora'] ?? 0);
-    $motivo = limpiar($datos['motivo'] ?? '');
+    $motivo = trim($datos['motivo'] ?? '');
 
     if (!$esAdmin) respuestaError('Las protectoras no pueden eliminarse. Contacta con administración.', 403);
     if (!$id) respuestaError('idProtectora requerido.');

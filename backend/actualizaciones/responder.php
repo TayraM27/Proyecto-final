@@ -18,7 +18,7 @@ $rol = $usuario['rol'];
 
 $datos = json_decode(file_get_contents('php://input'), true) ?? [];
 $idActualizacion = intval($datos['idActualizacion'] ?? 0);
-$respuesta = limpiar($datos['respuesta'] ?? '');
+$respuesta = trim($datos['respuesta'] ?? '');
 
 if (!$idActualizacion || !$respuesta) {
     respuestaError('Faltan datos.', 400);

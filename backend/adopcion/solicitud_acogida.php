@@ -25,15 +25,24 @@ if ($esJson) {
 }
 
 $idMascota  = (int)($post['idMascota']                      ?? 0);
-$nombre     = limpiar($post['nombre']                       ?? '');
+$nombre     = trim($post['nombre']                       ?? '');
 $email      = trim($post['email']                           ?? '');
-$telefono   = limpiar($post['telefono']                     ?? '');
+$telefono   = trim($post['telefono']                     ?? '');
 $vivienda   = $post['tipo_vivienda']                        ?? '';   /* enum: piso|casa_con_jardin|casa_sin_jardin|finca */
-$experiencia= limpiar($post['experiencia_acogida']          ?? '');
+$experiencia= trim($post['experiencia_acogida']          ?? '');
 $tiempo     = $post['tiempo_fuera_casa']                    ?? '';   /* enum: menos_de_2h|2_a_4h|mas_de_4h|disponibilidad_completa */
-$motivo     = limpiar($post['motivo_acogida']               ?? '');
+$motivo     = trim($post['motivo_acogida']               ?? '');
 $acepta_politica = !empty($post['aceptar_politica_privacidad']) ? 1 : 0;
-$mensaje    = limpiar($post['mensaje']                      ?? '');
+$mensaje    = trim($post['mensaje']                      ?? '');
+/* Extra fields from frontend (acoge.html / fichaAnimal.html) */
+$dni                = trim($post['dni']                  ?? '');
+$fecha_nacimiento   = trim($post['fecha_nacimiento']        ?? '');
+$direccion_completa = trim($post['direccion_completa']   ?? '');
+$vivienda_en_propiedad = $post['vivienda_en_propiedad']     ?? '';
+$disponibilidad_tiempo  = trim($post['disponibilidad_tiempo'] ?? '');
+$animales_en_hogar  = $post['animales_en_hogar']            ?? '';
+$descripcion_animales   = trim($post['descripcion_animales'] ?? '');
+$posibilidad_gastos = $post['posibilidad_gastos']           ?? '';
 
 /* Mapear valor del formulario al ENUM de la tabla */
 $viviendaMap = [
@@ -111,8 +120,31 @@ iniciarSesionSegura();
 $idUsuario = usuarioLogueado() ? (int)$_SESSION['idUsuario'] : null;
 session_write_close();
 
-/* Concatenar experiencia + motivo en el campo texto disponible */
-$textoExperiencia = trim(($experiencia ? 'Experiencia: ' . $experiencia . "\n\n" : '') . ($motivo ? 'Motivo: ' . $motivo : ''));
+/* Manejar fichero permiso_propietario */
+$permisoRuta = null;
+if (!empty($files['permiso_propietario']) && $files['permiso_propietario']['error'] === UPLOAD_ERR_OK) {
+    $dir = __DIR__ . '/../../uploads/acogida/';
+    if (!is_dir($dir)) mkdir($dir, 0775, true);
+    $ext = strtolower(pathinfo($files['permiso_propietario']['name'], PATHINFO_EXTENSION));
+    $nombreArchivo = uniqid('permiso_') . '.' . $ext;
+    move_uploaded_file($files['permiso_propietario']['tmp_name'], $dir . $nombreArchivo);
+    $permisoRuta = 'uploads/acogida/' . $nombreArchivo;
+}
+
+/* Componer texto completo de experiencia con todos los campos extra */
+$bloques = [];
+if ($experiencia) $bloques[] = 'Experiencia: ' . $experiencia;
+if ($motivo) $bloques[] = 'Motivo: ' . $motivo;
+if ($dni) $bloques[] = 'DNI: ' . $dni;
+if ($fecha_nacimiento) $bloques[] = 'Fecha de nacimiento: ' . $fecha_nacimiento;
+if ($direccion_completa) $bloques[] = 'Dirección: ' . $direccion_completa;
+if ($vivienda_en_propiedad) $bloques[] = 'Vivienda en propiedad: ' . $vivienda_en_propiedad;
+if ($disponibilidad_tiempo) $bloques[] = 'Disponibilidad de tiempo: ' . $disponibilidad_tiempo;
+if ($animales_en_hogar) $bloques[] = 'Animales en hogar: ' . $animales_en_hogar;
+if ($descripcion_animales) $bloques[] = 'Descripción animales: ' . $descripcion_animales;
+if ($posibilidad_gastos) $bloques[] = 'Posibilidad gastos: ' . $posibilidad_gastos;
+if ($permisoRuta) $bloques[] = 'Permiso propietario: ' . $permisoRuta;
+$textoExperiencia = implode("\n\n", $bloques);
 
 $stmt = $pdo->prepare(
     'INSERT INTO solicitudes_acogida

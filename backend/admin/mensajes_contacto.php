@@ -8,6 +8,7 @@ iniciarSesionSegura();
 header('Content-Type: application/json; charset=utf-8');
 
 $pdo    = conectar();
+session_write_close();
 $metodo = $_SERVER['REQUEST_METHOD'];
 
 /*--------------------------------------------------------------------------------------------

@@ -30,7 +30,7 @@ $limite   = (int)($_GET['limite']        ?? 12);
 $limite   = min(max($limite, 1), 100); // Entre 1 y 100
 $offset   = ($pagina - 1) * $limite;
 
-$where  = ['m.activa = 1'];
+$where  = ['m.activa = 1', 'p.activa = 1'];
 $params = [];
 
 /* Filtro especie */

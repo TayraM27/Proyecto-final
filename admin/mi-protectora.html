@@ -1783,8 +1783,8 @@ function guardarEvento() {
         return;
     }
     var accion = id ? 'actualizar' : 'crear';
-    var url = '../backend/admin/eventos.php?accion=' + accion + (id ? '&id=' + id : '');
-    fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(data) })
+    if (id) data.id = id;
+    fetch('../backend/admin/eventos.php?accion=' + accion, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(data) })
         .then(function(r){ return r.json(); })
         .then(function(res){
             if (res.ok) { var msg = id ? 'Evento actualizado.' : 'Evento creado.'; cerrarModalEvento(); mostrarToast(msg, 'ok'); cargarEventos(); }
@@ -1794,13 +1794,23 @@ function guardarEvento() {
 
 function eliminarEvento(id) {
     if (!confirm('¿Desactivar este evento?')) return;
-    fetch('../backend/admin/eventos.php?accion=eliminar&id=' + id, { credentials: 'include' })
+    fetch('../backend/admin/eventos.php?accion=eliminar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id }),
+        credentials: 'include'
+    })
         .then(function(r){ return r.json(); })
         .then(function(res){ if (res.ok) { mostrarToast('Evento desactivado.', 'ok'); cargarEventos(); } });
 }
 
 function activarEvento(id) {
-    fetch('../backend/admin/eventos.php?accion=activar&id=' + id, { credentials: 'include' })
+    fetch('../backend/admin/eventos.php?accion=activar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id }),
+        credentials: 'include'
+    })
         .then(function(r){ return r.json(); })
         .then(function(res){ if (res.ok) { mostrarToast('Evento reactivado.', 'ok'); cargarEventos(); } });
 }
