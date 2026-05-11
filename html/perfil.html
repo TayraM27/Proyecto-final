@@ -843,6 +843,12 @@ function _notifConf(tipo) {
     return NOTIF_CONF[tipo] || { icon: 'fa-bell', color: '#1B358F', label: 'Notificación' };
 }
 
+function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+}
+
 function _notifRutaPerfil(n) {
     if (n.ruta_destino) return n.ruta_destino;
     if (n.idPublicacion) return 'foro.html?post=' + n.idPublicacion;
@@ -920,7 +926,7 @@ function _renderNotificaciones(todas) {
             + '<i class="fa-solid ' + conf.icon + '" style="color:' + conf.color + ';font-size:0.9rem;"></i>'
             + '</div>'
             + '<div style="flex:1;min-width:0;">'
-            + '<p style="margin:0;font-size:0.85rem;font-weight:' + (leida ? '400' : '600') + ';color:#222;">' + (n.mensaje || '') + '</p>'
+            + '<p style="margin:0;font-size:0.85rem;font-weight:' + (leida ? '400' : '600') + ';color:#222;">' + escapeHtml(n.mensaje || '') + '</p>'
             + '<p style="margin:0.2em 0 0;font-size:0.75rem;color:#aaa;">'
             + '<i class="fa-regular fa-clock me-1"></i>' + formatFecha(n.fecha)
             + '</p>'

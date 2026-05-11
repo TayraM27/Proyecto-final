@@ -73,7 +73,8 @@ if ($metodo === 'PUT') {
     $sol = $stmt->fetch();
     if (!$sol) respuestaError('Solicitud no encontrada.');
 
-    if (!$esAdmin && $idProtectoraUsuario) {
+    if (!$esAdmin) {
+        if (!$idProtectoraUsuario) respuestaError('No tienes una protectora asignada.', 403);
         $stmt = $pdo->prepare(
             'SELECT sa.idSolicitud FROM solicitudes_acogida sa
              JOIN mascotas m ON sa.idMascota = m.idMascota

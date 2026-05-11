@@ -25,9 +25,9 @@ function mostrarBannerCookies() {
     banner.id  = 'cookie-banner';
     banner.innerHTML =
         '<p><i class="fa-solid fa-cookie-bite me-2" style="color:#F8BA56;"></i>'
-      + 'Usamos cookies propias para el inicio de sesi\u00f3n y cookies de terceros (Tidio) para el chat de soporte. '
+      + 'Usamos cookies propias para el inicio de sesiÃ³n y cookies de terceros (Tidio) para el chat de soporte. '
       + 'Puedes aceptarlas todas o usar solo las necesarias. '
-      + '<a href="privacidad.html">M\u00e1s informaci\u00f3n</a></p>'
+      + '<a href="privacidad.html">MÃ¡s informaciÃ³n</a></p>'
       + '<div class="cookie-btns">'
       + '<button class="btn-cookie-necesarias" onclick="aplicarConsentimiento(\'necesarias\')">Solo necesarias</button>'
       + '<button class="btn-cookie-aceptar" onclick="aplicarConsentimiento(\'todas\')">Aceptar todas</button>'
@@ -268,6 +268,10 @@ function renderUserArea(usuario) {
     }
 
     iniciarPollingNotificaciones();
+    /* Si ya hay datos cacheados de un poll anterior, aplicar inmediatamente */
+    if (_noLeidasGlobal > 0) {
+        setTimeout(function() { _actualizarBadgesNum(_noLeidasGlobal); }, 50);
+    }
 
     /* En pantallas muy pequeñas (#user_burger oculto) añadir accesos
        rápidos al menú hamburguesa para que el usuario pueda navegar */
@@ -406,12 +410,12 @@ function cargarNotificaciones() {
         .then(function(data) {
             if (!data.success) return;
             var noLeidas = data.noLeidas || 0;
-            _notifCache = data.notificaciones || [];
-            var sesion = sessionStorage.getItem('pf_session');
-            if (sesion) { try { if (JSON.parse(sesion).rol === 'admin') return; } catch(e) {} }
-            /* Si el badge aún no está en el DOM (header no construido), reintentar */
+            _notifCache  = data.notificaciones || [];
+            /* Si el badge aún no está en el DOM, reintentar */
             if (!document.getElementById('user-notif-badge')) {
-                setTimeout(function() { _actualizarBadgesNum(noLeidas); }, 800);
+                (function(n) {
+                    setTimeout(function() { _actualizarBadgesNum(n); }, 900);
+                })(noLeidas);
             } else {
                 _actualizarBadgesNum(noLeidas);
             }
@@ -428,9 +432,14 @@ function cargarNotificaciones() {
         .catch(function() {});
 }
 
+var _pollingActivo = false;
+
 function iniciarPollingNotificaciones() {
     cargarNotificaciones();
-    setInterval(cargarNotificaciones, 10000);
+    if (!_pollingActivo) {
+        _pollingActivo = true;
+        setInterval(cargarNotificaciones, 10000);
+    }
 }
 
 /* Sincroniza favoritos desde la BD al localStorage para que los corazones
@@ -873,15 +882,15 @@ document.addEventListener('DOMContentLoaded', function() {
             var valor = inputEmail.value.trim();
             var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!valor)             return mostrarErrorL(inputEmail, errorEmailL, 'El email es obligatorio.'), false;
-            if (!regex.test(valor)) return mostrarErrorL(inputEmail, errorEmailL, 'Introduce un email v\u00e1lido.'), false;
+            if (!regex.test(valor)) return mostrarErrorL(inputEmail, errorEmailL, 'Introduce un email valido.'), false;
             limpiarErrorL(inputEmail, errorEmailL);
             return true;
         }
 
         function validarPasswordL() {
             var valor = inputPassword.value;
-            if (!valor)           return mostrarErrorL(inputPassword, errorPasswordL, 'La contrase\u00f1a es obligatoria.'), false;
-            if (valor.length < 6) return mostrarErrorL(inputPassword, errorPasswordL, 'M\u00ednimo 6 caracteres.'), false;
+            if (!valor)           return mostrarErrorL(inputPassword, errorPasswordL, 'La contrasena es obligatoria.'), false;
+            if (valor.length < 6) return mostrarErrorL(inputPassword, errorPasswordL, 'Minimo 6 caracteres.'), false;
             limpiarErrorL(inputPassword, errorPasswordL);
             return true;
         }
@@ -897,7 +906,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!ok) return;
 
             btnLogin.disabled = true;
-            btnLogin.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Iniciando sesi\u00f3n...';
+            btnLogin.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Iniciando sesion...';
             alertaLogin.classList.add('d-none');
 
             fetch('../backend/api/auth/login.php', {
@@ -913,7 +922,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(function(r) { return r.json(); })
             .then(function(data) {
                 btnLogin.disabled = false;
-                btnLogin.innerHTML = '<i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar sesi\u00f3n';
+                btnLogin.innerHTML = '<i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar sesion';
                 if (data.ok) {
                     sessionStorage.setItem(CLAVE_SESION, JSON.stringify(data.usuario));
                     window.location.href = data.redirigir || 'index.html';
@@ -924,8 +933,8 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(function() {
                 btnLogin.disabled = false;
-                btnLogin.innerHTML = '<i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar sesi\u00f3n';
-                document.getElementById('alertaLoginMsg').textContent = 'Error de conexi\u00f3n. Inténtalo de nuevo.';
+                btnLogin.innerHTML = '<i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar sesion';
+                document.getElementById('alertaLoginMsg').textContent = 'Error de conexion. Intenta de nuevo.';
                 alertaLogin.classList.remove('d-none');
             });
         });
@@ -950,7 +959,6 @@ document.addEventListener('DOMContentLoaded', function() {
         var fotoImg              = document.getElementById('fotoImg');
         var btnRegistro          = document.getElementById('btnRegistro');
         var alertaRegistro       = document.getElementById('alertaRegistro');
-        var alertaRegistroMsg    = document.getElementById('alertaRegistroMsg');
 
         /* Preview foto de perfil */
         var labelFoto = document.querySelector('.reg-foto-label');
@@ -1004,7 +1012,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (/[^A-Za-z0-9]/.test(val)) puntos++;
             if (puntos <= 1) {
                 fill.style.width = '33%'; fill.style.backgroundColor = '#e74c3c';
-                label.style.color = '#e74c3c'; label.textContent = 'D\u00e9bil';
+                label.style.color = '#e74c3c'; label.textContent = 'Debil';
             } else if (puntos <= 2) {
                 fill.style.width = '66%'; fill.style.backgroundColor = '#F8BA56';
                 label.style.color = '#c87a00'; label.textContent = 'Media';
@@ -1038,7 +1046,7 @@ document.addEventListener('DOMContentLoaded', function() {
         function validarUsername() {
             var val = inputUsername.value.trim();
             if (!val)           return mostrarErrorR(inputUsername, document.getElementById('errorUsername'), 'El nombre de usuario es obligatorio.'), false;
-            if (val.length < 3) return mostrarErrorR(inputUsername, document.getElementById('errorUsername'), 'M\u00ednimo 3 caracteres.'), false;
+            if (val.length < 3) return mostrarErrorR(inputUsername, document.getElementById('errorUsername'), 'Minimo 3 caracteres.'), false;
             if (/\s/.test(val)) return mostrarErrorR(inputUsername, document.getElementById('errorUsername'), 'Sin espacios.'), false;
             limpiarErrorR(inputUsername, document.getElementById('errorUsername'));
             return true;
@@ -1048,7 +1056,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var val   = inputEmailR.value.trim();
             var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!val)             return mostrarErrorR(inputEmailR, document.getElementById('errorEmail'), 'El email es obligatorio.'), false;
-            if (!regex.test(val)) return mostrarErrorR(inputEmailR, document.getElementById('errorEmail'), 'Introduce un email v\u00e1lido.'), false;
+            if (!regex.test(val)) return mostrarErrorR(inputEmailR, document.getElementById('errorEmail'), 'Introduce un email valido.'), false;
             limpiarErrorR(inputEmailR, document.getElementById('errorEmail'));
             return true;
         }
@@ -1064,22 +1072,22 @@ document.addEventListener('DOMContentLoaded', function() {
             var val = inputTelefono.value.trim();
             if (!val) return true;
             var regex = /^[6-9]\d{8}$/;
-            if (!regex.test(val.replace(/\s/g, ''))) return mostrarErrorR(inputTelefono, document.getElementById('errorTelefono'), 'Tel\u00e9fono no v\u00e1lido. Ej: 612 345 678'), false;
+            if (!regex.test(val.replace(/\s/g, ''))) return mostrarErrorR(inputTelefono, document.getElementById('errorTelefono'), 'Telefono no valido. Ej: 612 345 678'), false;
             limpiarErrorR(inputTelefono, document.getElementById('errorTelefono'));
             return true;
         }
 
         function validarPasswordR() {
             var val = inputPasswordR.value;
-            if (!val)           return mostrarErrorR(inputPasswordR, document.getElementById('errorPassword'), 'La contrase\u00f1a es obligatoria.'), false;
-            if (val.length < 8) return mostrarErrorR(inputPasswordR, document.getElementById('errorPassword'), 'M\u00ednimo 8 caracteres.'), false;
+            if (!val)           return mostrarErrorR(inputPasswordR, document.getElementById('errorPassword'), 'La contrasena es obligatoria.'), false;
+            if (val.length < 8) return mostrarErrorR(inputPasswordR, document.getElementById('errorPassword'), 'Minimo 8 caracteres.'), false;
             limpiarErrorR(inputPasswordR, document.getElementById('errorPassword'));
             return true;
         }
 
         function validarPasswordConfirm() {
             var val = inputPasswordConfirm.value;
-            if (!val)                         return mostrarErrorR(inputPasswordConfirm, document.getElementById('errorPasswordConfirm'), 'Repite la contrase\u00f1a.'), false;
+            if (!val)                         return mostrarErrorR(inputPasswordConfirm, document.getElementById('errorPasswordConfirm'), 'Repite la contrasena.'), false;
             if (val !== inputPasswordR.value) return mostrarErrorR(inputPasswordConfirm, document.getElementById('errorPasswordConfirm'), 'Las contraseñas no coinciden.'), false;
             limpiarErrorR(inputPasswordConfirm, document.getElementById('errorPasswordConfirm'));
             return true;
@@ -1087,7 +1095,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function validarTerminos() {
             if (!inputTerminos.checked) {
-                document.getElementById('errorTerminos').textContent = 'Debes aceptar los t\u00e9rminos para continuar.';
+                document.getElementById('errorTerminos').textContent = 'Debes aceptar los terminos para continuar.';
                 return false;
             }
             document.getElementById('errorTerminos').textContent = '';
@@ -1615,6 +1623,17 @@ function buildDatosProt(p) {
         html += '<a href="' + p.web + '" target="_blank" rel="noopener" class="btn-ir-web" style="margin-top:0.3em;">'
               + '<i class="fa-solid fa-arrow-up-right-from-square me-2"></i>Visitar la ' + tipoLabel + ' de ' + p.nombre
               + '</a>';
+    }
+
+    if (p.email) {
+        html += '<div style="margin-top:1em;padding-top:0.8em;border-top:1px solid #eee;font-size:0.8rem;color:#888;">'
+              + '<i class="fa-solid fa-circle-info me-1" style="color:#1B358F;"></i>'
+              + '¿Prefieres preguntar antes de donar? Escríbeles directamente:'
+              + '</div>'
+              + '<div class="modal-dato" style="margin-top:0.4em;">'
+              + '<i class="fa-solid fa-envelope" style="color:#1B358F;"></i>'
+              + '<a href="mailto:' + p.email + '?subject=Consulta%20sobre%20donaci%C3%B3n" style="color:#1B358F;">' + p.email + '</a>'
+              + '</div>';
     }
 
     if (p.email) {
