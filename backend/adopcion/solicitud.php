@@ -77,7 +77,15 @@ $stmt = $pdo->prepare(
 $stmt->execute([$idMascota]);
 $mascota = $stmt->fetch();
 if (!$mascota) {
-    respuestaError('Esta mascota no esta disponible para adopcion.');
+    respuestaError('Esta mascota no está disponible para adopción.');
+}
+
+/* Verificar protectora activa */
+$stmtProt = $pdo->prepare('SELECT activa FROM protectoras WHERE idProtectora = ? LIMIT 1');
+$stmtProt->execute([$mascota['idProtectora']]);
+$prot = $stmtProt->fetch();
+if (!$prot || !$prot['activa']) {
+    respuestaError('Esta protectora está temporalmente suspendida. No se pueden enviar solicitudes en este momento.');
 }
 
 $stmt = $pdo->prepare(
@@ -152,6 +160,21 @@ if ($idProtectora) {
         $idProtectora,
         'solicitud_adopcion',
         $nombre . ' ha enviado una solicitud de adopcion',
+        'admin/solicitudes.html',
+    ]);
+}
+
+/* Notificación a todos los administradores */
+$stmtAdmins = $pdo->prepare('SELECT idUsuario FROM usuarios WHERE rol = "admin" AND activo = 1');
+$stmtAdmins->execute();
+while ($admin = $stmtAdmins->fetch()) {
+    $pdo->prepare(
+        'INSERT INTO notificaciones (idUsuario, tipo, mensaje, ruta_destino)
+         VALUES (?, ?, ?, ?)'
+    )->execute([
+        $admin['idUsuario'],
+        'solicitud_adopcion',
+        $nombre . ' ha enviado una solicitud de adopcion para ' . $mascota['nombre'],
         'admin/solicitudes.html',
     ]);
 }

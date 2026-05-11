@@ -87,7 +87,15 @@ $stmt = $pdo->prepare(
 $stmt->execute([$idMascota]);
 $mascota = $stmt->fetch();
 if (!$mascota) {
-    respuestaError('Esta mascota no esta disponible para acogida.');
+    respuestaError('Esta mascota no está disponible para acogida.');
+}
+
+/* Verificar protectora activa */
+$stmtProt = $pdo->prepare('SELECT activa FROM protectoras WHERE idProtectora = ? LIMIT 1');
+$stmtProt->execute([$mascota['idProtectora']]);
+$prot = $stmtProt->fetch();
+if (!$prot || !$prot['activa']) {
+    respuestaError('Esta protectora está temporalmente suspendida. No se pueden enviar solicitudes en este momento.');
 }
 
 $stmt = $pdo->prepare(

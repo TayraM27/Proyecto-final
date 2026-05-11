@@ -20,7 +20,7 @@ $sql = "SELECT m.idMascota, m.nombre, m.especie, m.fecha_prioritaria, m.descripc
                 LIMIT 1) AS foto_principal
         FROM mascotas m
         JOIN protectoras p ON m.idProtectora = p.idProtectora
-        WHERE m.prioritaria = 1 AND m.activa = 1
+        WHERE m.prioritaria = 1 AND m.activa = 1 AND p.activa = 1
         ORDER BY m.fecha_prioritaria DESC
         LIMIT 10";
 

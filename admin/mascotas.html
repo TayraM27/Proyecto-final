@@ -59,6 +59,10 @@
             <span class="topbar-titulo"><i class="fa-solid fa-paw" style="color:var(--gold);margin-right:0.4em;"></i>Mascotas</span>
         </div>
         <span style="font-size:0.85rem;color:var(--texto-sub);"><i class="fa-solid fa-circle-info me-2"></i> Solo lectura. Gestión en panel de protectora.</span>
+        <a href="../html/perfil.html?tab=notificaciones" class="notif-bell" title="Notificaciones">
+            <i class="fa-solid fa-bell"></i>
+            <span id="notifBadge" class="notif-bell-badge">0</span>
+        </a>
     </header>
 
     <!-- contenido -->
@@ -201,6 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
     verificarAdmin(function() {
         cargarUrgentes();
         cargarMascotas();
+        iniciarNotificacionesAdmin();
     });
 });
 
@@ -284,6 +289,9 @@ function cargarMascotas() {
             totalPaginas = data.totalPaginas || 1;
             renderTabla(data.mascotas);
             renderPaginacion();
+        })
+        .catch(function(){
+            document.getElementById('tablaMascotas').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2em;color:var(--error);">Error de conexión al cargar mascotas.</td></tr>';
         });
 }
 
@@ -569,6 +577,6 @@ function calcEdadAdmin(fechaNac) {
 }
 
 </script>
-
+<script src="admin.js"></script>
 </body>
 </html>

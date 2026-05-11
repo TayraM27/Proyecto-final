@@ -114,14 +114,50 @@ if ($metodo === 'PUT') {
             ->execute([$nuevoEstado, $id]);
     }
 
-    /* Si se aprueba, marcar mascota en proceso */
+    /* Obtener datos de la solicitud para notificación */
+    $stmtInfo = $pdo->prepare(
+        'SELECT s.idUsuario, s.nombre, m.nombre AS mascota FROM solicitudes_adopcion s
+         JOIN mascotas m ON s.idMascota = m.idMascota WHERE s.idSolicitud = ?'
+    );
+    $stmtInfo->execute([$id]);
+    $infoSol = $stmtInfo->fetch();
+
     if ($nuevoEstado === 'aprobada') {
         $stmtMasc = $pdo->prepare('SELECT idMascota FROM solicitudes_adopcion WHERE idSolicitud = ?');
         $stmtMasc->execute([$id]);
-        $sol = $stmtMasc->fetch();
-        if ($sol) {
+        $solMasc = $stmtMasc->fetch();
+        if ($solMasc) {
             $pdo->prepare("UPDATE mascotas SET estado_adopcion = 'en_proceso' WHERE idMascota = ?")
-                ->execute([$sol['idMascota']]);
+                ->execute([$solMasc['idMascota']]);
+        }
+        if ($infoSol && $infoSol['idUsuario']) {
+            crearNotificacion((int)$infoSol['idUsuario'], 'aprobacion',
+                'Tu solicitud de adopción para ' . $infoSol['mascota'] . ' ha sido aprobada.',
+                '../html/perfil.html?tab=apadrinamientos');
+        }
+    }
+
+    if ($nuevoEstado === 'rechazada' && $infoSol && $infoSol['idUsuario']) {
+        crearNotificacion((int)$infoSol['idUsuario'], 'rechazo',
+            'Tu solicitud de adopción para ' . $infoSol['mascota'] . ' ha sido revisada. Contacta con la protectora para más información.',
+            '../html/perfil.html?tab=apadrinamientos');
+    }
+
+    /* Notificar a todos los administradores */
+    if ($nuevoEstado === 'aprobada' || $nuevoEstado === 'rechazada') {
+        $accionTexto = $nuevoEstado === 'aprobada' ? 'APROBADA' : 'RECHAZADA';
+        $stmtAdmins = $pdo->prepare('SELECT idUsuario FROM usuarios WHERE rol = "admin" AND activo = 1');
+        $stmtAdmins->execute();
+        while ($admin = $stmtAdmins->fetch()) {
+            $pdo->prepare(
+                'INSERT INTO notificaciones (idUsuario, tipo, mensaje, ruta_destino)
+                 VALUES (?, ?, ?, ?)'
+            )->execute([
+                $admin['idUsuario'],
+                'solicitud_' . $nuevoEstado,
+                'Solicitud de adopción para ' . $infoSol['mascota'] . ' de ' . $infoSol['nombre'] . ' ha sido ' . $accionTexto . '.',
+                'admin/solicitudes.html',
+            ]);
         }
     }
 

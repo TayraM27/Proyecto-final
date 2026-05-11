@@ -55,6 +55,10 @@
         <button class="btn btn-gold" id="btnNuevaMascota" onclick="abrirModalNueva()" style="display:none;">
             <i class="fa-solid fa-plus"></i> Nueva mascota
         </button>
+        <a href="../html/perfil.html?tab=notificaciones" class="notif-bell" title="Notificaciones">
+            <i class="fa-solid fa-bell"></i>
+            <span id="notifBadge" class="notif-bell-badge">0</span>
+        </a>
     </header>
 
     <main class="admin-contenido">
@@ -135,13 +139,14 @@
                                 <th>Nombre</th>
                                 <th>Especie</th>
                                 <th>Edad</th>
+                                <th>Tiempo en adopción</th>
                                 <th>Tiempo en protectora</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="tablaMascotas">
-                            <tr><td colspan="7" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
+                            <tr><td colspan="8" style="text-align:center;padding:3em;color:var(--texto-sub);">Cargando...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -895,7 +900,8 @@ function verificarSesion(cb) {
                 window.location.href = '../html/login.html'; return;
             }
             usuarioSesion = data.usuario;
-            document.getElementById('avatarInicial').textContent = usuarioSesion.nombre.charAt(0).toUpperCase();
+            var nom = usuarioSesion.nombre.trim().split(' ');
+            document.getElementById('avatarInicial').textContent = (nom.length >= 2 ? nom[0][0] + nom[1][0] : usuarioSesion.nombre.substring(0, 2)).toUpperCase();
             document.getElementById('adminNombre').textContent = usuarioSesion.nombre;
             document.getElementById('adminProtectoraNombre').textContent = 'Protectora';
 
@@ -966,6 +972,7 @@ function renderTabla(mascotas) {
             + '<td><strong>' + m.nombre + '</strong><br>' + badgePri + badgeExtra + '</td>'
             + '<td>' + (m.especie === 'perro' ? '🐕 Perro' : '🐱 Gato') + '</td>'
             + '<td>' + (m.edad_texto || '—') + '</td>'
+            + '<td>' + tiempoProtectora + '</td>'
             + '<td>' + tiempoProtectora + '</td>'
             + '<td>' + badgeEst + '</td>'
             + '<td><div class="tabla-acciones"><a href="../html/fichaAnimal.html?id=' + m.idMascota + '" class="btn btn-sm btn-icon btn-ver" title="Ver ficha"><i class="fa-solid fa-eye"></i></a><button class="btn btn-sm btn-icon btn-azul-lite" onclick="editar(' + m.idMascota + ')" title="Editar"><i class="fa-solid fa-pen"></i></button><button class="btn btn-sm btn-icon btn-danger" onclick="eliminar(' + m.idMascota + ')" title="Eliminar"><i class="fa-solid fa-trash"></i></button></div></td>'
@@ -1803,12 +1810,6 @@ function activarEvento(id) {
 function cerrarModal(e) { if (e && e.target === e.currentTarget) cerrarModalBtn(); }
 function cerrarModalBtn() { document.getElementById('modalOverlay').classList.remove('activo'); }
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('abierto'); }
-document.addEventListener('click', function(e) {
-    var s = document.getElementById('sidebar');
-    if (s.classList.contains('abierto') && !s.contains(e.target) && !e.target.closest('.sidebar-toggle')) {
-        s.classList.remove('abierto');
-    }
-});
 function cerrarSesion() { fetch('../backend/api/auth/logout.php', { credentials: 'include' }).then(function(){ window.location.href = '../html/index.html'; }); }
 
 var datosProtectora = null;
@@ -2040,7 +2041,7 @@ function guardarDatosProtectora() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', function(){ verificarSesion(function(){ cargarDatosProtectora(); cargarMascotas(1); }); });
+document.addEventListener('DOMContentLoaded', function(){ verificarSesion(function(){ cargarDatosProtectora(); cargarMascotas(1); iniciarNotificacionesAdmin(); }); });
 
 function parseFechaUTC(f) {
     return new Date(f + 'T00:00:00Z');
@@ -2160,5 +2161,6 @@ document.addEventListener('DOMContentLoaded', function(){
 }
 </style>
 
+<script src="admin.js"></script>
 </body>
 </html>

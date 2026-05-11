@@ -108,7 +108,7 @@ sidebar */
     gap: 0.9em;
     padding: 0.7em 1.5em;
     color: rgba(255,255,255,0.75);
-    font-size: 0.99rem;
+    font-size: 0.88rem;
     font-weight: 500;
     border-left: 3px solid transparent;
     transition: all 0.18s;
@@ -234,6 +234,39 @@ gap: 0.8em;
     font-weight: 700;
     border-radius: 50px;
     padding: 0.15em 0.5em;
+}
+
+.notif-bell{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    background:var(--azul-lite);
+    color:var(--azul);
+    text-decoration:none;
+    transition:background 0.2s;
+}
+.notif-bell:hover{ background:var(--azul); color:#fff; }
+.notif-bell-badge{
+    position:absolute;
+    top:-4px;
+    right:-4px;
+    min-width:18px;
+    height:18px;
+    border-radius:9px;
+    background:var(--rojo);
+    color:#fff;
+    font-size:0.62rem;
+    font-weight:700;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:0 4px;
+    border:2px solid #fff;
+    line-height:1;
 }
 
 /*--------------------------------------------------------------------------------------------
@@ -1125,8 +1158,8 @@ responsive */
 .tabla-wrap{ overflow-x: auto; }
 .sidebar-logo{ padding: 1em; }
 .sidebar-logo a.sidebar-link{ padding: 0; border-left: none; }
-.sidebar-logo img{ width: 36px; }
-.sidebar-logo span{ font-size: 1.1rem; }
+.sidebar-logo img{ width: 30px; }
+.sidebar-logo span{ font-size: 1rem; }
 }
 
 @media (max-width: 768px){

@@ -66,6 +66,21 @@ function requerirAdminOProtectora(): void {
     }
 }
 
+function protectoraBloqueada(int $idProtectora): bool {
+    $pdo  = conectar();
+    $stmt = $pdo->prepare('SELECT activa FROM protectoras WHERE idProtectora = ? LIMIT 1');
+    $stmt->execute([$idProtectora]);
+    $row  = $stmt->fetch();
+    return !$row || !(bool)$row['activa'];
+}
+
+function requerirProtectoraActiva(): void {
+    $idProtectora = getIdProtectoraUsuario();
+    if ($idProtectora && protectoraBloqueada($idProtectora)) {
+        respuestaError('Tu protectora está suspendida temporalmente. No puedes realizar cambios.', 403);
+    }
+}
+
 function respuestaOk(array $datos = []): void {
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(array_merge(['ok' => true], $datos), JSON_UNESCAPED_UNICODE);

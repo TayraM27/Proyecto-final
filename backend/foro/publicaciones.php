@@ -206,6 +206,21 @@ if ($metodo === 'PUT') {
         $pdo->prepare('UPDATE publicaciones SET num_likes = num_likes + 1 WHERE idPublicacion = ?')
              ->execute([$idPub]);
         $accion = 'like';
+
+        $stmtP = $pdo->prepare('SELECT idUsuario, idProtectora FROM publicaciones WHERE idPublicacion = ?');
+        $stmtP->execute([$idPub]);
+        $pubAuthor = $stmtP->fetch();
+        if ($pubAuthor) {
+            $s = $pdo->prepare('SELECT username FROM usuarios WHERE idUsuario = ?');
+            $s->execute([$idUsuario]);
+            $liker = $s->fetch();
+            if ($liker) {
+                if ($pubAuthor['idUsuario'] && $pubAuthor['idUsuario'] != $idUsuario) {
+                    $pdo->prepare('INSERT INTO notificaciones (idUsuario, tipo, mensaje, idPublicacion) VALUES (?,?,?,?)')
+                        ->execute([$pubAuthor['idUsuario'], 'like', $liker['username'] . ' le ha dado like a tu publicacion', $idPub]);
+                }
+            }
+        }
     }
 
     $stmt = $pdo->prepare('SELECT num_likes FROM publicaciones WHERE idPublicacion = ?');

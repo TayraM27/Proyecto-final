@@ -211,42 +211,70 @@ if ($metodo === 'PUT') {
     $idComentario = (int)($datos['idComentario'] ?? 0);
     if (!$idComentario) respuestaError('ID de comentario no valido.');
 
-    $stmtChk = $pdo->prepare('SELECT deleted FROM comentarios WHERE idComentario = ?');
+    $stmtChk = $pdo->prepare('SELECT idUsuario, idProtectora, idPublicacion, deleted FROM comentarios WHERE idComentario = ?');
     $stmtChk->execute([$idComentario]);
     $com = $stmtChk->fetch();
     if (!$com)           respuestaError('Comentario no encontrado.', 404);
     if ($com['deleted']) respuestaError('No puedes dar like a un comentario eliminado.', 400);
 
-    $idUsuario    = $ses['idUsuario'];
-    $idProtectora = $ses['idProtectora'];
+    $idUsuarioL = $ses['idUsuario'];
+    $idProtectoraL = $ses['idProtectora'];
 
-    if ($idUsuario) {
+    if ($idUsuarioL) {
         $chk = $pdo->prepare('SELECT COUNT(*) FROM likes_comentarios WHERE idComentario = ? AND idUsuario = ?');
-        $chk->execute([$idComentario, $idUsuario]);
+        $chk->execute([$idComentario, $idUsuarioL]);
         $yaLike = (bool)$chk->fetchColumn();
 
         if ($yaLike) {
-            $pdo->prepare('DELETE FROM likes_comentarios WHERE idComentario = ? AND idUsuario = ?')->execute([$idComentario, $idUsuario]);
+            $pdo->prepare('DELETE FROM likes_comentarios WHERE idComentario = ? AND idUsuario = ?')->execute([$idComentario, $idUsuarioL]);
             $pdo->prepare('UPDATE comentarios SET num_likes = GREATEST(0, num_likes - 1) WHERE idComentario = ?')->execute([$idComentario]);
             $accion = 'unlike';
         } else {
-            $pdo->prepare('INSERT IGNORE INTO likes_comentarios (idUsuario, idComentario) VALUES (?, ?)')->execute([$idUsuario, $idComentario]);
+            $pdo->prepare('INSERT IGNORE INTO likes_comentarios (idUsuario, idComentario) VALUES (?, ?)')->execute([$idUsuarioL, $idComentario]);
             $pdo->prepare('UPDATE comentarios SET num_likes = num_likes + 1 WHERE idComentario = ?')->execute([$idComentario]);
             $accion = 'like';
+
+            $s = $pdo->prepare('SELECT username FROM usuarios WHERE idUsuario = ?');
+            $s->execute([$idUsuarioL]);
+            $liker = $s->fetch();
+            if ($liker) {
+                if ($com['idUsuario'] && $com['idUsuario'] != $idUsuarioL) {
+                    $pdo->prepare('INSERT INTO notificaciones (idUsuario, tipo, mensaje, idPublicacion) VALUES (?,?,?,?)')
+                        ->execute([$com['idUsuario'], 'like_comentario', $liker['username'] . ' le ha dado like a tu comentario', $com['idPublicacion']]);
+                }
+                if ($com['idProtectora']) {
+                    $pdo->prepare('INSERT INTO notificaciones (idProtectora, tipo, mensaje, idPublicacion) VALUES (?,?,?,?)')
+                        ->execute([$com['idProtectora'], 'like_comentario', $liker['username'] . ' le ha dado like a tu comentario', $com['idPublicacion']]);
+                }
+            }
         }
     } else {
         $chk = $pdo->prepare('SELECT COUNT(*) FROM likes_comentarios WHERE idComentario = ? AND idProtectora = ?');
-        $chk->execute([$idComentario, $idProtectora]);
+        $chk->execute([$idComentario, $idProtectoraL]);
         $yaLike = (bool)$chk->fetchColumn();
 
         if ($yaLike) {
-            $pdo->prepare('DELETE FROM likes_comentarios WHERE idComentario = ? AND idProtectora = ?')->execute([$idComentario, $idProtectora]);
+            $pdo->prepare('DELETE FROM likes_comentarios WHERE idComentario = ? AND idProtectora = ?')->execute([$idComentario, $idProtectoraL]);
             $pdo->prepare('UPDATE comentarios SET num_likes = GREATEST(0, num_likes - 1) WHERE idComentario = ?')->execute([$idComentario]);
             $accion = 'unlike';
         } else {
-            $pdo->prepare('INSERT IGNORE INTO likes_comentarios (idProtectora, idComentario) VALUES (?, ?)')->execute([$idProtectora, $idComentario]);
+            $pdo->prepare('INSERT IGNORE INTO likes_comentarios (idProtectora, idComentario) VALUES (?, ?)')->execute([$idProtectoraL, $idComentario]);
             $pdo->prepare('UPDATE comentarios SET num_likes = num_likes + 1 WHERE idComentario = ?')->execute([$idComentario]);
             $accion = 'like';
+
+            $s = $pdo->prepare('SELECT nombre FROM protectoras WHERE idProtectora = ?');
+            $s->execute([$idProtectoraL]);
+            $liker = $s->fetch();
+            if ($liker) {
+                if ($com['idUsuario'] && $com['idUsuario'] != $idUsuarioL) {
+                    $pdo->prepare('INSERT INTO notificaciones (idUsuario, tipo, mensaje, idPublicacion) VALUES (?,?,?,?)')
+                        ->execute([$com['idUsuario'], 'like_comentario', $liker['nombre'] . ' le ha dado like a tu comentario', $com['idPublicacion']]);
+                }
+                if ($com['idProtectora'] && $com['idProtectora'] != $idProtectoraL) {
+                    $pdo->prepare('INSERT INTO notificaciones (idProtectora, tipo, mensaje, idPublicacion) VALUES (?,?,?,?)')
+                        ->execute([$com['idProtectora'], 'like_comentario', $liker['nombre'] . ' le ha dado like a tu comentario', $com['idPublicacion']]);
+                }
+            }
         }
     }
 

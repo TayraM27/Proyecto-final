@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://kit.fontawesome.com/093cf7cd82.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -89,6 +89,10 @@
                     <span id="animal-sexo-icono"></span>
                 </div>
                 <p class="animal-subtitulo" id="animal-subtitulo"></p>
+                <div id="aviso-protectora-suspendida" style="display:none;background:#fff3cd;border:1px solid #ffc107;border-radius:10px;padding:0.75em 1em;margin-bottom:1em;font-size:0.88rem;color:#856404;">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                    Esta protectora está temporalmente suspendida. Las actualizaciones pueden verse afectadas.
+                </div>
                 <div class="d-flex gap-2 flex-wrap mb-3" id="animal-badges"></div>
                 <div class="d-flex gap-2 flex-wrap mb-3" id="animal-prioritaria"></div>
 
@@ -185,7 +189,7 @@
                 <div id="adoptFormError" class="form-error" style="display:none;background:#fff0f0;color:#c0392b;padding:0.5em 0.8em;border-radius:6px;font-size:0.85rem;margin-bottom:1em;"></div>
                 <div id="adoptFormOk" class="form-success" style="display:none;background:#f0fff4;color:#27ae60;padding:0.5em 0.8em;border-radius:6px;font-size:0.85rem;margin-bottom:1em;"></div>
                 <div id="adoptMascotaInfo" style="background:#f0f4ff;padding:0.8em;border-radius:8px;margin-bottom:1em;font-size:0.9rem;"></div>
-                <form id="formAdopcion" onsubmit="enviarAdopcionFicha(event)">
+                <form id="formAdopcion" onsubmit="enviarAdopcionFicha(event)" novalidate>
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label" style="font-weight:500;font-size:0.9rem;">Nombre completo <span class="text-danger">*</span></label>
@@ -707,6 +711,9 @@ document.addEventListener('DOMContentLoaded', function() {
             _mascotaActual = res.mascota;
             sessionStorage.setItem('pf_vista_pendiente', id);
             renderizarFicha(res.mascota);
+            if (res.protectora_suspendida) {
+                aplicarAviso_protectoraSuspendida();
+            }
             cargarOtrosAnimales(id);
             if (typeof estaLogueadoFicha === 'function' && estaLogueadoFicha()) {
                 if (typeof actualizarBtnFavorito === 'function') actualizarBtnFavorito(id);
@@ -861,7 +868,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var logoUrl = '../img/iconosHeader/gato_logo.png';
         if (mascota.logo_protectora) logoUrl = '../' + mascota.logo_protectora;
         document.getElementById('protectora-logo').src = logoUrl;
-        document.getElementById('protectora-nombre').textContent = mascota.protectora || 'Sin especificar';
+        document.getElementById('protectora-nombre').textContent = mascota.protectora_nombre || 'Sin especificar';
         document.getElementById('protectora-ubicacion').innerHTML = '<i class="fa-solid fa-location-dot"></i> ' + (mascota.ubicacion || 'Sin ubicaci\u00f3n');
 
         var asuntoContacto = encodeURIComponent('Consulta sobre ' + mascota.nombre);
@@ -878,6 +885,23 @@ document.addEventListener('DOMContentLoaded', function() {
         renderContactoProtectora(mascota);
     }
 });
+
+function aplicarAviso_protectoraSuspendida() {
+    /* Mostrar aviso */
+    var aviso = document.getElementById('aviso-protectora-suspendida');
+    if (aviso) aviso.style.display = 'block';
+    /* Deshabilitar botones de acción */
+    var btnAdoptar = document.querySelector('.btn-adoptar');
+    var btnApadrinar = document.getElementById('btn-apadrinar');
+    var btnAcoger = document.getElementById('btn-acoger');
+    [btnAdoptar, btnApadrinar, btnAcoger].forEach(function(btn) {
+        if (!btn) return;
+        btn.disabled = true;
+        btn.style.opacity = '0.45';
+        btn.style.cursor = 'not-allowed';
+        btn.title = 'No disponible mientras la protectora está suspendida';
+    });
+}
 
 function calcTiempoProtectora(fechaEntrada) {
     if (!fechaEntrada) return 'Sin datos';
@@ -916,7 +940,7 @@ function cargarOtrosAnimales(idActual) {
                 d.className = 'col-12 col-sm-6 col-lg-4';
                 var foto = m.foto_principal ? '../' + m.foto_principal : '../img/mascotas/default.jpg';
                 d.innerHTML = '<div class="card-sugerencia card" onclick="window.location.href=\'fichaAnimal.html?id=' + m.idMascota + '\'" style="cursor:pointer;">' +
-                    '<img src="' + foto + '" alt="' + m.nombre + '" class="card-sugerencia-img" onerror="this.src=\'../img/mascotas/default.jpg\'">' +
+                    '<img src="' + foto + '" alt="' + m.nombre + '" style="height:420px;object-fit:cover;" onerror="this.src=\'../img/mascotas/default.jpg\'">' +
                     '<div class="card-body">' +
                     '<p class="card-title" style="font-weight:600;margin:0;">' + m.nombre + '</p>' +
                     '<p class="card-text" style="font-size:0.85rem;color:#666;margin:5px 0 0;">' + (m.raza || 'Sin especificar') + '</p>' +

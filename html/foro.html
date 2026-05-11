@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -229,93 +229,49 @@
 
 <footer>
     <div class="footer-grid">
-
         <div>
-
             <div class="footer-logo">
-
                 <img src="../img/iconosHeader/gato_logo.png" alt="PetFamily">
-
                 <span class="footer-logo-text">Pet<span>Family</span></span>
-
             </div>
-
             <p class="footer-tagline">Adopci&oacute;n responsable de perros y gatos<br>en Asturias. Conectamos animales<br>con familias comprometidas.</p>
-
         </div>
-
         <div>
-
             <p class="footer-col-titulo">Explorar</p>
-
             <ul class="footer-links">
-
                 <li><a href="adopta.html">Adopta</a></li>
-
                 <li><a href="apadrina.html">Apadrina</a></li>
-
                 <li><a href="acoge.html">Acoge</a></li>
-
                 <li><a href="dona.html">Dona</a></li>
-
                 <li><a href="protectoras.html">Protectoras</a></li>
-
                 <li><a href="foro.html">Foro</a></li>
-
                 <li><a href="test.html">Tests</a></li>
-
             </ul>
-
         </div>
-
         <div>
-
             <p class="footer-col-titulo">Contacto</p>
-
             <a href="mailto:petfamilycontact@yopmail.com" class="footer-contacto-email">
-
                 <i class="fa-solid fa-envelope"></i>
-
                 petfamilycontact@yopmail.com
-
             </a>
-
             <p class="footer-col-titulo" style="margin-top:1em;">S&iacute;guenos</p>
-
             <div class="footer-redes">
-
                 <a href="https://www.instagram.com/asociacionpeludosprotegidos?igsh=MXR5NmhhbzJpcmhhbg==" target="_blank" rel="noopener" class="footer-red" title="Instagram">
-
                     <i class="fa-brands fa-instagram"></i>
-
                 </a>
-
                 <a href="https://www.facebook.com/fundacionpeludosprotegidos" target="_blank" rel="noopener" class="footer-red" title="Facebook">
-
                     <i class="fa-brands fa-facebook"></i>
-
                 </a>
-
                 <a href="https://www.tiktok.com/@peludosprotegidos" target="_blank" rel="noopener" class="footer-red" title="TikTok">
-
                     <i class="fa-brands fa-tiktok"></i>
-
                 </a>
-
             </div>
-
         </div>
-
     </div>
-
     <div class="footer-bottom">
-
         &copy; 2026 PetFamily. Todos los derechos reservados. &nbsp;&middot;&nbsp;
-
         <a href="privacidad.html">Pol&iacute;tica de Privacidad</a> &nbsp;&middot;&nbsp;
-
         <a href="terminos.html">T&eacute;rminos de Servicio</a>
-
     </div>
 </footer>
 
@@ -335,8 +291,6 @@ var totalPagForo    = 1;
 var todosLosPosts   = [];
 var _intervaloComs  = {};
 var _ultimosComsEnviados = {};
-
-
 
 /*--------------------------------------------------------------------------------------------
 init */
@@ -461,18 +415,22 @@ function cargarSesionForo() {
         });
 }
 
+/* FIX 1 — avatar del formulario de publicar */
 function activarFormPub(usuario) {
     document.getElementById('bloqueUnete').style.display = 'none';
 
-    var avatar = document.getElementById('avatarPub');
+    var avatar  = document.getElementById('avatarPub');
+    var _nom    = usuario.nombre.trim().split(' ');
+    var _ini    = (_nom.length >= 2 ? _nom[0][0] + _nom[1][0] : usuario.nombre.substring(0, 2)).toUpperCase();
+
     if (usuario.foto_perfil) {
         var fotoSrc = usuario.foto_perfil.startsWith('http') ? usuario.foto_perfil : ('../backend/api/auth/' + usuario.foto_perfil);
         avatar.innerHTML = '<img src="' + fotoSrc + '" referrerpolicy="no-referrer"'
             + ' style="width:48px;height:48px;border-radius:50%;object-fit:cover;"'
-            + ' onerror="this.parentElement.textContent=\'' + usuario.nombre.charAt(0).toUpperCase() + '\'">';
+            + ' onerror="this.parentElement.textContent=\'' + _ini + '\'">';
     } else {
-        avatar.className = 'foro-avatar foro-avatar-gold foro-avatar-lg';
-        avatar.textContent  = usuario.nombre.charAt(0).toUpperCase();
+        avatar.className  = 'foro-avatar foro-avatar-gold foro-avatar-lg';
+        avatar.textContent = _ini;
     }
 
     var pendiente = sessionStorage.getItem('foroTextoPendiente');
@@ -529,9 +487,10 @@ function renderPosts(posts) {
     activarListenersPost();
 }
 
+/* FIX 2 — avatar del autor de cada post */
 function renderPost(p) {
-    var partes  = p.autor_nombre.split(' ');
-    var inicial = partes[0].charAt(0).toUpperCase() + (partes[1] ? partes[1].charAt(0).toUpperCase() : '');
+    var partes  = p.autor_nombre.trim().split(' ');
+    var inicial = (partes.length >= 2 ? partes[0][0] + partes[1][0] : p.autor_nombre.substring(0, 2)).toUpperCase();
 
     var avatarHtml;
     if (p.autor_foto) {
@@ -564,7 +523,6 @@ function renderPost(p) {
         : '';
 
     return '<article class="foro-post" id="post-' + p.idPublicacion + '" data-cat="' + p.categoria + '">'
-
         + '<div class="foro-post-header">'
         + avatarHtml
         + '<div class="foro-post-meta">'
@@ -573,7 +531,6 @@ function renderPost(p) {
         + '</div>'
         + catHtml + fijadoBadge
         + '</div>'
-
         + '<h3 class="foro-post-titulo">' + p.titulo + '</h3>'
         + '<div class="foro-post-contenido"><p>' + p.contenido + '</p></div>'
         + (p.tipo_media === 'imagen' && p.imagen
@@ -581,7 +538,6 @@ function renderPost(p) {
             : p.tipo_media === 'video' && p.video
                 ? '<div class="foro-post-media"><video src="../' + p.video + '" controls preload="metadata"></video></div>'
                 : '')
-
         + '<div class="foro-post-reacciones">'
         + (sesionForo && (String(sesionForo.idUsuario) === String(p.idUsuario) || sesionForo.rol === 'admin')
             ? '<button class="foro-reaccion-btn foro-btn-eliminar" data-id="' + p.idPublicacion + '" style="margin-left:auto;color:#c0392b;"><i class="fa-solid fa-trash-can"></i></button>'
@@ -593,13 +549,11 @@ function renderPost(p) {
         + '<i class="fa-regular fa-comment"></i> <span class="com-count">' + (p.num_comentarios||0) + '</span> comentarios'
         + '</button>'
         + '</div>'
-
         + '<div class="foro-comentarios-seccion" id="coms-' + p.idPublicacion + '">'
         + '<button class="foro-ver-mas-com" data-id="' + p.idPublicacion + '">'
         + '<i class="fa-solid fa-chevron-down me-1"></i>Ver comentarios'
         + '</button>'
         + '</div>'
-
         + '</article>';
 }
 
@@ -702,7 +656,6 @@ function toggleComentarios(idPublicacion, btn) {
 
             if (data.comentarios && data.comentarios.length) {
                 bloqueComs.innerHTML = data.comentarios.map(function(c) { return renderComentario(c, false); }).join('');
-                /* Sincronizar contador: solo comentarios raíz no eliminados */
                 var total = 0;
                 data.comentarios.forEach(function(c) { if (!c.deleted) total++; });
                 var countEl = document.querySelector('#post-' + idPublicacion + ' .com-count');
@@ -723,7 +676,9 @@ function toggleComentarios(idPublicacion, btn) {
             inputWrap.className = 'foro-comentario-input input-com-wrap mt-1';
 
             if (sesionForo) {
-                var inicial = sesionForo.nombre.charAt(0).toUpperCase();
+                /* FIX 4 — avatar del input de comentarios */
+                var _nomC = sesionForo.nombre.trim().split(' ');
+                var inicial = (_nomC.length >= 2 ? _nomC[0][0] + _nomC[1][0] : sesionForo.nombre.substring(0, 2)).toUpperCase();
                 var avatarHtml;
                 if (sesionForo.foto_perfil) {
                     var fotoSrc = sesionForo.foto_perfil.startsWith('http') ? sesionForo.foto_perfil : ('../backend/api/auth/' + sesionForo.foto_perfil);
@@ -779,7 +734,6 @@ function actualizarComentarios(idPublicacion, bloqueComs) {
             if (!data.comentarios) return;
             bloqueComs.innerHTML = data.comentarios.map(function(c) { return renderComentario(c, false); }).join('');
             activarEventosComentarios(bloqueComs, idPublicacion);
-            /* Contar igual que el backend: solo comentarios raíz no eliminados */
             var total = 0;
             data.comentarios.forEach(function(c) { if (!c.deleted) total++; });
             var countEl = document.querySelector('#post-' + idPublicacion + ' .com-count');
@@ -788,15 +742,15 @@ function actualizarComentarios(idPublicacion, bloqueComs) {
         .catch(function() {});
 }
 
+/* FIX 3 — avatar de cada comentario */
 function renderComentario(c, esRespuesta) {
-    /* Eliminado sin respuestas → ocultar completamente */
     if (c.deleted && (!c.respuestas || !c.respuestas.length)) {
         return '';
     }
 
     var autor   = c.autor_nombre || c.prot_nombre || 'Usuario';
-    var partes  = autor.split(' ');
-    var inicial = partes[0].charAt(0).toUpperCase() + (partes[1] ? partes[1].charAt(0).toUpperCase() : '');
+    var partes  = autor.trim().split(' ');
+    var inicial = (partes.length >= 2 ? partes[0][0] + partes[1][0] : autor.substring(0, 2)).toUpperCase();
 
     var avatarHtml;
     if (c.autor_foto) {
@@ -842,7 +796,6 @@ function renderComentario(c, esRespuesta) {
     var html = '<div class="foro-comentario' + esVerificado + claseReply + '" data-id="' + c.idComentario + '">';
 
     if (c.deleted) {
-        /* Eliminado CON respuestas → placeholder sin datos del autor */
         html += '<div class="foro-comentario-burbuja" style="background:#f1f3f5;opacity:0.75;">'
             + '<p class="foro-com-texto text-muted" style="font-size:0.82rem;font-style:italic;margin:0;">'
             + '<i class="fa-solid fa-ban me-1" style="font-size:0.75rem;"></i>Este comentario ha sido eliminado por el usuario.'
@@ -863,7 +816,6 @@ function renderComentario(c, esRespuesta) {
             + '</div>';
     }
 
-    /* Cerrar div del comentario ANTES de las respuestas (evita cascada flex) */
     html += '</div>';
 
     if (c.respuestas && c.respuestas.length) {
@@ -915,7 +867,6 @@ function eliminarComentario(id, idPub) {
     .then(function(r) { return r.json(); })
     .then(function(data) {
         if (!data.ok) return;
-        /* Refrescar la sección de comentarios para reflejar el estado real */
         var seccion    = document.getElementById('coms-' + idPub);
         var bloqueComs = seccion ? seccion.querySelector('.bloque-coms') : null;
         if (bloqueComs) {
@@ -1022,8 +973,9 @@ function enviarComentario(idPublicacion) {
         }
     }
 
-    var partes  = sesionForo.nombre.split(' ');
-    var inicial = partes[0].charAt(0).toUpperCase() + (partes[1] ? partes[1].charAt(0).toUpperCase() : '');
+    /* FIX 5 — avatar del comentario enviado (optimistic UI) */
+    var partes  = sesionForo.nombre.trim().split(' ');
+    var inicial = (partes.length >= 2 ? partes[0][0] + partes[1][0] : sesionForo.nombre.substring(0, 2)).toUpperCase();
     var avatarHtml;
     if (sesionForo.foto_perfil) {
         var fotoSrc = sesionForo.foto_perfil.startsWith('http') ? sesionForo.foto_perfil : ('../backend/api/auth/' + sesionForo.foto_perfil);
@@ -1051,7 +1003,6 @@ function enviarComentario(idPublicacion) {
         + '</div></div></div>';
 
     if (esReply) {
-        /* Insertar justo después del comentario padre para posición correcta */
         var parentEl = bloqueComs.querySelector('[data-id="' + replyingToId[idPublicacion] + '"]');
         if (parentEl) {
             parentEl.insertAdjacentHTML('afterend', tempHtml);
@@ -1164,7 +1115,6 @@ function toggleEmojiPicker() {
 }
 
 function toggleEmojiPickerCom(idPub) {
-    /* Buscar el inputWrap del post */
     var inputWrap = document.querySelector('#coms-' + idPub + ' .input-com-wrap');
     if (!inputWrap) return;
 

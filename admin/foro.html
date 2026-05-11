@@ -66,6 +66,10 @@
             <button class="btn btn-sm btn-primario" onclick="setVista('publicaciones')" id="btnPub">Publicaciones</button>
             <button class="btn btn-sm btn-outline"  onclick="setVista('comentarios')" id="btnCom">Comentarios</button>
         </div>
+        <a href="../html/perfil.html?tab=notificaciones" class="notif-bell" title="Notificaciones">
+            <i class="fa-solid fa-bell"></i>
+            <span id="notifBadge" class="notif-bell-badge">0</span>
+        </a>
     </header>
 
     <main class="admin-contenido">
@@ -157,6 +161,7 @@ var datosComsCache = [];
 document.addEventListener('DOMContentLoaded', function() {
     verificarAdmin(function() {
         setVista('publicaciones');
+        iniciarNotificacionesAdmin();
     });
 });
 
@@ -453,6 +458,6 @@ function mostrarToast(msg, tipo) {
     setTimeout(function(){ t.className = 'toast'; }, 3000);
 }
 </script>
-
+<script src="admin.js"></script>
 </body>
 </html>

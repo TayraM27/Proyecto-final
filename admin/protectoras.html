@@ -59,6 +59,10 @@
             <span class="topbar-titulo"><i class="fa-solid fa-building-shield" style="color:var(--gold);margin-right:0.4em;"></i>Protectoras</span>
         </div>
         <span style="font-size:0.85rem;color:var(--texto-sub);"><i class="fa-solid fa-circle-info me-2"></i> Gestión de plataforma. Las protectoras gestionan su propio contenido.</span>
+        <a href="../html/perfil.html?tab=notificaciones" class="notif-bell" title="Notificaciones">
+            <i class="fa-solid fa-bell"></i>
+            <span id="notifBadge" class="notif-bell-badge">0</span>
+        </a>
     </header>
 
     <main class="admin-contenido">
@@ -120,7 +124,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    verificarAdmin(cargarProtectoras);
+    verificarAdmin(function(){ cargarProtectoras(); iniciarNotificacionesAdmin(); });
 });
 
 function verificarAdmin(cb) {
@@ -293,6 +297,6 @@ function mostrarToast(msg, tipo) {
     setTimeout(function(){ t.className = 'toast'; }, 3000);
 }
 </script>
-
+<script src="admin.js"></script>
 </body>
 </html>

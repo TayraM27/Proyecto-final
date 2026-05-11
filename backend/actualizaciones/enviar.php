@@ -52,13 +52,26 @@ $stmt = $pdo->prepare('INSERT INTO actualizaciones (idMascota, idProtectora, men
 $stmt->execute([$idMascota, $idProtectora, $mensaje, $fotos ? json_encode($fotos) : null, $videoUrl]);
 $idActualizacion = $pdo->lastInsertId();
 
-$stmt = $pdo->prepare('SELECT idUsuario FROM apadrinamientos WHERE idMascota = ? AND estado = "activo"');
-$stmt->execute([$idMascota]);
-$padrinos = $stmt->fetchAll();
+$stmtM = $pdo->prepare('SELECT nombre FROM mascotas WHERE idMascota = ?');
+$stmtM->execute([$idMascota]);
+$mascotaNombre = $stmtM->fetchColumn() ?: 'tu apadrinado';
 
+$stmt = $pdo->prepare('SELECT idApadrinamiento, idUsuario FROM apadrinamientos WHERE idMascota = ? AND estado = "activo"');
+$stmt->execute([$idMascota]);
+$apads = $stmt->fetchAll();
+
+$tipoArchivo = $fotos ? 'foto' : ($videoUrl ? 'video' : 'texto');
+$rutaArchivo = $fotos ? $fotos[0] : ($videoUrl ?? null);
+
+$insertSeg = $pdo->prepare('INSERT INTO seguimientos (idApadrinamiento, contenido, tipo_archivo, ruta_archivo, idActualizacion) VALUES (?,?,?,?,?)');
 $insertPadrino = $pdo->prepare('INSERT INTO actualizacion_padrinos (idActualizacion, idUsuario, leido) VALUES (?, ?, 0)');
-foreach ($padrinos as $padrino) {
-    $insertPadrino->execute([$idActualizacion, $padrino['idUsuario']]);
+
+foreach ($apads as $apad) {
+    if ($apad['idUsuario']) {
+        $insertPadrino->execute([$idActualizacion, $apad['idUsuario']]);
+        crearNotificacion($apad['idUsuario'], 'actualizacion_protectora', 'Nueva actualización de ' . $mascotaNombre, 'perfil.html?tab=actualizaciones');
+    }
+    $insertSeg->execute([$apad['idApadrinamiento'], $mensaje, $tipoArchivo, $rutaArchivo, $idActualizacion]);
 }
 
 respuestaOk(['mensaje' => 'Actualización enviada.', 'idActualizacion' => $idActualizacion]);

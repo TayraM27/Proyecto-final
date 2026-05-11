@@ -9,7 +9,7 @@ require_once __DIR__ . '/../includes/funciones.php';
 header('Content-Type: application/json; charset=utf-8');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    respuestaError('Método no permitido.', 405);
+    respuestaError('Metodo no permitido.', 405);
 }
 
 $datos          = json_decode(file_get_contents('php://input'), true) ?? [];
@@ -32,7 +32,7 @@ if (!in_array($cantidadMensual, $cantidadesValidas)) {
 }
 
 if (!validarEmail($email)) {
-    respuestaError('Email no válido.');
+    respuestaError('Email no valido.');
 }
 
 if ($telefono && !preg_match('/^\d{9}$/', $telefono)) {
@@ -41,20 +41,29 @@ if ($telefono && !preg_match('/^\d{9}$/', $telefono)) {
 
 $metodosValidos = ['tarjeta', 'transferencia', 'bizum'];
 if (!in_array($metodoPago, $metodosValidos)) {
-    respuestaError('Selecciona un método de pago válido.');
+    respuestaError('Selecciona un metodo de pago valido.');
 }
 
 $pdo = conectar();
 
 // Comprobar que la mascota esta disponible para apadrinamiento
 $stmt = $pdo->prepare(
-    'SELECT idMascota FROM mascotas
+    'SELECT idMascota, idProtectora FROM mascotas
      WHERE idMascota = ? AND activa = 1 AND disponible_apadrinamiento = 1
      LIMIT 1'
 );
 $stmt->execute([$idMascota]);
-if (!$stmt->fetch()) {
-    respuestaError('Esta mascota no esta disponible para apadrinamiento.');
+$mascota = $stmt->fetch();
+if (!$mascota) {
+    respuestaError('Esta mascota no está disponible para apadrinamiento.');
+}
+
+/* Verificar protectora activa */
+$stmtProt = $pdo->prepare('SELECT activa FROM protectoras WHERE idProtectora = ? LIMIT 1');
+$stmtProt->execute([$mascota['idProtectora']]);
+$prot = $stmtProt->fetch();
+if (!$prot || !$prot['activa']) {
+    respuestaError('Esta protectora está temporalmente suspendida. No se pueden registrar apadrinamientos en este momento.');
 }
 
 iniciarSesionSegura();

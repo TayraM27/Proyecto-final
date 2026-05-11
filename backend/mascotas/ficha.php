@@ -6,7 +6,7 @@ header('Content-Type: application/json; charset=utf-8');
 $id = (int)($_GET['id'] ?? 0);
 
 if (!$id) {
-    respuestaError('ID inválido');
+    respuestaError('ID invalido');
 }
 
 $pdo = conectar();
@@ -35,17 +35,18 @@ $stmt = $pdo->prepare(
         m.microchip,
         m.desparasitado,
         m.num_vistas,
-        m.edad_texto,
         m.fecha_nacimiento,
         m.fecha_entrada,
         p.idProtectora,
         p.nombre AS protectora_nombre,
         p.localidad AS protectora_localidad,
+        p.localidad AS ubicacion,
         p.telefono AS telefono_protectora,
         p.email AS email_protectora,
         p.web AS web_protectora,
         p.bizum AS bizum_protectora,
-        p.foto_logo AS logo_protectora
+        p.foto_logo AS logo_protectora,
+        p.activa AS protectora_activa
      FROM mascotas m
      JOIN protectoras p ON m.idProtectora = p.idProtectora
      WHERE m.idMascota = ? AND m.activa = 1
@@ -71,4 +72,7 @@ $stmtFotos = $pdo->prepare(
 $stmtFotos->execute([$id]);
 $mascota['fotos'] = $stmtFotos->fetchAll();
 
-respuestaOk(['mascota' => $mascota]);
+respuestaOk([
+    'mascota'               => $mascota,
+    'protectora_suspendida' => !(bool)$mascota['protectora_activa'],
+]);

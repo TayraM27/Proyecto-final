@@ -24,40 +24,23 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $cond = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
         $stmt = $pdo->prepare(
-            'SELECT s.idSeguimiento, s.idApadrinamiento, s.contenido,
-                    s.tipo_archivo, s.ruta_archivo, s.fecha,
-                    s.idActualizacion,
+            'SELECT MAX(s.idSeguimiento) AS idSeguimiento,
+                    MAX(s.idApadrinamiento) AS idApadrinamiento,
+                    s.contenido,
+                    MAX(s.tipo_archivo) AS tipo_archivo,
+                    MAX(s.ruta_archivo) AS ruta_archivo,
+                    MAX(s.fecha) AS fecha,
+                    MAX(s.idActualizacion) AS idActualizacion,
                     m.nombre AS mascota_nombre
              FROM seguimientos s
              JOIN apadrinamientos a ON s.idApadrinamiento = a.idApadrinamiento
              JOIN mascotas m ON a.idMascota = m.idMascota
              ' . $cond . '
-             ORDER BY s.fecha DESC'
+             GROUP BY COALESCE(s.idActualizacion, s.idSeguimiento), s.contenido, m.nombre
+             ORDER BY fecha DESC'
         );
         $stmt->execute($params);
         $seguimientos = $stmt->fetchAll();
-
-        $idsAct = array_filter(array_column($seguimientos, 'idActualizacion'));
-        $respuestasPadrino = [];
-        if ($idsAct) {
-            $placeholders = implode(',', array_fill(0, count($idsAct), '?'));
-            $stmtR = $pdo->prepare(
-                "SELECT ap.idActualizacion, ap.respuesta, ap.fecha, u.nombre AS padrino_nombre
-                 FROM actualizacion_padrinos ap
-                 JOIN usuarios u ON ap.idUsuario = u.idUsuario
-                 WHERE ap.idActualizacion IN ($placeholders) AND ap.respuesta IS NOT NULL AND ap.respuesta != ''"
-            );
-            $stmtR->execute($idsAct);
-            $rows = $stmtR->fetchAll();
-            foreach ($rows as $r) {
-                $respuestasPadrino[$r['idActualizacion']][] = $r;
-            }
-        }
-
-        foreach ($seguimientos as &$s) {
-            $s['padrino_respuestas'] = $respuestasPadrino[$s['idActualizacion']] ?? [];
-        }
-        unset($s);
 
         respuestaOk(['seguimientos' => $seguimientos]);
         break;
@@ -75,20 +58,19 @@ switch ($_SERVER['REQUEST_METHOD']) {
         }
 
         $stmt = $pdo->prepare(
-            'SELECT a.idApadrinamiento, m.idProtectora
+            'SELECT a.idApadrinamiento, a.idUsuario, m.idProtectora
              FROM apadrinamientos a
              JOIN mascotas m ON a.idMascota = m.idMascota
-             WHERE a.idMascota = ? AND a.estado = "activo"
-             LIMIT 1'
+             WHERE a.idMascota = ? AND a.estado = "activo"'
         );
         $stmt->execute([$idMascota]);
-        $apad = $stmt->fetch();
+        $apads = $stmt->fetchAll();
 
-        if (!$apad) {
+        if (!$apads) {
             respuestaError('No hay un apadrinamiento activo para esta mascota.', 404);
         }
 
-        if (!$esAdmin && (int)$apad['idProtectora'] !== $idProtectora) {
+        if (!$esAdmin && (int)$apads[0]['idProtectora'] !== $idProtectora) {
             respuestaError('No puedes gestionar esta mascota.', 403);
         }
 
@@ -107,38 +89,33 @@ switch ($_SERVER['REQUEST_METHOD']) {
             $rutaArchivo = 'uploads/seguimientos/' . $nombre;
         }
 
-        $stmt = $pdo->prepare(
-            'INSERT INTO seguimientos (idApadrinamiento, contenido, tipo_archivo, ruta_archivo)
-             VALUES (?,?,?,?)'
-        );
-        $stmt->execute([
-            (int)$apad['idApadrinamiento'],
-            $contenido,
-            $tipoArchivo,
-            $rutaArchivo,
-        ]);
-        $idSeguimiento = $pdo->lastInsertId();
-
         $fotos = ($tipoArchivo === 'foto' && $rutaArchivo) ? json_encode([$rutaArchivo]) : null;
         $videoUrl = ($tipoArchivo === 'video' && $rutaArchivo) ? $rutaArchivo : null;
 
         $stmt = $pdo->prepare('INSERT INTO actualizaciones (idMascota, idProtectora, mensaje, fotos, video_url) VALUES (?,?,?,?,?)');
         $stmt->execute([$idMascota, $idProtectora, $contenido, $fotos, $videoUrl]);
         $idActualizacion = $pdo->lastInsertId();
-        $pdo->prepare('UPDATE seguimientos SET idActualizacion = ? WHERE idSeguimiento = ?')->execute([$idActualizacion, $idSeguimiento]);
 
         $stmtM = $pdo->prepare('SELECT nombre FROM mascotas WHERE idMascota = ?');
         $stmtM->execute([$idMascota]);
         $mascota = $stmtM->fetch();
         $mascotaNombre = $mascota ? $mascota['nombre'] : 'tu apadrinado';
 
-        $stmt = $pdo->prepare('SELECT idUsuario FROM apadrinamientos WHERE idMascota = ? AND estado = "activo"');
-        $stmt->execute([$idMascota]);
-        $padrinos = $stmt->fetchAll();
+        $insertSeg = $pdo->prepare('INSERT INTO seguimientos (idApadrinamiento, contenido, tipo_archivo, ruta_archivo, idActualizacion) VALUES (?,?,?,?,?)');
         $insertPadrino = $pdo->prepare('INSERT INTO actualizacion_padrinos (idActualizacion, idUsuario, leido) VALUES (?,?,0)');
-        foreach ($padrinos as $padrino) {
-            $insertPadrino->execute([$idActualizacion, $padrino['idUsuario']]);
-            crearNotificacion($padrino['idUsuario'], 'actualizacion_protectora', 'Nueva actualización de ' . $mascotaNombre, 'perfil.html?tab=actualizaciones');
+
+        foreach ($apads as $apad) {
+            $insertSeg->execute([
+                (int)$apad['idApadrinamiento'],
+                $contenido,
+                $tipoArchivo,
+                $rutaArchivo,
+                $idActualizacion,
+            ]);
+            if ($apad['idUsuario']) {
+                $insertPadrino->execute([$idActualizacion, $apad['idUsuario']]);
+                crearNotificacion($apad['idUsuario'], 'actualizacion_protectora', 'Nueva actualización de ' . $mascotaNombre, 'perfil.html?tab=actualizaciones');
+            }
         }
 
         respuestaOk(['mensaje' => 'Seguimiento añadido correctamente.']);

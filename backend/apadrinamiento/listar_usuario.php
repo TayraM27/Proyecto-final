@@ -5,7 +5,7 @@ header('Content-Type: application/json; charset=utf-8');
 
 iniciarSesionSegura();
 if (!usuarioLogueado()) {
-    respuestaError('Debes iniciar sesion.', 401);
+    respuestaError('Debes iniciar sesión.', 401);
 }
 
 $pdo = conectar();
@@ -17,7 +17,8 @@ $stmt = $pdo->prepare(
         a.estado, a.fecha_inicio AS fecha_solicitud,
         m.nombre AS mascota_nombre,
         (SELECT ruta FROM mascotas_fotos WHERE idMascota = a.idMascota AND es_principal = 1 LIMIT 1) AS foto_principal,
-        p.nombre AS protectora_nombre
+        p.nombre AS protectora_nombre,
+        p.activa AS protectora_activa
      FROM apadrinamientos a
      JOIN mascotas m ON a.idMascota = m.idMascota
      JOIN protectoras p ON m.idProtectora = p.idProtectora

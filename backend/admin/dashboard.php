@@ -21,7 +21,7 @@ $stats = [];
 $stats['mascotas_disponibles']   = safeCount($pdo, "SELECT COUNT(*) FROM mascotas WHERE activa=1 AND estado_adopcion='disponible'");
 $stats['total_protectoras']      = safeCount($pdo, "SELECT COUNT(*) FROM protectoras WHERE activa=1");
 $stats['total_usuarios']         = safeCount($pdo, "SELECT COUNT(*) FROM usuarios WHERE rol='usuario'");
-$stats['apadrinamientos_activos']= safeCount($pdo, "SELECT COUNT(*) FROM apadrinamientos WHERE estado='aceptada' AND deleted=0");
+$stats['apadrinamientos_activos']= safeCount($pdo, "SELECT COUNT(*) FROM apadrinamientos WHERE estado IN ('activo','aceptada')");
 $stats['publicaciones_foro']     = safeCount($pdo, "SELECT COUNT(*) FROM publicaciones WHERE activa=1");
 
 try {
@@ -38,11 +38,11 @@ try {
 
 try {
     $ultApad = $pdo->query(
-        "SELECT m.nombre AS mascota, u.nombre AS padrino, a.cuota
+        "SELECT m.nombre AS mascota, COALESCE(u.nombre, a.nombre_pagador) AS padrino, a.cuota
          FROM apadrinamientos a
          JOIN mascotas m ON a.idMascota = m.idMascota
-         JOIN usuarios u ON a.idUsuario = u.idUsuario
-         WHERE a.estado = 'aceptada' AND a.deleted = 0
+         LEFT JOIN usuarios u ON a.idUsuario = u.idUsuario
+         WHERE a.estado IN ('activo','aceptada')
          ORDER BY a.idApadrinamiento DESC LIMIT 5"
     )->fetchAll();
 } catch (PDOException $e) {
