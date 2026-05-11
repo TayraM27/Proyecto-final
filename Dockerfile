@@ -10,11 +10,15 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install pdo pdo_mysql mysqli zip gd \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Habilitar mod_rewrite para .htaccess
+# Habilitar mod_rewrite
 RUN a2enmod rewrite
 
 # Copiar configuración de Apache
 COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
+
+# Habilitar el sitio (ESTO ES LO QUE TE FALTABA)
+RUN a2dissite 000-default.conf || true
+RUN a2ensite 000-default.conf
 
 # Copiar todo el proyecto
 COPY . /var/www/html/
