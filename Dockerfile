@@ -15,6 +15,8 @@ COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
 RUN a2dissite 000-default.conf || true
 RUN a2ensite 000-default.conf
 
+COPY docker/php.ini /usr/local/etc/php/conf.d/custom.ini
+
 COPY . /var/www/html/
 
 RUN rm -rf /var/www/html/.git /var/www/html/docker /var/www/html/Dockerfile /var/www/html/render.yaml /var/www/html/.gitignore 2>/dev/null || true

@@ -11,7 +11,10 @@ $id = (int)($_GET['id'] ?? 0);
 $titulo     = 'PetFamily – Adopta, no compres';
 $descripcion= 'Encuentra tu compañero ideal en PetFamily. Adopta un perro o gato en Asturias.';
 $imagen     = '';
-$url        = 'http://localhost/ProyectoCat/html/fichaAnimal.html';
+$protocolo  = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$host       = $_SERVER['HTTP_HOST'] ?? 'petfamily-q82z.onrender.com';
+$baseUrl    = $protocolo . '://' . $host;
+$url        = $baseUrl . '/html/fichaAnimal.html';
 
 if ($id) {
     try {
@@ -38,10 +41,10 @@ if ($id) {
                 ? mb_substr($m['descripcion'], 0, 150) . (mb_strlen($m['descripcion']) > 150 ? '…' : '')
                 : ($m['nombre'] . ' es un ' . $especie . ' en ' . $m['protectora'] . ' buscando hogar.');
             $descripcion = $urgente . $desc_animal;
-            $url        = 'http://localhost/ProyectoCat/html/fichaAnimal.html?id=' . $id;
+            $url    = $baseUrl . '/html/fichaAnimal.html?id=' . $id;
 
             if ($m['foto_principal']) {
-                $imagen = 'http://localhost/ProyectoCat/' . $m['foto_principal'];
+                $imagen = $baseUrl . '/' . $m['foto_principal'];
             }
         }
     } catch (Exception $e) {
@@ -51,7 +54,7 @@ if ($id) {
 
 /* Imagen fallback */
 if (!$imagen) {
-    $imagen = 'http://localhost/ProyectoCat/img/iconosHeader/gato_logo.png';
+    $imagen = $baseUrl . '/img/iconosHeader/gato_logo.png';
 }
 
 /* Redirigir al usuario a fichaAnimal.html inmediatamente
