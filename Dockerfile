@@ -15,14 +15,15 @@ COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
 RUN a2dissite 000-default.conf || true
 RUN a2ensite 000-default.conf
 
-# ⬇️ ESTA ES LA LÍNEA QUE ARREGLA EL 403
-COPY html/ /var/www/html/
+COPY . /var/www/html/
+
+RUN rm -rf /var/www/html/.git /var/www/html/docker /var/www/html/Dockerfile /var/www/html/render.yaml /var/www/html/.gitignore 2>/dev/null || true
 
 RUN chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type d -exec chmod 755 {} \; \
     && find /var/www/html -type f -exec chmod 644 {} \;
 
-RUN mkdir -p /var/www/html/uploads/permisos \
+RUN mkdir -p /var/www/html/uploads/permisos /var/www/html/uploads/usuarios /var/www/html/uploads/acogida /var/www/html/uploads/seguimientos /var/www/html/uploads/actualizaciones /var/www/html/uploads/solicitudes_protectora \
     && chown -R www-data:www-data /var/www/html/uploads \
     && chmod -R 775 /var/www/html/uploads
 
