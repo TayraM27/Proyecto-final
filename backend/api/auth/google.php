@@ -22,10 +22,20 @@ if (!$credential) {
 /*--------------------------------------------------------------------------------------------
 verificar JWT con Google tokeninfo */
 
-$url      = 'https://oauth2.googleapis.com/tokeninfo?id_token=' . urlencode($credential);
-$respuesta = @file_get_contents($url);
+$url = 'https://oauth2.googleapis.com/tokeninfo?id_token=' . urlencode($credential);
 
-if (!$respuesta) {
+$ch = curl_init();
+curl_setopt_array($ch, [
+    CURLOPT_URL            => $url,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_TIMEOUT        => 10,
+    CURLOPT_SSL_VERIFYPEER => true,
+]);
+$respuesta = curl_exec($ch);
+$httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
+
+if (!$respuesta || $httpCode !== 200) {
     respuestaError('No se pudo verificar el token con Google. Comprueba la conexión.');
 }
 

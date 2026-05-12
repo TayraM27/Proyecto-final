@@ -5,8 +5,9 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libwebp-dev \
     libzip-dev \
+    libcurl4-openssl-dev \
     unzip \
-    && docker-php-ext-install pdo pdo_mysql mysqli zip gd \
+    && docker-php-ext-install pdo pdo_mysql mysqli zip gd curl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN a2enmod rewrite
