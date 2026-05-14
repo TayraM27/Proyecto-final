@@ -263,11 +263,6 @@
                     <div class="login-separador"><span>o regístrate con</span></div>
 
                     <!-- Google Sign-In -->
-                    <div id="g_id_onload"
-                         data-client_id="615608967925-59tc6p3spe5urj90hn8lu9aen1249852.apps.googleusercontent.com"
-                         data-callback="handleGoogleRegister"
-                         data-auto_prompt="false">
-                    </div>
                     <div class="login-social">
                         <button type="button" class="login-social-btn" onclick="iniciarGoogleRegister()">
                             <svg width="18" height="18" viewBox="0 0 48 48" style="margin-right:0.5em;flex-shrink:0;">
@@ -434,17 +429,25 @@
 
 <script>
 function iniciarGoogleRegister() {
-    google.accounts.id.prompt();
+    google.accounts.oauth2.initTokenClient({
+        client_id: '615608967925-59tc6p3spe5urj90hn8lu9aen1249852.apps.googleusercontent.com',
+        scope: 'profile email',
+        callback: function (res) {
+            if (res.access_token) {
+                handleGoogleRegister(res.access_token);
+            }
+        },
+    }).requestAccessToken();
 }
 
-function handleGoogleRegister(response) {
+function handleGoogleRegister(accessToken) {
     var btnGoogle = document.querySelector('.login-social-btn');
     if (btnGoogle) btnGoogle.disabled = true;
 
     fetch('../backend/api/auth/google.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credential: response.credential }),
+        body: JSON.stringify({ access_token: accessToken }),
         credentials: 'include'
     })
     .then(function(r) { return r.json(); })

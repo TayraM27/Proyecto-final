@@ -507,7 +507,7 @@
                 ' onerror="this.src=\'../img/mascotas/default.jpg\'">' +
 
                 '<button class="btn-fav" data-id="' + m.idMascota + '"' +
-                ' onclick="toggleFavorito(event, \'' + m.idMascota + '\')" title="Agregar a favoritos">' +
+                ' onclick="toggleFavorito(event, \'' + m.idMascota + '\')" aria-label="Agregar a favoritos">' +
                 '<i class="fa-regular fa-heart"></i></button>' +
 
                 (badges ? '<div class="image-badges">' + badges + '</div>' : '') +

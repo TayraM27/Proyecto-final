@@ -1,7 +1,7 @@
 <?php
 /*--------------------------------------------------------------------------------------------
-Google OAuth — recibe el JWT de Google, verifica y crea/inicia sesión
-POST { credential: <JWT> }
+Google OAuth — recibe un JWT (One Tap) o access_token (OAuth popup), verifica y crea/inicia sesión
+POST { credential: <JWT> } | { access_token: <token> }
 Devuelve: JSON ok/error */
 
 require_once __DIR__ . '/../../includes/funciones.php';
@@ -12,25 +12,38 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     respuestaError('Método no permitido.', 405);
 }
 
-$datos      = json_decode(file_get_contents('php://input'), true);
-$credential = $datos['credential'] ?? '';
+$datos       = json_decode(file_get_contents('php://input'), true);
+$credential  = $datos['credential'] ?? '';
+$accessToken = $datos['access_token'] ?? '';
 
-if (!$credential) {
+if (!$credential && !$accessToken) {
     respuestaError('Token de Google no recibido.');
 }
 
 /*--------------------------------------------------------------------------------------------
-verificar JWT con Google tokeninfo */
+verificar token con Google */
 
-$url = 'https://oauth2.googleapis.com/tokeninfo?id_token=' . urlencode($credential);
+if ($credential) {
+    $url = 'https://oauth2.googleapis.com/tokeninfo?id_token=' . urlencode($credential);
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_URL            => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 10,
+        CURLOPT_SSL_VERIFYPEER => true,
+    ]);
+} else {
+    $url = 'https://www.googleapis.com/oauth2/v3/userinfo';
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_URL            => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER     => ['Authorization: Bearer ' . $accessToken],
+        CURLOPT_TIMEOUT        => 10,
+        CURLOPT_SSL_VERIFYPEER => true,
+    ]);
+}
 
-$ch = curl_init();
-curl_setopt_array($ch, [
-    CURLOPT_URL            => $url,
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_TIMEOUT        => 10,
-    CURLOPT_SSL_VERIFYPEER => true,
-]);
 $respuesta = curl_exec($ch);
 $httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
