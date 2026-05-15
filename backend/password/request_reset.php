@@ -40,25 +40,30 @@ $enlace    = $protocolo . '://' . $host . '/backend/password/reset.php?token=' .
 
 $apiKey = getenv('RESEND_API_KEY') ?: '';
 
-$cuerpoHtml = '
+$cuerpoHtml = '<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"></head>
+<body>
 <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:2em;background:#f9f9f9;border-radius:12px;">
     <div style="text-align:center;margin-bottom:1.5em;">
-        <span style="font-size:1.5rem;font-weight:700;color:#1B358F;">Pet<span style="color:#F8BA56;">Family</span></span>
+        <span style="font-size:1.5rem;font-weight:700;color:#1B358F;">Pet</span><span style="font-size:1.5rem;font-weight:700;color:#F8BA56;">Family</span>
     </div>
-    <h2 style="color:#1B358F;font-size:1.1rem;">Restablecer contrasena</h2>
-    <p style="color:#444;font-size:0.92rem;">Has solicitado restablecer tu contrasena. Haz clic para continuar:</p>
+    <h2 style="color:#1B358F;font-size:1.1rem;">Restablecer contrase&ntilde;a</h2>
+    <p style="color:#444;font-size:0.92rem;">Has solicitado restablecer tu contrase&ntilde;a. Haz clic para continuar:</p>
     <p style="text-align:center;margin:2em 0;">
         <a href="' . htmlspecialchars($enlace) . '"
            style="background:#1B358F;color:#fff;padding:0.9em 2em;border-radius:8px;
                   text-decoration:none;font-weight:700;font-size:0.95rem;display:inline-block;">
-            Restablecer contrasena
+            Restablecer contrase&ntilde;a
         </a>
     </p>
     <p style="font-size:0.82rem;color:#888;text-align:center;">
         Caduca en <strong>1 hora</strong>. Si no lo solicitaste, ignora este mensaje.
     </p>
     <p style="font-size:0.78rem;color:#bbb;text-align:center;">PetFamily &mdash; Protectoras de Asturias</p>
-</div>';
+</div>
+</body>
+</html>';
 
 $payload = json_encode([
     'from'    => 'PetFamily <onboarding@resend.dev>',
@@ -74,7 +79,7 @@ curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Authorization: Bearer ' . $apiKey,
-    'Content-Type: application/json',
+    'Content-Type: application/json; charset=utf-8',
 ]);
 
 $respuesta  = curl_exec($ch);
@@ -91,7 +96,7 @@ $resultado = json_decode($respuesta, true);
 
 if ($httpCode !== 200 && $httpCode !== 201) {
     error_log('[PetFamily] Resend error: ' . $respuesta);
-    respuestaError('Error al enviar el correo. Inténtalo de nuevo más tarde.');
+    respuestaError('Error al enviar el correo. Intentalo de nuevo mas tarde.');
 }
 
-respuestaOk(['mensaje' => 'Si el email esta registrado recibirás un enlace en breve.']);
+respuestaOk(['mensaje' => 'Si el email esta registrado recibiras un enlace en breve.']);
