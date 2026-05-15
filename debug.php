@@ -3,35 +3,35 @@ ini_set('display_errors', '1');
 error_reporting(E_ALL);
 header('Content-Type: application/json');
 
+/* Simular exactamente lo que hace login.php */
+ob_start(); /* Capturar cualquier output antes del JSON */
+
 require_once __DIR__ . '/backend/config/db.php';
 require_once __DIR__ . '/backend/includes/funciones.php';
 
-/* Iniciar sesión PRIMERO, luego leer el handler */
+$output_before = ob_get_clean();
+
 iniciarSesionSegura();
-$_SESSION['test'] = 'ok_' . time();
-session_write_close();
 
 $info = [
-    'php_version'    => PHP_VERSION,
-    'https'          => $_SERVER['HTTPS'] ?? 'not set',
-    'x_forwarded'    => $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? 'not set',
-    'session_save'   => ini_get('session.save_handler'),  /* ahora sí es post-handler */
-    'session_id'     => session_id(),
-    'session_test'   => $_SESSION['test'] ?? 'NO SESSION',
-    'document_root'  => $_SERVER['DOCUMENT_ROOT'],
+    'session_save'    => ini_get('session.save_handler'),
+    'session_id'      => session_id(),
+    'output_before'   => $output_before, /* Cualquier error/warning antes del JSON */
+    'cookie_params'   => session_get_cookie_params(),
+    'headers_sent'    => headers_sent($file, $line) ? "YES - at $file:$line" : 'NO',
 ];
 
-/* Verificar que se guardó en MySQL */
+/* Intentar escribir sesión */
+$_SESSION['debug'] = 'test';
+session_write_close();
+
+/* Ver si hay entrada en BD */
 try {
-    $pdo  = conectar();
-    $stmt = $pdo->prepare('SELECT id, expires FROM php_sessions WHERE id = ?');
+    $stmt = conectar()->prepare('SELECT id FROM php_sessions WHERE id = ?');
     $stmt->execute([session_id()]);
-    $row  = $stmt->fetch();
-    $info['mysql_session'] = $row ? 'SAVED — expires: ' . $row['expires'] : 'NOT IN DB';
-    $total = $pdo->query('SELECT COUNT(*) FROM php_sessions')->fetchColumn();
-    $info['total_sessions'] = (int)$total;
+    $info['in_db'] = $stmt->fetch() ? 'YES' : 'NO';
 } catch (Exception $e) {
-    $info['mysql_session'] = 'ERROR: ' . $e->getMessage();
+    $info['in_db'] = 'ERROR: ' . $e->getMessage();
 }
 
-echo json_encode($info, JSON_PRETTY_PRINT);
+echo json_encode($info, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
