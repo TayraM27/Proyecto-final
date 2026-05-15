@@ -13,7 +13,7 @@ function iniciarSesionSegura(): void {
             'path'     => '/',
            'secure'   => $esHttps,
             'httponly' => true,
-            'samesite' => 'Lax',
+            'samesite' => $esHttps ? 'None' : 'Lax',
         ]);
 
         session_set_save_handler(
@@ -34,7 +34,8 @@ function iniciarSesionSegura(): void {
                     $expires = date('Y-m-d H:i:s', time() + 1800);
                     $pdo->prepare(
                         'INSERT INTO php_sessions (id, data, expires) VALUES (?, ?, ?)
-                         ON DUPLICATE KEY UPDATE data = VALUES(data), expires = VALUES(expires)'
+                         AS new_row
+                         ON DUPLICATE KEY UPDATE data = new_row.data, expires = new_row.expires'
                     )->execute([$id, $data, $expires]);
                     return true;
                 } catch (\Exception $e) { return false; }
@@ -103,6 +104,21 @@ function requerirProtectora(): void {
 function requerirAdminOProtectora(): void {
     if (!esAdminOProtectora()) {
         respuestaError('Acceso restringido.', 403);
+    }
+}
+
+function protectoraBloqueada(int $idProtectora): bool {
+    $pdo  = conectar();
+    $stmt = $pdo->prepare('SELECT activa FROM protectoras WHERE idProtectora = ? LIMIT 1');
+    $stmt->execute([$idProtectora]);
+    $row  = $stmt->fetch();
+    return !$row || !(bool)$row['activa'];
+}
+
+function requerirProtectoraActiva(): void {
+    $idProtectora = getIdProtectoraUsuario();
+    if ($idProtectora && protectoraBloqueada($idProtectora)) {
+        respuestaError('Tu protectora está suspendida temporalmente. No puedes realizar cambios.', 403);
     }
 }
 
