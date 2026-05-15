@@ -44,11 +44,9 @@ if ($metodo === 'GET') {
                        p.iban, p.bizum, p.teaming, p.badges,
                        p.foto_logo, p.latitud, p.longitud,
                        p.verificada, p.activa, p.fecha_registro,
-                       COUNT(m.idMascota) AS num_animales
+                       (SELECT COUNT(*) FROM mascotas m WHERE m.idProtectora = p.idProtectora AND m.activa = 1) AS num_animales
                 FROM protectoras p
-                LEFT JOIN mascotas m ON m.idProtectora = p.idProtectora AND m.activa = 1
-                WHERE p.idProtectora = ?
-                GROUP BY p.idProtectora";
+                WHERE p.idProtectora = ?";
         $params = [$id];
         if (!$esAdmin && $idProtectoraUsuario) {
             $sql .= ' AND p.idProtectora = ?';
@@ -85,11 +83,9 @@ if ($metodo === 'GET') {
                    p.iban, p.bizum, p.teaming, p.badges,
                    p.foto_logo, p.latitud, p.longitud,
                    p.verificada, p.activa, p.fecha_registro,
-                   COUNT(m.idMascota) AS num_animales
+                   (SELECT COUNT(*) FROM mascotas m WHERE m.idProtectora = p.idProtectora AND m.activa = 1) AS num_animales
             FROM protectoras p
-            LEFT JOIN mascotas m ON m.idProtectora = p.idProtectora AND m.activa = 1
             $cond
-            GROUP BY p.idProtectora
             ORDER BY p.nombre";
 
     $stmt = $pdo->prepare($sql);
