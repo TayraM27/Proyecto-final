@@ -1,7 +1,18 @@
 <?php
-ob_start();
-ini_set('display_errors', '1');
+ini_set('display_errors', '0');
 error_reporting(E_ALL);
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    header('Content-Type: application/json; charset=utf-8');
+    http_response_code(500);
+    echo json_encode(['ok'=>false,'error'=>"PHP $errno: $errstr in $errfile:$errline"]);
+    exit;
+});
+set_exception_handler(function($e) {
+    header('Content-Type: application/json; charset=utf-8');
+    http_response_code(500);
+    echo json_encode(['ok'=>false,'error'=>$e->getMessage().' in '.$e->getFile().':'.$e->getLine()]);
+    exit;
+});
 /*--------------------------------------------------------------------------------------------
 GET    — lista protectoras
 POST   — crea protectora
