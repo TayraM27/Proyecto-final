@@ -1894,7 +1894,7 @@ function renderDatosProtectora() {
     }
 
     cont.innerHTML = logoHtml
-        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1em 2em;">'
+        + '<div class="datos-grid">'
         + campoD('fa-shield-halved', 'Nombre', p.nombre)
         + campoD('fa-location-dot', 'Localidad', p.localidad)
         + campoD('fa-envelope', 'Email', p.email)
@@ -2124,6 +2124,11 @@ document.addEventListener('DOMContentLoaded', function(){
 </div>
 
 <style>
+.datos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1em 2em;
+}
 .modal-detalle-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -2161,6 +2166,9 @@ document.addEventListener('DOMContentLoaded', function(){
 }
 #modalOverlayDetalle .modal {
     max-width: 800px;
+}
+@media (max-width: 768px) {
+    .datos-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 600px) {
     .modal-detalle-grid { grid-template-columns: 1fr; }
