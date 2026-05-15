@@ -25,9 +25,9 @@ function mostrarBannerCookies() {
     banner.id  = 'cookie-banner';
     banner.innerHTML =
         '<p><i class="fa-solid fa-cookie-bite me-2" style="color:#F8BA56;"></i>'
-      + 'Usamos cookies propias para el inicio de sesiÃ³n y cookies de terceros (Tidio) para el chat de soporte. '
+      + 'Usamos cookies propias para el inicio de sesión y cookies de terceros (Tidio) para el chat de soporte. '
       + 'Puedes aceptarlas todas o usar solo las necesarias. '
-      + '<a href="privacidad.html">MÃ¡s informaciÃ³n</a></p>'
+      + '<a href="privacidad.html">Más información</a></p>'
       + '<div class="cookie-btns">'
       + '<button class="btn-cookie-necesarias" onclick="aplicarConsentimiento(\'necesarias\')">Solo necesarias</button>'
       + '<button class="btn-cookie-aceptar" onclick="aplicarConsentimiento(\'todas\')">Aceptar todas</button>'
@@ -268,10 +268,6 @@ function renderUserArea(usuario) {
     }
 
     iniciarPollingNotificaciones();
-    /* Si ya hay datos cacheados de un poll anterior, aplicar inmediatamente */
-    if (_noLeidasGlobal > 0) {
-        setTimeout(function() { _actualizarBadgesNum(_noLeidasGlobal); }, 50);
-    }
 
     /* En pantallas muy pequeñas (#user_burger oculto) añadir accesos
        rápidos al menú hamburguesa para que el usuario pueda navegar */
@@ -410,12 +406,12 @@ function cargarNotificaciones() {
         .then(function(data) {
             if (!data.success) return;
             var noLeidas = data.noLeidas || 0;
-            _notifCache  = data.notificaciones || [];
-            /* Si el badge aún no está en el DOM, reintentar */
+            _notifCache = data.notificaciones || [];
+            var sesion = sessionStorage.getItem('pf_session');
+            if (sesion) { try { if (JSON.parse(sesion).rol === 'admin') return; } catch(e) {} }
+            /* Si el badge aún no está en el DOM (header no construido), reintentar */
             if (!document.getElementById('user-notif-badge')) {
-                (function(n) {
-                    setTimeout(function() { _actualizarBadgesNum(n); }, 900);
-                })(noLeidas);
+                setTimeout(function() { _actualizarBadgesNum(noLeidas); }, 800);
             } else {
                 _actualizarBadgesNum(noLeidas);
             }
@@ -432,14 +428,9 @@ function cargarNotificaciones() {
         .catch(function() {});
 }
 
-var _pollingActivo = false;
-
 function iniciarPollingNotificaciones() {
     cargarNotificaciones();
-    if (!_pollingActivo) {
-        _pollingActivo = true;
-        setInterval(cargarNotificaciones, 10000);
-    }
+    setInterval(cargarNotificaciones, 10000);
 }
 
 /* Sincroniza favoritos desde la BD al localStorage para que los corazones
@@ -466,8 +457,7 @@ function sincronizarFavoritos() {
                 var idFicha = params.get('id');
                 if (idFicha && ids.indexOf(String(idFicha)) !== -1) {
                     btnFicha.classList.add('activo');
-                    var icoFicha = btnFicha.querySelector('i');
-                    if (icoFicha) icoFicha.className = 'fa-solid fa-heart';
+                    btnFicha.innerHTML = '<i class="fa-solid fa-heart me-1"></i> Guardado en favoritos';
                 }
             }
         })
@@ -891,7 +881,7 @@ document.addEventListener('DOMContentLoaded', function() {
         function validarPasswordL() {
             var valor = inputPassword.value;
             if (!valor)           return mostrarErrorL(inputPassword, errorPasswordL, 'La contrasena es obligatoria.'), false;
-            if (valor.length < 8) return mostrarErrorL(inputPassword, errorPasswordL, 'Minimo 8 caracteres.'), false;
+            if (valor.length < 6) return mostrarErrorL(inputPassword, errorPasswordL, 'Minimo 6 caracteres.'), false;
             limpiarErrorL(inputPassword, errorPasswordL);
             return true;
         }
@@ -1404,28 +1394,10 @@ function cargarProtectoras(pagina) {
         .then(function(data){
             if (!data.ok || !data.protectoras || !data.protectoras.length) {
                 grid.innerHTML = '<div class="col-12 text-center py-5"><p class="text-muted">No hay protectoras disponibles en este momento.</p></div>';
-                totalPaginasProtectoras = data.totalPaginas || 0;
-                generarPaginacionProtectoras(totalPaginasProtectoras, 1);
+                generarPaginacionProtectoras(1, 1);
                 return;
             }
             totalPaginasProtectoras = data.totalPaginas || 1;
-
-            data.protectoras.forEach(function(p) {
-                var key = 'prot-' + p.idProtectora;
-                protectoras[key] = {
-                    nombre:       p.nombre,
-                    telefono:     p.telefono     || null,
-                    email:        p.email        || null,
-                    web:          p.web          || null,
-                    tipo_pagina:  p.tipo_pagina  || 'sin_pagina',
-                    teaming:      p.teaming      || null,
-                    iban:         p.iban         || null,
-                    bizum:        p.bizum        || null,
-                    red_social_url: p.red_social_url || null,
-                    badges:       p.badges       || '',
-                };
-            });
-
             grid.innerHTML = data.protectoras.map(function(p) {
                 var logo = p.foto_logo
                     ? '<img src="../' + p.foto_logo + '" alt="Logo ' + p.nombre.replace(/"/g, '&quot;') + '" ' +
@@ -1676,17 +1648,14 @@ function buildDatosProt(p) {
 /*--------------------------------------------------------------------------------------------
 compartir animal — función global usada en adopta, fichaAnimal, apadrina y acoge */
 function compartirAnimal(id, nombre) {
-    /* Construir URL limpia a la ficha */
-    var base = window.location.href;
-    var url;
-    if (id) {
-        var partes = base.split('/html/');
-        url = partes.length > 1
-            ? partes[0] + '/html/fichaAnimal.html?id=' + id
-            : base.replace(/[^\/]*$/, '') + 'fichaAnimal.html?id=' + id;
-    } else {
-        url = base;
-    }
+    var base   = window.location.href;
+    var partes = base.split('/html/');
+    var raiz   = partes.length > 1 ? partes[0] : base.replace(/\/html\/[^/]*$/, '');
+
+    /* ficha_og.php genera las OG tags para WhatsApp/redes y redirige al usuario */
+    var url = id
+        ? raiz + '/backend/mascotas/ficha_og.php?id=' + id
+        : base;
 
     /* Copiar al portapapeles — textarea con position:fixed para máxima compatibilidad */
     try {
