@@ -6,7 +6,6 @@ require_once __DIR__ . '/../config/db.php';
 
 function iniciarSesionSegura(): void {
     if (session_status() === PHP_SESSION_NONE) {
-        /* En produccion (Render/HTTPS) la cookie debe ser Secure */
         $esHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
                 || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
 
@@ -17,6 +16,40 @@ function iniciarSesionSegura(): void {
             'httponly' => true,
             'samesite' => $esHttps ? 'None' : 'Lax',
         ]);
+
+        /* Guardar sesiones en MySQL para que sobrevivan reinicios del servidor */
+        $pdo = conectar();
+        $handler = new class($pdo) implements SessionHandlerInterface {
+            private PDO $pdo;
+            public function __construct(PDO $pdo) { $this->pdo = $pdo; }
+            public function open(string $path, string $name): bool { return true; }
+            public function close(): bool { return true; }
+            public function read(string $id): string|false {
+                $stmt = $this->pdo->prepare('SELECT data FROM php_sessions WHERE id = ? AND expires > NOW()');
+                $stmt->execute([$id]);
+                $row = $stmt->fetch();
+                return $row ? $row['data'] : '';
+            }
+            public function write(string $id, string $data): bool {
+                $expires = date('Y-m-d H:i:s', time() + (int)ini_get('session.gc_maxlifetime') ?: 1800);
+                $stmt = $this->pdo->prepare(
+                    'INSERT INTO php_sessions (id, data, expires) VALUES (?, ?, ?)
+                     ON DUPLICATE KEY UPDATE data = VALUES(data), expires = VALUES(expires)'
+                );
+                return $stmt->execute([$id, $data, $expires]);
+            }
+            public function destroy(string $id): bool {
+                $this->pdo->prepare('DELETE FROM php_sessions WHERE id = ?')->execute([$id]);
+                return true;
+            }
+            public function gc(int $max_lifetime): int|false {
+                $stmt = $this->pdo->prepare('DELETE FROM php_sessions WHERE expires < NOW()');
+                $stmt->execute();
+                return $stmt->rowCount();
+            }
+        };
+
+        session_set_save_handler($handler, true);
         session_start();
     }
 }
