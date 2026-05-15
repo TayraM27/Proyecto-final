@@ -7,14 +7,18 @@ require_once __DIR__ . '/../includes/funciones.php';
 
 $id = (int)($_GET['id'] ?? 0);
 
+/* URL base dinámica — funciona en local y en Render/producción */
+$esHttps  = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+           || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+$proto    = $esHttps ? 'https' : 'http';
+$host     = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$base_url = $proto . '://' . $host;
+
 /* Datos por defecto */
 $titulo     = 'PetFamily – Adopta, no compres';
 $descripcion= 'Encuentra tu compañero ideal en PetFamily. Adopta un perro o gato en Asturias.';
 $imagen     = '';
-$protocolo  = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-$host       = $_SERVER['HTTP_HOST'] ?? 'petfamily-q82z.onrender.com';
-$baseUrl    = $protocolo . '://' . $host;
-$url        = $baseUrl . '/html/fichaAnimal.html';
+$url        = $base_url . '/html/fichaAnimal.html';
 
 if ($id) {
     try {
@@ -41,10 +45,10 @@ if ($id) {
                 ? mb_substr($m['descripcion'], 0, 150) . (mb_strlen($m['descripcion']) > 150 ? '…' : '')
                 : ($m['nombre'] . ' es un ' . $especie . ' en ' . $m['protectora'] . ' buscando hogar.');
             $descripcion = $urgente . $desc_animal;
-            $url    = $baseUrl . '/html/fichaAnimal.html?id=' . $id;
+            $url        = $base_url . '/html/fichaAnimal.html?id=' . $id;
 
             if ($m['foto_principal']) {
-                $imagen = $baseUrl . '/' . $m['foto_principal'];
+                $imagen = $base_url . '/' . $m['foto_principal'];
             }
         }
     } catch (Exception $e) {
@@ -54,7 +58,7 @@ if ($id) {
 
 /* Imagen fallback */
 if (!$imagen) {
-    $imagen = $baseUrl . '/img/iconosHeader/gato_logo.png';
+    $imagen = $base_url . '/img/iconosHeader/gato_logo.png';
 }
 
 /* Redirigir al usuario a fichaAnimal.html inmediatamente

@@ -45,7 +45,10 @@ $expiresAt = date('Y-m-d H:i:s', strtotime('+1 hour'));
 $pdo->prepare('INSERT INTO password_resets (idUsuario, token, expires_at) VALUES (?, ?, ?)')
     ->execute([$idUsuario, $token, $expiresAt]);
 
-$protocolo = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+/* Render usa X-Forwarded-Proto para indicar HTTPS */
+$esHttps   = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+           || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+$protocolo = $esHttps ? 'https' : 'http';
 $host      = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $enlace    = $protocolo . '://' . $host . '/backend/password/reset.php?token=' . $token;
 

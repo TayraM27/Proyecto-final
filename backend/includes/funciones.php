@@ -6,12 +6,16 @@ require_once __DIR__ . '/../config/db.php';
 
 function iniciarSesionSegura(): void {
     if (session_status() === PHP_SESSION_NONE) {
+        /* En produccion (Render/HTTPS) la cookie debe ser Secure */
+        $esHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+
         session_set_cookie_params([
             'lifetime' => 0,
             'path'     => '/',
-            'secure'   => false,
+            'secure'   => $esHttps,
             'httponly' => true,
-            'samesite' => 'Lax',
+            'samesite' => $esHttps ? 'None' : 'Lax',
         ]);
         session_start();
     }
@@ -63,21 +67,6 @@ function requerirProtectora(): void {
 function requerirAdminOProtectora(): void {
     if (!esAdminOProtectora()) {
         respuestaError('Acceso restringido.', 403);
-    }
-}
-
-function protectoraBloqueada(int $idProtectora): bool {
-    $pdo  = conectar();
-    $stmt = $pdo->prepare('SELECT activa FROM protectoras WHERE idProtectora = ? LIMIT 1');
-    $stmt->execute([$idProtectora]);
-    $row  = $stmt->fetch();
-    return !$row || !(bool)$row['activa'];
-}
-
-function requerirProtectoraActiva(): void {
-    $idProtectora = getIdProtectoraUsuario();
-    if ($idProtectora && protectoraBloqueada($idProtectora)) {
-        respuestaError('Tu protectora está suspendida temporalmente. No puedes realizar cambios.', 403);
     }
 }
 
