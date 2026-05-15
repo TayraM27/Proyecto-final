@@ -1,5 +1,7 @@
 <?php
 ob_start();
+ini_set('display_errors', '1');
+error_reporting(E_ALL);
 /*--------------------------------------------------------------------------------------------
 GET    — lista protectoras
 POST   — crea protectora
