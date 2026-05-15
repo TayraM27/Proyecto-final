@@ -6,15 +6,14 @@ require_once __DIR__ . '/../config/db.php';
 
 function iniciarSesionSegura(): void {
     if (session_status() === PHP_SESSION_NONE) {
-        $esHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-                || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
-
+      
+        $esHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
         session_set_cookie_params([
             'lifetime' => 0,
             'path'     => '/',
-            'secure'   => $esHttps,
+           'secure'   => $esHttps,
             'httponly' => true,
-            'samesite' => 'Lax',
+            'samesite' => $esHttps ? 'None' : 'Lax',
         ]);
 
         session_set_save_handler(
