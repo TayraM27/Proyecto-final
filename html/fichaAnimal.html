@@ -12,6 +12,34 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/093cf7cd82.js" crossorigin="anonymous"></script>
+    <style>
+    .lightbox-modal {
+        position: fixed; z-index: 99999; left: 0; top: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.9);
+        display: flex; align-items: center; justify-content: center;
+        cursor: zoom-out;
+    }
+    .lightbox-contenido {
+        max-width: 92vw; max-height: 88vh;
+        border-radius: 10px;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+        object-fit: contain;
+        cursor: default;
+    }
+    .lightbox-cerrar {
+        position: absolute; top: 20px; right: 30px;
+        color: #fff; font-size: 2.8rem; font-weight: 300;
+        cursor: pointer; line-height: 1; z-index: 10;
+        transition: opacity 0.2s;
+    }
+    .lightbox-cerrar:hover { opacity: 0.7; }
+    .lightbox-caption {
+        position: absolute; bottom: 20px; left: 0; right: 0;
+        text-align: center; color: #ccc; font-size: 0.9rem;
+        pointer-events: none;
+    }
+    </style>
 </head>
 <body>
 
@@ -560,6 +588,13 @@
     </div>
 </div>
 
+<!-- modal lightbox imagen -->
+<div id="lightboxModal" class="lightbox-modal" style="display:none;" onclick="cerrarLightbox(event)">
+    <span class="lightbox-cerrar" onclick="cerrarLightbox()">&times;</span>
+    <img class="lightbox-contenido" id="lightboxImg" alt="Foto ampliada">
+    <div id="lightboxCaption" class="lightbox-caption"></div>
+</div>
+
 <!-- modal favoritos -->
 <div class="modal fade" id="modalLoginFav" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm">
@@ -734,6 +769,8 @@ document.addEventListener('DOMContentLoaded', function() {
         fp.src = fotoPrincipal ? '../' + fotoPrincipal : '../img/mascotas/default.jpg';
         fp.alt = 'Foto de ' + mascota.nombre;
         fp.onerror = function() { this.src = '../img/mascotas/default.jpg'; };
+        fp.style.cursor = 'zoom-in';
+        fp.onclick = function() { abrirLightbox(this.src, mascota.nombre); };
 
         var minWrap = document.getElementById('contenedor-miniaturas');
         if (mascota.fotos && mascota.fotos.length > 1) {
@@ -1501,6 +1538,26 @@ function compartirAnimalFicha() {
             }
         });
     });
+</script>
+
+<script>
+function abrirLightbox(src, nombre) {
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightboxCaption').textContent = nombre || '';
+    document.getElementById('lightboxModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+function cerrarLightbox(e) {
+    if (e && e.target !== e.currentTarget) return;
+    document.getElementById('lightboxModal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        var modal = document.getElementById('lightboxModal');
+        if (modal.style.display === 'flex') cerrarLightbox();
+    }
+});
 </script>
 
 </body>

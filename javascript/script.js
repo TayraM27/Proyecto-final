@@ -466,7 +466,8 @@ function sincronizarFavoritos() {
                 var idFicha = params.get('id');
                 if (idFicha && ids.indexOf(String(idFicha)) !== -1) {
                     btnFicha.classList.add('activo');
-                    btnFicha.innerHTML = '<i class="fa-solid fa-heart me-1"></i> Guardado en favoritos';
+                    var icoFicha = btnFicha.querySelector('i');
+                    if (icoFicha) icoFicha.className = 'fa-solid fa-heart';
                 }
             }
         })
