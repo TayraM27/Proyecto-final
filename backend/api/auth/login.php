@@ -13,7 +13,7 @@ if (!$datos) {
     respuestaError('Datos inválidos.');
 }
 
-$email    = trim($datos['email']    ?? '');
+$email    = limpiar($datos['email']    ?? '');
 $password = trim($datos['password']   ?? '');
 
 if (!$email || !$password) {
@@ -46,7 +46,6 @@ $pdo->prepare('UPDATE usuarios SET ultimo_login = NOW() WHERE idUsuario = ?')
     ->execute([$usuario['idUsuario']]);
 
 iniciarSesionSegura();
-session_regenerate_id(true);
 $_SESSION['idUsuario']    = $usuario['idUsuario'];
 $_SESSION['nombre']       = $usuario['nombre'];
 $_SESSION['username']     = $usuario['username'];
