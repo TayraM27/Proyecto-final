@@ -95,12 +95,6 @@ if ($metodo === 'GET') {
 }
 
 /*--------------------------------------------------------------------------------------------
-POST — crea protectora (SOLO REGISTRO PUBLICO, admin NO puede crear) */
-if ($metodo === 'POST') {
-    respuestaError('Las protectoras se registran por su cuenta. Los administradores no pueden crear protectoras.', 403);
-}
-
-/*--------------------------------------------------------------------------------------------
 PUT — actualizar protectora (protectora edita sus datos, admin solo moderacion) */
 if ($metodo === 'PUT') {
     $datos = json_decode(file_get_contents('php://input'), true) ?? [];

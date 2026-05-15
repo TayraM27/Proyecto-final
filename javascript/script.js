@@ -25,9 +25,9 @@ function mostrarBannerCookies() {
     banner.id  = 'cookie-banner';
     banner.innerHTML =
         '<p><i class="fa-solid fa-cookie-bite me-2" style="color:#F8BA56;"></i>'
-      + 'Usamos cookies propias para el inicio de sesión y cookies de terceros (Tidio) para el chat de soporte. '
+      + 'Usamos cookies propias para el inicio de sesiÃ³n y cookies de terceros (Tidio) para el chat de soporte. '
       + 'Puedes aceptarlas todas o usar solo las necesarias. '
-      + '<a href="privacidad.html">Más información</a></p>'
+      + '<a href="privacidad.html">MÃ¡s informaciÃ³n</a></p>'
       + '<div class="cookie-btns">'
       + '<button class="btn-cookie-necesarias" onclick="aplicarConsentimiento(\'necesarias\')">Solo necesarias</button>'
       + '<button class="btn-cookie-aceptar" onclick="aplicarConsentimiento(\'todas\')">Aceptar todas</button>'
@@ -407,8 +407,6 @@ function cargarNotificaciones() {
             if (!data.success) return;
             var noLeidas = data.noLeidas || 0;
             _notifCache = data.notificaciones || [];
-            var sesion = sessionStorage.getItem('pf_session');
-            if (sesion) { try { if (JSON.parse(sesion).rol === 'admin') return; } catch(e) {} }
             /* Si el badge aún no está en el DOM (header no construido), reintentar */
             if (!document.getElementById('user-notif-badge')) {
                 setTimeout(function() { _actualizarBadgesNum(noLeidas); }, 800);
@@ -1644,18 +1642,20 @@ function buildDatosProt(p) {
 
 
 
-
 /*--------------------------------------------------------------------------------------------
 compartir animal — función global usada en adopta, fichaAnimal, apadrina y acoge */
 function compartirAnimal(id, nombre) {
-    var base   = window.location.href;
-    var partes = base.split('/html/');
-    var raiz   = partes.length > 1 ? partes[0] : base.replace(/\/html\/[^/]*$/, '');
-
-    /* ficha_og.php genera las OG tags para WhatsApp/redes y redirige al usuario */
-    var url = id
-        ? raiz + '/backend/mascotas/ficha_og.php?id=' + id
-        : base;
+    /* Construir URL limpia a la ficha */
+    var base = window.location.href;
+    var url;
+    if (id) {
+        var partes = base.split('/html/');
+        url = partes.length > 1
+            ? partes[0] + '/html/fichaAnimal.html?id=' + id
+            : base.replace(/[^\/]*$/, '') + 'fichaAnimal.html?id=' + id;
+    } else {
+        url = base;
+    }
 
     /* Copiar al portapapeles — textarea con position:fixed para máxima compatibilidad */
     try {
