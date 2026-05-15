@@ -159,3 +159,5 @@ respuestaOk([
     'pagina'       => $pagina,
     'totalPaginas' => (int)ceil($total / $limite),
 ]);
+
+?>

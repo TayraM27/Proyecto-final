@@ -21,3 +21,5 @@ $stmtF->execute([$id]);
 $m['fotos'] = $stmtF->fetchAll();
 
 echo json_encode(['ok' => true, 'mascota' => $m]);
+
+?>

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*--------------------------------------------------------------------------------------------
 GET — lista solicitudes con filtro de estado y paginación
 PUT — cambia estado de una solicitud */

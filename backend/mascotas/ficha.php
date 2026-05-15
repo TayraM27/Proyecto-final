@@ -76,3 +76,4 @@ respuestaOk([
     'mascota'               => $mascota,
     'protectora_suspendida' => !(bool)$mascota['protectora_activa'],
 ]);
+?>

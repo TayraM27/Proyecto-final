@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 ob_start();
 require_once __DIR__ . '/../../includes/funciones.php';
 $_pf_early_output = ob_get_clean();
