@@ -14,7 +14,7 @@ function iniciarSesionSegura(): void {
             'path'     => '/',
             'secure'   => $esHttps,
             'httponly' => true,
-            'samesite' => $esHttps ? 'None' : 'Lax',
+            'samesite' => 'Lax',
         ]);
 
         session_set_save_handler(
