@@ -68,9 +68,9 @@ $cuerpoHtml = '<!DOCTYPE html>
 $payload = json_encode([
     'from'    => 'PetFamily <onboarding@resend.dev>',
     'to'      => [$email],
-    'subject' => 'Recuperar contrasena - PetFamily',
+    'subject' => 'Recuperar contraseña - PetFamily',
     'html'    => $cuerpoHtml,
-    'text'    => "Restablece tu contrasena:\n\n" . $enlace . "\n\nCaduca en 1 hora.",
+    'text'    => "Restablece tu contraseña:\n\n" . $enlace . "\n\nCaduca en 1 hora.",
 ]);
 
 $ch = curl_init('https://api.resend.com/emails');
