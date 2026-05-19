@@ -1663,8 +1663,8 @@ function compartirAnimal(id, nombre) {
     if (id) {
         var partes = base.split('/html/');
         url = partes.length > 1
-            ? partes[0] + '/html/fichaAnimal.html?id=' + id
-            : base.replace(/[^\/]*$/, '') + 'fichaAnimal.html?id=' + id;
+            ? partes[0] + '/compartir.php?id=' + id
+            : base.replace(/[^\/]*$/, '').replace(/html\/[^/]*$/, '') + 'compartir.php?id=' + id;
     } else {
         url = base;
     }
