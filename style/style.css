@@ -4980,3 +4980,24 @@ body > iframe[src*="tidio"] {
     color: #fff;
     border-color: #1B358F;
 }
+
+/*--------------------------------------------------------------------------------------------
+dona — móvil: descripción completa */
+@media (max-width: 768px) {
+    .dona-card-prot {
+        flex-wrap: wrap;
+        align-items: stretch;
+    }
+    .dona-card-logo {
+        align-self: center;
+    }
+    .dona-card-desc {
+        display: block;
+        -webkit-line-clamp: unset;
+        overflow: visible;
+    }
+    .dona-card-prot .btn-prot-donar {
+        flex: 1 1 100%;
+        margin-top: 0.3em;
+    }
+}
