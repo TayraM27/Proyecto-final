@@ -481,7 +481,6 @@ user area — con sesión */
         gap: 0.4em;
         text-decoration: none;
         text-align: center;
-        margin-right: -16%;
     }
 
     #logoMD img {
@@ -502,6 +501,7 @@ user area — con sesión */
 
     #menu_burger {
         display: flex;
+        align-items: center;
     }
 
     #user_burger img {
@@ -533,8 +533,18 @@ user area — con sesión */
 @media (max-width: 991px) {
 
     header {
-        height: clamp(85px, 14vh, 110px);
+        height: clamp(90px, 14vh, 110px);
         padding: 0 1em;
+    }
+
+    #menu_burger i {
+        margin-right: 0;
+        margin-left: 0;
+    }
+
+    #menu_burger {
+        align-items: center;
+        gap: 0.3em;
     }
 
     #lista_menu {

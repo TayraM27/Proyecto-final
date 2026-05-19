@@ -559,21 +559,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Hover del logo
     // ----------------------------------------------------------------
     function configurarHoverLogo(elementoLogo, imagenLogo) {
-        elementoLogo.addEventListener('mouseout', function() {
-            imagenLogo.src = "../img/iconosHeader/gato_logo.png";
-            imagenLogo.style.transform = "rotate(0deg)";
-            elementoLogo.style.transform = "scale(1)";
-            elementoLogo.style.transition = "transform .4s";
-            imagenLogo.style.transition = "transform .4s";
-        });
-
-        elementoLogo.addEventListener('mouseover', function() {
+        function ponerAmarillo() {
             imagenLogo.src = "../img/iconosHeader/cat_logo_yellow.png";
             imagenLogo.style.transform = "rotate(20deg)";
             elementoLogo.style.transform = "scale(1.1)";
             elementoLogo.style.transition = "transform .4s";
             elementoLogo.style.transformOrigin = "center center";
-        });
+        }
+
+        function ponerNormal() {
+            imagenLogo.src = "../img/iconosHeader/gato_logo.png";
+            imagenLogo.style.transform = "rotate(0deg)";
+            elementoLogo.style.transform = "scale(1)";
+            elementoLogo.style.transition = "transform .4s";
+            imagenLogo.style.transition = "transform .4s";
+        }
+
+        elementoLogo.addEventListener('mouseout', ponerNormal);
+        elementoLogo.addEventListener('mouseover', ponerAmarillo);
+        elementoLogo.addEventListener('touchstart', ponerAmarillo);
     }
 
     var logoImagenXL = document.getElementById('logoHeaderXL');

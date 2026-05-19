@@ -17,12 +17,16 @@ margin: 0 auto 1.5em;
 text-align: left;
 }
 
-.footer-logo {
+.footer-logo,
+.footer-logo:link,
+.footer-logo:visited,
+.footer-logo:hover,
+.footer-logo:active {
 display: flex;
 align-items: center;
 gap: 0.6em;
 margin-bottom: 0.6em;
-text-decoration: none;
+text-decoration: none !important;
 color: #fff;
 }
 
