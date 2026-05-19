@@ -25,9 +25,9 @@ function mostrarBannerCookies() {
     banner.id  = 'cookie-banner';
     banner.innerHTML =
         '<p><i class="fa-solid fa-cookie-bite me-2" style="color:#F8BA56;"></i>'
-      + 'Usamos cookies propias para el inicio de sesiÃ³n y cookies de terceros (Tidio) para el chat de soporte. '
+      + 'Usamos cookies propias para el inicio de sesión y cookies de terceros (Tidio) para el chat de soporte. '
       + 'Puedes aceptarlas todas o usar solo las necesarias. '
-      + '<a href="privacidad.html">MÃ¡s informaciÃ³n</a></p>'
+      + '<a href="privacidad.html">Más información</a></p>'
       + '<div class="cookie-btns">'
       + '<button class="btn-cookie-necesarias" onclick="aplicarConsentimiento(\'necesarias\')">Solo necesarias</button>'
       + '<button class="btn-cookie-aceptar" onclick="aplicarConsentimiento(\'todas\')">Aceptar todas</button>'
@@ -586,6 +586,12 @@ document.addEventListener('DOMContentLoaded', function() {
     var logoMD       = document.getElementById('logoMD');
     if (logoMD && logoImagenMD) {
         configurarHoverLogo(logoMD, logoImagenMD);
+    }
+
+    var logoImagenFooter = document.getElementById('logoFooter');
+    var logoFooterLink   = document.querySelector('.footer-logo');
+    if (logoFooterLink && logoImagenFooter) {
+        configurarHoverLogo(logoFooterLink, logoImagenFooter);
     }
 
     // ----------------------------------------------------------------
@@ -1361,13 +1367,15 @@ function cargarProtectorasDinamicasEnDona() {
                 var desc = p.descripcion_dona || p.descripcion || '';
 
                 return '<div class="dona-card-prot">'
+                    + '<div class="dona-card-top">'
                     + '<div class="dona-card-logo">' + logo + '</div>'
                     + '<div style="flex:1;min-width:0;">'
                     + '<p class="dona-card-nombre">' + p.nombre + '</p>'
                     + (p.localidad ? '<p class="dona-card-lugar"><i class="fa-solid fa-location-dot me-1"></i>' + p.localidad + '</p>' : '')
-                    + (desc ? '<p class="dona-card-desc">' + desc + '</p>' : '')
                     + '</div>'
-                    + '<button class="btn-prot-donar" style="flex:0 0 auto;width:auto;padding:0.55em 1em;white-space:nowrap;" '
+                    + '</div>'
+                    + (desc ? '<p class="dona-card-desc">' + desc + '</p>' : '')
+                    + '<button class="btn-prot-donar" '
                     + 'onclick="abrirModalDonarProtDinamica(' + p.idProtectora + ')">'
                     + '<i class="fa-solid fa-hand-holding-heart me-1"></i> Donar</button>'
                     + '</div>';

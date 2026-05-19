@@ -532,6 +532,11 @@ user area — con sesión */
 /* responsive hasta 991px */
 @media (max-width: 991px) {
 
+    header {
+        height: clamp(85px, 14vh, 110px);
+        padding: 0 1em;
+    }
+
     #lista_menu {
         flex-direction: column;
         gap: 0;
